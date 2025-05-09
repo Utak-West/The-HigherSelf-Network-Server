@@ -18,9 +18,21 @@ from pydantic import BaseModel, Field
 
 from models.base import NotionIntegrationConfig, ApiPlatform
 from services.notion_service import NotionService
+from services.integration_manager import IntegrationManager
+from services.typeform_service import TypeFormService
+from services.woocommerce_service import WooCommerceService
+from services.acuity_service import AcuityService
+from services.amelia_service import AmeliaServiceClient
+from services.airtable_service import AirtableService
+from services.snovio_service import SnovIOService
+from services.userfeedback_service import UserFeedbackService
+from services.tutorlm_service import TutorLMService
+from services.plaud_service import PlaudService
+from services.ai_router import AIRouter
 from agents.lead_capture_agent import LeadCaptureAgent
 from agents.booking_agent import BookingAgent, AmeliaBooking
 from models.notion_db_models import WorkflowInstance
+from api.webhooks import router as webhook_router
 
 
 # Configure logging
@@ -45,6 +57,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include webhook router
+app.include_router(webhook_router)
 
 # Initialize agents
 lead_capture_agent = LeadCaptureAgent(
@@ -101,10 +116,28 @@ async def verify_webhook_secret(x_webhook_secret: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Invalid webhook secret")
 
 
+# Initialize the Integration Manager
+integration_manager = IntegrationManager()
+
 @app.on_event("startup")
 async def startup_event():
-    """Initialize services and register agents on startup."""
+    """Initialize services, integrations, and register agents on startup."""
     try:
+        # Initialize the Integration Manager
+        logger.info("Initializing Integration Manager...")
+        integration_success = await integration_manager.initialize()
+        
+        if not integration_success:
+            logger.warning("Some integrations could not be initialized. Check logs for details.")
+        
+        # Log initialization status
+        status = integration_manager.get_initialization_status()
+        for service, initialized in status.items():
+            if initialized:
+                logger.info(f"✅ {service.capitalize()} service initialized successfully")
+            else:
+                logger.warning(f"❌ {service.capitalize()} service failed to initialize")
+        
         # Register agents in Notion
         await lead_capture_agent.register_in_notion()
         logger.info("Lead Capture Agent registered in Notion")
@@ -121,8 +154,19 @@ async def health_check():
     lead_agent_health = await lead_capture_agent.check_health()
     booking_agent_health = await booking_agent.check_health()
     
+    # Get integration statuses
+    integration_status = integration_manager.get_initialization_status()
+    
+    # Calculate overall status
     overall_status = "healthy"
     if lead_agent_health.get("status") != "healthy" or booking_agent_health.get("status") != "healthy":
+        overall_status = "degraded"
+    
+    # If Notion is not healthy, system is unhealthy as it's the central hub
+    if not integration_status.get("notion", False):
+        overall_status = "unhealthy"
+    # If more than 30% of integrations failed, system is degraded
+    elif sum(1 for status in integration_status.values() if not status) / len(integration_status) > 0.3:
         overall_status = "degraded"
     
     return {
@@ -132,7 +176,8 @@ async def health_check():
         "agents": {
             "lead_capture_agent": lead_agent_health,
             "booking_agent": booking_agent_health
-        }
+        },
+        "integrations": integration_status
     }
 
 
@@ -310,6 +355,9 @@ async def get_workflow_instance(instance_id: str):
 def start():
     """Start the API server."""
     port = int(os.environ.get("SERVER_PORT", 8000))
+    
+    logger.info(f"Starting The HigherSelf Network Server on port {port}")
+    logger.info("Notion is configured as the central hub for all data and workflows")
     
     uvicorn.run(
         "api.server:app",

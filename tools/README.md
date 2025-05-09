@@ -20,7 +20,7 @@ The `notion_db_setup.py` script initializes all required Notion databases for th
 
 Before running this utility, ensure you have:
 
-1. A Notion integration created at https://www.notion.so/my-integrations
+1. A Notion integration created at [https://www.notion.so/my-integrations](https://www.notion.so/my-integrations)
 2. An integration token with appropriate permissions
 3. A parent page in your Notion workspace where databases will be created
 4. The Notion integration added to the parent page (share the page with your integration)
@@ -41,6 +41,7 @@ Before running this utility, ensure you have:
    ```
 
 3. The utility will:
+
    - Validate your API token and parent page ID
    - Create all required databases
    - Verify database access
@@ -54,15 +55,18 @@ Before running this utility, ensure you have:
 
 #### Troubleshooting
 
-**Permission Issues**
+### Permission Issues
+
 - Ensure your Notion integration has been shared with the parent page
 - Verify the integration has "Insert content" and "Update content" capabilities
 
-**Invalid Parent Page ID**
+### Invalid Parent Page ID
+
 - The parent page ID should be the UUID portion of the Notion page URL
 - Make sure the page exists and is accessible to your integration
 
-**Rate Limit Errors**
+### Rate Limit Errors
+
 - If you encounter rate limit errors, wait a few minutes before retrying
 
 ## Additional Utilities
