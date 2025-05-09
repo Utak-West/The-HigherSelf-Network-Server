@@ -1,0 +1,16 @@
+[Unit]
+Description=The HigherSelf Network Server - Windsurf Agent Network
+After=network.target
+
+[Service]
+User=higherself
+WorkingDirectory=/opt/the-higherself-network-server
+ExecStart=/opt/the-higherself-network-server/venv/bin/python main.py
+Restart=always
+RestartSec=10
+Environment="PYTHONUNBUFFERED=1"
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
