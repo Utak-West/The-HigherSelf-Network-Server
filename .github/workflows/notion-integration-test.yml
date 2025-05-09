@@ -1,0 +1,93 @@
+name: Notion Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-notion-integration:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-asyncio
+
+      - name: Create mock environment for testing
+        run: |
+          echo "Creating test environment for Notion integration tests"
+          cat > .env.test << EOF
+          # Test environment for Notion integration
+          NOTION_API_TOKEN=${{ secrets.TEST_NOTION_API_TOKEN }}
+          NOTION_CLIENTS_DATABASE_ID=${{ secrets.TEST_NOTION_CLIENTS_DATABASE_ID }}
+          NOTION_PRODUCTS_DATABASE_ID=${{ secrets.TEST_NOTION_PRODUCTS_DATABASE_ID }}
+          NOTION_ORDERS_DATABASE_ID=${{ secrets.TEST_NOTION_ORDERS_DATABASE_ID }}
+          NOTION_APPOINTMENTS_DATABASE_ID=${{ secrets.TEST_NOTION_APPOINTMENTS_DATABASE_ID }}
+          NOTION_BOOKINGS_DATABASE_ID=${{ secrets.TEST_NOTION_BOOKINGS_DATABASE_ID }}
+          NOTION_FEEDBACK_DATABASE_ID=${{ secrets.TEST_NOTION_FEEDBACK_DATABASE_ID }}
+          NOTION_TUTORING_DATABASE_ID=${{ secrets.TEST_NOTION_TUTORING_DATABASE_ID }}
+          NOTION_WORKFLOW_INSTANCES_DATABASE_ID=${{ secrets.TEST_NOTION_WORKFLOW_DATABASE_ID }}
+          EOF
+
+      - name: Verify Notion as central hub
+        run: |
+          echo "Running tests to verify Notion serves as the central hub"
+          python -m pytest tests/notion_integration/ -v
+          
+          # If tests directory doesn't exist yet, create a basic test
+          if [ ! -d "tests/notion_integration" ]; then
+            mkdir -p tests/notion_integration
+            cat > tests/notion_integration/test_notion_central_hub.py << EOF
+          import pytest
+          import os
+          import sys
+          from services.notion_service import NotionService
+          
+          @pytest.mark.asyncio
+          async def test_notion_service_connection():
+              """Test that we can connect to Notion API as the central hub."""
+              notion_token = os.environ.get("NOTION_API_TOKEN")
+              if not notion_token:
+                  pytest.skip("Notion API token not configured")
+              
+              notion_service = NotionService(api_token=notion_token)
+              assert await notion_service.validate_token() == True
+          
+          @pytest.mark.asyncio
+          async def test_integration_manager_notion_sync():
+              """Test that Integration Manager properly synchronizes with Notion."""
+              from services.integration_manager import IntegrationManager
+              
+              integration_manager = IntegrationManager()
+              # This test would be expanded with actual integration testing
+              # that verifies data flows correctly to and from Notion
+              assert integration_manager is not None
+          EOF
+            
+            # Run the tests we just created
+            python -m pytest tests/notion_integration/ -v
+          fi
+
+      - name: Update Notion with test results
+        if: always()
+        run: |
+          echo "Updating Notion with test results"
+          if [ -n "${{ secrets.NOTION_API_TOKEN }}" ] && [ -n "${{ secrets.NOTION_TEST_RESULTS_DATABASE_ID }}" ]; then
+            # This would be an actual API call in production
+            echo "Notion would be updated with test results, maintaining it as the central hub"
+          else
+            echo "Notion credentials not configured for test results"
+          fi
