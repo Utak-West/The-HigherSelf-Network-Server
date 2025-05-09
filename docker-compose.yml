@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  windsurf-agent:
+    build: .
+    container_name: higherself-windsurf-agent
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - higherself-network
+
+  # Optional database service for local development or testing
+  # In production, this would typically be replaced with connections to external services
+  # while maintaining Notion as the central data hub
+  redis:
+    image: redis:alpine
+    container_name: higherself-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - higherself-network
+
+  # Add Nginx as a reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: higherself-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deployment/ssl:/etc/nginx/ssl:ro
+      - ./deployment/www:/usr/share/nginx/html:ro
+    depends_on:
+      - windsurf-agent
+    networks:
+      - higherself-network
+
+networks:
+  higherself-network:
+    driver: bridge
+
+volumes:
+  redis-data:
