@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The HigherSelf Network Server Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            margin: 30px 0;
+        }
+        .info {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .service-card {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .service-card h3 {
+            margin-top: 0;
+            color: #3498db;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .service-card p {
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 14px;
+        }
+        #lastUpdated {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 30px;
+        }
+        .control-panel {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .refresh-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .refresh-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>The HigherSelf Network Server Architecture</h1>
+    
+    <div class="container">
+        <h2>System Overview</h2>
+        <p>The HigherSelf Network Server provides a central integration platform that connects various services while maintaining Notion as the central hub for all data and workflows. The system follows a modular architecture built on asynchronous patterns and robust error handling.</p>
+        
+        <div class="info">
+            <strong>Core Principle:</strong> Notion serves as the central data and workflow management hub for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space.
+        </div>
+
+        <div class="control-panel">
+            <button class="refresh-button" onclick="refreshServiceData()">Refresh Service Data</button>
+            <span id="loadingStatus"></span>
+        </div>
+
+        <div id="systemOverviewDiagram" class="mermaid">
+flowchart TB
+    subgraph "The HigherSelf Network Server"
+        API[API Server\nFastAPI]
+        WEBHOOK[Webhook Handlers]
+        IM[Integration Manager]
+        NS[Notion Service]
+        
+        subgraph "Service Integrations"
+            BS[Base Service]
+            TYPEFORM[TypeForm Service]
+            WOOCOMMERCE[WooCommerce Service]
+            ACUITY[Acuity Service]
+            AMELIA[Amelia Service]
+            USER_FEEDBACK[UserFeedback Service]
+            TUTOR_LM[TutorLM Service]
+            AI_PROVIDER[AI Provider Service]
+        end
+        
+        BS --> TYPEFORM
+        BS --> WOOCOMMERCE
+        BS --> ACUITY
+        BS --> AMELIA
+        BS --> USER_FEEDBACK
+        BS --> TUTOR_LM
+        BS --> AI_PROVIDER
+        
+        API --> WEBHOOK
+        API --> IM
+        IM --> NS
+        IM --> TYPEFORM
+        IM --> WOOCOMMERCE
+        IM --> ACUITY
+        IM --> AMELIA
+        IM --> USER_FEEDBACK
+        IM --> TUTOR_LM
+        IM --> AI_PROVIDER
+    end
+    
+    NOTION[(Notion\nCentral Hub)]
+    TYPEFORM_API[TypeForm API]
+    WOO_API[WooCommerce API]
+    ACUITY_API[Acuity API]
+    AMELIA_API[Amelia API]
+    UF_API[UserFeedback API]
+    TL_API[TutorLM API]
+    OPENAI[OpenAI API]
+    ANTHROPIC[Anthropic API]
+    
+    API <--> CLIENTS[Client Applications]
+    
+    NS <--> NOTION
+    TYPEFORM <--> TYPEFORM_API
+    WOOCOMMERCE <--> WOO_API
+    ACUITY <--> ACUITY_API
+    AMELIA <--> AMELIA_API
+    USER_FEEDBACK <--> UF_API
+    TUTOR_LM <--> TL_API
+    AI_PROVIDER <--> OPENAI
+    AI_PROVIDER <--> ANTHROPIC
+    
+    classDef service fill:#ddf,stroke:#33f,stroke-width:2px;
+    classDef api fill:#fcc,stroke:#f33,stroke-width:2px;
+    classDef mainComponents fill:#cfc,stroke:#3a3,stroke-width:2px;
+    classDef datastore fill:#fcf,stroke:#a3a,stroke-width:2px;
+    
+    class TYPEFORM,WOOCOMMERCE,ACUITY,AMELIA,USER_FEEDBACK,TUTOR_LM,AI_PROVIDER,BS service;
+    class TYPEFORM_API,WOO_API,ACUITY_API,AMELIA_API,UF_API,TL_API,OPENAI,ANTHROPIC api;
+    class API,WEBHOOK,IM,NS mainComponents;
+    class NOTION datastore;
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Data Flow</h2>
+        <p>The system relies on bidirectional synchronization between services and Notion, ensuring all data ultimately resides in Notion as the source of truth.</p>
+
+        <div id="dataFlowDiagram" class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant IM as Integration Manager
+    participant NS as Notion Service
+    participant N as Notion
+    participant S as Third-Party Service
+    
+    C->>API: Request (API endpoint)
+    API->>IM: Process request with service
+    IM->>S: Perform service operation
+    S-->>IM: Service response
+    IM->>NS: Sync data to Notion
+    NS->>N: Create/update page
+    N-->>NS: Notion page ID
+    NS-->>IM: Notion page ID
+    IM->>S: Update with Notion reference
+    IM-->>API: Operation result
+    API-->>C: Response
+    
+    Note over IM,N: All data ultimately syncs to Notion as the central hub
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Service Architecture</h2>
+        <p>All services inherit from the BaseService class, providing consistent error handling, credential management, and HTTP methods.</p>
+
+        <div id="serviceArchitectureDiagram" class="mermaid">
+classDiagram
+    class BaseService {
+        +ServiceCredentials credentials
+        +String service_name
+        +DateTime last_error
+        +async_get(url, headers)
+        +async_post(url, headers, json)
+        +async_put(url, headers, json)
+        +async_patch(url, headers, json)
+        +async_delete(url, headers)
+        +validate_model(model)
+        +validate_connection()
+    }
+    
+    class ServiceCredentials {
+        +String service_name
+        +DateTime last_verified
+        +validate_required_fields()
+    }
+    
+    BaseService *-- ServiceCredentials
+    
+    BaseService <|-- NotionService
+    BaseService <|-- TypeFormService
+    BaseService <|-- WooCommerceService
+    BaseService <|-- AcuityService
+    BaseService <|-- AmeliaService 
+    BaseService <|-- UserFeedbackService
+    BaseService <|-- TutorLMService
+    BaseService <|-- AIProviderService
+    
+    ServiceCredentials <|-- TypeFormCredentials
+    ServiceCredentials <|-- WooCommerceCredentials
+    ServiceCredentials <|-- AcuityCredentials
+    ServiceCredentials <|-- AmeliaCredentials
+    ServiceCredentials <|-- UserFeedbackCredentials
+    ServiceCredentials <|-- TutorLMCredentials
+    ServiceCredentials <|-- AIProviderCredentials
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Service Integrations</h2>
+        <div class="service-grid" id="serviceCards">
+            <!-- Service cards will be dynamically generated -->
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Deployment Architecture</h2>
+        <p>The system is containerized using Docker and can be deployed to any environment supporting Docker containers.</p>
+
+        <div id="deploymentDiagram" class="mermaid">
+flowchart TB
+    subgraph "Docker Deployment"
+        APP[The HigherSelf Network Server]
+        ENV[Environment Variables]
+        LOGS[Log Volume]
+        
+        ENV --> APP
+        APP --> LOGS
+    end
+    
+    subgraph "External Services"
+        NOTION[(Notion API)]
+        TYPEFORM_EXT[TypeForm]
+        WOO_EXT[WooCommerce]
+        ACUITY_EXT[Acuity]
+        AMELIA_EXT[Amelia]
+        AI_EXT[AI Services]
+    end
+    
+    APP <--> NOTION
+    APP <--> TYPEFORM_EXT
+    APP <--> WOO_EXT
+    APP <--> ACUITY_EXT
+    APP <--> AMELIA_EXT
+    APP <--> AI_EXT
+    
+    classDef container fill:#e7f7e7,stroke:#28a745,stroke-width:2px;
+    classDef external fill:#f7e7e7,stroke:#dc3545,stroke-width:2px;
+    
+    class APP,ENV,LOGS container;
+    class NOTION,TYPEFORM_EXT,WOO_EXT,ACUITY_EXT,AMELIA_EXT,AI_EXT external;
+        </div>
+    </div>
+
+    <div id="lastUpdated">Last updated: <span id="updateTimestamp"></span></div>
+
+    <script>
+        // Service definitions - this will be dynamically updated by the GitHub Action
+        const serviceDefinitions = [
+            {
+                name: "TypeForm Service",
+                description: "Handles form submissions and webhook notifications.",
+                functions: [
+                    "Form submission processing",
+                    "Webhook handling",
+                    "Response data synchronization"
+                ]
+            },
+            {
+                name: "WooCommerce Service",
+                description: "Manages products and orders with Notion integration.",
+                functions: [
+                    "Product management",
+                    "Order processing",
+                    "Customer data synchronization"
+                ]
+            },
+            {
+                name: "Acuity Service",
+                description: "Handles scheduling and appointment management.",
+                functions: [
+                    "Appointment creation/updating",
+                    "Calendar management",
+                    "Client data synchronization"
+                ]
+            },
+            {
+                name: "Amelia Service",
+                description: "Manages bookings and synchronizes with Notion.",
+                functions: [
+                    "Booking management",
+                    "Service provider coordination",
+                    "Client notification"
+                ]
+            },
+            {
+                name: "User Feedback Service",
+                description: "Collects and processes user feedback.",
+                functions: [
+                    "Feedback collection",
+                    "Sentiment analysis",
+                    "Response tracking"
+                ]
+            },
+            {
+                name: "TutorLM Service",
+                description: "Manages AI tutoring functionalities.",
+                functions: [
+                    "Session scheduling",
+                    "Tutor-student matching",
+                    "Progress tracking"
+                ]
+            },
+            {
+                name: "AI Provider Service",
+                description: "Routes requests to OpenAI and Anthropic.",
+                functions: [
+                    "Provider management",
+                    "Request routing",
+                    "Response processing"
+                ]
+            },
+            {
+                name: "Integration Manager",
+                description: "Coordinates all service integrations.",
+                functions: [
+                    "Service initialization",
+                    "Notion synchronization",
+                    "Cross-service operations"
+                ]
+            }
+        ];
+
+        // Function to generate service cards
+        function generateServiceCards() {
+            const serviceCardsContainer = document.getElementById('serviceCards');
+            serviceCardsContainer.innerHTML = '';
+            
+            serviceDefinitions.forEach(service => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                
+                let functionsHTML = '';
+                if (service.functions && service.functions.length > 0) {
+                    functionsHTML = '<p>Primary functions:</p><ul>' + 
+                        service.functions.map(func => `<li>${func}</li>`).join('') + 
+                        '</ul>';
+                }
+                
+                card.innerHTML = `
+                    <h3>${service.name}</h3>
+                    <p>${service.description}</p>
+                    ${functionsHTML}
+                `;
+                
+                serviceCardsContainer.appendChild(card);
+            });
+        }
+
+        // Function to refresh service data
+        function refreshServiceData() {
+            document.getElementById('loadingStatus').textContent = 'Loading service data...';
+            
+            // In production, this would make an API call to get the current services
+            // For now, we're just using the static data and simulating a refresh
+            setTimeout(() => {
+                generateServiceCards();
+                updateTimestamp();
+                document.getElementById('loadingStatus').textContent = 'Service data refreshed';
+                setTimeout(() => {
+                    document.getElementById('loadingStatus').textContent = '';
+                }, 3000);
+            }, 1000);
+        }
+
+        // Function to update the timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('updateTimestamp').textContent = now.toLocaleString();
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            generateServiceCards();
+            updateTimestamp();
+        });
+    </script>
+</body>
+</html>
