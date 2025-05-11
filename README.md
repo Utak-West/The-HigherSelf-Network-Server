@@ -286,7 +286,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">🗓️</div>
+    <div style="font-size: 2em; margin-right: 15px;">📅</div>
     <div>
       <h3 style="margin: 0;">Booking & Order Management</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Solari & Ruvo</p>
@@ -308,7 +308,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">📣</div>
+    <div style="font-size: 2em; margin-right: 15px;">📢</div>
     <div>
       <h3 style="margin: 0;">Marketing Campaign Orchestration</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Liora, Elan & Zevi</p>
@@ -330,7 +330,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">👥</div>
+    <div style="font-size: 2em; margin-right: 15px;">👤</div>
     <div>
       <h3 style="margin: 0;">Community Engagement</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Sage & Elan</p>
@@ -352,7 +352,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">📝</div>
+    <div style="font-size: 2em; margin-right: 15px;">📄</div>
     <div>
       <h3 style="margin: 0;">Content Lifecycle Management</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Elan & Liora</p>
@@ -736,13 +736,13 @@ The HigherSelf Network Server connects with your essential business tools:
 <div class="docs-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>🚀 Deployment Guide</h3>
+  <h3>▶️ Deployment Guide</h3>
   <p>Comprehensive instructions for deploying the system in various environments.</p>
   <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="color: #0366d6;">Read the Deployment Guide →</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>👥 Agent System Guide</h3>
+  <h3>👤 Agent System Guide</h3>
   <p>Detailed information about agent personalities and how to work with them.</p>
   <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="color: #0366d6;">Read the Agent Guide →</a>
 </div>
@@ -857,7 +857,7 @@ class MyNewPlatformService(BaseService):
 </div>
 
 <div class="support-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>🌟 Training & Consulting</h3>
+  <h3>★ Training & Consulting</h3>
   <p>Need help getting started? We offer personalized training and consulting services.</p>
   <p><a href="https://higherself.network/training">Learn More</a></p>
 </div>
