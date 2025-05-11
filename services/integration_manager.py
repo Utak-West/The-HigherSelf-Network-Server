@@ -25,7 +25,7 @@ from services.tutor_lm_service import TutorLMService
 from services.tutorlm_service import TutorLMService as LegacyTutorLMService
 from services.ai_provider_service import AIProviderService
 from services.airtable_service import AirtableService
-from services.snovio_service import SnovIOService
+from services.snovio_service import SnovioService  # Corrected import
 from services.plaud_service import PlaudService
 
 
@@ -197,7 +197,7 @@ class IntegrationManager:
             # SnovIO
             if self.config.enable_snovio:
                 logger.info("Initializing SnovIO service...")
-                self.services["snovio"] = SnovIOService()
+                self.services["snovio"] = SnovioService()
                 snovio_initialized = await self.services["snovio"].validate_credentials()
                 self.initialization_status["snovio"] = snovio_initialized
                 if not snovio_initialized:
