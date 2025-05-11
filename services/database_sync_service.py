@@ -53,11 +53,11 @@ class SyncResult(BaseModel):
 
 class DatabaseSyncService:
     """Service for synchronizing between Notion and Supabase."""
-    
+
     def __init__(self, notion_service: NotionService, supabase_service: SupabaseService):
         """
         Initialize the Database Sync Service.
-        
+
         Args:
             notion_service: NotionService instance
             supabase_service: SupabaseService instance
@@ -66,32 +66,32 @@ class DatabaseSyncService:
         self.supabase_service = supabase_service
         self.logger = logging.getLogger(__name__)
         self.logger.info("Database Sync Service initialized")
-        
+
         # Last sync timestamps for each model
         self.last_sync_timestamps: Dict[str, datetime] = {}
-        
+
         # Check if we're in testing mode
         if is_api_disabled("notion") or is_api_disabled("supabase"):
             self.logger.warning("TESTING MODE ACTIVE: Some sync operations will be simulated")
-    
+
     async def sync_notion_to_supabase(
-        self, 
+        self,
         model_class: Type[BaseModel],
         notion_page_id: str
     ) -> SyncResult:
         """
         Synchronize a record from Notion to Supabase.
-        
+
         Args:
             model_class: Pydantic model class
             notion_page_id: Notion page ID
-            
+
         Returns:
             SyncResult instance
         """
         model_name = model_class.__name__
         table_name = MODEL_TO_TABLE_MAPPING.get(model_name)
-        
+
         if not table_name:
             return SyncResult(
                 success=False,
@@ -99,11 +99,11 @@ class DatabaseSyncService:
                 notion_page_id=notion_page_id,
                 error_message=f"No table mapping found for model: {model_name}"
             )
-        
+
         try:
             # Get the record from Notion
             notion_record = await self.notion_service.get_page(notion_page_id, model_class)
-            
+
             if not notion_record:
                 return SyncResult(
                     success=False,
@@ -111,14 +111,14 @@ class DatabaseSyncService:
                     notion_page_id=notion_page_id,
                     error_message=f"Record not found in Notion: {notion_page_id}"
                 )
-            
+
             # Check if the record already exists in Supabase by notion_page_id
             existing_records = await self.supabase_service.query_records(
                 table_name=table_name,
                 model_class=model_class,
                 filters={"notion_page_id": f"eq.{notion_page_id}"}
             )
-            
+
             if existing_records:
                 # Update the existing record
                 supabase_id = existing_records[0].id
@@ -127,7 +127,7 @@ class DatabaseSyncService:
                     record_id=supabase_id,
                     model=notion_record
                 )
-                
+
                 return SyncResult(
                     success=success,
                     model_name=model_name,
@@ -142,7 +142,7 @@ class DatabaseSyncService:
                     table_name=table_name,
                     model=notion_record
                 )
-                
+
                 return SyncResult(
                     success=bool(supabase_id),
                     model_name=model_name,
@@ -159,25 +159,25 @@ class DatabaseSyncService:
                 notion_page_id=notion_page_id,
                 error_message=str(e)
             )
-    
+
     async def sync_supabase_to_notion(
-        self, 
+        self,
         model_class: Type[BaseModel],
         supabase_id: str
     ) -> SyncResult:
         """
         Synchronize a record from Supabase to Notion.
-        
+
         Args:
             model_class: Pydantic model class
             supabase_id: Supabase record ID
-            
+
         Returns:
             SyncResult instance
         """
         model_name = model_class.__name__
         table_name = MODEL_TO_TABLE_MAPPING.get(model_name)
-        
+
         if not table_name:
             return SyncResult(
                 success=False,
@@ -185,7 +185,7 @@ class DatabaseSyncService:
                 supabase_id=supabase_id,
                 error_message=f"No table mapping found for model: {model_name}"
             )
-        
+
         try:
             # Get the record from Supabase
             supabase_record = await self.supabase_service.get_record(
@@ -193,7 +193,7 @@ class DatabaseSyncService:
                 record_id=supabase_id,
                 model_class=model_class
             )
-            
+
             if not supabase_record:
                 return SyncResult(
                     success=False,
@@ -201,14 +201,14 @@ class DatabaseSyncService:
                     supabase_id=supabase_id,
                     error_message=f"Record not found in Supabase: {supabase_id}"
                 )
-            
+
             # Check if the record already exists in Notion
             notion_page_id = getattr(supabase_record, "notion_page_id", None)
-            
+
             if notion_page_id:
                 # Update the existing page
                 success = await self.notion_service.update_page(supabase_record)
-                
+
                 return SyncResult(
                     success=success,
                     model_name=model_name,
@@ -220,7 +220,7 @@ class DatabaseSyncService:
             else:
                 # Create a new page
                 notion_page_id = await self.notion_service.create_page(supabase_record)
-                
+
                 if notion_page_id:
                     # Update the Supabase record with the Notion page ID
                     setattr(supabase_record, "notion_page_id", notion_page_id)
@@ -229,7 +229,7 @@ class DatabaseSyncService:
                         record_id=supabase_id,
                         model=supabase_record
                     )
-                
+
                 return SyncResult(
                     success=bool(notion_page_id),
                     model_name=model_name,
@@ -246,28 +246,34 @@ class DatabaseSyncService:
                 supabase_id=supabase_id,
                 error_message=str(e)
             )
-    
+
     async def sync_all_records(
-        self, 
+        self,
         model_class: Type[BaseModel],
         direction: str = "both",
         since: Optional[datetime] = None
     ) -> List[SyncResult]:
         """
         Synchronize all records of a specific model.
-        
+
         Args:
             model_class: Pydantic model class
             direction: Sync direction ("notion_to_supabase", "supabase_to_notion", or "both")
-            since: Only sync records updated since this timestamp
-            
+            since: Only sync records updated since this timestamp. If not provided, defaults to
+                  the last sync timestamp for this model or 30 days ago.
+
         Returns:
             List of SyncResult instances
+
+        Notes:
+            - For Notion, filtering uses the "last_edited_time" field
+            - For Supabase, filtering uses the "updated_at" field
+            - The sync timestamp for each model is updated after successful synchronization
         """
         model_name = model_class.__name__
         table_name = MODEL_TO_TABLE_MAPPING.get(model_name)
         results = []
-        
+
         if not table_name:
             results.append(SyncResult(
                 success=False,
@@ -275,49 +281,72 @@ class DatabaseSyncService:
                 error_message=f"No table mapping found for model: {model_name}"
             ))
             return results
-        
+
         try:
             # Set default sync timestamp if not provided
             if not since:
                 since = self.last_sync_timestamps.get(model_name, datetime.now() - timedelta(days=30))
-            
+
             # Sync from Notion to Supabase
             if direction in ["notion_to_supabase", "both"]:
+                # Create filter for records updated since the specified timestamp
+                filter_conditions = None
+                if since:
+                    # Format the timestamp for Notion's filter API
+                    # Notion uses "last_edited_time" as the field for when a page was last updated
+                    filter_conditions = {
+                        "timestamp": "last_edited_time",
+                        "last_edited_time": {
+                            "on_or_after": since.isoformat()
+                        }
+                    }
+                    self.logger.info(f"Filtering Notion records updated since: {since.isoformat()}")
+
                 # Get all records from Notion
                 notion_records = await self.notion_service.query_database(
                     model_class=model_class,
-                    filter_conditions=None,  # TODO: Add filter for updated_at > since
+                    filter_conditions=filter_conditions,
                     limit=1000
                 )
-                
+
                 for record in notion_records:
                     notion_page_id = getattr(record, "page_id", None)
                     if notion_page_id:
                         result = await self.sync_notion_to_supabase(model_class, notion_page_id)
                         results.append(result)
-            
+
             # Sync from Supabase to Notion
             if direction in ["supabase_to_notion", "both"]:
+                # Create filter for records updated since the specified timestamp
+                filters = None
+                if since:
+                    # Format the timestamp for Supabase's filter API
+                    # Supabase uses "updated_at" as the standard field for when a record was last updated
+                    filters = {
+                        "updated_at": f"gte.{since.isoformat()}"
+                    }
+                    self.logger.info(f"Filtering Supabase records updated since: {since.isoformat()}")
+
                 # Get all records from Supabase
                 supabase_records = await self.supabase_service.query_records(
                     table_name=table_name,
                     model_class=model_class,
-                    filters=None,  # TODO: Add filter for updated_at > since
+                    filters=filters,
                     limit=1000
                 )
-                
+
                 for record in supabase_records:
                     supabase_id = getattr(record, "id", None)
                     notion_page_id = getattr(record, "notion_page_id", None)
-                    
+
                     # Only sync to Notion if no notion_page_id exists
                     if supabase_id and not notion_page_id:
                         result = await self.sync_supabase_to_notion(model_class, supabase_id)
                         results.append(result)
-            
+
             # Update last sync timestamp
             self.last_sync_timestamps[model_name] = datetime.now()
-            
+
             return results
         except Exception as e:
             self.logger.error(f"Error syncing all records: {e}")
@@ -327,20 +356,26 @@ class DatabaseSyncService:
                 error_message=str(e)
             ))
             return results
-    
-    async def sync_all_databases(self, direction: str = "both") -> Dict[str, List[SyncResult]]:
+
+    async def sync_all_databases(
+        self,
+        direction: str = "both",
+        since: Optional[datetime] = None
+    ) -> Dict[str, List[SyncResult]]:
         """
         Synchronize all databases.
-        
+
         Args:
             direction: Sync direction ("notion_to_supabase", "supabase_to_notion", or "both")
-            
+            since: Only sync records updated since this timestamp. If not provided, defaults to
+                  the last sync timestamp for each model or 30 days ago.
+
         Returns:
             Dictionary mapping model names to lists of SyncResult instances
         """
         # Import here to avoid circular imports
         from models.notion_db_models import (
-            BusinessEntity, Agent, Workflow, WorkflowInstance, 
+            BusinessEntity, Agent, Workflow, WorkflowInstance,
             ApiIntegration, DataTransformation, UseCase,
             NotificationTemplate, AgentCommunication, Task
         )
@@ -348,42 +383,42 @@ class DatabaseSyncService:
             ContactProfile, CommunityMember, ProductService,
             MarketingCampaign, FeedbackSurvey, RewardBounty
         )
-        
+
         models = [
             BusinessEntity, ContactProfile, CommunityMember, ProductService,
             WorkflowInstance, MarketingCampaign, FeedbackSurvey, RewardBounty,
             Task, AgentCommunication, Agent, ApiIntegration,
             DataTransformation, NotificationTemplate, UseCase, Workflow
         ]
-        
+
         results = {}
-        
+
         for model_class in models:
             model_name = model_class.__name__
             self.logger.info(f"Syncing {model_name}...")
-            model_results = await self.sync_all_records(model_class, direction)
+            model_results = await self.sync_all_records(model_class, direction, since)
             results[model_name] = model_results
-            
+
             # Log results
             success_count = sum(1 for r in model_results if r.success)
             total_count = len(model_results)
             self.logger.info(f"Synced {model_name}: {success_count}/{total_count} successful")
-        
+
         return results
-    
+
     @classmethod
     async def create_from_services(
-        cls, 
-        notion_service: NotionService, 
+        cls,
+        notion_service: NotionService,
         supabase_service: SupabaseService
     ) -> 'DatabaseSyncService':
         """
         Create a DatabaseSyncService instance from existing services.
-        
+
         Args:
             notion_service: NotionService instance
             supabase_service: SupabaseService instance
-            
+
         Returns:
             DatabaseSyncService instance
         """

@@ -52,14 +52,14 @@ def configure_logging():
 
     # Add Docker log path if running in container
     if os.environ.get("RUNNING_IN_CONTAINER") == "true":
-        container_log_path = "/var/log/windsurf/windsurf_agents.log"
-        if os.path.exists(os.path.dirname(container_log_path)):
-            logger.add(
-                container_log_path,
-                rotation="500 MB",
-                retention="30 days",
-                level=log_level
-            )
+        container_log_path = "/app/logs/higherself_agents.log"
+        os.makedirs(os.path.dirname(container_log_path), exist_ok=True)
+        logger.add(
+            container_log_path,
+            rotation="500 MB",
+            retention="30 days",
+            level=log_level
+        )
 
     logger.info("Logging configured with level: {}", log_level)
     if json_logs:
@@ -92,8 +92,13 @@ async def initialize_integrations():
     return integration_manager
 
 
-async def register_agents():
-    """Register all agents in Notion with named personalities."""
+async def register_agents(message_bus=None):
+    """
+    Register all agents in Notion with named personalities.
+
+    Args:
+        message_bus: Optional MessageBus instance for inter-agent communication
+    """
     # Initialize Notion service
     notion_service = NotionService.from_env()
 
@@ -106,10 +111,10 @@ async def register_agents():
     elan = Elan(notion_client=notion_service)  # Content Choreographer
     zevi = Zevi(notion_client=notion_service)  # Audience Analyst
 
-    # Create Grace Fields orchestrator
-    grace = GraceOrchestrator([
-        nyra, solari, ruvo, liora, sage, elan, zevi
-    ])
+    # Create Grace Fields orchestrator with message bus for enhanced communication
+    grace = create_grace_orchestrator(notion_service, message_bus)
+
+    logger.info("🌸 Grace Fields orchestration system initialized with enhanced capabilities")
 
     # Register all agents in Notion
     await nyra.register_in_notion()
@@ -132,8 +137,6 @@ async def register_agents():
 
     await zevi.register_in_notion()
     logger.info("🐺 Zevi (Audience Analyst) registered successfully")
-
-    logger.info("🌸 Grace Fields orchestration system initialized")
 
     # Return all agents and orchestrator for use by the API server
     return {
@@ -239,8 +242,9 @@ async def async_initialization(message_bus=None):
 
     # Then register agents which require Notion connection
     try:
-        agents = await register_agents()
-        logger.info("All agents registered successfully")
+        # Pass the message bus to register_agents for enhanced orchestration
+        agents = await register_agents(message_bus)
+        logger.info("All agents registered successfully with enhanced orchestration")
 
         # If we have a message bus, register agents as subscribers
         if message_bus and agents:
@@ -248,6 +252,10 @@ async def async_initialization(message_bus=None):
                 if hasattr(agent, 'process_message'):
                     message_bus.subscribe(agent_id, agent.process_message)
                     logger.info(f"Agent {agent_id} subscribed to message bus")
+
+            # Subscribe the message bus to the GraceOrchestrator for centralized event handling
+            if "grace" in agents:
+                logger.info("Enhanced Grace Orchestrator connected to message bus for multi-agent workflows")
     except Exception as e:
         logger.error("Failed to register agents: {}", e)
         logger.exception(e)

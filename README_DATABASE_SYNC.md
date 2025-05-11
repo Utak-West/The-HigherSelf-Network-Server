@@ -19,6 +19,7 @@ This system provides a seamless synchronization between the 16 Notion databases 
 - **⚡ Enhanced Performance**: Faster queries and reporting capabilities
 - **🔒 Data Redundancy**: Critical data is stored in both systems for safety
 - **🧩 Unified Structure**: All 16 databases are properly aligned across systems
+- **⏰ Timestamp Filtering**: Efficient synchronization by only processing records updated since last sync
 
 ## 📚 Documentation
 
@@ -40,6 +41,17 @@ For a visual representation of the database structure, open the [Database Visual
 2. Run the database setup script
 3. Perform initial synchronization
 4. Set up automated sync process
+
+```bash
+# Sync all databases with timestamp filtering
+python -m tools.sync_databases
+
+# Sync only records updated in the last 24 hours
+python -m tools.sync_databases --since $(date -u -v-1d +"%Y-%m-%dT%H:%M:%S")
+
+# Sync only from Notion to Supabase
+python -m tools.sync_databases --direction notion_to_supabase
+```
 
 See the [Developer Implementation Guide](documentation/DEVELOPER_IMPLEMENTATION_GUIDE.md) for detailed instructions.
 

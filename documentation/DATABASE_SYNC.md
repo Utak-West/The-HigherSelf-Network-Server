@@ -118,11 +118,16 @@ The synchronization system works as follows:
    - Notion records have a `supabase_id` field
    - Supabase records have a `notion_page_id` field
 
-3. **Conflict Resolution**: When conflicts occur (changes to the same record in both systems), the system uses the following rules:
+3. **Timestamp Filtering**: The system only processes records that have been updated since the last synchronization:
+   - For Notion, it uses the `last_edited_time` field
+   - For Supabase, it uses the `updated_at` field
+   - This significantly improves performance for large databases
+
+4. **Conflict Resolution**: When conflicts occur (changes to the same record in both systems), the system uses the following rules:
    - The record with the most recent `updated_at` timestamp wins
    - If timestamps are identical, Notion takes precedence as the primary user interface
 
-4. **Error Handling**: Synchronization errors are logged and can be reviewed. Failed synchronizations will be retried in the next sync cycle.
+5. **Error Handling**: Synchronization errors are logged and can be reviewed. Failed synchronizations will be retried in the next sync cycle.
 
 ## Troubleshooting
 
