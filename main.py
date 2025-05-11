@@ -15,13 +15,20 @@ from loguru import logger
 from api.server import start as start_api
 from services.integration_manager import IntegrationManager
 from services.notion_service import NotionService
-from agents.lead_capture_agent import LeadCaptureAgent
-from agents.booking_agent import BookingAgent
-from agents.content_lifecycle_agent import ContentLifecycleAgent
-from agents.audience_segmentation_agent import AudienceSegmentationAgent
-from agents.task_management_agent import TaskManagementAgent
-from agents.marketing_campaign_agent import MarketingCampaignAgent
-from agents.community_engagement_agent import CommunityEngagementAgent
+
+# Import named agent personalities
+from agents import (
+    # Legacy agent imports (for backwards compatibility)
+    LeadCaptureAgent, BookingAgent, ContentLifecycleAgent,
+    AudienceSegmentationAgent, TaskManagementAgent,
+    MarketingCampaignAgent, CommunityEngagementAgent,
+    
+    # Named agent personalities
+    Nyra, Solari, Ruvo, Liora, Sage, Elan, Zevi,
+    
+    # Orchestration
+    GraceOrchestrator, create_agent_collective, create_grace_orchestrator
+)
 
 
 def setup_logging():
@@ -102,50 +109,70 @@ async def initialize_integrations():
 
 
 async def register_agents():
-    """Register all agents in Notion."""
+    """Register all agents in Notion with named personalities."""
     # Initialize Notion service
     notion_service = NotionService.from_env()
     
-    # Initialize all agents
-    lead_agent = LeadCaptureAgent(notion_service)
-    booking_agent = BookingAgent(notion_service)
-    content_agent = ContentLifecycleAgent(notion_service)
-    audience_agent = AudienceSegmentationAgent(notion_service)
-    task_agent = TaskManagementAgent(notion_service)
-    marketing_agent = MarketingCampaignAgent(notion_service)
-    community_agent = CommunityEngagementAgent(notion_service)
+    # Initialize all named agent personalities
+    nyra = Nyra(notion_client=notion_service)  # Lead Capture Specialist
+    solari = Solari(notion_client=notion_service)  # Booking & Order Manager
+    ruvo = Ruvo(notion_client=notion_service)  # Task Orchestrator
+    liora = Liora(notion_client=notion_service)  # Marketing Strategist
+    sage = Sage(notion_client=notion_service)  # Community Curator
+    elan = Elan(notion_client=notion_service)  # Content Choreographer
+    zevi = Zevi(notion_client=notion_service)  # Audience Analyst
+    
+    # Create Grace Fields orchestrator
+    grace = GraceOrchestrator([
+        nyra, solari, ruvo, liora, sage, elan, zevi
+    ])
     
     # Register all agents in Notion
-    await lead_agent.register_in_notion()
-    logger.info("Lead Capture Agent registered successfully")
+    await nyra.register_in_notion()
+    logger.info("✨ Nyra (Lead Capture Specialist) registered successfully")
     
-    await booking_agent.register_in_notion()
-    logger.info("Booking Agent registered successfully")
+    await solari.register_in_notion()
+    logger.info("☀️ Solari (Booking & Order Manager) registered successfully")
     
-    await content_agent.register_in_notion()
-    logger.info("Content Lifecycle Agent registered successfully")
+    await ruvo.register_in_notion()
+    logger.info("🏔️ Ruvo (Task Orchestrator) registered successfully")
     
-    await audience_agent.register_in_notion()
-    logger.info("Audience Segmentation Agent registered successfully")
+    await liora.register_in_notion()
+    logger.info("💫 Liora (Marketing Strategist) registered successfully")
     
-    await task_agent.register_in_notion()
-    logger.info("Task Management Agent registered successfully")
+    await sage.register_in_notion()
+    logger.info("🌿 Sage (Community Curator) registered successfully")
     
-    await marketing_agent.register_in_notion()
-    logger.info("Marketing Campaign Agent registered successfully")
+    await elan.register_in_notion()
+    logger.info("🎭 Elan (Content Choreographer) registered successfully")
     
-    await community_agent.register_in_notion()
-    logger.info("Community Engagement Agent registered successfully")
+    await zevi.register_in_notion()
+    logger.info("🐺 Zevi (Audience Analyst) registered successfully")
     
-    # Return all agents for use by the API server
+    logger.info("🌸 Grace Fields orchestration system initialized")
+    
+    # Return all agents and orchestrator for use by the API server
     return {
-        "lead_capture_agent": lead_agent,
-        "booking_agent": booking_agent,
-        "content_lifecycle_agent": content_agent,
-        "audience_segmentation_agent": audience_agent,
-        "task_management_agent": task_agent,
-        "marketing_campaign_agent": marketing_agent,
-        "community_engagement_agent": community_agent
+        # Named agent personalities with unique character
+        "nyra": nyra,      # Lead Capture Specialist
+        "solari": solari,  # Booking & Order Manager
+        "ruvo": ruvo,      # Task Orchestrator
+        "liora": liora,    # Marketing Strategist
+        "sage": sage,      # Community Curator
+        "elan": elan,      # Content Choreographer
+        "zevi": zevi,      # Audience Analyst
+        
+        # Orchestration
+        "grace": grace,     # System Orchestrator
+        
+        # Legacy references (for backwards compatibility)
+        "lead_capture_agent": nyra,
+        "booking_agent": solari,
+        "task_management_agent": ruvo,
+        "marketing_campaign_agent": liora,
+        "community_engagement_agent": sage,
+        "content_lifecycle_agent": elan,
+        "audience_segmentation_agent": zevi
     }
 
 
@@ -182,6 +209,7 @@ def main():
     
     logger.info("Starting The HigherSelf Network Server")
     logger.info("Notion is configured as the central hub for all operations")
+    logger.info("Initializing the named agent personality system - Grace Fields Orchestration")
     
     # Initialize integrations and register agents asynchronously
     try:
