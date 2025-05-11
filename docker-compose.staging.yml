@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  windsurf-agent:
+    environment:
+      - ENVIRONMENT=staging
+      - LOG_LEVEL=INFO
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 768M
+
+  nginx:
+    restart: always
+    volumes:
+      - ./deployment/docker-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deployment/ssl:/etc/nginx/ssl:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "3"

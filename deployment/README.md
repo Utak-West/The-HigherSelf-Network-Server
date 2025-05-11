@@ -1,8 +1,101 @@
 # The HigherSelf Network Server Deployment Guide
 
-This guide provides detailed instructions for deploying the Windsurf Agent Network on The HigherSelf Network Server, adhering to the core principle of maintaining Notion as the central hub for all operations.
+This guide provides detailed instructions for deploying The HigherSelf Network Server, adhering to the core principle of maintaining Notion as the central hub for all operations.
 
-## Prerequisites
+There are two deployment options:
+1. **Docker Deployment** - Recommended for most environments
+2. **Traditional Deployment** - For environments without Docker support
+
+## Docker Deployment
+
+### Prerequisites for Docker Deployment
+
+- Docker and Docker Compose installed
+- Access to The HigherSelf Network Server with sudo privileges
+- Notion API integration token with appropriate permissions
+
+### Docker Deployment Steps
+
+#### 1. Clone the Repository
+
+```bash
+# Navigate to desired location
+cd /opt
+sudo git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git the-higherself-network-server
+cd the-higherself-network-server
+```
+
+#### 2. Configure Environment Variables
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit the environment file with your specific values
+nano .env
+```
+
+Ensure the following variables are properly configured:
+- `NOTION_API_TOKEN`: Your Notion integration API token
+- `NOTION_PARENT_PAGE_ID`: ID of the parent page for database creation
+- `WEBHOOK_SECRET`: Secret for securing webhook endpoints
+- All other required API credentials for integrated services
+
+#### 3. Configure SSL Certificates
+
+Create directories for SSL certificates:
+
+```bash
+mkdir -p deployment/ssl
+```
+
+You can either:
+1. Copy existing SSL certificates into this directory, or
+2. Use Let's Encrypt with Certbot to generate certificates:
+
+```bash
+sudo certbot certonly --standalone -d agent-api.thehigherselfnetwork.com
+sudo cp /etc/letsencrypt/live/agent-api.thehigherselfnetwork.com/fullchain.pem deployment/ssl/
+sudo cp /etc/letsencrypt/live/agent-api.thehigherselfnetwork.com/privkey.pem deployment/ssl/
+sudo chmod -R 755 deployment/ssl/
+```
+
+#### 4. Deploy with Docker Compose
+
+For development:
+```bash
+# Start all services in development mode
+./deploy.sh --env dev --build
+```
+
+For staging:
+```bash
+# Start all services in staging mode
+./deploy.sh --env staging --build
+```
+
+For production:
+```bash
+# Start all services in production mode
+./deploy.sh --env prod --build
+```
+
+#### 5. Verify Deployment
+
+```bash
+# Check if containers are running
+docker-compose ps
+
+# View logs for the agent container
+docker-compose logs -f windsurf-agent
+
+# Test the API
+curl http://localhost:8000/health
+```
+
+## Traditional Deployment
+
+### Prerequisites for Traditional Deployment
 
 - Ubuntu 20.04 LTS or later
 - Python 3.10+
@@ -11,7 +104,7 @@ This guide provides detailed instructions for deploying the Windsurf Agent Netwo
 - Access to The HigherSelf Network Server with sudo privileges
 - Notion API integration token with appropriate permissions
 
-## Deployment Steps
+### Traditional Deployment Steps
 
 ### 1. Server Preparation
 
@@ -182,9 +275,58 @@ sudo systemctl restart windsurf-agent
    sudo ufw enable
    ```
 
+## Docker Container Maintenance
+
+### Viewing Logs
+
+```bash
+# View logs for a specific service
+docker-compose logs -f windsurf-agent
+docker-compose logs -f nginx
+
+# View logs with timestamps
+docker-compose logs -f --timestamps
+```
+
+### Updating the Application
+
+When new code is pushed to the repository:
+
+```bash
+# Pull the latest changes
+git pull
+
+# Rebuild and restart the containers
+./deploy.sh --env prod --build
+```
+
+### Managing Containers
+
+```bash
+# Restart a specific service
+docker-compose restart windsurf-agent
+
+# Stop all services
+docker-compose down
+
+# Start all services
+docker-compose up -d
+```
+
+### Backup and Restore
+
+```bash
+# Backup the environment file
+cp .env .env.backup.$(date +%Y%m%d)
+
+# Backup the logs directory
+tar -czf logs_backup_$(date +%Y%m%d).tar.gz logs/
+```
+
 ## Important Notes
 
-- All Windsurf agents, automations, and webhook endpoints must operate exclusively on this server
+- All agents, automations, and webhook endpoints must operate exclusively on The HigherSelf Network Server
 - Notion remains the central data hub for all operations
 - All API tokens and sensitive credentials must be managed securely using environment variables
 - Regularly backup the environment configuration file and any custom modifications
+- For Docker deployments, use the provided deploy.sh script for consistent deployments
