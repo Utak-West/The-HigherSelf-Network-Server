@@ -1,0 +1,119 @@
+{
+  "database_name": "Agent Training Results",
+  "database_id": "AgentTrainingResults",
+  "description": "Results of agent training scenarios and exercises in The HigherSelf Network Server",
+  "properties": {
+    "Scenario": {
+      "type": "title",
+      "title": {}
+    },
+    "Scenario Type": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "lead_capture",
+            "color": "pink"
+          },
+          {
+            "name": "booking_management",
+            "color": "yellow"
+          },
+          {
+            "name": "task_management",
+            "color": "brown"
+          },
+          {
+            "name": "marketing_campaign",
+            "color": "purple"
+          },
+          {
+            "name": "community_engagement",
+            "color": "green"
+          },
+          {
+            "name": "content_lifecycle",
+            "color": "blue"
+          },
+          {
+            "name": "audience_segmentation",
+            "color": "orange"
+          },
+          {
+            "name": "error_handling",
+            "color": "red"
+          },
+          {
+            "name": "workflow_orchestration",
+            "color": "default"
+          }
+        ]
+      }
+    },
+    "Success": {
+      "type": "checkbox",
+      "checkbox": {}
+    },
+    "Result": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Involved Agents": {
+      "type": "multi_select",
+      "multi_select": {
+        "options": [
+          {
+            "name": "Nyra",
+            "color": "pink"
+          },
+          {
+            "name": "Solari",
+            "color": "yellow"
+          },
+          {
+            "name": "Ruvo",
+            "color": "brown"
+          },
+          {
+            "name": "Liora",
+            "color": "purple"
+          },
+          {
+            "name": "Sage",
+            "color": "green"
+          },
+          {
+            "name": "Elan",
+            "color": "blue"
+          },
+          {
+            "name": "Zevi",
+            "color": "orange"
+          },
+          {
+            "name": "Grace",
+            "color": "default"
+          }
+        ]
+      }
+    },
+    "Timestamp": {
+      "type": "date",
+      "date": {}
+    },
+    "Duration (ms)": {
+      "type": "number",
+      "number": {
+        "format": "number"
+      }
+    },
+    "Notes": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Training Run ID": {
+      "type": "rich_text",
+      "rich_text": {}
+    }
+  }
+}

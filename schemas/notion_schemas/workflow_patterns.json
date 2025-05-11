@@ -1,0 +1,147 @@
+{
+  "database_name": "Workflow Patterns",
+  "database_id": "WorkflowPatterns",
+  "description": "Predefined workflow patterns for multi-agent coordination in The HigherSelf Network Server",
+  "properties": {
+    "Name": {
+      "type": "title",
+      "title": {}
+    },
+    "Description": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Business Entity": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "The Connection Practice",
+            "color": "blue"
+          },
+          {
+            "name": "The 7 Space",
+            "color": "green"
+          },
+          {
+            "name": "Conscious Consultancy",
+            "color": "purple"
+          },
+          {
+            "name": "All",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Steps": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Involved Agents": {
+      "type": "multi_select",
+      "multi_select": {
+        "options": [
+          {
+            "name": "Nyra",
+            "color": "pink"
+          },
+          {
+            "name": "Solari",
+            "color": "yellow"
+          },
+          {
+            "name": "Ruvo",
+            "color": "brown"
+          },
+          {
+            "name": "Liora",
+            "color": "purple"
+          },
+          {
+            "name": "Sage",
+            "color": "green"
+          },
+          {
+            "name": "Elan",
+            "color": "blue"
+          },
+          {
+            "name": "Zevi",
+            "color": "orange"
+          }
+        ]
+      }
+    },
+    "Trigger Event": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "lead_capture",
+            "color": "pink"
+          },
+          {
+            "name": "booking_created",
+            "color": "yellow"
+          },
+          {
+            "name": "content_idea",
+            "color": "blue"
+          },
+          {
+            "name": "community_event",
+            "color": "green"
+          },
+          {
+            "name": "campaign_trigger",
+            "color": "purple"
+          },
+          {
+            "name": "audience_analysis",
+            "color": "orange"
+          },
+          {
+            "name": "task_needed",
+            "color": "brown"
+          },
+          {
+            "name": "manual",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Status": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "Active",
+            "color": "green"
+          },
+          {
+            "name": "Draft",
+            "color": "yellow"
+          },
+          {
+            "name": "Archived",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Success Metrics": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Created By": {
+      "type": "people",
+      "people": {}
+    },
+    "Last Updated": {
+      "type": "date",
+      "date": {}
+    }
+  }
+}

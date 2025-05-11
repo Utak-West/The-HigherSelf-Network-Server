@@ -1,0 +1,143 @@
+{
+  "database_name": "Agent Best Practices",
+  "database_id": "AgentBestPractices",
+  "description": "Best practices for agent behavior and coordination in The HigherSelf Network Server",
+  "properties": {
+    "Name": {
+      "type": "title",
+      "title": {}
+    },
+    "Type": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "Communication",
+            "color": "blue"
+          },
+          {
+            "name": "Error Handling",
+            "color": "red"
+          },
+          {
+            "name": "Workflow",
+            "color": "green"
+          },
+          {
+            "name": "Security",
+            "color": "yellow"
+          },
+          {
+            "name": "Performance",
+            "color": "purple"
+          },
+          {
+            "name": "Data Handling",
+            "color": "orange"
+          },
+          {
+            "name": "General",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Description": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Examples": {
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "Applicable Agents": {
+      "type": "multi_select",
+      "multi_select": {
+        "options": [
+          {
+            "name": "Nyra",
+            "color": "pink"
+          },
+          {
+            "name": "Solari",
+            "color": "yellow"
+          },
+          {
+            "name": "Ruvo",
+            "color": "brown"
+          },
+          {
+            "name": "Liora",
+            "color": "purple"
+          },
+          {
+            "name": "Sage",
+            "color": "green"
+          },
+          {
+            "name": "Elan",
+            "color": "blue"
+          },
+          {
+            "name": "Zevi",
+            "color": "orange"
+          },
+          {
+            "name": "Grace",
+            "color": "default"
+          },
+          {
+            "name": "All",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Status": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "Active",
+            "color": "green"
+          },
+          {
+            "name": "Draft",
+            "color": "yellow"
+          },
+          {
+            "name": "Archived",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Priority": {
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "name": "High",
+            "color": "red"
+          },
+          {
+            "name": "Medium",
+            "color": "yellow"
+          },
+          {
+            "name": "Low",
+            "color": "blue"
+          }
+        ]
+      }
+    },
+    "Created By": {
+      "type": "people",
+      "people": {}
+    },
+    "Last Updated": {
+      "type": "date",
+      "date": {}
+    }
+  }
+}
