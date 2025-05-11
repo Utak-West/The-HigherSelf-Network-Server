@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This document provides instructions for deploying the Windsurf Agent Network on The HigherSelf Network Server, ensuring Notion remains the central hub for all operations.
+This document provides instructions for deploying The HigherSelf Network Server, ensuring Notion remains the central hub for all operations.
 
 ## Deployment Requirements
 
@@ -77,7 +77,7 @@ For production deployment on The HigherSelf Network Server:
 
    ```ini
    [Unit]
-   Description=Windsurf Agent Network
+   Description=The HigherSelf Network Server
    After=network.target
 
    [Service]

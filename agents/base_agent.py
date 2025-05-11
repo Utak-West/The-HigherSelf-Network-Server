@@ -1,5 +1,5 @@
 """
-Base agent implementation for the Windsurf Agent Network.
+Base agent implementation for The HigherSelf Network Server.
 Provides common functionality for all agents in the network.
 """
 

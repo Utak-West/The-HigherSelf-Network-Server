@@ -1,6 +1,6 @@
 # API and Webhook Integration Guide
 
-This document details the API endpoints and webhook integrations for the Windsurf Agent Network, which serves The HigherSelf Network's Notion-centric operations.
+This document details the API endpoints and webhook integrations for The HigherSelf Network Server, which serves as the central hub for all Notion-centric operations.
 
 ## API Server
 

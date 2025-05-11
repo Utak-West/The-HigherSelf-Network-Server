@@ -1,6 +1,6 @@
 # Agent Development Guide
 
-This document provides guidance on developing new agents for the Windsurf Agent Network, following The HigherSelf Network's core principles.
+This document provides guidance on developing new agents for The HigherSelf Network Server, following The HigherSelf Network's core principles.
 
 ## Agent Architecture
 

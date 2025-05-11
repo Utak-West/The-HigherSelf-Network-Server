@@ -1,5 +1,5 @@
 """
-Agents package for the Windsurf Agent Network.
+Agents package for The HigherSelf Network Server.
 """
 
 from agents.base_agent import BaseAgent

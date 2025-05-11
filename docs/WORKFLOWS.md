@@ -1,6 +1,6 @@
 # Workflow Management Guide
 
-This document explains how workflows are managed in the Windsurf Agent Network, providing standardized processing for The HigherSelf Network's business operations.
+This document explains how workflows are managed in The HigherSelf Network Server, providing standardized processing for The HigherSelf Network's business operations.
 
 ## Workflow Structure
 

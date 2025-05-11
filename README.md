@@ -1,4 +1,4 @@
-# Windsurf Agent Network: Notion Integration
+# The HigherSelf Network Server: Notion Integration
 
 **Version:** 1.0.0  
 **Date:** May 9, 2025  
@@ -6,7 +6,7 @@
 
 ## Overview
 
-This repository contains the Windsurf Agent Network system optimized for Notion integration and automation. It establishes Notion as the central hub for data management, workflow tracking, and automation for The HigherSelf Network, supporting the operations of The Connection Practice and The 7 Space.
+This repository contains The HigherSelf Network Server system optimized for Notion integration and automation. It establishes Notion as the central hub for data management, workflow tracking, and automation for The HigherSelf Network, supporting the operations of The Connection Practice and The 7 Space.
 
 The system follows the Pydantic AI framework for data validation and includes a robust agent architecture that interacts with various external systems while maintaining Notion as the single source of truth for operational data.
 
@@ -50,24 +50,24 @@ Additional agents can be implemented following the same pattern by extending the
 1. Clone the repository to The HigherSelf Network Server:
 
 ```bash
-git clone <repository_url> windsurf-notion-agent
-cd windsurf-notion-agent
+git clone <repository_url> higherself-network-server
+cd higherself-network-server
 ```
 
-2. Create and activate a virtual environment:
+1. Create and activate a virtual environment:
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install dependencies:
+1. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Configure environment variables:
+1. Configure environment variables:
 
 ```bash
 cp .env.example .env
@@ -170,7 +170,7 @@ The system is designed to run on The HigherSelf Network Server. Follow proper de
 
 ## Support
 
-For questions or support, contact the Windsurf engineering team.
+For questions or support, contact The HigherSelf Network team.
 
 ## License
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Main entry point for the Windsurf Agent Network.
+Main entry point for The HigherSelf Network Server.
 This script initializes the API server and agent system.
 """
 

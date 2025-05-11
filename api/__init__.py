@@ -1,5 +1,5 @@
 """
-API package for the Windsurf Agent Network.
+API package for The HigherSelf Network Server.
 """
 
 from api.server import app, start

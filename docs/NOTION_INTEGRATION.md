@@ -1,6 +1,6 @@
 # Notion Integration Guide
 
-This document provides details on how the Windsurf Agent Network integrates with Notion as the central hub for data management, workflow tracking, and automation for The HigherSelf Network.
+This document provides details on how The HigherSelf Network Server integrates with Notion as the central hub for data management, workflow tracking, and automation for The HigherSelf Network.
 
 ## Notion Database Structure
 

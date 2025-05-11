@@ -1,6 +1,6 @@
 """
 Utility script to create and configure the required Notion databases.
-This script initializes the database structure needed for the Windsurf Agent Network.
+This script initializes the database structure needed for The HigherSelf Network Server.
 """
 
 import os
@@ -43,7 +43,7 @@ def print_header(message: str) -> None:
 
 class NotionDatabaseSetup:
     """
-    Tool for setting up Notion databases required by the Windsurf Agent Network.
+    Tool for setting up Notion databases required by The HigherSelf Network Server.
     """
     
     def __init__(self, notion_token: str):
@@ -179,7 +179,7 @@ class NotionDatabaseSetup:
     
     async def create_all_databases(self, parent_page_id: str) -> Dict[str, str]:
         """
-        Create all required databases for the Windsurf Agent Network.
+        Create all required databases for The HigherSelf Network Server.
         
         Args:
             parent_page_id: ID of the parent page to create databases in
@@ -561,7 +561,7 @@ class NotionDatabaseSetup:
     
     def create_env_file(self, database_ids: Dict[str, str], output_path: str = ".env.notion") -> None:
         """
-        Create an .env file with the database IDs for the Windsurf Agent Network.
+        Create an .env file with the database IDs for The HigherSelf Network Server.
         
         Args:
             database_ids: Dictionary mapping database names to IDs
@@ -652,7 +652,7 @@ async def verify_databases(setup: NotionDatabaseSetup, database_ids: Dict[str, s
 
 async def main():
     """Main function to create the Notion databases."""
-    print_header("\n=== Windsurf Agent Network: Notion Database Setup ===\n")
+    print_header("\n=== The HigherSelf Network Server: Notion Database Setup ===\n")
     
     # Validate environment variables
     is_valid, notion_token, parent_page_id = validate_environment()
@@ -690,7 +690,7 @@ async def main():
             print(f"  - {name}: {db_id}")
         
         print_success(f"\nEnvironment variables have been written to {output_path}")
-        print_info("Add these variables to your .env file for use with the Windsurf Agent Network.")
+        print_info("Add these variables to your .env file for use with The HigherSelf Network Server.")
         print_info("Example:")
         print("  cat .env.notion >> .env")
         

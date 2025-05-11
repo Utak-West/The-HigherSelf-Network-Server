@@ -1,6 +1,6 @@
-# Windsurf Agent Network Utilities
+# The HigherSelf Network Server Utilities
 
-This directory contains utility scripts for setting up and maintaining the Windsurf Agent Network for The HigherSelf Network.
+This directory contains utility scripts for setting up and maintaining The HigherSelf Network Server.
 
 ## Available Utilities
 
@@ -71,7 +71,7 @@ Before running this utility, ensure you have:
 
 ## Additional Utilities
 
-Future utilities will be added to this directory to support various aspects of the Windsurf Agent Network, such as:
+Future utilities will be added to this directory to support various aspects of The HigherSelf Network Server, such as:
 
 - Database verification and health checks
 - Data migration tools

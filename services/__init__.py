@@ -1,5 +1,5 @@
 """
-Services package for the Windsurf Agent Network.
+Services package for The HigherSelf Network Server.
 """
 
 from services.notion_service import NotionService

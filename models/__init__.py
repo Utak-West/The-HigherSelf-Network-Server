@@ -1,5 +1,5 @@
 """
-Models package for the Windsurf Agent Network.
+Models package for The HigherSelf Network Server.
 """
 
 from models.base import (

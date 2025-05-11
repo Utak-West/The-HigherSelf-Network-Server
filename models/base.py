@@ -1,5 +1,5 @@
 """
-Base Pydantic models for the Windsurf Agent Network's Notion integration.
+Base Pydantic models for The HigherSelf Network Server's Notion integration.
 These models are aligned with The HigherSelf Network's central data management approach.
 """
 

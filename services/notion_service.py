@@ -1,19 +1,20 @@
 """
-Notion integration service for the Windsurf Agent Network.
+Notion integration service for The HigherSelf Network Server.
 Handles all interactions with the Notion API, following the standardized
 data structures and patterns defined in the Pydantic models.
 """
 
 import os
 import json
+import logging
 from typing import Dict, Any, List, Optional, Type, Union, TypeVar
 from datetime import datetime
 
+from pydantic import ValidationError, BaseModel
 from notion_client import Client
-from pydantic import BaseModel
-from loguru import logger
 
-from models.base import NotionPage, NotionIntegrationConfig
+from models.notion import NotionPage, NotionIntegrationConfig
+from config.testing_mode import is_api_disabled, TestingMode
 from models.notion_db_models import (
     BusinessEntity, Agent, Workflow, WorkflowInstance, 
     ApiIntegration, DataTransformation, UseCase,
@@ -38,7 +39,12 @@ class NotionService:
         self.config = config
         self.client = Client(auth=config.token)
         self.db_mappings = config.database_mappings
-        logger.info("Notion service initialized with {} database mappings", len(self.db_mappings))
+        self.logger = logging.getLogger(__name__)
+        self.logger.info(f"Notion service initialized with {len(self.db_mappings)} database mappings")
+        
+        # Check if we're in testing mode
+        if is_api_disabled("notion"):
+            self.logger.warning("TESTING MODE ACTIVE: Notion API calls will be simulated")
     
     @classmethod
     def from_env(cls) -> 'NotionService':
@@ -193,23 +199,37 @@ class NotionService:
         Returns:
             ID of the created page
         """
-        model_name = model.__class__.__name__
-        db_id = self.db_mappings.get(model_name)
-        
-        if not db_id:
-            raise ValueError(f"No database mapping found for model {model_name}")
-        
-        properties = self._model_to_notion_properties(model)
-        
-        response = self.client.pages.create(
-            parent={"database_id": db_id},
-            properties=properties
-        )
-        
-        page_id = response["id"]
-        logger.info(f"Created Notion page with ID: {page_id} for {model_name}")
-        
-        return page_id
+        try:
+            # Determine the database type from the model class
+            db_type = model.__class__.__name__
+            
+            if db_type not in self.db_mappings:
+                raise ValueError(f"No database mapping found for model type: {db_type}")
+                
+            db_id = self.db_mappings[db_type]
+            properties = self._model_to_notion_properties(model)
+            
+            # Check if Notion API is disabled in testing mode
+            if is_api_disabled("notion"):
+                TestingMode.log_attempted_api_call(
+                    api_name="notion",
+                    endpoint="pages.create",
+                    method="POST",
+                    params={"parent": {"database_id": db_id}, "properties": properties}
+                )
+                self.logger.info(f"[TESTING MODE] Simulated creating page in {db_type} database")
+                return f"test_page_id_{db_type}_{model.id if hasattr(model, 'id') else id(model)}"
+            
+            response = self.client.pages.create(
+                parent={"database_id": db_id},
+                properties=properties
+            )
+            
+            return response["id"]
+            
+        except Exception as e:
+            self.logger.error(f"Error creating Notion page: {e}")
+            raise
     
     async def update_page(self, model: BaseModel) -> bool:
         """
@@ -221,20 +241,32 @@ class NotionService:
         Returns:
             True if update was successful
         """
-        if not hasattr(model, 'page_id') or not model.page_id:
-            raise ValueError(f"Model does not have a page_id set")
-        
-        properties = self._model_to_notion_properties(model)
-        
         try:
+            if not hasattr(model, "page_id") or not model.page_id:
+                raise ValueError("Model must have a page_id attribute to update")
+                
+            properties = self._model_to_notion_properties(model)
+            
+            # Check if Notion API is disabled in testing mode
+            if is_api_disabled("notion"):
+                TestingMode.log_attempted_api_call(
+                    api_name="notion",
+                    endpoint="pages.update",
+                    method="PATCH",
+                    params={"page_id": model.page_id, "properties": properties}
+                )
+                self.logger.info(f"[TESTING MODE] Simulated updating page {model.page_id}")
+                return True
+            
             self.client.pages.update(
                 page_id=model.page_id,
                 properties=properties
             )
-            logger.info(f"Updated Notion page with ID: {model.page_id}")
+            
             return True
+            
         except Exception as e:
-            logger.error(f"Error updating Notion page: {e}")
+            self.logger.error(f"Error updating Notion page: {e}")
             return False
     
     async def get_page(self, page_id: str, model_class: Type[T]) -> T:
@@ -268,42 +300,54 @@ class NotionService:
             limit: Maximum number of results to return
             
         Returns:
-            List of Pydantic model instances
+            List of model instances matching the query
         """
-        model_name = model_class.__name__
-        db_id = self.db_mappings.get(model_name)
-        
-        if not db_id:
-            raise ValueError(f"No database mapping found for model {model_name}")
-        
-        query_params = {"database_id": db_id}
-        if filter_conditions:
-            query_params["filter"] = filter_conditions
-        if sorts:
-            query_params["sorts"] = sorts
-        
-        results = []
-        has_more = True
-        start_cursor = None
-        
-        while has_more and len(results) < limit:
-            if start_cursor:
-                query_params["start_cursor"] = start_cursor
+        try:
+            db_type = model_class.__name__
+            
+            if db_type not in self.db_mappings:
+                raise ValueError(f"No database mapping found for model type: {db_type}")
                 
+            db_id = self.db_mappings[db_type]
+            
+            query_params = {"database_id": db_id}
+            
+            if filter_conditions:
+                query_params["filter"] = filter_conditions
+                
+            if sorts:
+                query_params["sorts"] = sorts
+                
+            if limit:
+                query_params["page_size"] = min(limit, 100)  # Notion API limits to 100
+
+            # Check if Notion API is disabled in testing mode
+            if is_api_disabled("notion"):
+                TestingMode.log_attempted_api_call(
+                    api_name="notion",
+                    endpoint="databases.query",
+                    method="POST",
+                    params=query_params
+                )
+                self.logger.info(f"[TESTING MODE] Simulated querying {db_type} database")
+                # Return empty list in testing mode
+                return []
+            
             response = self.client.databases.query(**query_params)
             
-            for page in response["results"]:
-                model_instance = self._notion_to_model(page, model_class)
-                results.append(model_instance)
-                
-                if len(results) >= limit:
-                    break
+            results = []
+            for page in response.get("results", []):
+                try:
+                    model = self._notion_to_model(page, model_class)
+                    results.append(model)
+                except ValidationError as e:
+                    self.logger.warning(f"Error converting Notion page to model: {e}")
             
-            has_more = response.get("has_more", False)
-            start_cursor = response.get("next_cursor")
-        
-        logger.info(f"Retrieved {len(results)} {model_name} records from Notion")
-        return results
+            return results
+            
+        except Exception as e:
+            self.logger.error(f"Error querying Notion database: {e}")
+            return []
     
     async def append_to_history_log(self, workflow_instance: WorkflowInstance, action: str, details: Dict[str, Any] = None) -> bool:
         """

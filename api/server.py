@@ -1,5 +1,5 @@
 """
-API server for the Windsurf Agent Network.
+API server for The HigherSelf Network Server.
 Provides webhook endpoints and API routes for interacting with agents.
 """
 
@@ -44,7 +44,7 @@ logger = logging.getLogger("windsurf-api")
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Windsurf Agent Network API",
+    title="The HigherSelf Network Server API",
     description="API for The HigherSelf Network's agent system integrated with Notion",
     version="1.0.0",
 )

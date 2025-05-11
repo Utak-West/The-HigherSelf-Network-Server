@@ -1,5 +1,5 @@
 """
-Lead Capture Agent for the Windsurf Agent Network.
+Lead Capture Agent for The HigherSelf Network Server.
 
 This agent is responsible for:
 1. Capturing leads from various sources (TypeForm, website forms, etc.)

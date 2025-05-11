@@ -1,6 +1,6 @@
 # Docker Deployment Guide for The HigherSelf Network Server
 
-This guide explains how to deploy the Windsurf Agent Network on The HigherSelf Network Server using Docker containers, while maintaining Notion as the central hub for all operations.
+This guide explains how to deploy The HigherSelf Network Server using Docker containers, while maintaining Notion as the central hub for all operations.
 
 ## Prerequisites
 
@@ -106,7 +106,7 @@ docker-compose up -d
 ```
 
 This will start:
-- The Windsurf Agent Network container
+- The HigherSelf Network Server container
 - Redis for caching (optional)
 - Nginx as a reverse proxy
 

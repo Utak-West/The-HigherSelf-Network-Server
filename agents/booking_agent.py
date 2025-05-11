@@ -1,5 +1,5 @@
 """
-Booking Detection Agent for the Windsurf Agent Network.
+Booking Detection Agent for The HigherSelf Network Server.
 
 This agent is responsible for:
 1. Detecting new bookings from Amelia
