@@ -20,7 +20,7 @@ class ApiPlatform(str, Enum):
     """API platforms integrated with the agent network."""
     NOTION = "NOTION_API"
     HUBSPOT = "HUBSPOT_API"
-    TYPEFORM = "TYPEFORM_API" 
+    TYPEFORM = "TYPEFORM_API"
     AIRTABLE = "AIRTABLE_API"
     AMELIA = "AMELIA_API"
     WOOCOMMERCE = "WOOCOMMERCE_API"
@@ -31,6 +31,7 @@ class ApiPlatform(str, Enum):
 
 class AgentCapability(str, Enum):
     """Capabilities that agents can have."""
+    # Original capabilities
     BOOKING_DETECTION = "Booking Detection"
     CLIENT_COMMUNICATION = "Client Communication"
     LEAD_PROCESSING = "Lead Processing"
@@ -42,6 +43,18 @@ class AgentCapability(str, Enum):
     CONTENT_GENERATION = "Content Generation"
     LEARNING_CONTENT = "Learning Content Management"
     TRANSCRIPTION_PROCESSING = "Transcription Processing"
+
+    # Additional capabilities for Grace Fields training
+    LEAD_CAPTURE = "Lead Capture"
+    BOOKING_MANAGEMENT = "Booking Management"
+    TASK_MANAGEMENT = "Task Management"
+    MARKETING_CAMPAIGN = "Marketing Campaign"
+    COMMUNITY_ENGAGEMENT = "Community Engagement"
+    CONTENT_CREATION = "Content Creation"
+    CONTENT_DISTRIBUTION = "Content Distribution"
+    AUDIENCE_ANALYSIS = "Audience Analysis"
+    ERROR_HANDLING = "Error Handling"
+    WORKFLOW_ORCHESTRATION = "Workflow Orchestration"
 
 
 class AgentStatus(str, Enum):
@@ -101,7 +114,7 @@ class TaskStatus(str, Enum):
 class ContentReviewStatus(str, Enum):
     """Statuses for content review."""
     PENDING_REVIEW = "Pending Review"
-    APPROVED = "Approved" 
+    APPROVED = "Approved"
     REJECTED = "Rejected"
 
 
@@ -113,7 +126,7 @@ class NotionPage(BaseModel):
     page_id: Optional[str] = Field(None, description="Notion page ID when record exists")
     database_id: str = Field(..., description="Notion database ID")
     properties: Dict[str, Any] = Field(..., description="Notion page properties")
-    
+
     @classmethod
     def from_pydantic(cls, model: BaseModel, database_id: str) -> "NotionPage":
         """Convert any Pydantic model to a Notion page structure."""
