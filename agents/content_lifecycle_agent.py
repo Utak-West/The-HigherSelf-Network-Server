@@ -12,67 +12,19 @@ All operations maintain Notion as the central data hub.
 """
 
 import os
-import json
 import asyncio
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
-from enum import Enum
-from pydantic import BaseModel, Field, validator
 from loguru import logger
 
 from models.base import AgentCapability, ApiPlatform
 from models.notion_db_models import WorkflowInstance, ContentItem, ContentPlan
+from models.content_models import (
+    ContentType, ContentStage, ContentPlatform, 
+    ContentRequest, ResearchData
+)
 from agents.base_agent import BaseAgent
 from services.notion_service import NotionService
-
-
-class ContentType(str, Enum):
-    """Types of content handled by the ContentLifecycleAgent."""
-    BLOG_POST = "blog_post"
-    SOCIAL_MEDIA = "social_media"
-    EMAIL_NEWSLETTER = "email_newsletter"
-    VIDEO_SCRIPT = "video_script"
-    PODCAST_SCRIPT = "podcast_script"
-    COURSE_MATERIAL = "course_material"
-    WORKSHOP_MATERIAL = "workshop_material"
-
-
-class ContentStage(str, Enum):
-    """Stages in the content lifecycle workflow."""
-    IDEA = "idea"
-    RESEARCH = "research"
-    DRAFT = "draft"
-    REVIEW = "review"
-    MEDIA_CREATION = "media_creation"
-    FINAL = "final"
-    SCHEDULED = "scheduled"
-    PUBLISHED = "published"
-    ARCHIVED = "archived"
-
-
-class ContentPlatform(str, Enum):
-    """Distribution platforms for content."""
-    WORDPRESS = "wordpress"
-    BEEHIIV = "beehiiv"
-    INSTAGRAM = "instagram"
-    FACEBOOK = "facebook"
-    LINKEDIN = "linkedin"
-    YOUTUBE = "youtube"
-    TUTORM = "tutorm"
-
-
-class ContentRequest(BaseModel):
-    """Model for a content creation request."""
-    title: str
-    content_type: ContentType
-    brief: str
-    audience: Optional[str] = None
-    keywords: List[str] = Field(default_factory=list)
-    target_platforms: List[ContentPlatform] = Field(default_factory=list)
-    required_media: bool = False
-    target_completion_date: Optional[datetime] = None
-    references: List[str] = Field(default_factory=list)
-    additional_data: Dict[str, Any] = Field(default_factory=dict)
 
 
 class ContentLifecycleAgent(BaseAgent):
@@ -88,29 +40,10 @@ class ContentLifecycleAgent(BaseAgent):
         description: str = "Manages content from idea to distribution",
         version: str = "1.0.0",
         business_entities: List[str] = None,
-        perplexity_api_key: Optional[str] = None,
-        openai_api_key: Optional[str] = None,
-        anthropic_api_key: Optional[str] = None,
-        plaud_api_key: Optional[str] = None,
-        beehiiv_api_key: Optional[str] = None,
+        api_keys: Dict[str, str] = None,
         notion_service: Optional[NotionService] = None
     ):
-        """
-        Initialize the Content Lifecycle Agent.
-        
-        Args:
-            agent_id: Unique identifier
-            name: Human-readable name
-            description: Agent description
-            version: Agent version
-            business_entities: Associated business entities
-            perplexity_api_key: API key for Perplexity research
-            openai_api_key: API key for OpenAI (GPT)
-            anthropic_api_key: API key for Anthropic (Claude)
-            plaud_api_key: API key for Plaud transcription
-            beehiiv_api_key: API key for Beehiiv newsletter
-            notion_service: Optional NotionService instance
-        """
+        """Initialize the Content Lifecycle Agent."""
         capabilities = [
             AgentCapability.CONTENT_CREATION,
             AgentCapability.CONTENT_DISTRIBUTION,
@@ -137,12 +70,16 @@ class ContentLifecycleAgent(BaseAgent):
             notion_service=notion_service
         )
         
-        # Set up API credentials - retrieve from environment if not provided
-        self.perplexity_api_key = perplexity_api_key or os.environ.get("PERPLEXITY_API_KEY")
-        self.openai_api_key = openai_api_key or os.environ.get("OPENAI_API_KEY")
-        self.anthropic_api_key = anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY")
-        self.plaud_api_key = plaud_api_key or os.environ.get("PLAUD_API_KEY")
-        self.beehiiv_api_key = beehiiv_api_key or os.environ.get("BEEHIIV_API_KEY")
+        # Set up API credentials
+        self.api_keys = api_keys or {}
+        
+        # Retrieve API keys from environment if not provided
+        api_key_names = ["PERPLEXITY_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", 
+                         "PLAUD_API_KEY", "BEEHIIV_API_KEY"]
+        
+        for key_name in api_key_names:
+            if key_name not in self.api_keys and os.environ.get(key_name):
+                self.api_keys[key_name] = os.environ.get(key_name)
         
         self.logger.info("Content Lifecycle Agent initialized")
     
@@ -156,15 +93,6 @@ class ContentLifecycleAgent(BaseAgent):
         """
         Generate content ideas using Perplexity for research.
         Stores results in Notion as the central hub.
-        
-        Args:
-            business_entity_id: Business entity ID
-            topic_area: General topic to generate ideas about
-            count: Number of ideas to generate
-            content_type: Optional specific content type
-            
-        Returns:
-            Generated ideas
         """
         self.logger.info(f"Generating {count} content ideas for topic: {topic_area}")
         
@@ -198,13 +126,10 @@ class ContentLifecycleAgent(BaseAgent):
             idea["notion_id"] = item_id
             stored_ideas.append(idea)
         
-        self.logger.info(f"Generated and stored {len(stored_ideas)} content ideas in Notion")
-        
         return {
             "status": "success",
             "ideas": stored_ideas,
-            "topic_area": topic_area,
-            "business_entity_id": business_entity_id
+            "topic_area": topic_area
         }
     
     async def research_content_topic(
@@ -215,25 +140,12 @@ class ContentLifecycleAgent(BaseAgent):
         """
         Research a content topic using Perplexity.
         Stores research results in Notion as the central hub.
-        
-        Args:
-            content_item_id: Notion ID of the content item
-            depth: Research depth (shallow, medium, deep)
-            
-        Returns:
-            Research results
         """
-        self.logger.info(f"Researching content item {content_item_id} with {depth} depth")
-        
-        # Get content item from Notion
         notion_svc = await self.notion_service
         content_item = await notion_svc.get_page(ContentItem, content_item_id)
         
         if not content_item:
-            return {
-                "status": "error",
-                "message": f"Content item {content_item_id} not found"
-            }
+            return {"status": "error", "message": f"Content item {content_item_id} not found"}
         
         # This would use Perplexity API in a full implementation
         # For now, simulate research results
@@ -257,8 +169,6 @@ class ContentLifecycleAgent(BaseAgent):
         
         await notion_svc.update_page(content_item)
         
-        self.logger.info(f"Updated content item {content_item_id} with research data in Notion")
-        
         return {
             "status": "success",
             "content_item_id": content_item_id,
@@ -273,25 +183,12 @@ class ContentLifecycleAgent(BaseAgent):
         """
         Generate a content draft using an LLM.
         Stores draft in Notion as the central hub.
-        
-        Args:
-            content_item_id: Notion ID of the content item
-            llm_provider: Which LLM to use (anthropic/claude or openai/gpt)
-            
-        Returns:
-            Generated draft
         """
-        self.logger.info(f"Generating content draft for {content_item_id} using {llm_provider}")
-        
-        # Get content item from Notion
         notion_svc = await self.notion_service
         content_item = await notion_svc.get_page(ContentItem, content_item_id)
         
         if not content_item:
-            return {
-                "status": "error",
-                "message": f"Content item {content_item_id} not found"
-            }
+            return {"status": "error", "message": f"Content item {content_item_id} not found"}
         
         # This would use the appropriate LLM API in a full implementation
         # For now, simulate draft generation
@@ -314,12 +211,10 @@ class ContentLifecycleAgent(BaseAgent):
         
         await notion_svc.update_page(content_item)
         
-        self.logger.info(f"Updated content item {content_item_id} with draft content in Notion")
-        
         return {
             "status": "success",
             "content_item_id": content_item_id,
-            "draft_content": draft_content
+            "draft_preview": draft_content[:200] + "..."  # Return just a preview
         }
     
     async def process_transcription(
@@ -332,18 +227,7 @@ class ContentLifecycleAgent(BaseAgent):
         """
         Process audio transcription using Plaud.
         Stores transcription in Notion as the central hub.
-        
-        Args:
-            audio_url: URL to the audio file
-            business_entity_id: Business entity ID
-            content_type: Type of content to create
-            title: Optional title for the content
-            
-        Returns:
-            Transcription results
         """
-        self.logger.info(f"Processing transcription from {audio_url}")
-        
         # This would use Plaud API in a full implementation
         # For now, simulate transcription
         transcription = "This is a sample transcription of audio content."
@@ -363,12 +247,10 @@ class ContentLifecycleAgent(BaseAgent):
         
         item_id = await notion_svc.create_page(content_item)
         
-        self.logger.info(f"Created content item {item_id} with transcription in Notion")
-        
         return {
             "status": "success",
             "content_item_id": item_id,
-            "transcription": transcription
+            "transcription_length": len(transcription)
         }
     
     async def distribute_content(
@@ -379,25 +261,12 @@ class ContentLifecycleAgent(BaseAgent):
         """
         Distribute content to specified platforms.
         Updates distribution status in Notion as the central hub.
-        
-        Args:
-            content_item_id: Notion ID of the content item
-            platforms: List of platforms to distribute to
-            
-        Returns:
-            Distribution results
         """
-        self.logger.info(f"Distributing content {content_item_id} to {platforms}")
-        
-        # Get content item from Notion
         notion_svc = await self.notion_service
         content_item = await notion_svc.get_page(ContentItem, content_item_id)
         
         if not content_item:
-            return {
-                "status": "error",
-                "message": f"Content item {content_item_id} not found"
-            }
+            return {"status": "error", "message": f"Content item {content_item_id} not found"}
         
         # Ensure content is in final stage
         if content_item.stage != ContentStage.FINAL.value:
@@ -427,112 +296,34 @@ class ContentLifecycleAgent(BaseAgent):
         
         await notion_svc.update_page(content_item)
         
-        self.logger.info(f"Updated content item {content_item_id} with distribution data in Notion")
-        
         return {
             "status": "success",
             "content_item_id": content_item_id,
-            "distribution_results": distribution_results
-        }
-    
-    async def create_content_plan(
-        self,
-        business_entity_id: str,
-        plan_name: str,
-        content_types: List[ContentType],
-        duration_weeks: int,
-        frequency: Dict[str, int]
-    ) -> Dict[str, Any]:
-        """
-        Create a content plan in Notion.
-        
-        Args:
-            business_entity_id: Business entity ID
-            plan_name: Name of the content plan
-            content_types: Types of content to include
-            duration_weeks: Duration of the plan in weeks
-            frequency: Publishing frequency by content type
-            
-        Returns:
-            Created content plan
-        """
-        self.logger.info(f"Creating content plan: {plan_name}")
-        
-        # Create content plan in Notion
-        notion_svc = await self.notion_service
-        
-        content_plan = ContentPlan(
-            name=plan_name,
-            business_entity_id=business_entity_id,
-            duration_weeks=duration_weeks,
-            content_types=[ct.value for ct in content_types],
-            frequency=frequency,
-            created_by=self.agent_id
-        )
-        
-        plan_id = await notion_svc.create_page(content_plan)
-        
-        self.logger.info(f"Created content plan {plan_id} in Notion")
-        
-        return {
-            "status": "success",
-            "plan_id": plan_id,
-            "plan_name": plan_name
+            "platforms": [p.value for p in platforms]
         }
     
     async def process_event(self, event_type: str, event_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Process an event received by this agent.
+        """Process an event received by this agent."""
+        event_handlers = {
+            "generate_content_ideas": self.generate_content_ideas,
+            "research_content_topic": self.research_content_topic,
+            "generate_content_draft": self.generate_content_draft,
+            "process_transcription": self.process_transcription,
+            "distribute_content": self.distribute_content
+        }
         
-        Args:
-            event_type: Type of event
-            event_data: Event data
+        handler = event_handlers.get(event_type)
+        if not handler:
+            return {"status": "error", "message": f"Unsupported event type: {event_type}"}
             
-        Returns:
-            Processing result
-        """
-        if event_type == "generate_content_ideas":
-            return await self.generate_content_ideas(
-                business_entity_id=event_data.get("business_entity_id"),
-                topic_area=event_data.get("topic_area"),
-                count=event_data.get("count", 5),
-                content_type=event_data.get("content_type")
-            )
-        elif event_type == "research_content_topic":
-            return await self.research_content_topic(
-                content_item_id=event_data.get("content_item_id"),
-                depth=event_data.get("depth", "medium")
-            )
-        elif event_type == "generate_content_draft":
-            return await self.generate_content_draft(
-                content_item_id=event_data.get("content_item_id"),
-                llm_provider=event_data.get("llm_provider", "anthropic")
-            )
-        elif event_type == "process_transcription":
-            return await self.process_transcription(
-                audio_url=event_data.get("audio_url"),
-                business_entity_id=event_data.get("business_entity_id"),
-                content_type=event_data.get("content_type", ContentType.BLOG_POST),
-                title=event_data.get("title")
-            )
-        elif event_type == "distribute_content":
-            return await self.distribute_content(
-                content_item_id=event_data.get("content_item_id"),
-                platforms=event_data.get("platforms", [])
-            )
-        else:
-            return {
-                "status": "error",
-                "message": f"Unsupported event type: {event_type}"
-            }
+        try:
+            return await handler(**event_data)
+        except Exception as e:
+            self.logger.error(f"Error processing {event_type}: {e}")
+            return {"status": "error", "message": str(e)}
     
     async def check_health(self) -> Dict[str, Any]:
-        """
-        Check the health status of this agent.
-        
-        Returns:
-            Health check result
-        """
+        """Check the health status of this agent."""
         health_checks = {
             "notion_api": False,
             "perplexity_api": False,
@@ -543,23 +334,15 @@ class ContentLifecycleAgent(BaseAgent):
         # Check Notion API
         try:
             notion_svc = await self.notion_service
-            # Try to query a database to verify connection
             await notion_svc.query_database(ContentItem, limit=1)
             health_checks["notion_api"] = True
         except Exception as e:
             self.logger.error(f"Notion API health check failed: {e}")
         
-        # Check Perplexity API (mock check for now)
-        if self.perplexity_api_key:
-            health_checks["perplexity_api"] = True
-        
-        # Check LLM API (mock check for now)
-        if self.openai_api_key or self.anthropic_api_key:
-            health_checks["llm_api"] = True
-        
-        # Check distribution APIs (mock check for now)
-        if self.beehiiv_api_key:
-            health_checks["distribution_apis"] = True
+        # Check other APIs based on available keys
+        health_checks["perplexity_api"] = "PERPLEXITY_API_KEY" in self.api_keys
+        health_checks["llm_api"] = "OPENAI_API_KEY" in self.api_keys or "ANTHROPIC_API_KEY" in self.api_keys
+        health_checks["distribution_apis"] = "BEEHIIV_API_KEY" in self.api_keys
         
         return {
             "agent_id": self.agent_id,
