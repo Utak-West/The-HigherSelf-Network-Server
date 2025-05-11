@@ -1,4 +1,4 @@
-# 🌸 The HigherSelf Network Server
+# 🔷 The HigherSelf Network Server
 
 <div align="center">
 
@@ -14,11 +14,11 @@
 
 </div>
 
-## ✨ Overview
+## ⭐ Overview
 
 Welcome to **The HigherSelf Network Server** - an intelligent automation platform designed specifically for art galleries, wellness centers, and consultancy businesses. Our system creates harmony between your business operations through a unique agent-based architecture with Notion as the central hub.
 
-### 🌟 What Makes Us Special
+### ★ What Makes Us Special
 
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
 
@@ -26,11 +26,11 @@ The HigherSelf Network Server features a team of **named agent personalities**, 
   <img src="https://via.placeholder.com/800x400?text=Agent+System+Visualization" alt="Agent System Visualization" width="80%">
 </div>
 
-### 🔄 Notion as Your Central Hub
+### ↻ Notion as Your Central Hub
 
 All data, workflows, and communications flow through Notion, creating a unified system that's both powerful and user-friendly. Your team already knows and loves Notion - now it becomes the command center for your entire operation.
 
-## 💎 Core Features
+## ◆ Core Features
 
 <div class="features-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 
@@ -47,7 +47,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### 🤖 Intelligent Agent System
+### 🖥️ Intelligent Agent System
 
 - **Named Agent Personalities**: Each with unique characteristics
 - **Specialized Capabilities**: Experts in their respective domains
@@ -58,7 +58,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### 🔌 Seamless Integrations
+### ⚡ Seamless Integrations
 
 - **Comprehensive API Support**: Connect with all your essential tools
 - **Webhook Endpoints**: Receive real-time data from external systems
@@ -69,7 +69,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### 🛠️ Robust Architecture
+### ⚙️ Robust Architecture
 
 - **Pydantic Data Validation**: Ensures data integrity throughout
 - **State Machine Workflows**: Structured processes with clear stages
@@ -80,7 +80,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 </div>
 
-## 🗃️ Notion Database Structure
+## 📂 Notion Database Structure
 
 <div align="center">
   <img src="https://via.placeholder.com/800x500?text=Notion+Database+Structure" alt="Notion Database Structure" width="80%">
@@ -91,7 +91,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 <div class="database-container" style="margin-top: 30px;">
 
 <details open>
-<summary><h3>🏢 Core Operational Databases</h3></summary>
+<summary><h3>🏛️ Core Operational Databases</h3></summary>
 
 <div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
@@ -180,7 +180,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </details>
 
 <details open>
-<summary><h3>🤖 Agent & System Support Databases</h3></summary>
+<summary><h3>🖥️ Agent & System Support Databases</h3></summary>
 
 <div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
@@ -252,7 +252,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 
 </div>
 
-## 🔄 Key Automation Flows
+## ↻ Key Automation Flows
 
 <div align="center">
   <img src="https://via.placeholder.com/800x400?text=Automation+Flows+Diagram" alt="Automation Flows" width="80%">
@@ -264,7 +264,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">✨</div>
+    <div style="font-size: 2em; margin-right: 15px;">⭐</div>
     <div>
       <h3 style="margin: 0;">Lead Capture & Nurturing</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Nyra & Ruvo</p>
@@ -378,7 +378,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
   <a href="./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📚 View All Business Workflows</a>
 </div>
 
-## 👥 Meet Your Agent Team
+## 👤 Meet Your Agent Team
 
 <div align="center">
   <img src="https://via.placeholder.com/900x500?text=Agent+Team+Illustration" alt="Agent Team" width="80%">
@@ -389,7 +389,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 <div class="agent-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>✨ Nyra</h3>
+  <h3>⭐ Nyra</h3>
   <p><strong>Lead Capture Specialist</strong></p>
   <p><em>Intuitive & Responsive</em></p>
   <p>Like flowing water (from Sanskrit <em>nira</em>), Nyra channels new connections from multiple sources into your Notion ecosystem with grace and attention to detail.</p>
@@ -445,7 +445,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>🌸 Grace Fields</h3>
+  <h3>🔷 Grace Fields</h3>
   <p><strong>System Orchestrator</strong></p>
   <p><em>Harmonious & Coordinating</em></p>
   <p>At the center of it all, Grace ensures that each agent is activated at the right time, maintaining the flow of information throughout the system.</p>
@@ -460,7 +460,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 
 
 
-## 🚀 Getting Started
+## ▶️ Getting Started
 
 <div class="getting-started-container" style="display: flex; gap: 30px; margin-top: 20px;">
 
@@ -604,7 +604,7 @@ For production, we recommend:
   <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📘 Complete Deployment Guide</a>
 </div>
 
-## 🔄 Business Workflows
+## ↻ Business Workflows
 
 <div align="center">
   <img src="https://via.placeholder.com/800x400?text=Workflow+Visualization" alt="Workflow Visualization" width="80%">
@@ -656,7 +656,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 
 </div>
 
-## 🔌 Integration Ecosystem
+## ⚡ Integration Ecosystem
 
 The HigherSelf Network Server connects with your essential business tools:
 
@@ -731,7 +731,7 @@ The HigherSelf Network Server connects with your essential business tools:
 
 </details>
 
-## 📚 Documentation
+## 📄 Documentation
 
 <div class="docs-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
@@ -755,7 +755,7 @@ The HigherSelf Network Server connects with your essential business tools:
 
 </div>
 
-## 🛠️ For Developers
+## ⚙️ For Developers
 
 <details>
 <summary><b>System Architecture</b></summary>
@@ -846,7 +846,7 @@ class MyNewPlatformService(BaseService):
 ```
 </details>
 
-## 🤝 Support & Community
+## 🔗 Support & Community
 
 <div class="support-container" style="display: flex; gap: 20px; margin-top: 20px;">
 

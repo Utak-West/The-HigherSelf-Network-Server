@@ -23,7 +23,7 @@ anthropic==0.2.8
 
 # Integration services
 pyairtable==1.4.0
-pywoocommerce==3.0.0
+woocommerce==3.0.0
 aiofiles==23.1.0
 beautifulsoup4==4.12.2
 

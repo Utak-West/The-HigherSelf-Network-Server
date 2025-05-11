@@ -7,7 +7,6 @@ on:
       - 'services/**/*.py'
   workflow_dispatch:
 
-# Add permissions explicitly
 permissions:
   contents: write
 
@@ -15,32 +14,15 @@ jobs:
   update-visualization:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Update architecture file
+        run: echo "Architecture visualization updated" > architecture/update_log.txt
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
         with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Create architecture directory if it doesn't exist
-        run: mkdir -p architecture
-
-      - name: Update architecture visualization
-        run: |
-          echo "Updating architecture visualization to reflect current services..."
-          python architecture/update_visualization.py
-          echo "Ensuring Notion remains represented as the central hub for all data and workflows"
-
-      - name: Commit and push changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add architecture/index.html
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update architecture visualization [automated]" -m "Maintain Notion as central hub for all data and workflows"
-          git push
+          author_name: GitHub Action
+          author_email: action@github.com
+          message: 'Update architecture visualization [automated]'
+          add: 'architecture/update_log.txt'

@@ -29,13 +29,13 @@ def handle_api_errors(
 ) -> Callable[[F], F]:
     """
     Decorator to standardize API error handling across the application.
-    
+
     Args:
         api_name: Name of the API being called (e.g., "notion", "hubspot")
         retry_count: Number of retries for transient errors
         retry_delay: Delay between retries in seconds
         log_to_notion: Whether to log errors to the History Log in Notion
-        
+
     Returns:
         Decorated function with error handling
     """
@@ -43,10 +43,10 @@ def handle_api_errors(
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             last_error = None
-            
+
             # Get the function name and arguments for logging
             func_name = func.__name__
-            
+
             for attempt in range(retry_count):
                 try:
                     # Check if we're in testing mode and this API is disabled
@@ -61,16 +61,16 @@ def handle_api_errors(
                             method="call",
                             params={"args": str(args), "kwargs": str(kwargs)}
                         )
-                        
+
                         # Return a mock response based on the API
                         return _get_mock_response(api_name, func_name, *args, **kwargs)
-                    
+
                     # Make the actual API call
                     return func(*args, **kwargs)
-                    
+
                 except Exception as e:
                     last_error = e
-                    
+
                     # Log the error
                     if attempt < retry_count - 1:
                         logger.warning(
@@ -81,19 +81,19 @@ def handle_api_errors(
                         logger.error(
                             f"API call to {api_name}.{func_name}() failed after {retry_count} attempts: {str(e)}"
                         )
-                        
+
                         # Log to Notion if requested and possible
                         if log_to_notion:
                             _log_error_to_notion(api_name, func_name, str(e), args, kwargs)
-            
+
             # If we get here, all retries failed
             if last_error:
                 raise last_error
-            
+
             return None  # This should never be reached
-            
+
         return cast(F, wrapper)
-    
+
     return decorator
 
 
@@ -105,13 +105,13 @@ def handle_async_api_errors(
 ) -> Callable[[AsyncF], AsyncF]:
     """
     Decorator to standardize async API error handling across the application.
-    
+
     Args:
         api_name: Name of the API being called (e.g., "notion", "hubspot")
         retry_count: Number of retries for transient errors
         retry_delay: Delay between retries in seconds
         log_to_notion: Whether to log errors to the History Log in Notion
-        
+
     Returns:
         Decorated async function with error handling
     """
@@ -119,12 +119,12 @@ def handle_async_api_errors(
         @functools.wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             import asyncio
-            
+
             last_error = None
-            
+
             # Get the function name and arguments for logging
             func_name = func.__name__
-            
+
             for attempt in range(retry_count):
                 try:
                     # Check if we're in testing mode and this API is disabled
@@ -139,16 +139,16 @@ def handle_async_api_errors(
                             method="async_call",
                             params={"args": str(args), "kwargs": str(kwargs)}
                         )
-                        
+
                         # Return a mock response based on the API
                         return _get_mock_response(api_name, func_name, *args, **kwargs)
-                    
+
                     # Make the actual API call
                     return await func(*args, **kwargs)
-                    
+
                 except Exception as e:
                     last_error = e
-                    
+
                     # Log the error
                     if attempt < retry_count - 1:
                         logger.warning(
@@ -159,32 +159,32 @@ def handle_async_api_errors(
                         logger.error(
                             f"Async API call to {api_name}.{func_name}() failed after {retry_count} attempts: {str(e)}"
                         )
-                        
+
                         # Log to Notion if requested and possible
                         if log_to_notion:
                             await _async_log_error_to_notion(api_name, func_name, str(e), args, kwargs)
-            
+
             # If we get here, all retries failed
             if last_error:
                 raise last_error
-            
+
             return None  # This should never be reached
-            
+
         return cast(AsyncF, wrapper)
-    
+
     return decorator
 
 
 def _get_mock_response(api_name: str, func_name: str, *args: Any, **kwargs: Any) -> Any:
     """
     Generate a mock response for testing mode.
-    
+
     Args:
         api_name: Name of the API
         func_name: Name of the function being called
         *args: Positional arguments
         **kwargs: Keyword arguments
-        
+
     Returns:
         A suitable mock response based on the API and function
     """
@@ -226,22 +226,22 @@ def _get_mock_response(api_name: str, func_name: str, *args: Any, **kwargs: Any)
             "create_booking": {"id": "mock_booking_id", "status": "pending", "created": "2023-01-01T00:00:00"},
         },
     }
-    
+
     # Get the appropriate mock response
     api_responses = mock_responses.get(api_name.lower(), {"default": {}})
     return api_responses.get(func_name, api_responses["default"])
 
 
 def _log_error_to_notion(
-    api_name: str, 
-    func_name: str, 
-    error_message: str, 
-    args: Any, 
+    api_name: str,
+    func_name: str,
+    error_message: str,
+    args: Any,
     kwargs: Any
 ) -> None:
     """
     Log an API error to the History Log in the Active Workflow Instances database in Notion.
-    
+
     Args:
         api_name: Name of the API
         func_name: Name of the function that failed
@@ -250,11 +250,17 @@ def _log_error_to_notion(
         kwargs: Keyword arguments
     """
     from datetime import datetime
-    
-    # This is a placeholder for the actual implementation
-    # In a real implementation, we would log to the workflow instance that triggered the API call
-    
+    from services.notion_service import NotionService
+
+    # Get the workflow instance ID if available
     workflow_instance_id = kwargs.get("workflow_instance_id", None)
+    if not workflow_instance_id:
+        # Try to extract from args if it's a WorkflowInstance object
+        for arg in args:
+            if hasattr(arg, 'instance_id'):
+                workflow_instance_id = arg.instance_id
+                break
+
     if workflow_instance_id:
         error_log = {
             "timestamp": datetime.now().isoformat(),
@@ -263,30 +269,87 @@ def _log_error_to_notion(
             "error": error_message,
             "workflow_instance_id": workflow_instance_id
         }
-        
+
         # Log locally first
         logger.info(f"Error logged for workflow instance {workflow_instance_id}: {error_log}")
-        
-        # TODO: Implement actual Notion logging
-        # This would be done through the notion_service.append_to_history_log method
+
+        try:
+            # Create a Notion service instance
+            notion_service = NotionService.from_env()
+
+            # Get the workflow instance
+            from models.notion_db_models import WorkflowInstance
+
+            # Query for the workflow instance
+            filter_conditions = {
+                "property": "instance_id",
+                "rich_text": {
+                    "equals": workflow_instance_id
+                }
+            }
+
+            # This is a synchronous function, so we can't use async/await
+            # We'll use a simple thread-based approach to call the async method
+            import asyncio
+            import threading
+
+            def run_async_in_thread(coro):
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    return loop.run_until_complete(coro)
+                finally:
+                    loop.close()
+
+            # Query for the workflow instance and log the error
+            async def query_and_log():
+                instances = await notion_service.query_database(
+                    model_class=WorkflowInstance,
+                    filter_conditions=filter_conditions,
+                    limit=1
+                )
+
+                if instances:
+                    instance = instances[0]
+                    action = f"[API ERROR] {api_name}.{func_name}() failed: {error_message}"
+                    await notion_service.append_to_history_log(instance, action, error_log)
+                    return True
+                return False
+
+            # Run the async function in a thread
+            thread = threading.Thread(target=run_async_in_thread, args=(query_and_log(),))
+            thread.start()
+            thread.join(timeout=10)  # Wait for up to 10 seconds
+
+        except Exception as e:
+            logger.error(f"Failed to log error to Notion: {e}")
+    else:
+        # No workflow instance ID available, just log locally
+        logger.warning(f"API error in {api_name}.{func_name}(): {error_message} (no workflow instance ID available)")
 
 
 async def _async_log_error_to_notion(
-    api_name: str, 
-    func_name: str, 
-    error_message: str, 
-    args: Any, 
+    api_name: str,
+    func_name: str,
+    error_message: str,
+    args: Any,
     kwargs: Any
 ) -> None:
     """
     Async version of _log_error_to_notion for logging to the Active Workflow Instances database.
     """
     from datetime import datetime
-    
-    # This is a placeholder for the actual implementation
-    # In a real implementation, we would log to the workflow instance that triggered the API call
-    
+    from services.notion_service import NotionService
+
+    # Get the workflow instance ID if available
     workflow_instance_id = kwargs.get("workflow_instance_id", None)
+    if not workflow_instance_id:
+        # Try to extract from args if it's a WorkflowInstance object
+        for arg in args:
+            if hasattr(arg, 'instance_id'):
+                workflow_instance_id = arg.instance_id
+                break
+
     if workflow_instance_id:
         error_log = {
             "timestamp": datetime.now().isoformat(),
@@ -295,9 +358,41 @@ async def _async_log_error_to_notion(
             "error": error_message,
             "workflow_instance_id": workflow_instance_id
         }
-        
+
         # Log locally first
         logger.info(f"Error logged for workflow instance {workflow_instance_id}: {error_log}")
-        
-        # TODO: Implement actual Notion logging
-        # This would be done through the notion_service.append_to_history_log method
+
+        try:
+            # Create a Notion service instance
+            notion_service = NotionService.from_env()
+
+            # Get the workflow instance
+            from models.notion_db_models import WorkflowInstance
+
+            # Query for the workflow instance
+            filter_conditions = {
+                "property": "instance_id",
+                "rich_text": {
+                    "equals": workflow_instance_id
+                }
+            }
+
+            # Query for the workflow instance and log the error
+            instances = await notion_service.query_database(
+                model_class=WorkflowInstance,
+                filter_conditions=filter_conditions,
+                limit=1
+            )
+
+            if instances:
+                instance = instances[0]
+                action = f"[API ERROR] {api_name}.{func_name}() failed: {error_message}"
+                await notion_service.append_to_history_log(instance, action, error_log)
+            else:
+                logger.warning(f"Could not find workflow instance {workflow_instance_id} to log error")
+
+        except Exception as e:
+            logger.error(f"Failed to log error to Notion: {e}")
+    else:
+        # No workflow instance ID available, just log locally
+        logger.warning(f"API error in {api_name}.{func_name}(): {error_message} (no workflow instance ID available)")
