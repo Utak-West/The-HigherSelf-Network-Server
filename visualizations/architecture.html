@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The HigherSelf Network Server - Architecture</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2e7d32;
+        }
+        .architecture-diagram {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: auto;
+        }
+        .notion-hub {
+            background-color: #e8f5e9;
+            border: 2px solid #2e7d32;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            width: 80%;
+            margin: 0 auto 30px;
+        }
+        .database-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .database-column {
+            width: 48%;
+        }
+        .database-group {
+            background-color: #f1f8e9;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        .database-item {
+            background-color: white;
+            border-left: 4px solid #7cb342;
+            padding: 8px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .flows-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .flow {
+            width: 48%;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow h3 {
+            color: #1565c0;
+            margin-top: 0;
+        }
+        .agents-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .agent {
+            width: 30%;
+            background-color: #fff3e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .agent h3 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        .webhooks-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .webhook {
+            width: 30%;
+            background-color: #e0f7fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .webhook h3 {
+            color: #00838f;
+            margin-top: 0;
+        }
+        .tools-section {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .tool {
+            background-color: white;
+            border-left: 4px solid #8e24aa;
+            padding: 10px;
+        }
+        footer {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The HigherSelf Network Server</h1>
+            <p>Architecture Overview with Notion as the Central Hub</p>
+        </header>
+
+        <div class="architecture-diagram">
+            <div class="notion-hub">
+                <h2>Notion 16-Database Structure</h2>
+                <p>Central Hub for All Operations</p>
+            </div>
+
+            <div class="database-section">
+                <div class="database-column">
+                    <div class="database-group">
+                        <h3>Core Operational Databases</h3>
+                        <div class="database-item">Business Entities Registry DB</div>
+                        <div class="database-item">Contacts & Profiles DB</div>
+                        <div class="database-item">Community Hub DB</div>
+                        <div class="database-item">Products & Services DB</div>
+                        <div class="database-item">Active Workflow Instances DB</div>
+                        <div class="database-item">Marketing Campaigns DB</div>
+                        <div class="database-item">Feedback & Surveys DB</div>
+                        <div class="database-item">Rewards & Bounties DB</div>
+                        <div class="database-item">Master Tasks Database</div>
+                    </div>
+                </div>
+                <div class="database-column">
+                    <div class="database-group">
+                        <h3>Agent & System Support Databases</h3>
+                        <div class="database-item">Agent Communication Patterns DB</div>
+                        <div class="database-item">Agent Registry DB</div>
+                        <div class="database-item">API Integrations Catalog DB</div>
+                        <div class="database-item">Data Transformations Registry DB</div>
+                        <div class="database-item">Notifications Templates DB</div>
+                        <div class="database-item">Use Cases Library DB</div>
+                        <div class="database-item">Workflows Library DB</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Automation Flows</h2>
+            <div class="flows-section">
+                <div class="flow">
+                    <h3>Flow 1: Lead Capture & Initial Processing</h3>
+                    <p><strong>Sources:</strong> Typeform, Snov.io, Userfeedback, Amelia, Acuity, WooCommerce</p>
+                    <p><strong>Agents:</strong> LeadCaptureAgent, TaskManagementAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 2: Retreat Booking Management</h3>
+                    <p><strong>Sources:</strong> Amelia</p>
+                    <p><strong>Agents:</strong> BookingAgent, TaskManagementAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 3: Art Sale & Fulfillment</h3>
+                    <p><strong>Sources:</strong> WooCommerce</p>
+                    <p><strong>Agents:</strong> BookingAgent, TaskManagementAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 4: Marketing Email Campaign</h3>
+                    <p><strong>Sources:</strong> Beehiiv</p>
+                    <p><strong>Agents:</strong> MarketingCampaignAgent, LeadCaptureAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 5: Automated Task Management</h3>
+                    <p><strong>Sources:</strong> Workflow Events, Scheduled Events</p>
+                    <p><strong>Agents:</strong> TaskManagementAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 6: Community Engagement</h3>
+                    <p><strong>Sources:</strong> Circle.so</p>
+                    <p><strong>Agents:</strong> CommunityEngagementAgent, TaskManagementAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 7: Content Creation & Distribution</h3>
+                    <p><strong>Sources:</strong> Content Requests, Publication Schedule</p>
+                    <p><strong>Agents:</strong> ContentLifecycleAgent, MarketingCampaignAgent</p>
+                </div>
+                <div class="flow">
+                    <h3>Flow 8: Audience Analysis & Segmentation</h3>
+                    <p><strong>Sources:</strong> Customer Data, Interaction Records</p>
+                    <p><strong>Agents:</strong> AudienceSegmentationAgent, MarketingCampaignAgent</p>
+                </div>
+            </div>
+
+            <h2>Specialized Agents</h2>
+            <div class="agents-section">
+                <div class="agent">
+                    <h3>LeadCaptureAgent</h3>
+                    <p>Processes leads from various sources and creates workflow instances</p>
+                </div>
+                <div class="agent">
+                    <h3>BookingAgent</h3>
+                    <p>Manages retreat bookings and product orders</p>
+                </div>
+                <div class="agent">
+                    <h3>TaskManagementAgent</h3>
+                    <p>Creates and assigns tasks based on workflow events</p>
+                </div>
+                <div class="agent">
+                    <h3>MarketingCampaignAgent</h3>
+                    <p>Manages email campaigns and marketing initiatives</p>
+                </div>
+                <div class="agent">
+                    <h3>CommunityEngagementAgent</h3>
+                    <p>Handles community member interactions in Circle.so</p>
+                </div>
+                <div class="agent">
+                    <h3>ContentLifecycleAgent</h3>
+                    <p>Manages content from creation to distribution</p>
+                </div>
+                <div class="agent">
+                    <h3>AudienceSegmentationAgent</h3>
+                    <p>Analyzes customer data and creates audience segments</p>
+                </div>
+            </div>
+
+            <h2>Webhook Handlers</h2>
+            <div class="webhooks-section">
+                <div class="webhook">
+                    <h3>Typeform Webhooks</h3>
+                    <p>Processes form submissions and leads</p>
+                </div>
+                <div class="webhook">
+                    <h3>WooCommerce Webhooks</h3>
+                    <p>Processes orders and product sales</p>
+                </div>
+                <div class="webhook">
+                    <h3>Amelia Webhooks</h3>
+                    <p>Processes booking events for retreats</p>
+                </div>
+                <div class="webhook">
+                    <h3>Circle.so Webhooks</h3>
+                    <p>Processes community member activities</p>
+                </div>
+                <div class="webhook">
+                    <h3>Beehiiv Webhooks</h3>
+                    <p>Processes newsletter subscribers and metrics</p>
+                </div>
+                <div class="webhook">
+                    <h3>Userfeedback Webhooks</h3>
+                    <p>Processes feedback submissions</p>
+                </div>
+            </div>
+
+            <h2>Development & Testing Tools</h2>
+            <div class="tools-section">
+                <div class="tools-grid">
+                    <div class="tool">
+                        <h4>Test Automation Flows</h4>
+                        <p>Simulates flow execution with mock data</p>
+                    </div>
+                    <div class="tool">
+                        <h4>Toggle Testing Mode</h4>
+                        <p>Enables/disables real API calls during development</p>
+                    </div>
+                    <div class="tool">
+                        <h4>Validate Notion Structure</h4>
+                        <p>Verifies 16-database configuration and access</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>The HigherSelf Network Server - Version 1.0 - May 2025</p>
+        </footer>
+    </div>
+</body>
+</html>

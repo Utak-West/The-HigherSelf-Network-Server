@@ -22,6 +22,7 @@ The system follows the Pydantic AI framework for data validation and includes a 
 ## Notion Database Structure (16-Database Design)
 
 ### Core Operational Databases
+
 1. **Business Entities Registry**: List of business entities using the system
 2. **Contacts & Profiles**: Unified customer/contact database
 3. **Community Hub**: Community member profiles and engagement tracking
@@ -74,12 +75,23 @@ All agents maintain Notion as the central hub for data storage and processing.
 
 ## Agent Types
 
-The system currently includes the following agent types:
+The system includes the following specialized agent types:
 
-1. **Lead Capture Agent (`LeadCaptureAgent`)**: Captures leads from sources like Typeform and website forms, with optional HubSpot CRM synchronization
-2. **Booking Detection Agent (`BookingAgent`)**: Processes retreat bookings from Amelia, creating and managing workflow instances
+1. **Lead Capture Agent (`LeadCaptureAgent`)**: Captures leads from various sources like Typeform, Snov.io, and Userfeedback, with optional HubSpot CRM synchronization.
 
-Additional agents can be implemented following the same pattern by extending the `BaseAgent` class.
+2. **Booking Agent (`BookingAgent`)**: Processes retreat bookings from Amelia and handles WooCommerce orders, creating and managing workflow instances.
+
+3. **Task Management Agent (`TaskManagementAgent`)**: Creates, assigns, and tracks tasks based on workflow events and templates.
+
+4. **Marketing Campaign Agent (`MarketingCampaignAgent`)**: Manages email campaigns through Beehiiv, including audience targeting and performance tracking.
+
+5. **Community Engagement Agent (`CommunityEngagementAgent`)**: Handles community member interactions in Circle.so, tracking engagement and managing member profiles.
+
+6. **Content Lifecycle Agent (`ContentLifecycleAgent`)**: Manages content from idea generation to distribution across various platforms.
+
+7. **Audience Segmentation Agent (`AudienceSegmentationAgent`)**: Analyzes customer data to create and manage audience segments for targeted marketing.
+
+All agents are implemented following the same pattern by extending the `BaseAgent` class and maintaining Notion as the central hub for data storage and processing.
 
 ## Core Integration Points
 
@@ -168,7 +180,18 @@ The API server will start on port 8000 by default (configurable via `SERVER_PORT
 
 ## API Endpoints
 
-- **Typeform Webhook:** `/webhooks/typeform`
+### Webhook Endpoints
+
+- **Typeform:** `/webhooks/typeform`
+- **WooCommerce:** `/webhooks/woocommerce`
+- **Amelia:** `/webhooks/amelia`
+- **Snov.io:** `/webhooks/snovio`
+- **Userfeedback:** `/webhooks/userfeedback`
+- **Circle.so:** `/webhooks/circleso/new_member`, `/webhooks/circleso/member_activity`, `/webhooks/circleso/event`
+- **Beehiiv:** `/webhooks/beehiiv/newsletter/metrics`, `/webhooks/beehiiv/subscriber`, `/webhooks/beehiiv/referral`
+
+### General API Endpoints
+
 - **Website Form Submission:** `/api/forms/submit`
 - **Workflow Instance Details:** `/workflows/{instance_id}`
 - **Health Check:** `/health`
