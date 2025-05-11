@@ -33,7 +33,8 @@ from agents.lead_capture_agent import LeadCaptureAgent
 from agents.booking_agent import BookingAgent, AmeliaBooking
 from models.notion_db_models import WorkflowInstance
 from api.webhooks import router as webhook_router
-
+from api.webhooks_circleso import router as circleso_router
+from api.webhooks_beehiiv import router as beehiiv_router
 
 # Configure logging
 logging.basicConfig(
@@ -58,8 +59,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include webhook router
+# Include routers
 app.include_router(webhook_router)
+app.include_router(circleso_router)
+app.include_router(beehiiv_router)
 
 # Initialize agents
 lead_capture_agent = LeadCaptureAgent(

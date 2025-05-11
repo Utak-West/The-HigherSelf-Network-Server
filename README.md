@@ -12,12 +12,65 @@ The system follows the Pydantic AI framework for data validation and includes a 
 
 ## Core Features
 
-- **Centralized Notion Database Integration:** Aligns with the 10 Notion database structures defined in the specifications
+- **Centralized Notion Database Integration:** Aligns with the 16 Notion database structures defined in the specifications
 - **Pydantic Model Framework:** All data structures use Pydantic for validation and serialization
 - **Agent-based Architecture:** Modular agents with specific responsibilities and capabilities
 - **Webhook Support:** Endpoints for third-party system integration
 - **State Machine Workflow Tracking:** Structured workflow instances with history logging
 - **Extensible Design:** Easy to add new agents and integrations
+
+## Notion Database Structure (16-Database Design)
+
+### Core Operational Databases
+1. **Business Entities Registry**: List of business entities using the system
+2. **Contacts & Profiles**: Unified customer/contact database
+3. **Community Hub**: Community member profiles and engagement tracking
+4. **Products & Services**: Catalog of available products and services
+5. **Active Workflow Instances**: Currently active workflow instances
+6. **Marketing Campaigns**: Marketing initiatives and performance tracking
+7. **Feedback & Surveys**: Customer feedback and survey responses
+8. **Rewards & Bounties**: Incentive programs and achievements
+9. **Master Tasks**: Centralized task management system
+
+### Agent & System Support Databases
+
+1. **Agent Communication Patterns**: Patterns for agent interaction
+2. **Agent Registry**: Inventory of available agents and their capabilities
+3. **API Integrations Catalog**: Catalog of integrated external services
+4. **Data Transformations Registry**: Data mapping configurations
+5. **Notifications Templates**: Templates for notifications
+6. **Use Cases Library**: Documented use cases for reference
+7. **Workflows Library**: Template workflows that can be instantiated
+
+## Automation Flows & Agents
+
+The system implements the following key automation flows using specialized agents:
+
+1. **Lead Capture & Initial Processing**: Consolidates leads from Typeform, Snov.io, Userfeedback, and other sources.
+   - Implemented by `LeadCaptureAgent` and `TaskManagementAgent`
+
+2. **Retreat Booking Management**: Automates the booking process for retreats via Amelia.
+   - Implemented by `BookingAgent` and `TaskManagementAgent`
+
+3. **Art Sale & Fulfillment**: Manages WooCommerce orders, especially for art products.
+   - Implemented by `BookingAgent` (handles orders too) and `TaskManagementAgent`
+
+4. **Marketing Email Campaign**: Manages email campaigns through Beehiiv.
+   - Implemented by `MarketingCampaignAgent` and `LeadCaptureAgent`
+
+5. **Automated Task Management**: Creates and assigns tasks based on workflow events.
+   - Implemented by `TaskManagementAgent`
+
+6. **Community Engagement**: Handles Circle.so community interactions and member management.
+   - Implemented by `CommunityEngagementAgent` and `TaskManagementAgent`
+
+7. **Content Creation & Distribution**: Manages content lifecycle from idea to publication.
+   - Implemented by `ContentLifecycleAgent` and `MarketingCampaignAgent`
+
+8. **Audience Analysis & Segmentation**: Creates and manages audience segments for targeted content.
+   - Implemented by `AudienceSegmentationAgent` and `MarketingCampaignAgent`
+
+All agents maintain Notion as the central hub for data storage and processing.
 
 ## Agent Types
 
@@ -82,15 +135,21 @@ The system requires several Notion database IDs and API credentials to function.
 ### Required Notion Database IDs
 
 - `NOTION_BUSINESS_ENTITIES_DB`: Business Entities Registry
-- `NOTION_AGENT_REGISTRY_DB`: Agent Registry
-- `NOTION_WORKFLOWS_LIBRARY_DB`: Workflows Library
+- `NOTION_CONTACTS_PROFILES_DB`: Contacts & Profiles
+- `NOTION_COMMUNITY_HUB_DB`: Community Hub
+- `NOTION_PRODUCTS_SERVICES_DB`: Products & Services
 - `NOTION_ACTIVE_WORKFLOW_INSTANCES_DB`: Active Workflow Instances
+- `NOTION_MARKETING_CAMPAIGNS_DB`: Marketing Campaigns
+- `NOTION_FEEDBACK_SURVEYS_DB`: Feedback & Surveys
+- `NOTION_REWARDS_BOUNTIES_DB`: Rewards & Bounties
+- `NOTION_MASTER_TASKS_DB`: Master Tasks
+- `NOTION_AGENT_COMMUNICATION_DB`: Agent Communication Patterns
+- `NOTION_AGENT_REGISTRY_DB`: Agent Registry
 - `NOTION_API_INTEGRATIONS_DB`: API Integrations Catalog
 - `NOTION_DATA_TRANSFORMATIONS_DB`: Data Transformations Registry
-- `NOTION_USE_CASES_DB`: Use Cases Library
 - `NOTION_NOTIFICATIONS_TEMPLATES_DB`: Notifications Templates
-- `NOTION_AGENT_COMMUNICATION_DB`: Agent Communication Patterns
-- `NOTION_TASKS_DB`: Master Tasks Database
+- `NOTION_USE_CASES_DB`: Use Cases Library
+- `NOTION_WORKFLOWS_LIBRARY_DB`: Workflows Library
 
 ### API Credentials
 
@@ -116,7 +175,7 @@ The API server will start on port 8000 by default (configurable via `SERVER_PORT
 
 ## Architecture
 
-The system follows a modular architecture with several key components:
+The HigherSelf Network Server implements a hub-and-spoke architecture with Notion as the central hub. All agents operate independently but coordinate through a structured set of 16 interconnected Notion databases.
 
 ### Components
 

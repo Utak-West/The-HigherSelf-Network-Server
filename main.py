@@ -17,6 +17,11 @@ from services.integration_manager import IntegrationManager
 from services.notion_service import NotionService
 from agents.lead_capture_agent import LeadCaptureAgent
 from agents.booking_agent import BookingAgent
+from agents.content_lifecycle_agent import ContentLifecycleAgent
+from agents.audience_segmentation_agent import AudienceSegmentationAgent
+from agents.task_management_agent import TaskManagementAgent
+from agents.marketing_campaign_agent import MarketingCampaignAgent
+from agents.community_engagement_agent import CommunityEngagementAgent
 
 
 def setup_logging():
@@ -98,34 +103,49 @@ async def initialize_integrations():
 
 async def register_agents():
     """Register all agents in Notion."""
-    # Initialize lead capture agent
-    lead_agent = LeadCaptureAgent(
-        agent_id="LeadCaptureAgent",
-        name="Lead Capture Agent", 
-        description="Captures leads from various sources (Typeform, website forms) and creates workflow instances in Notion",
-        business_entities=["The Connection Practice", "The 7 Space"]
-    )
+    # Initialize Notion service
+    notion_service = NotionService.from_env()
     
-    # Initialize booking agent for retreat bookings
-    booking_agent = BookingAgent(
-        agent_id="TCP_AGENT_001",
-        name="Retreat Booking Detection Agent", 
-        description="Detects retreat bookings from Amelia and creates workflow instances in Notion",
-        business_entities=["The Connection Practice"]
-    )
+    # Initialize all agents
+    lead_agent = LeadCaptureAgent(notion_service)
+    booking_agent = BookingAgent(notion_service)
+    content_agent = ContentLifecycleAgent(notion_service)
+    audience_agent = AudienceSegmentationAgent(notion_service)
+    task_agent = TaskManagementAgent(notion_service)
+    marketing_agent = MarketingCampaignAgent(notion_service)
+    community_agent = CommunityEngagementAgent(notion_service)
     
-    # Register agents in Notion
+    # Register all agents in Notion
     await lead_agent.register_in_notion()
     logger.info("Lead Capture Agent registered successfully")
     
     await booking_agent.register_in_notion()
     logger.info("Booking Agent registered successfully")
     
-    # Add more agents here as they are implemented
+    await content_agent.register_in_notion()
+    logger.info("Content Lifecycle Agent registered successfully")
     
+    await audience_agent.register_in_notion()
+    logger.info("Audience Segmentation Agent registered successfully")
+    
+    await task_agent.register_in_notion()
+    logger.info("Task Management Agent registered successfully")
+    
+    await marketing_agent.register_in_notion()
+    logger.info("Marketing Campaign Agent registered successfully")
+    
+    await community_agent.register_in_notion()
+    logger.info("Community Engagement Agent registered successfully")
+    
+    # Return all agents for use by the API server
     return {
         "lead_capture_agent": lead_agent,
-        "booking_agent": booking_agent
+        "booking_agent": booking_agent,
+        "content_lifecycle_agent": content_agent,
+        "audience_segmentation_agent": audience_agent,
+        "task_management_agent": task_agent,
+        "marketing_campaign_agent": marketing_agent,
+        "community_engagement_agent": community_agent
     }
 
 

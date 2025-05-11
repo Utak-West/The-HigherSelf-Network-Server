@@ -14,7 +14,18 @@ from loguru import logger
 
 from services.notion_service import NotionService
 from services.integration_manager import IntegrationManager, get_integration_manager
-from models.notion_models import NotionIntegrationConfig
+
+# Import all necessary agents
+from agents.lead_capture_agent import LeadCaptureAgent
+from agents.booking_agent import BookingAgent
+from agents.marketing_campaign_agent import MarketingCampaignAgent
+from agents.community_engagement_agent import CommunityEngagementAgent
+from agents.task_management_agent import TaskManagementAgent
+
+# Import models
+from models.notion_db_models import NotionIntegrationConfig
+from models.notion_db_models_extended import ContactProfile, CommunityMember
+from config.testing_mode import is_api_disabled, TestingMode
 
 
 # Initialize router
@@ -22,6 +33,22 @@ router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
 # Initialize services
 notion_service = NotionService()
+
+# Initialize agents (dependency injection pattern)
+def get_lead_capture_agent():
+    return LeadCaptureAgent(notion_service)
+
+def get_booking_agent():
+    return BookingAgent(notion_service)
+    
+def get_marketing_agent():
+    return MarketingCampaignAgent(notion_service)
+    
+def get_community_agent():
+    return CommunityEngagementAgent(notion_service)
+
+def get_task_agent():
+    return TaskManagementAgent(notion_service)
 
 
 class WebhookResponse(BaseModel):
@@ -37,7 +64,8 @@ def is_test_mode() -> bool:
     In test mode, no real API calls or webhook triggers should be made.
     """
     return os.environ.get("TEST_MODE", "").lower() == "true" or \
-           os.environ.get("DISABLE_WEBHOOKS", "").lower() == "true"
+           os.environ.get("DISABLE_WEBHOOKS", "").lower() == "true" or \
+           is_api_disabled("webhook")
 
 
 async def verify_typeform_webhook(request: Request, signature: str = Header(None)) -> bool:
