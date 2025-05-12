@@ -115,7 +115,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/package-24.svg" alt="Package" width="16" height="16" /> Products & Services</h4>
+  <h4>Products & Services</h4>
   <p>Catalog of all available products and services across businesses</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Type, Price, Availability</p>
@@ -124,7 +124,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/gear-24.svg" alt="Gear" width="16" height="16" /> Active Workflows</h4>
+  <h4>Active Workflows</h4>
   <p>Currently active workflow instances being processed</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Status, Stage, Start Date</p>
@@ -133,7 +133,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/megaphone-24.svg" alt="Megaphone" width="16" height="16" /> Marketing Campaigns</h4>
+  <h4>Marketing Campaigns</h4>
   <p>Marketing initiatives and performance tracking</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Channel, Status, Metrics</p>
@@ -142,7 +142,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/pencil-24.svg" alt="Pencil" width="16" height="16" /> Feedback & Surveys</h4>
+  <h4>Feedback & Surveys</h4>
   <p>Customer feedback and survey responses</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Type, Rating, Date, Source</p>
@@ -151,7 +151,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/trophy-24.svg" alt="Trophy" width="16" height="16" /> Rewards & Bounties</h4>
+  <h4>Rewards & Bounties</h4>
   <p>Incentive programs and achievements</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Type, Value, Criteria</p>
@@ -160,7 +160,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> Master Tasks</h4>
+  <h4>Master Tasks</h4>
   <p>Centralized task management system</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Title, Status, Due Date, Priority</p>
@@ -172,12 +172,12 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </details>
 
 <details open>
-<summary><h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/device-desktop-24.svg" alt="Desktop" width="18" height="18" /> Agent & System Support Databases</h3></summary>
+<summary><h3>Agent & System Support Databases</h3></summary>
 
 <div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/comment-discussion-24.svg" alt="Comment" width="16" height="16" /> Agent Communication</h4>
+  <h4>Agent Communication</h4>
   <p>Record of all agent interactions and messages</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Sender, Recipient, Message Type</p>
@@ -186,7 +186,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/checklist-24.svg" alt="Checklist" width="16" height="16" /> Agent Registry</h4>
+  <h4>Agent Registry</h4>
   <p>Inventory of all available agents and their capabilities</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Type, Status, Version</p>
@@ -195,7 +195,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/plug-24.svg" alt="Plug" width="16" height="16" /> API Integrations</h4>
+  <h4>API Integrations</h4>
   <p>Catalog of all integrated external services</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Service Name, Status, Last Sync</p>
@@ -204,7 +204,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sync-24.svg" alt="Sync" width="16" height="16" /> Data Transformations</h4>
+  <h4>Data Transformations</h4>
   <p>Data mapping configurations between systems</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Source, Target, Mapping Rules</p>
@@ -213,7 +213,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/bell-24.svg" alt="Bell" width="16" height="16" /> Notification Templates</h4>
+  <h4>Notification Templates</h4>
   <p>Templates for system and user notifications</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Type, Channel, Subject, Body</p>
@@ -222,7 +222,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> Use Cases Library</h4>
+  <h4>Use Cases Library</h4>
   <p>Documented use cases for reference</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Title, Category, Steps</p>
@@ -231,7 +231,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/checklist-24.svg" alt="Checklist" width="16" height="16" /> Workflows Library</h4>
+  <h4>Workflows Library</h4>
   <p>Template workflows that can be instantiated</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Type, Stages, Triggers</p>
@@ -255,7 +255,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/star-24.svg" alt="Star" width="24" height="24" /></div>
+    <div style="font-size: 2em; margin-right: 15px;">Star</div>
     <div>
       <h3 style="margin: 0;">Lead Capture & Nurturing</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Nyra & Ruvo</p>
@@ -277,7 +277,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/calendar-24.svg" alt="Calendar" width="24" height="24" /></div>
+    <div style="font-size: 2em; margin-right: 15px;">Calendar</div>
     <div>
       <h3 style="margin: 0;">Booking & Order Management</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Solari & Ruvo</p>
@@ -299,7 +299,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/megaphone-24.svg" alt="Megaphone" width="24" height="24" /></div>
+    <div style="font-size: 2em; margin-right: 15px;">Megaphone</div>
     <div>
       <h3 style="margin: 0;">Marketing Campaign Orchestration</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Liora, Elan & Zevi</p>
@@ -321,7 +321,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/person-24.svg" alt="Person" width="24" height="24" /></div>
+    <div style="font-size: 2em; margin-right: 15px;">Person</div>
     <div>
       <h3 style="margin: 0;">Community Engagement</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Sage & Elan</p>
@@ -343,7 +343,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/file-24.svg" alt="File" width="24" height="24" /></div>
+    <div style="font-size: 2em; margin-right: 15px;">File</div>
     <div>
       <h3 style="margin: 0;">Content Lifecycle Management</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Elan & Liora</p>
@@ -366,7 +366,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 </div>
 
 <div align="center" style="margin-top: 30px;">
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> View All Business Workflows</a>
+  <a href="./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">View All Business Workflows</a>
 </div>
 
 ## Meet Your Agent Team
@@ -445,7 +445,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div align="center" style="margin-top: 30px;">
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> Read the Complete Agent System Guide</a>
+  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Read the Complete Agent System Guide</a>
 </div>
 
 
@@ -460,15 +460,15 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 
 Before you begin, ensure you have:
 
-- <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> Python 3.10 or higher
-- <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> Docker (recommended for production)
-- <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> Notion account with admin access
-- <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> API keys for your integrated services
+- Python 3.10 or higher
+- Docker (recommended for production)
+- Notion account with admin access
+- API keys for your integrated services
 
 ### Installation Options
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/container-24.svg" alt="Container" width="16" height="16" /> Docker Installation (Recommended)</b></summary>
+<summary><b>Docker Installation (Recommended)</b></summary>
 
 ```bash
 # Clone the repository
@@ -487,7 +487,7 @@ This will start the server and all required services in containers.
 </details>
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/code-24.svg" alt="Code" width="16" height="16" /> Direct Python Installation</b></summary>
+<summary><b>Direct Python Installation</b></summary>
 
 ```bash
 # Clone the repository
