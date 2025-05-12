@@ -252,7 +252,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sync-24.svg" alt="Sync" width="20" height="20" /> Key Automation Flows
+## Key Automation Flows
 
 <div align="center">
   <img src="https://via.placeholder.com/800x400?text=Automation+Flows+Diagram" alt="Automation Flows" width="80%">
@@ -378,7 +378,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
   <a href="./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> View All Business Workflows</a>
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/person-24.svg" alt="Person" width="20" height="20" /> Meet Your Agent Team
+## Meet Your Agent Team
 
 <div align="center">
   <img src="https://via.placeholder.com/900x500?text=Agent+Team+Illustration" alt="Agent Team" width="80%">
@@ -389,7 +389,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 <div class="agent-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/star-24.svg" alt="Star" width="18" height="18" /> Nyra</h3>
+  <h3>Nyra</h3>
   <p><strong>Lead Capture Specialist</strong></p>
   <p><em>Intuitive & Responsive</em></p>
   <p>Like flowing water (from Sanskrit <em>nira</em>), Nyra channels new connections from multiple sources into your Notion ecosystem with grace and attention to detail.</p>
@@ -397,7 +397,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sun-24.svg" alt="Sun" width="18" height="18" /> Solari</h3>
+  <h3>Solari</h3>
   <p><strong>Booking & Order Manager</strong></p>
   <p><em>Clear & Luminous</em></p>
   <p>Bringing solar precision to appointment and order processes, Solari manages the structured flow of bookings and purchases with clarity and warmth.</p>
@@ -405,7 +405,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/milestone-24.svg" alt="Milestone" width="18" height="18" /> Ruvo</h3>
+  <h3>Ruvo</h3>
   <p><strong>Task Orchestrator</strong></p>
   <p><em>Grounded & Task-driven</em></p>
   <p>From the Latin root <em>ruvus</em> (resolve), Ruvo handles the practical execution of workflow-generated tasks with calm efficiency and reliability.</p>
@@ -413,7 +413,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sparkle-fill-24.svg" alt="Sparkle" width="18" height="18" /> Liora</h3>
+  <h3>Liora</h3>
   <p><strong>Marketing Strategist</strong></p>
   <p><em>Elegant & Strategic</em></p>
   <p>Liora (Hebrew for "light") brings illumination and strategic thinking to your marketing campaigns, maintaining clarity amid complex promotional activities.</p>
@@ -421,7 +421,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/leaf-24.svg" alt="Leaf" width="18" height="18" /> Sage</h3>
+  <h3>Sage</h3>
   <p><strong>Community Curator</strong></p>
   <p><em>Warm & Connected</em></p>
   <p>Sage nurtures your community with wisdom and care, holding space for authentic relationships and meaningful engagement in your Circle.so community.</p>
@@ -429,7 +429,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/smiley-24.svg" alt="Smiley" width="18" height="18" /> Elan</h3>
+  <h3>Elan</h3>
   <p><strong>Content Choreographer</strong></p>
   <p><em>Creative & Adaptive</em></p>
   <p>With both flair and disciplined order, Elan manages the lifecycle of your content from conception to publication across multiple platforms.</p>
@@ -437,7 +437,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/eye-24.svg" alt="Eye" width="18" height="18" /> Zevi</h3>
+  <h3>Zevi</h3>
   <p><strong>Audience Analyst</strong></p>
   <p><em>Analytical & Sharp</em></p>
   <p>Like its wolf namesake, Zevi keenly observes patterns in audience behavior to create meaningful segments for targeted engagement.</p>
@@ -445,7 +445,7 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 </div>
 
 <div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/diamond-24.svg" alt="Diamond" width="18" height="18" /> Grace Fields</h3>
+  <h3>Grace Fields</h3>
   <p><strong>System Orchestrator</strong></p>
   <p><em>Harmonious & Coordinating</em></p>
   <p>At the center of it all, Grace ensures that each agent is activated at the right time, maintaining the flow of information throughout the system.</p>
@@ -460,13 +460,13 @@ The HigherSelf Network Server features a unique team of agent personalities, eac
 
 
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/play-24.svg" alt="Play" width="20" height="20" /> Getting Started
+## Getting Started
 
 <div class="getting-started-container" style="display: flex; gap: 30px; margin-top: 20px;">
 
 <div class="installation-guide" style="flex: 1;">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/checklist-24.svg" alt="Checklist" width="18" height="18" /> Prerequisites
+### Prerequisites
 
 Before you begin, ensure you have:
 
@@ -475,7 +475,7 @@ Before you begin, ensure you have:
 - <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> Notion account with admin access
 - <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/check-24.svg" alt="Check" width="16" height="16" /> API keys for your integrated services
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/tools-24.svg" alt="Tools" width="18" height="18" /> Installation Options
+### Installation Options
 
 <details>
 <summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/container-24.svg" alt="Container" width="16" height="16" /> Docker Installation (Recommended)</b></summary>
@@ -536,7 +536,7 @@ We support:
 
 <div class="configuration-guide" style="flex: 1;">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/gear-24.svg" alt="Gear" width="18" height="18" /> Configuration
+### Configuration
 
 The system is configured through environment variables in the `.env` file:
 
@@ -604,7 +604,7 @@ For production, we recommend:
   <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> Complete Deployment Guide</a>
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sync-24.svg" alt="Sync" width="20" height="20" /> Business Workflows
+## Business Workflows
 
 <div align="center">
   <img src="https://via.placeholder.com/800x400?text=Workflow+Visualization" alt="Workflow Visualization" width="80%">
@@ -656,7 +656,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/zap-24.svg" alt="Zap" width="20" height="20" /> Integration Ecosystem
+## Integration Ecosystem
 
 The HigherSelf Network Server connects with your essential business tools:
 
@@ -731,7 +731,7 @@ The HigherSelf Network Server connects with your essential business tools:
 
 </details>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/file-24.svg" alt="File" width="20" height="20" /> Documentation
+## Documentation
 
 <div class="docs-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
@@ -755,7 +755,7 @@ The HigherSelf Network Server connects with your essential business tools:
 
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/gear-24.svg" alt="Gear" width="20" height="20" /> For Developers
+## For Developers
 
 <details>
 <summary><b>System Architecture</b></summary>
@@ -846,7 +846,7 @@ class MyNewPlatformService(BaseService):
 ```
 </details>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/link-24.svg" alt="Link" width="20" height="20" /> Support & Community
+## Support & Community
 
 <div class="support-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
