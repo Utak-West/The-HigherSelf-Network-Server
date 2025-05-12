@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/diamond-24.svg" alt="Diamond" width="24" height="24" /> The HigherSelf Network Server
+# <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/diamond-24.svg?sanitize=true" alt="Diamond" width="24" height="24" /> The HigherSelf Network Server
 
 <div align="center">
 
