@@ -865,6 +865,6 @@ class MyNewPlatformService(BaseService):
 </div>
 
 <div align="center" style="margin-top: 50px; padding: 20px; background-color: #f6f8fa; border-radius: 10px;">
-  <p>&copy; 2023 The HigherSelf Network - All Rights Reserved</p>
+  <p>&copy; 2023-2025 The HigherSelf Network - All Rights Reserved</p>
   <p><small>Proprietary software for art gallery, wellness center, and consultancy automation</small></p>
 </div>
