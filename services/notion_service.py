@@ -337,6 +337,10 @@ class NotionService:
 
             # Check if Notion API is disabled in testing mode
             if is_api_disabled("notion"):
+                # Force disable the API in testing mode
+                from config.testing_mode import TestingMode
+                TestingMode.add_disabled_api("notion")
+
                 TestingMode.log_attempted_api_call(
                     api_name="notion",
                     endpoint="databases.query",

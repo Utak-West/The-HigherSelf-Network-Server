@@ -46,10 +46,42 @@ from services.notion_service import NotionService
 from services.supabase_service import SupabaseService, SupabaseConfig
 from services.database_sync_service import DatabaseSyncService, SyncResult
 from models.base import NotionIntegrationConfig
+from utils.logging_setup import setup_logging
+try:
+    # Try to import from the new settings_v2 module first
+    from config.settings_v2 import settings, reload_settings
+    print("Using Pydantic v2 settings")
+except ImportError:
+    # Fall back to the original settings module
+    from config.settings import settings, reload_settings
+    print("Using Pydantic v1 settings")
+from loguru import logger
 
 
 # Initialize colorama for colored terminal output
 init(autoreset=True)
+
+
+def configure_script_logging():
+    """Configure logging for this script using global settings."""
+    # log_level = settings.server.log_level.value # Temporarily override for testing
+    forced_log_level = "DEBUG"
+    json_logs = settings.server.json_logs
+    log_file = settings.server.log_file
+
+    setup_logging(
+        log_level=forced_log_level, # Use forced_log_level
+        json_output=json_logs,
+        log_file=log_file
+    )
+    # Using loguru's logger directly after setup
+    logger.info(f"Script logging FORCED to level: {forced_log_level} (original from settings: {settings.server.log_level.value})")
+    if json_logs:
+        logger.info("JSON structured logging enabled for script.")
+    if log_file:
+        logger.info(f"Script logging to file: {log_file}")
+
+    logger.debug("This is a DEBUG message directly from configure_script_logging after forcing level to DEBUG.")
 
 
 def print_header(message: str) -> None:
@@ -177,6 +209,34 @@ async def setup_services() -> tuple:
 
 async def main():
     """Main function."""
+    # Load .env file and reload settings to ensure LOG_LEVEL is respected
+    load_dotenv()
+    reload_settings() # Reload settings after .env is loaded
+
+    # Configure logging first, now using potentially updated settings
+    configure_script_logging()
+
+    # Check if we're in test mode and handle accordingly
+    from config.testing_mode import is_testing_mode, is_api_disabled, enable_testing_mode, TestingMode
+
+    if is_testing_mode():
+        print_info("Running in TEST_MODE. API calls will be simulated.")
+        # Make sure both Notion and Supabase APIs are disabled
+        if not is_api_disabled("notion") or not is_api_disabled("supabase"):
+            print_info("Enabling testing mode with Notion and Supabase APIs disabled.")
+            # Force disable both Notion and Supabase APIs
+            TestingMode.add_disabled_api("notion")
+            TestingMode.add_disabled_api("supabase")
+            logger.debug(f"Disabled APIs in testing mode: {TestingMode.get_disabled_apis()}")
+
+    # Force disable APIs in testing mode if environment variables are set
+    if os.environ.get("TEST_MODE", "").lower() == "true":
+        if os.environ.get("DISABLE_APIS", "").lower().find("notion") != -1:
+            TestingMode.add_disabled_api("notion")
+
+        if os.environ.get("DISABLE_APIS", "").lower().find("supabase") != -1:
+            TestingMode.add_disabled_api("supabase")
+
     parser = argparse.ArgumentParser(description="Database Synchronization Utility")
     parser.add_argument("--direction", choices=["notion_to_supabase", "supabase_to_notion", "both"], default="both",
                         help="Sync direction (default: both)")
@@ -184,7 +244,8 @@ async def main():
     parser.add_argument("--since", help="Only sync records updated since this timestamp (ISO format)")
     args = parser.parse_args()
 
-    print_header("\n=== Database Synchronization Utility ===\n")
+    # Using loguru's logger for script-level info after setup
+    logger.info("\n=== Database Synchronization Utility Starting ===\n")
 
     # Set up services
     notion_service, supabase_service, sync_service = await setup_services()

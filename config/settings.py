@@ -6,10 +6,22 @@ with support for environment variables, .env files, and validation.
 """
 
 import os
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 from enum import Enum
+from dotenv import load_dotenv # Added
 
-from pydantic import BaseSettings, Field, validator, AnyHttpUrl
+# Load .env file at the very beginning when this module is imported
+load_dotenv() # Added
+
+try:
+    # Try to import from pydantic-settings first (Pydantic v2)
+    from pydantic_settings import BaseSettings
+    from pydantic import Field, field_validator, AnyHttpUrl # For Pydantic v2, validator is field_validator
+    PYDANTIC_V2 = True
+except ImportError:
+    # Fall back to Pydantic v1
+    from pydantic import BaseSettings, Field, validator, AnyHttpUrl
+    PYDANTIC_V2 = False
 
 
 class LogLevel(str, Enum):
@@ -33,7 +45,7 @@ class NotionSettings(BaseSettings):
     """Notion API configuration."""
     api_token: str = Field(..., env="NOTION_API_TOKEN")
     parent_page_id: Optional[str] = Field(None, env="NOTION_PARENT_PAGE_ID")
-    
+
     # Database IDs
     business_entities_db: Optional[str] = Field(None, env="NOTION_BUSINESS_ENTITIES_DB")
     contacts_profiles_db: Optional[str] = Field(None, env="NOTION_CONTACTS_PROFILES_DB")
@@ -51,14 +63,22 @@ class NotionSettings(BaseSettings):
     notifications_templates_db: Optional[str] = Field(None, env="NOTION_NOTIFICATIONS_TEMPLATES_DB")
     use_cases_db: Optional[str] = Field(None, env="NOTION_USE_CASES_DB")
     workflows_library_db: Optional[str] = Field(None, env="NOTION_WORKFLOWS_LIBRARY_DB")
-    
-    @validator('api_token')
-    def validate_api_token(cls, v):
-        """Validate Notion API token."""
-        if not v or len(v) < 10:
-            raise ValueError("Invalid Notion API token")
-        return v
-    
+
+    if PYDANTIC_V2:
+        @field_validator('api_token')
+        def validate_api_token(cls, v):
+            """Validate Notion API token."""
+            if not v or len(v) < 10:
+                raise ValueError("Invalid Notion API token")
+            return v
+    else:
+        @validator('api_token')
+        def validate_api_token(cls, v):
+            """Validate Notion API token."""
+            if not v or len(v) < 10:
+                raise ValueError("Invalid Notion API token")
+            return v
+
     def get_database_mappings(self) -> Dict[str, str]:
         """Get database mappings for Notion service."""
         return {
@@ -91,13 +111,21 @@ class ServerSettings(BaseSettings):
     json_logs: bool = Field(False, env="JSON_LOGS")
     log_file: Optional[str] = Field("logs/app.log", env="LOG_FILE")
     webhook_secret: str = Field(..., env="WEBHOOK_SECRET")
-    
-    @validator('port')
-    def validate_port(cls, v):
-        """Validate port number."""
-        if not 1024 <= v <= 65535:
-            raise ValueError("Port must be between 1024 and 65535")
-        return v
+
+    if PYDANTIC_V2:
+        @field_validator('port')
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1024 <= v <= 65535:
+                raise ValueError("Port must be between 1024 and 65535")
+            return v
+    else:
+        @validator('port')
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1024 <= v <= 65535:
+                raise ValueError("Port must be between 1024 and 65535")
+            return v
 
 
 class IntegrationSettings(BaseSettings):
@@ -115,7 +143,7 @@ class IntegrationSettings(BaseSettings):
     enable_plaud: bool = Field(True, env="ENABLE_PLAUD")
     enable_beehiiv: bool = Field(True, env="ENABLE_BEEHIIV")
     enable_circle: bool = Field(True, env="ENABLE_CIRCLE")
-    
+
     # API credentials
     typeform_api_key: Optional[str] = Field(None, env="TYPEFORM_API_KEY")
     woocommerce_consumer_key: Optional[str] = Field(None, env="WOOCOMMERCE_CONSUMER_KEY")
@@ -133,7 +161,7 @@ class IntegrationSettings(BaseSettings):
     beehiiv_publication_id: Optional[str] = Field(None, env="BEEHIIV_PUBLICATION_ID")
     circle_api_token: Optional[str] = Field(None, env="CIRCLE_API_TOKEN")
     circle_community_id: Optional[str] = Field(None, env="CIRCLE_COMMUNITY_ID")
-    
+
     # AI provider credentials
     openai_api_key: Optional[str] = Field(None, env="OPENAI_API_KEY")
     openai_organization_id: Optional[str] = Field(None, env="OPENAI_ORGANIZATION_ID")
@@ -147,17 +175,26 @@ class Settings(BaseSettings):
     debug: bool = Field(False, env="DEBUG")
     testing: bool = Field(False, env="TESTING")
     disable_webhooks: bool = Field(False, env="DISABLE_WEBHOOKS")
-    
-    # Component settings
-    notion: NotionSettings = NotionSettings()
-    server: ServerSettings = ServerSettings()
-    integrations: IntegrationSettings = IntegrationSettings()
-    
-    class Config:
-        """Pydantic configuration."""
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+
+    # Component settings - don't initialize here for Pydantic v2
+    notion: NotionSettings = Field(default_factory=NotionSettings)
+    server: ServerSettings = Field(default_factory=ServerSettings)
+    integrations: IntegrationSettings = Field(default_factory=IntegrationSettings)
+
+    if PYDANTIC_V2:
+        model_config = {
+            "env_file": ".env",
+            "env_file_encoding": "utf-8",
+            "case_sensitive": True,
+            "extra": "ignore"
+        }
+    else:
+        class Config:
+            """Pydantic configuration."""
+            env_file = ".env"
+            env_file_encoding = "utf-8"
+            case_sensitive = True
+            extra = "ignore"
 
 
 # Create global settings instance

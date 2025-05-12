@@ -15,6 +15,8 @@ from services.base_service import BaseService
 
 # Import service classes
 from services.notion_service import NotionService
+from models.notion import NotionIntegrationConfig # Added
+from config.settings import settings as global_settings # Added
 from services.typeform_service import TypeFormService
 from services.woocommerce_service import WooCommerceService
 from services.acuity_service import AcuityService
@@ -109,7 +111,13 @@ class IntegrationManager:
             self.config = config
 
         # Initialize core services
-        self.notion_service = NotionService(api_token=self.config.notion_api_token)
+        # Create NotionIntegrationConfig from global settings
+        notion_config_obj = NotionIntegrationConfig(
+            token=global_settings.notion.api_token,
+            database_mappings=global_settings.notion.get_database_mappings(),
+            # last_sync can be omitted or set to now if needed for this context
+        )
+        self.notion_service = NotionService(config=notion_config_obj)
 
         # Initialize optional services based on configuration
         self.services = {}
