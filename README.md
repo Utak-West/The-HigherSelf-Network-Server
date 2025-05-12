@@ -1,4 +1,4 @@
-# 💎 The HigherSelf Network Server
+# The HigherSelf Network Server
 
 <div align="center">
 
@@ -14,11 +14,11 @@
 
 </div>
 
-## ⭐ Overview
+## Overview
 
 Welcome to **The HigherSelf Network Server** - an intelligent automation platform designed specifically for art galleries, wellness centers, and consultancy businesses. Our system creates harmony between your business operations through a unique agent-based architecture with Notion as the central hub.
 
-### ⭐ What Makes Us Special
+### What Makes Us Special
 
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
 
@@ -26,17 +26,17 @@ The HigherSelf Network Server features a team of **named agent personalities**, 
   <img src="https://via.placeholder.com/800x400?text=Agent+System+Visualization" alt="Agent System Visualization" width="80%">
 </div>
 
-### 🔄 Notion as Your Central Hub
+### Notion as Your Central Hub
 
 All data, workflows, and communications flow through Notion, creating a unified system that's both powerful and user-friendly. Your team already knows and loves Notion - now it becomes the command center for your entire operation.
 
-## 💎 Core Features
+## Core Features
 
 <div class="features-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 
 <div class="feature-card">
 
-### 📊 Notion-Powered Operations
+### Notion-Powered Operations
 
 - **Centralized Database Hub**: 16 interconnected Notion databases
 - **Real-time Synchronization**: All systems stay in perfect harmony
@@ -47,7 +47,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### 💻 Intelligent Agent System
+### Intelligent Agent System
 
 - **Named Agent Personalities**: Each with unique characteristics
 - **Specialized Capabilities**: Experts in their respective domains
@@ -58,7 +58,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### ⚡ Seamless Integrations
+### Seamless Integrations
 
 - **Comprehensive API Support**: Connect with all your essential tools
 - **Webhook Endpoints**: Receive real-time data from external systems
@@ -69,7 +69,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### ⚙️ Robust Architecture
+### Robust Architecture
 
 - **Pydantic Data Validation**: Ensures data integrity throughout
 - **State Machine Workflows**: Structured processes with clear stages
@@ -80,7 +80,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 </div>
 
-## 📂 Notion Database Structure
+## Notion Database Structure
 
 <div align="center">
   <img src="https://via.placeholder.com/800x500?text=Notion+Database+Structure" alt="Notion Database Structure" width="80%">
@@ -91,12 +91,12 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 <div class="database-container" style="margin-top: 30px;">
 
 <details open>
-<summary><h3>🏛️ Core Operational Databases</h3></summary>
+<summary><h3>Core Operational Databases</h3></summary>
 
 <div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>🏛️ Business Entities</h4>
+  <h4>Business Entities</h4>
   <p>Registry of all business entities using the system (art gallery, wellness center, consultancy)</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Type, Contact Info, Logo</p>
@@ -105,7 +105,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>👤 Contacts & Profiles</h4>
+  <h4>Contacts & Profiles</h4>
   <p>Unified customer/contact database for all entities and interactions</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Email, Phone, Tags</p>
@@ -114,7 +114,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>🌐 Community Hub</h4>
+  <h4>Community Hub</h4>
   <p>Community member profiles and engagement tracking</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Member Since, Engagement Level</p>
