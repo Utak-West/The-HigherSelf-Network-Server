@@ -6,7 +6,8 @@ data structures and patterns defined in the Pydantic models.
 
 import os
 import json
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from typing import Dict, Any, List, Optional, Type, Union, TypeVar
 from datetime import datetime
 
@@ -41,12 +42,12 @@ class SupabaseService:
         self.url = config.url
         self.api_key = config.api_key
         self.project_id = config.project_id
-        self.logger = logging.getLogger(__name__)
-        self.logger.info(f"Supabase service initialized with URL: {self.url}")
+        # self.logger removed, use global loguru logger
+        logger.info(f"Supabase service initialized with URL: {self.url} for {self.__class__.__name__}")
         
         # Check if we're in testing mode
         if is_api_disabled("supabase"):
-            self.logger.warning("TESTING MODE ACTIVE: Supabase API calls will be simulated")
+            logger.warning(f"TESTING MODE ACTIVE for {self.__class__.__name__}: Supabase API calls will be simulated")
     
     async def _make_request(
         self, 
@@ -83,7 +84,7 @@ class SupabaseService:
                 method=method,
                 params={"data": data, "params": params}
             )
-            self.logger.info(f"[TESTING MODE] Simulated {method} request to {path}")
+            logger.info(f"[TESTING MODE] Simulated {method} request to {path}")
             return {"data": [], "status": 200, "statusText": "OK"}
         
         try:
@@ -102,7 +103,7 @@ class SupabaseService:
                 response.raise_for_status()
                 return response.json()
         except Exception as e:
-            self.logger.error(f"Error making request to Supabase: {e}")
+            logger.error(f"Error making request to Supabase: {e}")
             raise
     
     async def create_record(self, table_name: str, model: BaseModel) -> Optional[str]:
@@ -134,7 +135,7 @@ class SupabaseService:
             
             return None
         except Exception as e:
-            self.logger.error(f"Error creating record in Supabase: {e}")
+            logger.error(f"Error creating record in Supabase: {e}")
             return None
     
     async def update_record(self, table_name: str, record_id: str, model: BaseModel) -> bool:
@@ -163,7 +164,7 @@ class SupabaseService:
             
             return True
         except Exception as e:
-            self.logger.error(f"Error updating record in Supabase: {e}")
+            logger.error(f"Error updating record in Supabase: {e}")
             return False
     
     async def get_record(self, table_name: str, record_id: str, model_class: Type[T]) -> Optional[T]:
@@ -192,7 +193,7 @@ class SupabaseService:
             
             return None
         except Exception as e:
-            self.logger.error(f"Error getting record from Supabase: {e}")
+            logger.error(f"Error getting record from Supabase: {e}")
             return None
     
     async def query_records(
@@ -238,11 +239,11 @@ class SupabaseService:
                         model = model_class(**item)
                         results.append(model)
                     except ValidationError as e:
-                        self.logger.warning(f"Error converting Supabase record to model: {e}")
+                        logger.warning(f"Error converting Supabase record to model: {e}")
             
             return results
         except Exception as e:
-            self.logger.error(f"Error querying records from Supabase: {e}")
+            logger.error(f"Error querying records from Supabase: {e}")
             return []
     
     async def delete_record(self, table_name: str, record_id: str) -> bool:
@@ -266,7 +267,7 @@ class SupabaseService:
             
             return True
         except Exception as e:
-            self.logger.error(f"Error deleting record from Supabase: {e}")
+            logger.error(f"Error deleting record from Supabase: {e}")
             return False
     
     @classmethod

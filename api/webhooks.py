@@ -1,4 +1,5 @@
 """
+
 Webhook handlers for The HigherSelf Network Server.
 All webhooks ensure data is properly processed and stored in Notion as the central hub.
 """
@@ -23,7 +24,7 @@ from agents.community_engagement_agent import CommunityEngagementAgent
 from agents.task_management_agent import TaskManagementAgent
 
 # Import models
-from models.notion_db_models import NotionIntegrationConfig
+from models.notion_db_models import NotionSetupConfig
 from models.notion_db_models_extended import ContactProfile, CommunityMember
 from config.testing_mode import is_api_disabled, TestingMode
 
@@ -32,7 +33,8 @@ from config.testing_mode import is_api_disabled, TestingMode
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
 # Initialize services
-notion_service = NotionService()
+# Use the from_env class method to properly initialize the NotionService
+notion_service = NotionService.from_env()
 
 # Initialize agents (dependency injection pattern)
 def get_lead_capture_agent():

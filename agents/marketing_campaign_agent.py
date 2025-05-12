@@ -8,7 +8,8 @@ This agent is responsible for:
 4. Integrating with email platforms like Beehiiv
 """
 
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 import json
 from typing import Dict, Any, List, Optional
 from datetime import datetime
@@ -21,7 +22,7 @@ from models.notion_db_models_extended import MarketingCampaign, ContactProfile
 from services.notion_service import NotionService
 from config.testing_mode import is_api_disabled, TestingMode
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__) # Replaced by global loguru logger
 
 
 class MarketingCampaignAgent(BaseAgent):

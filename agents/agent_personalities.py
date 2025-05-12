@@ -18,6 +18,8 @@ from loguru import logger
 from .base_agent import BaseAgent
 from utils.message_bus import MessageBus, AgentMessage
 from models.base import AgentCapability
+from models.notion_db_models import WorkflowInstance
+from models.base import InstanceStatus
 
 
 class Nyra(BaseAgent):
@@ -1454,15 +1456,42 @@ class GraceOrchestrator:
 
                 # Record workflow in Notion if available
                 if self.message_bus and hasattr(self.message_bus, "notion_service"):
-                    notion_data = {
-                        "workflow_id": workflow_id,
-                        "workflow_type": "lead_capture_complete",
-                        "status": "active",
+                    from models.notion_db_models import WorkflowInstance # Ensure this import exists or add it at top of file
+                    from models.base import InstanceStatus # Ensure this import exists or add it at top of file
+                    
+                    # Data from event_data for key_data_payload
+                    key_data = {
                         "lead_id": event_data.get("lead_id"),
                         "contact_id": event_data.get("contact_id"),
-                        "business_entity_id": event_data.get("business_entity_id")
+                        # any other relevant fields from event_data
                     }
-                    await self.message_bus.notion_service.create_workflow_record(notion_data)
+
+                    # Map status string to Enum
+                    instance_status_val = InstanceStatus.ACTIVE
+                    if notion_data_status := event_data.get("status", "active").upper(): # Using event_data for status
+                        if hasattr(InstanceStatus, notion_data_status):
+                            instance_status_val = getattr(InstanceStatus, notion_data_status)
+                        else:
+                            logger.warning(f"Invalid status '{notion_data_status}' for WorkflowInstance, defaulting to ACTIVE.")
+
+
+                    workflow_instance_data = WorkflowInstance(
+                        workflow_id=workflow_id,
+                        business_entity=event_data.get("business_entity_id"),
+                        current_state=event_data.get("workflow_type", "lead_capture_initiated"), # Using workflow_type from event_data or a default
+                        status=instance_status_val,
+                        client_lead_name=event_data.get("lead_name"), # Assuming lead_name might be available
+                        # Add other relevant fields from event_data if available and mapped
+                        # For example, if lead_email is available:
+                        client_lead_email=event_data.get("lead_email"),
+                        key_data_payload=key_data,
+                        source_record_id=event_data.get("lead_id") # Or a more specific source ID
+                    )
+                    try:
+                        await self.message_bus.notion_service.create_page(workflow_instance_data)
+                        logger.info(f"Successfully created WorkflowInstance in Notion for workflow {workflow_id}")
+                    except Exception as e:
+                        logger.error(f"Failed to create WorkflowInstance in Notion for workflow {workflow_id}: {e}")
 
         elif event_type == "workflow_booking_confirmed":
             # When booking is confirmed, create tasks and notify marketing

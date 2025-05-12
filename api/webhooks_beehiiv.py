@@ -9,13 +9,14 @@ import hmac
 import hashlib
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, Request, HTTPException, Depends, Header
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 
 from agents.marketing_campaign_agent import MarketingCampaignAgent
 from agents.lead_capture_agent import LeadCaptureAgent
 from api.webhooks import WebhookResponse, is_test_mode, get_marketing_agent, get_lead_capture_agent
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__) # Replaced by global loguru logger
 
 # Initialize router
 router = APIRouter(prefix="/webhooks/beehiiv", tags=["webhooks", "marketing"])

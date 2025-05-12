@@ -6,7 +6,7 @@ data structures and patterns defined in the Pydantic models.
 
 import os
 import json
-import logging
+from loguru import logger
 from typing import Dict, Any, List, Optional, Type, Union, TypeVar
 from datetime import datetime
 
@@ -42,19 +42,26 @@ class NotionService:
         self.config = config
         self.client = Client(auth=config.token)
         self.db_mappings = config.database_mappings
-        self.logger = logging.getLogger(__name__)
-        self.logger.info(f"Notion service initialized with {len(self.db_mappings)} database mappings")
+        # self.logger removed, use global loguru logger
+        logger.info(f"Notion service initialized with {len(self.db_mappings)} database mappings for {self.__class__.__name__}")
 
         # Check if we're in testing mode
         if is_api_disabled("notion"):
-            self.logger.warning("TESTING MODE ACTIVE: Notion API calls will be simulated")
+            logger.warning(f"TESTING MODE ACTIVE for {self.__class__.__name__}: Notion API calls will be simulated")
 
     @classmethod
     def from_env(cls) -> 'NotionService':
         """Create a NotionService instance using environment variables."""
-        token = os.environ.get('NOTION_API_TOKEN')
-        if not token:
-            raise ValueError("NOTION_API_TOKEN environment variable not set")
+        # Check if we're in test mode - check both TEST_MODE and TESTING
+        if os.environ.get('TEST_MODE', '').lower() == 'true' or os.environ.get('TESTING', '').lower() == 'true':
+            # Create a mock config for testing
+            token = "mock_token_for_testing"
+            logger.info("Test mode active: Using mock Notion configuration")
+        else:
+            # Use real token from environment
+            token = os.environ.get('NOTION_API_TOKEN')
+            if not token:
+                raise ValueError("NOTION_API_TOKEN environment variable not set")
 
         # Create database mappings from environment variables
         db_mappings = {
@@ -224,7 +231,7 @@ class NotionService:
                     method="POST",
                     params={"parent": {"database_id": db_id}, "properties": properties}
                 )
-                self.logger.info(f"[TESTING MODE] Simulated creating page in {db_type} database")
+                logger.info(f"[TESTING MODE] Simulated creating page in {db_type} database")
                 return f"test_page_id_{db_type}_{model.id if hasattr(model, 'id') else id(model)}"
 
             response = self.client.pages.create(
@@ -235,7 +242,7 @@ class NotionService:
             return response["id"]
 
         except Exception as e:
-            self.logger.error(f"Error creating Notion page: {e}")
+            logger.error(f"Error creating Notion page: {e}")
             raise
 
     async def update_page(self, model: BaseModel) -> bool:
@@ -262,7 +269,7 @@ class NotionService:
                     method="PATCH",
                     params={"page_id": model.page_id, "properties": properties}
                 )
-                self.logger.info(f"[TESTING MODE] Simulated updating page {model.page_id}")
+                logger.info(f"[TESTING MODE] Simulated updating page {model.page_id}")
                 return True
 
             self.client.pages.update(
@@ -273,7 +280,7 @@ class NotionService:
             return True
 
         except Exception as e:
-            self.logger.error(f"Error updating Notion page: {e}")
+            logger.error(f"Error updating Notion page: {e}")
             return False
 
     async def get_page(self, page_id: str, model_class: Type[T]) -> T:
@@ -336,7 +343,7 @@ class NotionService:
                     method="POST",
                     params=query_params
                 )
-                self.logger.info(f"[TESTING MODE] Simulated querying {db_type} database")
+                logger.info(f"[TESTING MODE] Simulated querying {db_type} database")
                 # Return empty list in testing mode
                 return []
 
@@ -348,12 +355,12 @@ class NotionService:
                     model = self._notion_to_model(page, model_class)
                     results.append(model)
                 except ValidationError as e:
-                    self.logger.warning(f"Error converting Notion page to model: {e}")
+                    logger.warning(f"Error converting Notion page to model: {e}")
 
             return results
 
         except Exception as e:
-            self.logger.error(f"Error querying Notion database: {e}")
+            logger.error(f"Error querying Notion database: {e}")
             return []
 
     async def append_to_history_log(self, workflow_instance: WorkflowInstance, action: str, details: Dict[str, Any] = None) -> bool:
@@ -402,10 +409,12 @@ class NotionService:
                 }
             )
 
+            # logger.info already here, no change needed for this specific block's logger call
             logger.info(f"Updated history log for workflow instance {workflow_instance.instance_id}")
             return True
 
         except Exception as e:
+            # logger.error already here
             logger.error(f"Error updating history log: {e}")
             return False
 
@@ -501,170 +510,6 @@ class NotionService:
 
         return task
 
-    async def query_database(self, database_id: str, filter_conditions: Dict[str, Any] = None) -> List[Dict[str, Any]]:
-        """
-        Query a Notion database with optional filter conditions.
 
-        Args:
-            database_id: ID or name of the database to query
-            filter_conditions: Optional filter conditions
 
-        Returns:
-            List of database items matching the filter
-        """
-        # Resolve database ID if a name was provided
-        if not database_id.startswith("db_") and not database_id.startswith("database_"):
-            database_id = self.get_database_id(database_id)
 
-        try:
-            # Prepare query parameters
-            params = {}
-            if filter_conditions:
-                params["filter"] = filter_conditions
-
-            # Execute the query
-            response = await self.notion.databases.query(database_id, **params)
-
-            # Process the results
-            results = []
-            for page in response.get("results", []):
-                # Extract properties
-                properties = page.get("properties", {})
-                item = {"id": page.get("id")}
-
-                # Process each property
-                for prop_name, prop_data in properties.items():
-                    prop_type = prop_data.get("type")
-
-                    if prop_type == "title":
-                        title_array = prop_data.get("title", [])
-                        item["name"] = "".join([text.get("plain_text", "") for text in title_array])
-                    elif prop_type == "rich_text":
-                        text_array = prop_data.get("rich_text", [])
-                        item[prop_name.lower()] = "".join([text.get("plain_text", "") for text in text_array])
-                    elif prop_type == "select":
-                        select_data = prop_data.get("select")
-                        if select_data:
-                            item[prop_name.lower()] = select_data.get("name")
-                    elif prop_type == "multi_select":
-                        multi_select = prop_data.get("multi_select", [])
-                        item[prop_name.lower()] = [option.get("name") for option in multi_select]
-                    elif prop_type == "checkbox":
-                        item[prop_name.lower()] = prop_data.get("checkbox", False)
-                    elif prop_type == "date":
-                        date_data = prop_data.get("date")
-                        if date_data:
-                            item[prop_name.lower()] = date_data.get("start")
-                    elif prop_type == "number":
-                        item[prop_name.lower()] = prop_data.get("number")
-
-                results.append(item)
-
-            return results
-        except Exception as e:
-            self.logger.error(f"Error querying Notion database {database_id}: {e}")
-            return []
-
-    async def create_page(self, database_id: str, properties: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Create a new page in a Notion database.
-
-        Args:
-            database_id: ID or name of the database
-            properties: Properties for the new page
-
-        Returns:
-            Created page data
-        """
-        # Resolve database ID if a name was provided
-        if not database_id.startswith("db_") and not database_id.startswith("database_"):
-            database_id = self.get_database_id(database_id)
-
-        try:
-            # Convert properties to Notion format
-            notion_properties = {}
-
-            for key, value in properties.items():
-                # Convert property name to title case for Notion
-                prop_name = " ".join(word.capitalize() for word in key.split("_"))
-
-                if key == "name" or key == "title":
-                    # Title property
-                    notion_properties["Name"] = {
-                        "title": [{"text": {"content": str(value)}}]
-                    }
-                elif isinstance(value, bool):
-                    # Checkbox property
-                    notion_properties[prop_name] = {
-                        "checkbox": value
-                    }
-                elif isinstance(value, (int, float)):
-                    # Number property
-                    notion_properties[prop_name] = {
-                        "number": value
-                    }
-                elif isinstance(value, list):
-                    # Multi-select property
-                    notion_properties[prop_name] = {
-                        "multi_select": [{"name": str(item)} for item in value]
-                    }
-                elif key.lower() in ["date", "timestamp", "due_date", "start_date", "end_date"]:
-                    # Date property
-                    notion_properties[prop_name] = {
-                        "date": {"start": value}
-                    }
-                else:
-                    # Default to rich text
-                    notion_properties[prop_name] = {
-                        "rich_text": [{"text": {"content": str(value)}}]
-                    }
-
-            # Create the page
-            response = await self.notion.pages.create(
-                parent={"database_id": database_id},
-                properties=notion_properties
-            )
-
-            return {"id": response.get("id"), "status": "success"}
-        except Exception as e:
-            self.logger.error(f"Error creating page in Notion database {database_id}: {e}")
-            return {"error": str(e), "status": "error"}
-
-    def get_database_id(self, database_name: str) -> str:
-        """
-        Get the database ID from a database name.
-
-        Args:
-            database_name: Name of the database
-
-        Returns:
-            Database ID
-        """
-        # Map of database names to IDs
-        database_map = {
-            "AgentBestPractices": os.getenv("NOTION_BEST_PRACTICES_DB"),
-            "WorkflowPatterns": os.getenv("NOTION_WORKFLOW_PATTERNS_DB"),
-            "AgentTrainingResults": os.getenv("NOTION_TRAINING_RESULTS_DB")
-        }
-
-        if database_name in database_map:
-            return database_map[database_name]
-        else:
-            self.logger.warning(f"Unknown database name: {database_name}")
-            return database_name  # Return the name as is, might be an ID already
-
-    async def create_workflow_record(self, workflow_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Create a workflow record in Notion.
-
-        Args:
-            workflow_data: Workflow data to record
-
-        Returns:
-            Created record data
-        """
-        # Get the workflows database ID
-        database_id = self.get_database_id("Workflows")
-
-        # Create the workflow record
-        return await self.create_page(database_id, workflow_data)

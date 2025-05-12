@@ -9,7 +9,8 @@ It reads SQL migration files and executes them against the Supabase database.
 import os
 import sys
 import asyncio
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from typing import Dict, List, Any, Tuple
 from dotenv import load_dotenv
 import httpx
@@ -62,7 +63,7 @@ class SupabaseDatabaseSetup:
             supabase_service: SupabaseService instance
         """
         self.supabase_service = supabase_service
-        self.logger = logging.getLogger(__name__)
+        # self.logger = logging.getLogger(__name__) # Replaced by global loguru logger
     
     async def execute_sql_file(self, file_path: str) -> bool:
         """
@@ -88,7 +89,7 @@ class SupabaseDatabaseSetup:
             
             return True
         except Exception as e:
-            self.logger.error(f"Error executing SQL file {file_path}: {e}")
+            logger.error(f"Error executing SQL file {file_path}: {e}") # Changed self.logger to logger
             return False
     
     async def verify_tables(self) -> Dict[str, bool]:
@@ -126,12 +127,15 @@ class SupabaseDatabaseSetup:
                 "data_transformations",
                 "notification_templates",
                 "use_cases",
-                "workflows"
+                "workflows",
+                # Vector database tables
+                "embeddings",
+                "vector_chunks"
             ]
             
             return {table: table in tables for table in required_tables}
         except Exception as e:
-            self.logger.error(f"Error verifying tables: {e}")
+            logger.error(f"Error verifying tables: {e}") # Changed self.logger to logger
             return {table: False for table in required_tables}
     
     async def setup_database(self) -> bool:
@@ -147,7 +151,7 @@ class SupabaseDatabaseSetup:
             migration_files = sorted([f for f in os.listdir(migrations_dir) if f.endswith(".sql")])
             
             if not migration_files:
-                self.logger.error("No migration files found")
+                logger.error("No migration files found") # Changed self.logger to logger
                 return False
             
             # Execute each migration file
@@ -174,7 +178,7 @@ class SupabaseDatabaseSetup:
             
             return all_tables_exist
         except Exception as e:
-            self.logger.error(f"Error setting up database: {e}")
+            logger.error(f"Error setting up database: {e}")
             return False
 
 

@@ -8,12 +8,13 @@ import json
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, Request, HTTPException, Depends, Header
 from pydantic import BaseModel
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 
 from agents.community_engagement_agent import CommunityEngagementAgent
 from api.webhooks import WebhookResponse, is_test_mode, get_community_agent
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__) # Replaced by global loguru logger
 
 # Initialize router
 router = APIRouter(prefix="/webhooks/circleso", tags=["webhooks", "community"])

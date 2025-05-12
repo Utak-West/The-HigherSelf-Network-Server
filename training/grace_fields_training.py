@@ -10,7 +10,8 @@ the agent collective in The HigherSelf Network Server.
 import os
 import asyncio
 import json
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
@@ -43,7 +44,8 @@ class GraceFieldsTrainer:
         self.notion_service = notion_service
         self.ai_router = ai_router
         self.message_bus = MessageBus(notion_service)
-        self.logger = logging.getLogger("grace_fields_trainer")
+        # self.logger = logging.getLogger("grace_fields_trainer") # Replaced by global loguru logger
+        # logger will be used directly. If context is needed, use logger.bind()
         
         # Initialize agents and Grace
         self.agents = {}
@@ -76,11 +78,11 @@ class GraceFieldsTrainer:
         # Subscribe to training monitor
         self.message_bus.subscribe("training_monitor", self.monitor_message)
         
-        self.logger.info("Training environment initialized")
+        logger.info("Training environment initialized") # Changed self.logger to logger
         
     async def train_on_best_practices(self):
         """Train Grace Fields on agent best practices."""
-        self.logger.info("Starting best practices training")
+        logger.info("Starting best practices training") # Changed self.logger to logger
         
         # Load best practices from Notion
         best_practices = await self.load_best_practices()
@@ -89,7 +91,7 @@ class GraceFieldsTrainer:
         for practice in best_practices:
             await self.train_on_practice(practice)
             
-        self.logger.info("Best practices training completed")
+        logger.info("Best practices training completed") # Changed self.logger to logger
         
     async def load_best_practices(self) -> List[Dict[str, Any]]:
         """Load agent best practices from Notion."""
@@ -114,7 +116,7 @@ class GraceFieldsTrainer:
         practice_type = practice.get("type", "General")
         practice_description = practice.get("description", "")
         
-        self.logger.info(f"Training on: {practice_name} ({practice_type})")
+        logger.info(f"Training on: {practice_name} ({practice_type})") # Changed self.logger to logger
         
         # Create a training message
         training_message = AgentMessage(
@@ -138,7 +140,7 @@ class GraceFieldsTrainer:
         
     async def train_on_workflow_patterns(self):
         """Train Grace Fields on effective workflow patterns."""
-        self.logger.info("Starting workflow patterns training")
+        logger.info("Starting workflow patterns training") # Changed self.logger to logger
         
         # Load workflow patterns from Notion
         patterns = await self.load_workflow_patterns()
@@ -147,7 +149,7 @@ class GraceFieldsTrainer:
         for pattern in patterns:
             await self.train_on_pattern(pattern)
             
-        self.logger.info("Workflow patterns training completed")
+        logger.info("Workflow patterns training completed") # Changed self.logger to logger
         
     async def load_workflow_patterns(self) -> List[Dict[str, Any]]:
         """Load workflow patterns from Notion."""
@@ -172,7 +174,7 @@ class GraceFieldsTrainer:
         pattern_description = pattern.get("description", "")
         pattern_steps = pattern.get("steps", [])
         
-        self.logger.info(f"Training on workflow pattern: {pattern_name}")
+        logger.info(f"Training on workflow pattern: {pattern_name}") # Changed self.logger to logger
         
         # Create a training message
         training_message = AgentMessage(
@@ -195,7 +197,7 @@ class GraceFieldsTrainer:
         
     async def run_training_scenarios(self):
         """Run training scenarios to test Grace's understanding."""
-        self.logger.info("Starting training scenarios")
+        logger.info("Starting training scenarios") # Changed self.logger to logger
         
         # Run lead capture scenario
         await self.run_lead_capture_scenario()
@@ -206,11 +208,11 @@ class GraceFieldsTrainer:
         # Run error handling scenario
         await self.run_error_handling_scenario()
         
-        self.logger.info("Training scenarios completed")
+        logger.info("Training scenarios completed") # Changed self.logger to logger
         
     async def run_lead_capture_scenario(self):
         """Run a lead capture training scenario."""
-        self.logger.info("Running lead capture scenario")
+        logger.info("Running lead capture scenario") # Changed self.logger to logger
         
         # Simulate a new lead
         lead_data = {
@@ -236,7 +238,7 @@ class GraceFieldsTrainer:
         
     async def run_content_lifecycle_scenario(self):
         """Run a content lifecycle training scenario."""
-        self.logger.info("Running content lifecycle scenario")
+        logger.info("Running content lifecycle scenario") # Changed self.logger to logger
         
         # Simulate content creation
         content_data = {
@@ -256,7 +258,7 @@ class GraceFieldsTrainer:
         
     async def run_error_handling_scenario(self):
         """Run an error handling training scenario."""
-        self.logger.info("Running error handling scenario")
+        logger.info("Running error handling scenario") # Changed self.logger to logger
         
         # Simulate an error condition
         error_data = {
@@ -288,9 +290,9 @@ class GraceFieldsTrainer:
             success = "error" in result or result.get("status") == "error"
             
         if success:
-            self.logger.info(f"Training scenario {scenario_type} completed successfully")
+            logger.info(f"Training scenario {scenario_type} completed successfully") # Changed self.logger to logger
         else:
-            self.logger.warning(f"Training scenario {scenario_type} failed")
+            logger.warning(f"Training scenario {scenario_type} failed") # Changed self.logger to logger
             
         # Record training result in Notion
         asyncio.create_task(self.record_training_result(scenario_type, success, result))
@@ -324,7 +326,7 @@ async def run_training():
         ai_router = AIRouter()
         await ai_router.initialize()
     except Exception as e:
-        logging.warning(f"Could not initialize AI router: {e}")
+        logger.warning(f"Could not initialize AI router: {e}") # Changed logging to logger
     
     # Create and initialize trainer
     trainer = GraceFieldsTrainer(notion_service, ai_router)
@@ -335,15 +337,25 @@ async def run_training():
     await trainer.train_on_workflow_patterns()
     await trainer.run_training_scenarios()
     
-    logging.info("Grace Fields training completed")
+    logger.info("Grace Fields training completed") # Changed logging to logger
 
 
 if __name__ == "__main__":
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    # Configure logging using the centralized setup
+    # This assumes utils.logging_setup.setup_logging() is available
+    # and sets up loguru. If this script is run standalone and that setup
+    # isn't part of the main path, it might need `from utils.logging_setup import setup_logging`
+    # and a call to `setup_logging()` here. For now, removing direct basicConfig.
+    # logging.basicConfig(
+    #     level=logging.INFO,
+    #     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    # )
+    # It's better if this script, when run standalone, calls the project's main logging config:
+    try:
+        from utils.logging_setup import setup_logging
+        setup_logging() # Basic loguru setup to console
+    except ImportError:
+        logger.warning("Could not import centralized logging_setup. Loguru will use default stderr.")
     
     # Run the training
     asyncio.run(run_training())

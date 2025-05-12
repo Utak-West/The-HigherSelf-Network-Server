@@ -7,7 +7,7 @@ This script initializes the API server and agent system.
 import os
 import sys
 import asyncio
-import logging
+# import logging # Unused directly, setup_logging handles interception
 from dotenv import load_dotenv
 from pathlib import Path
 

@@ -6,7 +6,8 @@ ensuring that data is consistent across both systems.
 """
 
 import os
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 import asyncio
 from typing import Dict, Any, List, Optional, Type, Union, Tuple
 from datetime import datetime, timedelta
@@ -64,15 +65,15 @@ class DatabaseSyncService:
         """
         self.notion_service = notion_service
         self.supabase_service = supabase_service
-        self.logger = logging.getLogger(__name__)
-        self.logger.info("Database Sync Service initialized")
+        # self.logger = logging.getLogger(__name__) # Replaced by global loguru logger
+        logger.info(f"Database Sync Service initialized for {self.__class__.__name__}")
 
         # Last sync timestamps for each model
         self.last_sync_timestamps: Dict[str, datetime] = {}
 
         # Check if we're in testing mode
         if is_api_disabled("notion") or is_api_disabled("supabase"):
-            self.logger.warning("TESTING MODE ACTIVE: Some sync operations will be simulated")
+            logger.warning(f"TESTING MODE ACTIVE for {self.__class__.__name__}: Some sync operations will be simulated")
 
     async def sync_notion_to_supabase(
         self,
@@ -152,7 +153,7 @@ class DatabaseSyncService:
                     error_message=None if supabase_id else "Failed to create record in Supabase"
                 )
         except Exception as e:
-            self.logger.error(f"Error syncing from Notion to Supabase: {e}")
+            logger.error(f"Error syncing from Notion to Supabase: {e}")
             return SyncResult(
                 success=False,
                 model_name=model_name,
@@ -239,7 +240,7 @@ class DatabaseSyncService:
                     error_message=None if notion_page_id else "Failed to create page in Notion"
                 )
         except Exception as e:
-            self.logger.error(f"Error syncing from Supabase to Notion: {e}")
+            logger.error(f"Error syncing from Supabase to Notion: {e}")
             return SyncResult(
                 success=False,
                 model_name=model_name,
@@ -300,7 +301,7 @@ class DatabaseSyncService:
                             "on_or_after": since.isoformat()
                         }
                     }
-                    self.logger.info(f"Filtering Notion records updated since: {since.isoformat()}")
+                    logger.info(f"Filtering Notion records updated since: {since.isoformat()}")
 
                 # Get all records from Notion
                 notion_records = await self.notion_service.query_database(
@@ -325,7 +326,7 @@ class DatabaseSyncService:
                     filters = {
                         "updated_at": f"gte.{since.isoformat()}"
                     }
-                    self.logger.info(f"Filtering Supabase records updated since: {since.isoformat()}")
+                    logger.info(f"Filtering Supabase records updated since: {since.isoformat()}")
 
                 # Get all records from Supabase
                 supabase_records = await self.supabase_service.query_records(
@@ -349,7 +350,7 @@ class DatabaseSyncService:
 
             return results
         except Exception as e:
-            self.logger.error(f"Error syncing all records: {e}")
+            logger.error(f"Error syncing all records: {e}")
             results.append(SyncResult(
                 success=False,
                 model_name=model_name,
@@ -395,14 +396,14 @@ class DatabaseSyncService:
 
         for model_class in models:
             model_name = model_class.__name__
-            self.logger.info(f"Syncing {model_name}...")
+            logger.info(f"Syncing {model_name}...")
             model_results = await self.sync_all_records(model_class, direction, since)
             results[model_name] = model_results
 
             # Log results
             success_count = sum(1 for r in model_results if r.success)
             total_count = len(model_results)
-            self.logger.info(f"Synced {model_name}: {success_count}/{total_count} successful")
+            logger.info(f"Synced {model_name}: {success_count}/{total_count} successful")
 
         return results
 

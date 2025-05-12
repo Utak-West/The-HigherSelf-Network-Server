@@ -1,19 +1,52 @@
 """
 Pydantic models that represent the Notion database structures for The HigherSelf Network.
-These models are used for data validation, serialization/deserialization, and 
+These models are used for data validation, serialization/deserialization, and
 structured interaction with the Notion API.
 """
+
+# NotionIntegrationConfig - Used for webhook handling and API configurations
 
 from pydantic import BaseModel, Field, validator
 from typing import Optional, Dict, Any, List, Union
 from datetime import datetime
 from uuid import uuid4
+import os
 
 from models.base import (
     EntityType, ApiPlatform, AgentCapability, AgentStatus, RuntimeEnvironment,
     WorkflowStatus, InstanceStatus, IntegrationStatus, NotificationChannel,
     TaskStatus, ContentReviewStatus
 )
+
+
+class NotionSetupConfig(BaseModel):
+    """
+    Configuration model for Notion initial setup, parent page, and webhooks.
+    """
+    api_token: str = Field(..., description="Notion API token")
+    parent_page_id: Optional[str] = Field(None, description="Parent page ID for database creation")
+    webhook_secret: Optional[str] = Field(None, description="Secret for webhook verification")
+    
+    @validator('api_token')
+    def validate_token(cls, v):
+        if not v:
+            raise ValueError("Notion API token is required")
+        return v
+    
+    @classmethod
+    def from_env(cls) -> 'NotionSetupConfig':
+        """
+        Create a configuration instance from environment variables.
+        
+        Returns:
+            NotionSetupConfig: Configuration instance
+        """
+        return cls(
+            api_token=os.environ.get("NOTION_API_TOKEN", ""),
+            parent_page_id=os.environ.get("NOTION_PARENT_PAGE_ID"),
+            webhook_secret=os.environ.get("WEBHOOK_SECRET")
+        )
+    
 
 
 class BusinessEntity(BaseModel):
@@ -241,4 +274,52 @@ class AIContentReview(BaseModel):
     related_business_entity: Optional[str] = Field(None, description="Related business entity ID")
     
     # Notion-specific fields
+    page_id: Optional[str] = Field(None, description="Notion page ID")
+
+
+class ContentItem(BaseModel):
+    """
+    Represents a content item in the content management system.
+    Used for tracking content through its lifecycle.
+    """
+    content_id: str = Field(default_factory=lambda: f"CONTENT-{uuid4().hex[:8]}", description="Unique content ID")
+    title: str = Field(..., description="Content title")
+    content_type: str = Field(..., description="Type of content (blog, social, email, etc.)")
+    stage: str = Field("idea", description="Current lifecycle stage")
+    description: str = Field(..., description="Content description or brief")
+    created_date: datetime = Field(default_factory=datetime.now, description="Creation date")
+    last_updated: datetime = Field(default_factory=datetime.now, description="Last update date")
+    author: Optional[str] = Field(None, description="Content author")
+    associated_business_entity: Optional[str] = Field(None, description="Associated business entity ID")
+    target_platforms: List[str] = Field(default_factory=list, description="Target distribution platforms")
+    keywords: List[str] = Field(default_factory=list, description="Content keywords")
+    scheduled_publish_date: Optional[datetime] = Field(None, description="Scheduled publication date")
+    actual_publish_date: Optional[datetime] = Field(None, description="Actual publication date")
+    published_urls: List[str] = Field(default_factory=list, description="Published content URLs")
+    performance_metrics: Dict[str, Any] = Field(default_factory=dict, description="Performance metrics")
+    
+    # Notion-specific field
+    page_id: Optional[str] = Field(None, description="Notion page ID")
+
+
+class ContentPlan(BaseModel):
+    """
+    Represents a content plan in the content management system.
+    Used for planning and scheduling content creation and distribution.
+    """
+    plan_id: str = Field(default_factory=lambda: f"PLAN-{uuid4().hex[:8]}", description="Unique plan ID")
+    name: str = Field(..., description="Plan name")
+    description: str = Field(..., description="Plan description")
+    start_date: datetime = Field(default_factory=datetime.now, description="Start date")
+    end_date: Optional[datetime] = Field(None, description="End date")
+    content_types: List[str] = Field(default_factory=list, description="Content types included in plan")
+    frequency: Dict[str, int] = Field(default_factory=dict, description="Publishing frequency by content type")
+    target_platforms: List[str] = Field(default_factory=list, description="Target platforms")
+    business_entity: Optional[str] = Field(None, description="Associated business entity ID")
+    themes: List[str] = Field(default_factory=list, description="Content themes")
+    status: str = Field("Active", description="Plan status")
+    owner: Optional[str] = Field(None, description="Plan owner")
+    content_items: List[str] = Field(default_factory=list, description="Associated content item IDs")
+    
+    # Notion-specific field
     page_id: Optional[str] = Field(None, description="Notion page ID")

@@ -25,8 +25,27 @@ from services.tutor_lm_service import TutorLMService
 from services.tutorlm_service import TutorLMService as LegacyTutorLMService
 from services.ai_provider_service import AIProviderService
 from services.airtable_service import AirtableService
-from services.snovio_service import SnovioService  # Corrected import
+from services.snovio_service import SnovIOService  # Corrected import
 from services.plaud_service import PlaudService
+
+# Singleton instance of the IntegrationManager
+_integration_manager = None
+
+# Function to get or create the IntegrationManager instance
+async def get_integration_manager() -> 'IntegrationManager':
+    """
+    Get or create a singleton instance of the IntegrationManager.
+    
+    Returns:
+        IntegrationManager: The singleton instance of the integration manager
+    """
+    global _integration_manager
+    
+    if _integration_manager is None:
+        _integration_manager = IntegrationManager()
+        await _integration_manager.initialize()
+        
+    return _integration_manager
 
 
 class IntegrationManagerConfig(BaseModel):

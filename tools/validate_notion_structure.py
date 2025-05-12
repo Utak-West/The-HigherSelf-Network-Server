@@ -9,7 +9,8 @@ and validates that the database structures match the expected Pydantic models.
 import os
 import sys
 import asyncio
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from typing import Dict, List, Any, Tuple
 from dotenv import load_dotenv
 from colorama import init, Fore, Style
@@ -30,13 +31,10 @@ from services.notion_service import NotionService
 init()
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-logger = logging.getLogger(__name__)
-
+# logging.basicConfig(...) # Handled by loguru setup, if called
+# logger = logging.getLogger(__name__) # Replaced by global loguru logger
+# This script's main() should ideally call setup_logging() from utils
+# if specific loguru configuration is desired when run standalone.
 
 class NotionStructureValidator:
     """Validator for the 16-database Notion structure."""
@@ -66,10 +64,12 @@ class NotionStructureValidator:
             print(f"{Fore.YELLOW}Running in test mode - no actual API calls will be made{Style.RESET_ALL}")
             
         # Initialize Notion service with obtained mappings
-        from models.notion_db_models import NotionIntegrationConfig
-        config = NotionIntegrationConfig(
-            token=self.notion_token,
-            database_mappings=database_mappings
+        # Import the correct NotionIntegrationConfig that NotionService expects
+        from models.notion import NotionIntegrationConfig as ServiceNotionIntegrationConfig
+        
+        config = ServiceNotionIntegrationConfig(
+            token=self.notion_token, # This is correct for models.notion.NotionIntegrationConfig
+            database_mappings=database_mappings # Also correct for models.notion.NotionIntegrationConfig
         )
         self.notion_service = NotionService(config)
         

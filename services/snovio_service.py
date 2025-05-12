@@ -10,7 +10,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 
-class SnovioConfig(BaseModel):
+class SnovIOConfig(BaseModel):
     """Configuration for SnovIO API integration."""
     client_id: str
     client_secret: str
@@ -19,7 +19,7 @@ class SnovioConfig(BaseModel):
         env_prefix = "SNOVIO_"
 
 
-class SnovioService:
+class SnovIOService:
     """
     Service for interacting with the SnovIO API for lead enrichment.
     Data from this service is processed and stored in Notion as the central hub.

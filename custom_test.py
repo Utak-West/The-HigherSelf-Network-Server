@@ -6,7 +6,8 @@ This script validates the main components of the system without external depende
 
 import os
 import sys
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from datetime import datetime
 
 # Add the current directory to the Python path to ensure modules can be found
@@ -14,11 +15,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
 # Set up basic logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger("higherself_test")
+# logging.basicConfig(...) # Handled by loguru setup in main or utils.logging_setup
+# logger = logging.getLogger("higherself_test") # Replaced by global loguru logger
 
 def log_section(title):
     """Log a section title with decorative formatting."""

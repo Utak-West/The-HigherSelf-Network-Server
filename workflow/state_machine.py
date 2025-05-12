@@ -9,16 +9,72 @@ in Notion databases, maintaining it as the central hub for all workflow data.
 import asyncio
 import uuid
 from datetime import datetime
+import asyncio
+import functools
+import time
+import random
 from enum import Enum
-from typing import Dict, List, Any, Optional, Callable, Union, Set, Tuple
-from pydantic import BaseModel, Field
+from typing import Dict, List, Any, Optional, Callable, Union, Set, Tuple, TypeVar, Generic
+from pydantic import BaseModel, Field, validator
 from loguru import logger
 
 from models.notion_db_models import WorkflowInstance
 from services.notion_service import NotionService
+from workflow.transitions import TransitionCondition, ConditionGroup, TransitionTrigger
+from knowledge import get_semantic_search, SemanticSearch
+
+# Type variable for state data
+T = TypeVar('T')
 
 
-class WorkflowState(BaseModel):
+class AgentAssignment(BaseModel):
+    """
+    Defines how agents are assigned to a workflow state.
+    Supports both static assignments and dynamic rules.
+    """
+    agent_id: Optional[str] = None
+    agent_role: Optional[str] = None
+    assignment_rule: Optional[str] = None
+    fallback_agent_ids: List[str] = Field(default_factory=list)
+    priority: int = 1
+    selection_strategy: str = "first_available"  # first_available, round_robin, load_balancing
+    context_dependent: bool = False
+    context_condition: Optional[Dict[str, Any]] = None
+    timeout_seconds: Optional[int] = None
+    
+    @validator('selection_strategy')
+    def validate_selection_strategy(cls, v):
+        valid_strategies = ['first_available', 'round_robin', 'load_balancing', 'semantic_match']
+        if v not in valid_strategies:
+            raise ValueError(f"Strategy must be one of {valid_strategies}")
+        return v
+
+
+class StateTimeout(BaseModel):
+    """
+    Defines timeout behavior for a workflow state.
+    """
+    duration_seconds: int
+    action: str = "transition"  # transition, retry, alert, fail
+    transition_on_timeout: Optional[str] = None
+    max_retries: int = 0
+    alert_message: Optional[str] = None
+    escalation_agent_id: Optional[str] = None
+
+
+class ErrorHandling(BaseModel):
+    """
+    Defines error handling behavior for a workflow state.
+    """
+    retry_count: int = 0
+    retry_delay_seconds: int = 60
+    exponential_backoff: bool = False
+    failure_transition: Optional[str] = None
+    error_handlers: Dict[str, str] = Field(default_factory=dict)  # error_type -> handler_function
+    fallback_agent_id: Optional[str] = None
+
+
+class WorkflowState(BaseModel, Generic[T]):
     """
     Represents a single state in a workflow state machine.
     All state information is persisted in Notion.
@@ -27,11 +83,55 @@ class WorkflowState(BaseModel):
     description: str
     is_terminal: bool = False
     available_transitions: List[str] = Field(default_factory=list)
-    agent_assignments: List[str] = Field(default_factory=list)
+    agent_assignments: List[AgentAssignment] = Field(default_factory=list)
     required_data_points: List[str] = Field(default_factory=list)
+    entry_conditions: List[Dict[str, Any]] = Field(default_factory=list)
+    exit_conditions: List[Dict[str, Any]] = Field(default_factory=list)
+    timeout: Optional[StateTimeout] = None
+    error_handling: Optional[ErrorHandling] = None
+    state_data: Optional[T] = None
+    max_time_in_state_seconds: Optional[int] = None
+    auto_transition_after_seconds: Optional[int] = None
+    auto_transition_to: Optional[str] = None
     
     class Config:
         frozen = True
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for Notion storage."""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "is_terminal": self.is_terminal,
+            "available_transitions": self.available_transitions,
+            "agent_assignments": [assignment.dict() for assignment in self.agent_assignments],
+            "required_data_points": self.required_data_points,
+            "entry_conditions": self.entry_conditions,
+            "exit_conditions": self.exit_conditions,
+            "timeout": self.timeout.dict() if self.timeout else None,
+            "error_handling": self.error_handling.dict() if self.error_handling else None,
+            "max_time_in_state_seconds": self.max_time_in_state_seconds,
+            "auto_transition_after_seconds": self.auto_transition_after_seconds,
+            "auto_transition_to": self.auto_transition_to
+        }
+
+
+class TransitionResult(BaseModel):
+    """
+    Result of a state transition attempt.
+    """
+    success: bool
+    instance: Optional[WorkflowInstance] = None
+    error: Optional[str] = None
+    transition: Optional[str] = None
+    from_state: Optional[str] = None
+    to_state: Optional[str] = None
+    agent_id: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.now)
+    retry_count: int = 0
+    retry_recommended: bool = False
+    retry_after_seconds: Optional[int] = None
+    fallback_transition: Optional[str] = None
 
 
 class StateTransition(BaseModel):
@@ -43,14 +143,208 @@ class StateTransition(BaseModel):
     to_state: str
     name: str
     description: str
-    conditions: List[str] = Field(default_factory=list)
-    triggers: List[str] = Field(default_factory=list)
+    conditions: List[Union[Dict[str, Any], str]] = Field(default_factory=list)
+    condition_groups: List[Dict[str, Any]] = Field(default_factory=list)
+    triggers: List[Union[Dict[str, Any], str]] = Field(default_factory=list)
     timeout_seconds: Optional[int] = None
     retry_count: int = 0
+    retry_delay_seconds: int = 60
+    exponential_backoff: bool = False
     transition_handler: Optional[str] = None
+    transition_priority: int = 1
+    requires_approval: bool = False
+    approval_roles: List[str] = Field(default_factory=list)
+    precondition_actions: List[str] = Field(default_factory=list)
+    postcondition_actions: List[str] = Field(default_factory=list)
+    failure_actions: List[str] = Field(default_factory=list)
+    conditional_routing: Dict[str, str] = Field(default_factory=dict)  # condition -> to_state
     
     class Config:
         frozen = True
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for Notion storage."""
+        return {
+            "from_state": self.from_state,
+            "to_state": self.to_state,
+            "name": self.name,
+            "description": self.description,
+            "conditions": self.conditions,
+            "condition_groups": self.condition_groups,
+            "triggers": self.triggers,
+            "timeout_seconds": self.timeout_seconds,
+            "retry_count": self.retry_count,
+            "retry_delay_seconds": self.retry_delay_seconds,
+            "exponential_backoff": self.exponential_backoff,
+            "transition_handler": self.transition_handler,
+            "transition_priority": self.transition_priority,
+            "requires_approval": self.requires_approval,
+            "approval_roles": self.approval_roles,
+            "precondition_actions": self.precondition_actions,
+            "postcondition_actions": self.postcondition_actions,
+            "failure_actions": self.failure_actions,
+            "conditional_routing": self.conditional_routing
+        }
+    
+    async def evaluate_conditions(
+        self,
+        instance: WorkflowInstance,
+        condition_evaluator: Optional[Callable] = None
+    ) -> bool:
+        """
+        Evaluate all conditions for this transition.
+        
+        Args:
+            instance: The workflow instance
+            condition_evaluator: Optional custom condition evaluator
+            
+        Returns:
+            True if all conditions are met, False otherwise
+        """
+        # If no conditions, transition is always allowed
+        if not self.conditions and not self.condition_groups:
+            return True
+        
+        if condition_evaluator:
+            # Use custom evaluator if provided
+            return await condition_evaluator(self, instance)
+        
+        # Default condition evaluation
+        context_data = instance.context_data
+        
+        # Process individual conditions
+        condition_results = []
+        for condition in self.conditions:
+            if isinstance(condition, str):
+                # String reference to condition - would need to be looked up
+                # For now, just log that we can't evaluate it
+                logger.warning(f"String condition reference '{condition}' cannot be evaluated directly")
+                condition_results.append(False)
+            elif isinstance(condition, dict):
+                # Convert dict to TransitionCondition
+                try:
+                    from workflow.transitions import TransitionCondition
+                    cond = TransitionCondition.from_dict(condition)
+                    condition_results.append(cond.is_satisfied(context_data))
+                except Exception as e:
+                    logger.error(f"Error evaluating condition: {e}")
+                    condition_results.append(False)
+        
+        # Process condition groups
+        group_results = []
+        for group in self.condition_groups:
+            try:
+                from workflow.transitions import ConditionGroup
+                group_obj = ConditionGroup.from_dict(group)
+                group_results.append(group_obj.is_satisfied(context_data))
+            except Exception as e:
+                logger.error(f"Error evaluating condition group: {e}")
+                group_results.append(False)
+        
+        # Both individual conditions and condition groups must be satisfied
+        # If either list is empty, its result is True
+        conditions_satisfied = all(condition_results) if condition_results else True
+        groups_satisfied = all(group_results) if group_results else True
+        
+        return conditions_satisfied and groups_satisfied
+    
+    def get_dynamic_target_state(self, instance: WorkflowInstance) -> Optional[str]:
+        """
+        Determine the target state based on conditional routing.
+        
+        Args:
+            instance: The workflow instance
+            
+        Returns:
+            Target state name or None to use the default to_state
+        """
+        if not self.conditional_routing:
+            return None
+            
+        context_data = instance.context_data
+        
+        # Try each condition in the conditional routing
+        for condition_str, target_state in self.conditional_routing.items():
+            try:
+                # Parse condition as a field path and expected value
+                field_path, operator, expected_value = self._parse_condition_string(condition_str)
+                
+                # Get the actual value
+                actual_value = self._get_field_value(context_data, field_path)
+                
+                # Compare based on operator
+                if self._compare_values(actual_value, operator, expected_value):
+                    return target_state
+            except Exception as e:
+                logger.error(f"Error evaluating conditional routing '{condition_str}': {e}")
+                
+        return None
+    
+    def _parse_condition_string(self, condition_str: str) -> Tuple[str, str, Any]:
+        """Parse a condition string into field path, operator, and expected value."""
+        # Very simple parser - in production, use a more robust solution
+        parts = condition_str.split()
+        if len(parts) < 3:
+            raise ValueError(f"Invalid condition format: {condition_str}")
+            
+        field_path = parts[0]
+        operator = parts[1]
+        # Join the rest as the expected value
+        expected_value = " ".join(parts[2:])
+        
+        # Try to convert expected value to appropriate type
+        try:
+            if expected_value.lower() == "true":
+                expected_value = True
+            elif expected_value.lower() == "false":
+                expected_value = False
+            elif expected_value.isdigit():
+                expected_value = int(expected_value)
+            elif expected_value.replace(".", "", 1).isdigit():
+                expected_value = float(expected_value)
+        except:
+            pass
+            
+        return field_path, operator, expected_value
+    
+    def _get_field_value(self, data: Dict[str, Any], field_path: str) -> Any:
+        """Get the value from a nested dictionary using dot notation."""
+        path_parts = field_path.split(".")
+        current = data
+        
+        for part in path_parts:
+            if isinstance(current, dict) and part in current:
+                current = current[part]
+            else:
+                return None
+        
+        return current
+    
+    def _compare_values(self, actual: Any, operator: str, expected: Any) -> bool:
+        """Compare values based on operator."""
+        if operator == "==":
+            return actual == expected
+        elif operator == "!=":
+            return actual != expected
+        elif operator == ">":
+            return actual > expected if actual is not None else False
+        elif operator == "<":
+            return actual < expected if actual is not None else False
+        elif operator == ">=":
+            return actual >= expected if actual is not None else False
+        elif operator == "<=":
+            return actual <= expected if actual is not None else False
+        elif operator == "in":
+            return actual in expected if expected is not None else False
+        elif operator == "not_in":
+            return actual not in expected if expected is not None else True
+        elif operator == "contains":
+            return expected in actual if actual is not None else False
+        elif operator == "not_contains":
+            return expected not in actual if actual is not None else True
+        else:
+            logger.warning(f"Unknown operator: {operator}")
+            return False
 
 
 class WorkflowStateMachine:

@@ -5,8 +5,9 @@ Provides webhook endpoints and API routes for interacting with agents.
 
 import os
 import json
-import logging
+# import logging # Replaced by loguru
 import asyncio
+from loguru import logger # Added for direct loguru usage
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
 
@@ -37,11 +38,8 @@ from api.webhooks_circleso import router as circleso_router
 from api.webhooks_beehiiv import router as beehiiv_router
 
 # Configure logging
-logging.basicConfig(
-    level=os.environ.get("LOG_LEVEL", "INFO"),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("windsurf-api")
+# logging.basicConfig removed - assuming setup_logging from utils is called in main.py
+# logger = logging.getLogger("windsurf-api") # Replaced by global loguru logger
 
 # Initialize FastAPI app
 app = FastAPI(

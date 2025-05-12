@@ -9,12 +9,13 @@ for external service integrations while maintaining Notion as the central hub.
 import os
 import time
 import functools
-import logging
+# import logging # Replaced by loguru
+from loguru import logger # Added for direct loguru usage
 from typing import Any, Callable, Dict, Optional, TypeVar, cast
 
 from config.testing_mode import is_testing_mode, is_api_disabled, TestingMode
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__) # Replaced by global loguru logger
 
 # Type variables for better type hinting with decorators
 F = TypeVar('F', bound=Callable[..., Any])

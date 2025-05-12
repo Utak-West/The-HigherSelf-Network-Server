@@ -5,6 +5,7 @@ These models represent Notion pages, databases, and integration configurations.
 """
 
 from typing import Dict, List, Optional, Any, Union
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 
@@ -37,7 +38,12 @@ class NotionIntegrationConfig(BaseModel):
     """
     Configuration for Notion integration.
     """
-    api_token: str
+    token: str
+    database_mappings: Dict[str, str] = Field(default_factory=dict)
+    last_sync: Optional[datetime] = None
+    
+    # Legacy fields for backward compatibility
+    api_token: Optional[str] = None
     databases: Dict[str, str] = Field(default_factory=dict)
     
     # Database IDs for different types of data
@@ -52,7 +58,10 @@ class NotionIntegrationConfig(BaseModel):
     def to_dict(self) -> Dict[str, Any]:
         """Convert the configuration to a dictionary."""
         return {
-            "api_token": self.api_token,
+            "token": self.token,
+            "database_mappings": self.database_mappings,
+            "last_sync": self.last_sync,
+            "api_token": self.api_token or self.token,
             "databases": self.databases,
             "clients_database_id": self.clients_database_id,
             "products_database_id": self.products_database_id,
