@@ -5,11 +5,6 @@
 
 **Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Utak-West/The-HigherSelf-Network-Server)
-[![Notion](https://img.shields.io/badge/Notion-Central%20Hub-black.svg)](https://www.notion.so)
-[![Python](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com)
-[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
 </div>
 
