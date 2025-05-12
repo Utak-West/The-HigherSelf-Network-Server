@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/diamond-24.svg?sanitize=true" alt="Diamond" width="24" height="24" /> The HigherSelf Network Server
+# 💎 The HigherSelf Network Server
 
 <div align="center">
 
@@ -14,11 +14,11 @@
 
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/star-24.svg" alt="Star" width="20" height="20" /> Overview
+## ⭐ Overview
 
 Welcome to **The HigherSelf Network Server** - an intelligent automation platform designed specifically for art galleries, wellness centers, and consultancy businesses. Our system creates harmony between your business operations through a unique agent-based architecture with Notion as the central hub.
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/star-24.svg" alt="Star" width="18" height="18" /> What Makes Us Special
+### ⭐ What Makes Us Special
 
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
 
@@ -26,17 +26,17 @@ The HigherSelf Network Server features a team of **named agent personalities**, 
   <img src="https://via.placeholder.com/800x400?text=Agent+System+Visualization" alt="Agent System Visualization" width="80%">
 </div>
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/sync-24.svg" alt="Sync" width="18" height="18" /> Notion as Your Central Hub
+### 🔄 Notion as Your Central Hub
 
 All data, workflows, and communications flow through Notion, creating a unified system that's both powerful and user-friendly. Your team already knows and loves Notion - now it becomes the command center for your entire operation.
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/diamond-24.svg" alt="Diamond" width="20" height="20" /> Core Features
+## 💎 Core Features
 
 <div class="features-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 
 <div class="feature-card">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/graph-24.svg" alt="Graph" width="18" height="18" /> Notion-Powered Operations
+### 📊 Notion-Powered Operations
 
 - **Centralized Database Hub**: 16 interconnected Notion databases
 - **Real-time Synchronization**: All systems stay in perfect harmony
@@ -47,7 +47,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/device-desktop-24.svg" alt="Desktop" width="18" height="18" /> Intelligent Agent System
+### 💻 Intelligent Agent System
 
 - **Named Agent Personalities**: Each with unique characteristics
 - **Specialized Capabilities**: Experts in their respective domains
@@ -58,7 +58,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/zap-24.svg" alt="Zap" width="18" height="18" /> Seamless Integrations
+### ⚡ Seamless Integrations
 
 - **Comprehensive API Support**: Connect with all your essential tools
 - **Webhook Endpoints**: Receive real-time data from external systems
@@ -69,7 +69,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 <div class="feature-card">
 
-### <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/gear-24.svg" alt="Gear" width="18" height="18" /> Robust Architecture
+### ⚙️ Robust Architecture
 
 - **Pydantic Data Validation**: Ensures data integrity throughout
 - **State Machine Workflows**: Structured processes with clear stages
@@ -80,7 +80,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 </div>
 
-## <img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/file-directory-24.svg" alt="Directory" width="20" height="20" /> Notion Database Structure
+## 📂 Notion Database Structure
 
 <div align="center">
   <img src="https://via.placeholder.com/800x500?text=Notion+Database+Structure" alt="Notion Database Structure" width="80%">
@@ -91,12 +91,12 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 <div class="database-container" style="margin-top: 30px;">
 
 <details open>
-<summary><h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/organization-24.svg" alt="Organization" width="18" height="18" /> Core Operational Databases</h3></summary>
+<summary><h3>🏛️ Core Operational Databases</h3></summary>
 
 <div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/organization-24.svg" alt="Organization" width="16" height="16" /> Business Entities</h4>
+  <h4>🏛️ Business Entities</h4>
   <p>Registry of all business entities using the system (art gallery, wellness center, consultancy)</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Type, Contact Info, Logo</p>
@@ -105,7 +105,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/person-24.svg" alt="Person" width="16" height="16" /> Contacts & Profiles</h4>
+  <h4>👤 Contacts & Profiles</h4>
   <p>Unified customer/contact database for all entities and interactions</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Name, Email, Phone, Tags</p>
@@ -114,7 +114,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 </div>
 
 <div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/globe-24.svg" alt="Globe" width="16" height="16" /> Community Hub</h4>
+  <h4>🌐 Community Hub</h4>
   <p>Community member profiles and engagement tracking</p>
   <div style="font-size: 0.8em; color: #666;">
     <p><strong>Key Properties:</strong> Member Since, Engagement Level</p>
