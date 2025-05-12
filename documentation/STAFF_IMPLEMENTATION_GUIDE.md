@@ -15,7 +15,7 @@ Our system uses **two connected databases** that work together:
 
 These two systems stay synchronized automatically, so you can continue working in Notion as usual while benefiting from enhanced capabilities.
 
-![Database System Overview](../assets/database_system_overview.png)
+![Database System Overview](../assets/database_system_overview.svg)
 
 ### Why We Use This System
 

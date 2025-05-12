@@ -38,7 +38,6 @@ Key components include:
 - **Service Integrations**: Connect to external platforms like TypeForm, WooCommerce, Acuity, etc.
 - **Notion Service**: Ensures all data is properly synchronized with Notion databases
 
-![Architecture Overview](../architecture/architecture-overview.png)
 
 ---
 
