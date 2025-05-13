@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 
 from models.base import NotionIntegrationConfig, ApiPlatform
 from services.notion_service import NotionService
-from services.integration_manager import IntegrationManager
+from services.integration_manager import get_integration_manager # Changed
 from services.typeform_service import TypeFormService
 from services.woocommerce_service import WooCommerceService
 from services.acuity_service import AcuityService
@@ -70,20 +70,7 @@ app.include_router(crawl_router)
 app.include_router(voice_router)
 app.include_router(rag_router)
 
-# Initialize agents
-lead_capture_agent = LeadCaptureAgent(
-    agent_id="LeadCaptureAgent",
-    name="Lead Capture Agent",
-    description="Captures leads from various sources and creates workflow instances",
-    business_entities=["The Connection Practice", "The 7 Space"]
-)
-
-booking_agent = BookingAgent(
-    agent_id="TCP_AGENT_001",
-    name="Retreat Booking Detection Agent",
-    description="Detects retreat bookings from Amelia and creates workflow instances",
-    business_entities=["The Connection Practice"]
-)
+# Agents will be passed via app.state.agents from main.py
 
 
 # API Models
@@ -140,34 +127,56 @@ async def verify_webhook_secret(x_webhook_secret: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Invalid webhook secret")
 
 
-# Initialize the Integration Manager
-integration_manager = IntegrationManager()
+# Integration Manager will be fetched via get_integration_manager() where needed
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize services, integrations, and register agents on startup."""
     try:
-        # Initialize the Integration Manager
-        logger.info("Initializing Integration Manager...")
-        integration_success = await integration_manager.initialize()
+        # Get or create Integration Manager instance (this will also initialize it if new)
+        logger.info("Fetching/Initializing Integration Manager via singleton accessor for startup...")
+        integration_manager = await get_integration_manager() # Changed
 
-        if not integration_success:
-            logger.warning("Some integrations could not be initialized. Check logs for details.")
+        if not integration_manager:
+            logger.error("Failed to obtain Integration Manager instance during startup. Critical error.")
+            # This indicates a problem with get_integration_manager or its internal initialization
+            # Depending on desired behavior, you might want to raise an error to stop startup
+            return # Or raise an exception
 
-        # Log initialization status
-        status = integration_manager.get_initialization_status()
+        logger.info("Integration Manager instance obtained for startup.")
+        status = integration_manager.get_initialization_status() # Get status after it's initialized
+
+        # Log overall status based on Notion, as it's critical
+        if not status.get("notion", False):
+            logger.error("Integration Manager's Notion service failed to initialize. This may impact core functionality.")
+        else:
+            logger.info("Integration Manager's Notion service appears to be initialized.")
+
+        # Log detailed status for all services
+        successful_count = 0
+        total_count = len(status) if status else 0
         for service, initialized in status.items():
             if initialized:
-                logger.info(f"✅ {service.capitalize()} service initialized successfully")
+                logger.info(f"✅ {service.capitalize()} service initialized successfully via Integration Manager.")
+                successful_count += 1
             else:
-                logger.warning(f"❌ {service.capitalize()} service failed to initialize")
+                logger.warning(f"❌ {service.capitalize()} service failed to initialize via Integration Manager.")
+        
+        if total_count > 0:
+            logger.info(f"Integration Manager reported {successful_count}/{total_count} services initialized during startup.")
+        else:
+            logger.warning("Integration Manager reported no services or status unavailable during startup.")
 
-        # Register agents in Notion
-        await lead_capture_agent.register_in_notion()
-        logger.info("Lead Capture Agent registered in Notion")
-
-        await booking_agent.register_in_notion()
-        logger.info("Booking Agent registered in Notion")
+        # Agent registration is now handled in main.py before starting the API.
+        # We can log the availability of agents passed via app.state
+        if hasattr(app.state, "agents") and app.state.agents:
+            logger.info(f"Agents available to API server: {list(app.state.agents.keys())}")
+            if 'lead_capture_agent' in app.state.agents:
+                logger.info("Lead Capture Agent (or its alias Nyra) instance provided.")
+            if 'booking_agent' in app.state.agents:
+                logger.info("Booking Agent (or its alias Solari) instance provided.")
+        else:
+            logger.warning("No agents dictionary found in app.state or it's empty.")
 
         # Initialize RAG services
         logger.info("Initializing RAG services...")
@@ -208,13 +217,31 @@ async def startup_event():
 
 
 @app.get("/health")
-async def health_check():
+async def health_check(request: Request): # Added request
     """Health check endpoint."""
-    lead_agent_health = await lead_capture_agent.check_health()
-    booking_agent_health = await booking_agent.check_health()
+    # Access agents from app.state
+    lead_agent = request.app.state.agents.get('lead_capture_agent') # or 'nyra'
+    booking_agent = request.app.state.agents.get('booking_agent') # or 'solari'
+
+    lead_agent_health = {"status": "unavailable", "reason": "Agent not found in app.state"}
+    if lead_agent and hasattr(lead_agent, 'check_health'):
+        lead_agent_health = await lead_agent.check_health()
+    else:
+        logger.warning("Lead Capture Agent not available for health check.")
+        
+    booking_agent_health = {"status": "unavailable", "reason": "Agent not found in app.state"}
+    if booking_agent and hasattr(booking_agent, 'check_health'):
+        booking_agent_health = await booking_agent.check_health()
+    else:
+        logger.warning("Booking Agent not available for health check.")
 
     # Get integration statuses
-    integration_status = integration_manager.get_initialization_status()
+    integration_manager = await get_integration_manager() # Added
+    if not integration_manager:
+        logger.error("Failed to get IntegrationManager for health check.")
+        integration_status = {"error": "IntegrationManager unavailable"}
+    else:
+        integration_status = integration_manager.get_initialization_status()
 
     # Check RAG services
     rag_services_status = {}
@@ -278,6 +305,10 @@ async def typeform_webhook(background_tasks: BackgroundTasks, payload: Dict[str,
     Receives form submissions from Typeform and processes them.
     """
     logger.info(f"Received Typeform webhook: {payload.get('event_id')}")
+    lead_agent = request.app.state.agents.get('lead_capture_agent') # or 'nyra'
+    if not lead_agent:
+        logger.error("Lead Capture Agent not found in app.state for Typeform webhook.")
+        raise HTTPException(status_code=500, detail="Lead Capture Agent not available")
 
     # Extract query parameters for workflow and business entity
     business_entity_id = request.query_params.get("business_entity_id")
@@ -292,7 +323,7 @@ async def typeform_webhook(background_tasks: BackgroundTasks, payload: Dict[str,
 
     # Process the webhook in the background
     background_tasks.add_task(
-        lead_capture_agent.process_event,
+        lead_agent.process_event, # Use agent from app.state
         event_type="typeform_webhook",
         event_data={
             "payload": payload,
@@ -310,15 +341,19 @@ async def typeform_webhook(background_tasks: BackgroundTasks, payload: Dict[str,
 
 
 @app.post("/api/forms/submit", response_model=WebhookResponse)
-async def submit_website_form(payload: WebsiteFormPayload):
+async def submit_website_form(payload: WebsiteFormPayload, request: Request): # Added request
     """
     Submit a website form for processing.
     Creates a workflow instance for the form submission.
     """
     logger.info(f"Received website form submission for form: {payload.form_id}")
+    lead_agent = request.app.state.agents.get('lead_capture_agent') # or 'nyra'
+    if not lead_agent:
+        logger.error("Lead Capture Agent not found in app.state for website form submission.")
+        raise HTTPException(status_code=500, detail="Lead Capture Agent not available")
 
     # Process the form submission
-    result = await lead_capture_agent.process_event(
+    result = await lead_agent.process_event( # Use agent from app.state
         event_type="website_form",
         event_data={
             "form_data": payload.form_data,
@@ -367,9 +402,14 @@ async def event_registration_webhook(
         "integration_source": "zapier_event_registration"
     }
 
+    lead_agent = request.app.state.agents.get('lead_capture_agent') # or 'nyra'
+    if not lead_agent:
+        logger.error("Lead Capture Agent not found in app.state for event registration webhook.")
+        raise HTTPException(status_code=500, detail="Lead Capture Agent not available")
+
     # Process the event in the background
     background_tasks.add_task(
-        lead_capture_agent.process_event,
+        lead_agent.process_event, # Use agent from app.state
         event_type="generic_event_registration", # A new event type for LeadCaptureAgent
         event_data=event_data_for_agent
     )
@@ -401,10 +441,15 @@ async def amelia_webhook(background_tasks: BackgroundTasks, payload: Dict[str, A
         raise HTTPException(status_code=400, detail="workflow_id query parameter is required for new_booking events")
 
     # Process based on event type
+    book_agent = request.app.state.agents.get('booking_agent') # or 'solari'
+    if not book_agent:
+        logger.error("Booking Agent not found in app.state for Amelia webhook.")
+        raise HTTPException(status_code=500, detail="Booking Agent not available")
+
     if event_type == "new_booking":
         # Process in the background
         background_tasks.add_task(
-            booking_agent.process_event,
+            book_agent.process_event, # Use agent from app.state
             event_type="new_booking",
             event_data={
                 "booking": payload.get("booking", {}),
@@ -422,7 +467,7 @@ async def amelia_webhook(background_tasks: BackgroundTasks, payload: Dict[str, A
     elif event_type == "booking_status_update":
         # Process in the background
         background_tasks.add_task(
-            booking_agent.process_event,
+            book_agent.process_event, # Use agent from app.state
             event_type="booking_status_update",
             event_data={
                 "booking_id": payload.get("booking_id"),
@@ -487,21 +532,32 @@ async def get_workflow_instance(instance_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def start():
-    """Start the API server."""
-    port = int(os.environ.get("SERVER_PORT", 8000))
+def start(host: str, port: int, log_level: str, workers: int, agents: Optional[Dict[str, Any]] = None):
+    """Start the API server, now accepting configuration and agents."""
+    # Store agents in app state to make them accessible to endpoints
+    app.state.agents = agents if agents is not None else {}
+    
+    if not app.state.agents:
+        logger.warning("API server (app.state.agents) starting without any agents provided.")
+    else:
+        logger.info(f"API server (app.state.agents) starting with agents: {list(app.state.agents.keys())}")
 
-    logger.info(f"Starting The HigherSelf Network Server on port {port}")
-    logger.info("Notion is configured as the central hub for all data and workflows")
+    logger.info(f"Attempting to start The HigherSelf Network Server on {host}:{port} with {workers} worker(s) and log level {log_level}")
+    logger.info("Notion is configured as the central hub for all data and workflows (as per earlier logs).")
 
     uvicorn.run(
-        "api.server:app",
-        host="0.0.0.0",
+        app,  # Pass the FastAPI app instance directly
+        host=host,
         port=port,
-        reload=False,
-        log_level=os.environ.get("LOG_LEVEL", "info").lower()
+        log_level=log_level,
+        workers=workers,
+        reload=False # Preserving reload=False from original
     )
 
-
-if __name__ == "__main__":
-    start()
+# This block is likely redundant if main.py is the sole entry point.
+# Commenting out to prevent accidental direct execution without proper setup.
+# if __name__ == "__main__":
+#     # This would require default parameters or a different setup if run directly.
+#     # For now, assume main.py is the entry point.
+#     logger.warning("api/server.py executed directly. This is not the intended entry point. Use main.py.")
+#     # start(host="0.0.0.0", port=8000, log_level="info", workers=1, agents=None)
