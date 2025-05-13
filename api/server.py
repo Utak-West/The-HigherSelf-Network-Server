@@ -37,6 +37,9 @@ from api.webhooks import router as webhook_router
 from api.webhooks_circleso import router as circleso_router
 from api.webhooks_beehiiv import router as beehiiv_router
 from api.video_router import router as video_router
+from api.crawl_router import router as crawl_router
+from api.voice_router import router as voice_router
+from api.rag_router import router as rag_router
 
 # Configure logging
 # logging.basicConfig removed - assuming setup_logging from utils is called in main.py
@@ -63,6 +66,9 @@ app.include_router(webhook_router)
 app.include_router(circleso_router)
 app.include_router(beehiiv_router)
 app.include_router(video_router)
+app.include_router(crawl_router)
+app.include_router(voice_router)
+app.include_router(rag_router)
 
 # Initialize agents
 lead_capture_agent = LeadCaptureAgent(
@@ -107,6 +113,21 @@ class WebsiteFormPayload(BaseModel):
     sync_to_hubspot: bool = True
 
 
+class EventRegistrationPayload(BaseModel):
+    """Payload for event registrations coming from external platforms like Zapier."""
+    event_platform: str = Field(..., description="Name of the platform where the event was registered (e.g., 'Eventbrite', 'ZapierGenericEvent')")
+    event_id: Optional[str] = Field(None, description="Unique identifier for the event from the source platform")
+    event_name: Optional[str] = Field(None, description="Name of the event")
+    attendee_email: str = Field(..., description="Email address of the attendee")
+    attendee_name: Optional[str] = Field(None, description="Full name of the attendee")
+    attendee_details: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Other details about the attendee")
+    business_entity_id: str = Field(..., description="Business entity ID for routing within the system")
+    workflow_id: str = Field(..., description="Workflow ID to instantiate for this registration")
+    ai_insights: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Optional AI-generated insights (e.g., interest categorization)")
+    sync_to_hubspot: bool = Field(True, description="Whether to sync this lead to HubSpot")
+    raw_payload: Optional[Dict[str, Any]] = Field(default_factory=dict, description="The raw, original payload from the source for auditing/debugging")
+
+
 # Authentication middleware
 async def verify_webhook_secret(x_webhook_secret: Optional[str] = Header(None)):
     """Verify webhook secret for protected endpoints."""
@@ -147,6 +168,41 @@ async def startup_event():
 
         await booking_agent.register_in_notion()
         logger.info("Booking Agent registered in Notion")
+
+        # Initialize RAG services
+        logger.info("Initializing RAG services...")
+        try:
+            from knowledge.vector_store import get_vector_store
+            from knowledge.semantic_search import get_semantic_search
+            from services.crawl4ai_service import get_crawl4ai_service
+            from services.aqua_voice_service import get_aqua_voice_service
+            from services.ai_router import AIRouter
+            from knowledge.rag_pipeline import get_rag_pipeline
+
+            # Initialize AI router for completions
+            ai_router = AIRouter()
+
+            # Initialize vector store and semantic search
+            vector_store = await get_vector_store()
+            logger.info("✅ Vector store initialized successfully")
+
+            semantic_search = await get_semantic_search()
+            logger.info("✅ Semantic search initialized successfully")
+
+            # Initialize Crawl4AI service
+            crawl_service = await get_crawl4ai_service()
+            logger.info("✅ Crawl4AI service initialized successfully")
+
+            # Initialize Aqua Voice service
+            voice_service = await get_aqua_voice_service(ai_router)
+            logger.info("✅ Aqua Voice service initialized successfully")
+
+            # Initialize RAG pipeline
+            rag_pipeline = await get_rag_pipeline(ai_router)
+            logger.info("✅ RAG pipeline initialized successfully")
+
+        except Exception as e:
+            logger.error(f"Error initializing RAG services: {e}")
     except Exception as e:
         logger.error(f"Error during startup: {e}")
 
@@ -160,6 +216,31 @@ async def health_check():
     # Get integration statuses
     integration_status = integration_manager.get_initialization_status()
 
+    # Check RAG services
+    rag_services_status = {}
+    try:
+        from knowledge.vector_store import get_vector_store
+        from knowledge.semantic_search import get_semantic_search
+        from services.crawl4ai_service import get_crawl4ai_service
+
+        vector_store = await get_vector_store()
+        semantic_search = await get_semantic_search()
+        crawl_service = await get_crawl4ai_service()
+
+        rag_services_status = {
+            "vector_store": True,
+            "semantic_search": True,
+            "crawl4ai_service": True
+        }
+    except Exception as e:
+        logger.error(f"Error checking RAG services: {e}")
+        rag_services_status = {
+            "vector_store": False,
+            "semantic_search": False,
+            "crawl4ai_service": False,
+            "error": str(e)
+        }
+
     # Calculate overall status
     overall_status = "healthy"
     if lead_agent_health.get("status") != "healthy" or booking_agent_health.get("status") != "healthy":
@@ -172,6 +253,11 @@ async def health_check():
     elif sum(1 for status in integration_status.values() if not status) / len(integration_status) > 0.3:
         overall_status = "degraded"
 
+    # If RAG services are not healthy, system is degraded
+    if not all(rag_services_status.get(service, False) for service in ["vector_store", "semantic_search"]):
+        if overall_status == "healthy":
+            overall_status = "degraded"
+
     return {
         "status": overall_status,
         "version": "1.0.0",
@@ -180,7 +266,8 @@ async def health_check():
             "lead_capture_agent": lead_agent_health,
             "booking_agent": booking_agent_health
         },
-        "integrations": integration_status
+        "integrations": integration_status,
+        "rag_services": rag_services_status
     }
 
 
@@ -246,6 +333,51 @@ async def submit_website_form(payload: WebsiteFormPayload):
         status=result.get("status", "error"),
         message=result.get("message", "Unknown error"),
         data=result
+    )
+
+
+@app.post("/api/integrations/event_registration", response_model=WebhookResponse, dependencies=[Depends(verify_webhook_secret)])
+async def event_registration_webhook(
+    payload: EventRegistrationPayload,
+    background_tasks: BackgroundTasks,
+    request: Request  # Added to potentially access headers or client info if needed later
+):
+    """
+    Webhook endpoint for receiving event registrations from integrated platforms like Zapier.
+    Processes the registration through the LeadCaptureAgent.
+    """
+    logger.info(f"Received event registration from platform: {payload.event_platform} for attendee: {payload.attendee_email}")
+
+    # Prepare event data for the LeadCaptureAgent
+    # The structure should align with what LeadCaptureAgent expects or be adapted within the agent
+    event_data_for_agent = {
+        "source_platform": payload.event_platform,
+        "event_id": payload.event_id,
+        "event_name": payload.event_name,
+        "email": payload.attendee_email, # Standardizing to 'email'
+        "name": payload.attendee_name, # Standardizing to 'name'
+        "details": payload.attendee_details,
+        "business_entity_id": payload.business_entity_id,
+        "workflow_id": payload.workflow_id,
+        "ai_insights": payload.ai_insights,
+        "sync_to_hubspot": payload.sync_to_hubspot,
+        "raw_payload": payload.raw_payload, # Store the original payload for reference
+        # You might want to add a specific field to indicate the source, e.g., 'zapier_event_registration'
+        # This helps LeadCaptureAgent distinguish this from, say, a Typeform submission.
+        "integration_source": "zapier_event_registration"
+    }
+
+    # Process the event in the background
+    background_tasks.add_task(
+        lead_capture_agent.process_event,
+        event_type="generic_event_registration", # A new event type for LeadCaptureAgent
+        event_data=event_data_for_agent
+    )
+
+    return WebhookResponse(
+        status="success",
+        message=f"Event registration for {payload.attendee_email} received and processing started.",
+        data={"attendee_email": payload.attendee_email, "event_platform": payload.event_platform}
     )
 
 

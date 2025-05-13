@@ -208,6 +208,71 @@ class LeadCaptureAgent(BaseAgent):
             interests=interests,
             additional_data=additional_data
         )
+
+    async def _generic_event_to_standardized_lead(self, event_data: Dict[str, Any]) -> StandardizedLead:
+        """
+        Convert a generic event (e.g., from Zapier) to a standardized lead.
+
+        Args:
+            event_data: Dictionary containing event details. Expected keys include:
+                        'email', 'name', 'source_platform', 'event_id', 'details',
+                        'ai_insights', 'raw_payload', 'event_name'.
+        Returns:
+            StandardizedLead object
+        """
+        email = event_data.get("email")
+        if not email:
+            raise ValueError("Email is required but was not found in the generic event data")
+
+        full_name = event_data.get("name")
+        first_name = None
+        last_name = None
+        if full_name:
+            parts = full_name.split(" ", 1)
+            first_name = parts[0]
+            if len(parts) > 1:
+                last_name = parts[1]
+
+        source = event_data.get("source_platform", "UnknownIntegration")
+        source_id = event_data.get("event_id")
+        if not source_id:
+            # Generate a source_id if not provided, using email and timestamp to ensure uniqueness
+            timestamp_str = datetime.now().isoformat()
+            source_id_data = f"{email.lower()}:{source}:{timestamp_str}"
+            source_id = hashlib.md5(source_id_data.encode()).hexdigest()
+            logger.info(f"Generated source_id for generic event: {source_id}")
+
+
+        # Consolidate various details into additional_data
+        additional_data_payload = event_data.get("details", {})
+        if event_data.get("ai_insights"):
+            additional_data_payload["ai_insights"] = event_data.get("ai_insights")
+        if event_data.get("raw_payload"):
+            additional_data_payload["raw_payload"] = event_data.get("raw_payload")
+        if event_data.get("event_name"):
+            additional_data_payload["event_name"] = event_data.get("event_name")
+        if event_data.get("integration_source"): # From api/server.py
+             additional_data_payload["integration_source"] = event_data.get("integration_source")
+
+
+        # Attempt to extract phone and interests if they exist in 'details'
+        phone = additional_data_payload.pop("phone", None) # Remove if present to avoid duplication
+        interests = additional_data_payload.pop("interests", [])
+        if not isinstance(interests, list): # Ensure interests is a list
+            interests = [str(interests)] if interests else []
+
+
+        return StandardizedLead(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            source=source, # e.g., "Eventbrite via Zapier"
+            source_id=source_id, # e.g., Eventbrite attendee ID
+            submission_date=datetime.now(), # Use current time as submission time for agent processing
+            interests=interests,
+            additional_data=additional_data_payload
+        )
     
     async def _check_for_duplicates(self, lead: StandardizedLead) -> Optional[WorkflowInstance]:
         """
