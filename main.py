@@ -13,7 +13,7 @@ from pathlib import Path
 
 from loguru import logger
 from api.server import start as start_api
-from services.integration_manager import IntegrationManager
+from services.integration_manager import get_integration_manager # Changed
 from services.notion_service import NotionService
 
 # Import configuration and utilities
@@ -70,24 +70,39 @@ def configure_logging():
 
 async def initialize_integrations():
     """Initialize the Integration Manager and connect all services."""
-    logger.info("Initializing Integration Manager with Notion as the central hub...")
+    logger.info("Fetching/Initializing Integration Manager via singleton accessor...")
 
-    # Create Integration Manager
-    integration_manager = IntegrationManager()
+    # Get or create Integration Manager instance (this will also initialize it if new)
+    integration_manager = await get_integration_manager()
 
-    # Initialize all integrations (this will validate Notion connection first)
-    success = await integration_manager.initialize()
+    if not integration_manager:
+        logger.error("Failed to obtain Integration Manager instance. Critical error.")
+        # This indicates a problem with get_integration_manager or its internal initialization
+        raise RuntimeError("Could not initialize Integration Manager")
 
-    if not success:
-        logger.error("Failed to initialize Integration Manager. Check Notion connection and API keys.")
-
-    # Log initialization status
+    logger.info("Integration Manager instance obtained.")
     status = integration_manager.get_initialization_status()
+
+    # Log overall status based on Notion, as it's critical
+    if not status.get("notion", False):
+        logger.error("Integration Manager's Notion service failed to initialize. This may impact core functionality.")
+    else:
+        logger.info("Integration Manager's Notion service appears to be initialized.")
+
+    # Log detailed status for all services
+    successful_count = 0
+    total_count = len(status) if status else 0 # Handle case where status might be None if manager failed badly
     for service, initialized in status.items():
         if initialized:
-            logger.info(f"✅ {service.capitalize()} service initialized successfully")
+            logger.info(f"✅ {service.capitalize()} service initialized successfully via Integration Manager.")
+            successful_count += 1
         else:
-            logger.warning(f"❌ {service.capitalize()} service failed to initialize")
+            logger.warning(f"❌ {service.capitalize()} service failed to initialize via Integration Manager.")
+    
+    if total_count > 0:
+        logger.info(f"Integration Manager reported {successful_count}/{total_count} services initialized.")
+    else:
+        logger.warning("Integration Manager reported no services or status unavailable.")
 
     return integration_manager
 
@@ -203,19 +218,30 @@ def main():
     logger.info("Initializing the named agent personality system - Grace Fields Orchestration")
 
     # Initialize integrations and register agents asynchronously
+    agents_dict = None # Initialize to None
     try:
-        # Run both initialization tasks
-        asyncio.run(async_initialization(message_bus))
+        # Run both initialization tasks and get the agents dictionary
+        agents_dict = asyncio.run(async_initialization(message_bus)) # Capture returned agents
     except Exception as e:
         logger.error("Failed during initialization: {}", e)
         logger.exception(e)
+        # Potentially exit or handle critical failure if agents_dict is None and required
 
-    # Start the API server with configured settings
+    if agents_dict is None:
+        logger.critical("Agent initialization failed. API server cannot start with agents.")
+        # Decide on behavior: exit, or start API without agents (if that's a valid state)
+        # For now, let's assume we log and it might proceed without agents if start_api allows
+        # Or, more robustly:
+        # sys.exit("Critical: Agent initialization failed.")
+
+
+    # Start the API server with configured settings and pass the agents
     start_api(
         host=settings.server.host,
         port=settings.server.port,
         log_level=settings.server.log_level.value.lower(),
-        workers=settings.server.workers
+        workers=settings.server.workers,
+        agents=agents_dict  # Pass agents to the API server
     )
 
 
@@ -240,6 +266,7 @@ async def async_initialization(message_bus=None):
         logger.exception(e)
         # Continue even if some integrations fail, as long as Notion works
 
+    agents = None # Initialize to None
     # Then register agents which require Notion connection
     try:
         # Pass the message bus to register_agents for enhanced orchestration
@@ -248,9 +275,9 @@ async def async_initialization(message_bus=None):
 
         # If we have a message bus, register agents as subscribers
         if message_bus and agents:
-            for agent_id, agent in agents.items():
-                if hasattr(agent, 'process_message'):
-                    message_bus.subscribe(agent_id, agent.process_message)
+            for agent_id, agent_instance in agents.items(): # Renamed 'agent' to 'agent_instance' for clarity
+                if hasattr(agent_instance, 'process_message'):
+                    message_bus.subscribe(agent_id, agent_instance.process_message)
                     logger.info(f"Agent {agent_id} subscribed to message bus")
 
             # Subscribe the message bus to the GraceOrchestrator for centralized event handling
@@ -259,6 +286,9 @@ async def async_initialization(message_bus=None):
     except Exception as e:
         logger.error("Failed to register agents: {}", e)
         logger.exception(e)
+        # agents will remain None if registration fails
+
+    return agents # Return the dictionary of initialized agents
 
 
 if __name__ == "__main__":

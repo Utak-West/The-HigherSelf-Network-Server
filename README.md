@@ -71,6 +71,28 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 </div>
 
+<div class="feature-card">
+
+### Retrieval Augmented Generation (RAG)
+
+- **Knowledge Retrieval**: Access relevant information from various sources
+- **Web Crawling**: Automatically extract content from websites using Crawl4AI
+- **Vector Embeddings**: Convert content into semantic vector representations
+- **Contextual Generation**: Generate responses enhanced with retrieved context
+
+</div>
+
+<div class="feature-card">
+
+### Flexible Embedding Providers
+
+- **Multiple Providers**: Support for OpenAI, Anthropic, and local embeddings
+- **Automatic Fallback**: Gracefully degrade to available providers
+- **Local Processing**: Process sensitive data locally with sentence-transformers
+- **Mock Providers**: Test without external API keys
+
+</div>
+
 </div>
 
 ## Notion Database Structure

@@ -11,26 +11,29 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write # Needed for GitHub Actions
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -39,17 +42,19 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/higherself-network-server:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          provenance: false # Disable provenance attestation to avoid issues
 
       - name: Update Notion Deployment Status
         if: github.event_name != 'pull_request'
         run: |
           echo "Updating Notion about deployment status..."
           echo "IMPORTANT: Notion serves as the central hub for all data and workflows"
-          
+
           # This would be replaced with actual Notion API call in production
           if [ -n "${{ secrets.NOTION_API_KEY }}" ] && [ -n "${{ secrets.NOTION_DEPLOYMENT_DB_ID }}" ]; then
             echo "Notion credentials configured, updating deployment status"
-            
+
             # Mock API call for example purposes
             echo 'Would execute:
             curl -X POST https://api.notion.com/v1/pages \
@@ -91,7 +96,14 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run security scan
         uses: aquasecurity/trivy-action@master
@@ -101,3 +113,4 @@ jobs:
           exit-code: '0'  # Changed from 1 to 0 to prevent workflow failures during initial setup
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+          timeout: '10m'
