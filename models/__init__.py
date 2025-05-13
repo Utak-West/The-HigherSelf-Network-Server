@@ -1,7 +1,7 @@
 """
 Models for The HigherSelf Network Server.
 
-This package contains Pydantic models that represent the data structures 
+This package contains Pydantic models that represent the data structures
 used throughout the system, aligned with the 16-database Notion structure.
 """
 
@@ -14,7 +14,7 @@ from models.base import (
 
 # Core Notion database models
 from models.notion_db_models import (
-    BusinessEntity, Agent, Workflow, WorkflowInstance, 
+    BusinessEntity, Agent, Workflow, WorkflowInstance,
     ApiIntegration, DataTransformation, UseCase,
     NotificationTemplate, AgentCommunication, Task,
     AIContentReview
@@ -32,10 +32,13 @@ from models.content_models import *
 # Audience segmentation models
 from models.audience_models import *
 
+# Video models
+from models.video_models import *
+
 __all__ = [
-    'EntityType', 'ApiPlatform', 'AgentCapability', 'AgentStatus', 
-    'RuntimeEnvironment', 'WorkflowStatus', 'InstanceStatus', 
-    'IntegrationStatus', 'NotificationChannel', 'TaskStatus', 
+    'EntityType', 'ApiPlatform', 'AgentCapability', 'AgentStatus',
+    'RuntimeEnvironment', 'WorkflowStatus', 'InstanceStatus',
+    'IntegrationStatus', 'NotificationChannel', 'TaskStatus',
     'ContentReviewStatus', 'NotionPage', 'NotionIntegrationConfig',
     'BusinessEntity', 'Agent', 'Workflow', 'WorkflowInstance',
     'ApiIntegration', 'DataTransformation', 'UseCase',

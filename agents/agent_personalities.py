@@ -586,6 +586,10 @@ class Elan(BaseAgent):
         self.agent_type = "ContentLifecycleAgent"
         self.tone = "Creative & adaptive"
 
+        # Initialize the video content agent extension
+        from agents.video_content_agent import VideoContentAgent
+        self.video_agent = VideoContentAgent(notion_service=notion_client)
+
     async def run(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Manage content lifecycle from idea generation to distribution across platforms,
@@ -606,6 +610,65 @@ class Elan(BaseAgent):
 
         return {"status": "processed", "message": "Content processed successfully"}
 
+    async def generate_video(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate a video using MoneyPrinterTurbo integration.
+
+        Args:
+            event_data: Video generation parameters
+
+        Returns:
+            Dict containing processing results and video content ID
+        """
+        self.logger.info(f"Elan generating video for topic: {event_data.get('topic', 'unknown')}")
+
+        # Convert event data to VideoGenerationConfig
+        from models.video_models import VideoGenerationConfig
+
+        try:
+            # Extract required parameters
+            config = VideoGenerationConfig(
+                topic=event_data.get("topic", ""),
+                language=event_data.get("language", "en"),
+                voice_name=event_data.get("voice_name"),
+                resolution=event_data.get("resolution", "1080x1920"),
+                clip_duration=event_data.get("clip_duration", 5),
+                subtitle_font=event_data.get("subtitle_font"),
+                subtitle_position=event_data.get("subtitle_position", "bottom"),
+                subtitle_color=event_data.get("subtitle_color", "#FFFFFF"),
+                subtitle_size=event_data.get("subtitle_size", 40),
+                subtitle_stroke_width=event_data.get("subtitle_stroke_width", 1.5),
+                background_music_volume=event_data.get("background_music_volume", 0.1),
+                custom_script=event_data.get("custom_script")
+            )
+
+            # Get business entity ID
+            business_entity_id = event_data.get("business_entity_id", "the_connection_practice")
+
+            # Generate video using the video agent extension
+            result = await self.video_agent.generate_video(config, business_entity_id)
+
+            return result
+        except Exception as e:
+            self.logger.error(f"Error generating video: {e}")
+            return {"status": "error", "message": str(e)}
+
+    async def get_video_status(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Get the status of a video generation task.
+
+        Args:
+            event_data: Must contain content_id
+
+        Returns:
+            Dict containing status information
+        """
+        content_id = event_data.get("content_id")
+        if not content_id:
+            return {"status": "error", "message": "content_id is required"}
+
+        return await self.video_agent.get_video_status(content_id)
+
     async def process_event(self, event_type: str, event_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process an event received by this agent.
@@ -622,7 +685,9 @@ class Elan(BaseAgent):
             "content_ready": self.run,
             "content_stage_change": self.run,
             "generate_content": self.run,
-            "distribute_content": self.run
+            "distribute_content": self.run,
+            "generate_video": self.generate_video,
+            "get_video_status": self.get_video_status
         }
 
         handler = event_handlers.get(event_type)
@@ -1458,7 +1523,7 @@ class GraceOrchestrator:
                 if self.message_bus and hasattr(self.message_bus, "notion_service"):
                     from models.notion_db_models import WorkflowInstance # Ensure this import exists or add it at top of file
                     from models.base import InstanceStatus # Ensure this import exists or add it at top of file
-                    
+
                     # Data from event_data for key_data_payload
                     key_data = {
                         "lead_id": event_data.get("lead_id"),

@@ -20,6 +20,7 @@ class ContentType(str, Enum):
     PODCAST_SCRIPT = "podcast_script"
     COURSE_MATERIAL = "course_material"
     WORKSHOP_MATERIAL = "workshop_material"
+    VIDEO = "video"
 
 
 class ContentStage(str, Enum):
@@ -30,6 +31,7 @@ class ContentStage(str, Enum):
     REVIEW = "review"
     MEDIA_CREATION = "media_creation"
     FINAL = "final"
+    READY = "ready"
     SCHEDULED = "scheduled"
     PUBLISHED = "published"
     ARCHIVED = "archived"
