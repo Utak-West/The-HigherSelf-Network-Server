@@ -290,5 +290,3 @@ python -m tools.verify_schema
 
 - [Notion API Documentation](https://developers.notion.com/)
 - [Supabase Documentation](https://supabase.io/docs)
-- [Database Sync Service API Reference](./API_REFERENCE.md)
-- [Troubleshooting Guide](./TROUBLESHOOTING.md)

@@ -71,7 +71,7 @@ This document outlines the complete structure of The HigherSelf Network Server c
 
 ### `/visualizations` - Visual Representations
 
-- `architecture.html` - HTML visualization of the system architecture
+- `../architecture/index.html` - HTML visualization of the system architecture
 
 ### `/logs` - Log Files
 

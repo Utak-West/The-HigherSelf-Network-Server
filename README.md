@@ -619,7 +619,7 @@ For production, we recommend:
 ## Business Workflows
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400?text=Workflow+Visualization" alt="Workflow Visualization" width="80%">
+  <!-- Placeholder for Workflow Visualization. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 The HigherSelf Network Server automates key business workflows for your art gallery, wellness center, and consultancy operations:
@@ -793,7 +793,7 @@ The HigherSelf Network Server connects with your essential business tools:
 The HigherSelf Network Server implements a hub-and-spoke architecture with Notion as the central hub:
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x500?text=System+Architecture+Diagram" alt="System Architecture" width="80%">
+  <!-- Placeholder for System Architecture Diagram. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 ### Key Components

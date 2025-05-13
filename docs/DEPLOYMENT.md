@@ -15,8 +15,8 @@ This document provides instructions for deploying The HigherSelf Network Server,
 1. Clone the repository on The HigherSelf Network Server:
 
    ```bash
-   git clone https://github.com/the-higherself-network/windsurf-notion-agent.git
-   cd windsurf-notion-agent
+   git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
+   cd The-HigherSelf-Network-Server
    ```
 
 1. Create and activate a virtual environment:
@@ -73,7 +73,7 @@ For production deployment on The HigherSelf Network Server:
 
 1. Set up a process manager (systemd, Supervisor, PM2, etc.)
 
-   Example systemd service file (`/etc/systemd/system/windsurf-agent.service`):
+   Example systemd service file (`/etc/systemd/system/the-higherself-network-server.service`):
 
    ```ini
    [Unit]
@@ -82,8 +82,8 @@ For production deployment on The HigherSelf Network Server:
 
    [Service]
    User=higherself
-   WorkingDirectory=/path/to/windsurf-notion-agent
-   ExecStart=/path/to/windsurf-notion-agent/venv/bin/python main.py
+   WorkingDirectory=/path/to/The-HigherSelf-Network-Server
+   ExecStart=/path/to/The-HigherSelf-Network-Server/venv/bin/python main.py
    Restart=always
    RestartSec=10
    Environment="PYTHONUNBUFFERED=1"
@@ -98,8 +98,8 @@ For production deployment on The HigherSelf Network Server:
 
    ```bash
    sudo systemctl daemon-reload
-   sudo systemctl enable windsurf-agent
-   sudo systemctl start windsurf-agent
+   sudo systemctl enable the-higherself-network-server
+   sudo systemctl start the-higherself-network-server
    ```
 
 3. Set up Nginx as a reverse proxy:
@@ -150,13 +150,13 @@ For production deployment on The HigherSelf Network Server:
 Logs are stored in the `logs` directory and rotated automatically. To view logs:
 
 ```bash
-tail -f logs/windsurf_agents.log
+tail -f logs/app.log
 ```
 
 In production, logs are also sent to the system journal:
 
 ```bash
-sudo journalctl -u windsurf-agent -f
+sudo journalctl -u the-higherself-network-server -f
 ```
 
 ### Health Checks

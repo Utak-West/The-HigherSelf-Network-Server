@@ -116,7 +116,7 @@ Run the database setup utility to create all required databases:
 
 ```bash
 # Using Docker
-docker-compose run --rm windsurf-agent python -m tools.notion_db_setup
+docker-compose run --rm the-higherself-network-server python -m tools.notion_db_setup
 
 # Using Python directly
 python -m tools.notion_db_setup

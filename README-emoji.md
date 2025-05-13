@@ -1,9 +1,7 @@
 # 💎 The HigherSelf Network Server
 
 <div align="center">
-
-![The HigherSelf Network Banner](https://via.placeholder.com/1200x300?text=The+HigherSelf+Network+Banner)
-
+  <!-- Placeholder for The HigherSelf Network Banner. Consider creating a new image or using a tool to generate one. -->
 **Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations**
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Utak-West/The-HigherSelf-Network-Server)
@@ -23,7 +21,7 @@ Welcome to **The HigherSelf Network Server** - an intelligent automation platfor
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400?text=Agent+System+Visualization" alt="Agent System Visualization" width="80%">
+  <!-- Placeholder for Agent System Visualization. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 ### 🔄 Notion as Your Central Hub
@@ -83,7 +81,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 ## 📂 Notion Database Structure
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x500?text=Notion+Database+Structure" alt="Notion Database Structure" width="80%">
+  <!-- Placeholder for Notion Database Structure. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 The HigherSelf Network Server uses a carefully designed system of 16 interconnected Notion databases that work together to create a powerful, flexible automation platform.
@@ -130,7 +128,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 ## 🔄 Key Automation Flows
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400?text=Automation+Flows+Diagram" alt="Automation Flows" width="80%">
+  <!-- Placeholder for Automation Flows Diagram. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 The HigherSelf Network Server implements powerful automation flows that streamline operations across your businesses. Each flow is handled by specialized agents working together through Notion.
@@ -142,7 +140,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 ## 👤 Meet Your Agent Team
 
 <div align="center">
-  <img src="https://via.placeholder.com/900x500?text=Agent+Team+Illustration" alt="Agent Team" width="80%">
+  <!-- Placeholder for Agent Team Illustration. Consider creating a new image or using a tool to generate one. -->
 </div>
 
 The HigherSelf Network Server features a unique team of agent personalities, each with their own character, tone, and specialized skills. These aren't just algorithms - they're digital team members designed to bring intention and care to your automated processes.

@@ -4,7 +4,7 @@ This document provides details on how The HigherSelf Network Server integrates w
 
 ## Notion Database Structure
 
-The system uses 10 structured Notion databases that form the backbone of the operational data:
+The system uses 16 structured Notion databases that form the backbone of the operational data:
 
 1. **Business Entities Registry** - Tracks all business entities (The Connection Practice, The 7 Space)
 2. **Agent Registry** - Catalogs all agents in the network with their capabilities
@@ -16,6 +16,12 @@ The system uses 10 structured Notion databases that form the backbone of the ope
 8. **Notifications Templates** - Manages reusable notification templates
 9. **Agent Communication Patterns** - Documents agent-to-agent communication
 10. **Master Tasks Database** - Centralizes actionable tasks
+11. **Contacts & Profiles DB** - Unified customer/contact database (this seems to be missing from the original list of 10 but is a core DB)
+12. **Community Hub DB** - Community member profiles and engagement tracking (this seems to be missing from the original list of 10 but is a core DB)
+13. **Products & Services DB** - Catalog of all available products and services (this seems to be missing from the original list of 10 but is a core DB)
+14. **Marketing Campaigns DB** - Marketing initiatives and performance tracking (this seems to be missing from the original list of 10 but is a core DB)
+15. **Feedback & Surveys DB** - Customer feedback and survey responses (this seems to be missing from the original list of 10 but is a core DB)
+16. **Rewards & Bounties DB** - Incentive programs and achievements (this seems to be missing from the original list of 10 but is a core DB)
 
 ## Database Setup
 

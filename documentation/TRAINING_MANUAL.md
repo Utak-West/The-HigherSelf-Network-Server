@@ -4,7 +4,7 @@
 
 Welcome to The HigherSelf Network Server training manual. This document provides comprehensive guidance for both technical staff and other stakeholders who will interact with our integration platform. 
 
-**Core Principle**: Notion serves as the central data and workflow management hub for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space. All integrations and automations are designed around this principle.
+**Core Principle**: Notion serves as the central data and workflow management hub (utilizing a 16-database structure) for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space. All integrations and automations are designed around this principle.
 
 ## Table of Contents
 
