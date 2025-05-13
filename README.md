@@ -692,6 +692,16 @@ The HigherSelf Network Server connects with your essential business tools:
   <span style="color: #666; font-size: 0.9em;">Learning</span>
 </div>
 
+<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+  <span style="font-weight: bold;">N8N</span>
+  <span style="color: #666; font-size: 0.9em;">Workflow Automation</span>
+</div>
+
+<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+  <span style="font-weight: bold;">Zapier</span>
+  <span style="color: #666; font-size: 0.9em;">Integration Platform</span>
+</div>
+
 </div>
 
 <details>
@@ -708,6 +718,8 @@ The HigherSelf Network Server connects with your essential business tools:
 | Circle.so | `/webhooks/circleso/member_activity` | Tracks community engagement |
 | Beehiiv | `/webhooks/beehiiv/newsletter/metrics` | Collects newsletter performance |
 | Beehiiv | `/webhooks/beehiiv/subscriber` | Manages newsletter subscribers |
+| N8N | `/external/n8n/callback` | Receives workflow data from N8N |
+| Zapier | `/external/zapier/callback` | Receives workflow data from Zapier |
 
 ### General API Endpoints
 
@@ -741,6 +753,12 @@ The HigherSelf Network Server connects with your essential business tools:
   <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/search-24.svg" alt="Search" width="18" height="18" /> Monitoring Guide</h3>
   <p>Instructions for monitoring system health and troubleshooting issues.</p>
   <a href="./documentation/MONITORING_AND_TROUBLESHOOTING.md" style="color: #0366d6;">Read the Monitoring Guide →</a>
+</div>
+
+<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
+  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/workflow-24.svg" alt="Workflow" width="18" height="18" /> N8N & Zapier Guide</h3>
+  <p>Guide for integrating with N8N and Zapier workflow automation platforms.</p>
+  <a href="./N8N_Zapier_Integration_Guide.md" style="color: #0366d6;">Read the Integration Guide →</a>
 </div>
 
 </div>
