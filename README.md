@@ -57,6 +57,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Webhook Endpoints**: Receive real-time data from external systems
 - **Bidirectional Sync**: Data flows both ways between systems
 - **Secure Authentication**: All connections use modern security standards
+- **Softr Integration**: Staff interfaces with agents through Softr
 
 </div>
 
@@ -97,6 +98,13 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Notion Integration**: Process text from Notion pages with Hugging Face models
 - **Webhook Support**: Trigger Hugging Face processing from external systems
 - **Task-Specific Models**: Curated model recommendations for different NLP tasks
+
+### Softr Integration
+
+- **Staff Agent Interface**: Allow staff to interact with agents through Softr
+- **Secure Authentication**: Staff authentication and authorization
+- **Interaction History**: Track and manage staff-agent interactions
+- **Webhook Support**: Process events from Softr in real-time
 
 </div>
 
@@ -803,6 +811,12 @@ The HigherSelf Network Server connects with your essential business tools:
   <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/huggingface-24.svg" alt="Hugging Face" width="18" height="18" /> Hugging Face Guide</h3>
   <p>Guide for using Hugging Face models with Notion for specialized NLP tasks.</p>
   <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Read the Hugging Face Guide →</a>
+</div>
+
+<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
+  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/people-24.svg" alt="Softr" width="18" height="18" /> Softr Integration Guide</h3>
+  <p>Guide for enabling staff to interface with agents through Softr.</p>
+  <a href="./documentation/SOFTR_INTEGRATION.md" style="color: #0366d6;">Read the Softr Integration Guide →</a>
 </div>
 
 </div>
