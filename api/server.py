@@ -40,6 +40,7 @@ from api.video_router import router as video_router
 from api.crawl_router import router as crawl_router
 from api.voice_router import router as voice_router
 from api.rag_router import router as rag_router
+from api.routes.agent_tasks import router as agent_tasks_router
 
 # Configure logging
 # logging.basicConfig removed - assuming setup_logging from utils is called in main.py
@@ -69,6 +70,7 @@ app.include_router(video_router)
 app.include_router(crawl_router)
 app.include_router(voice_router)
 app.include_router(rag_router)
+app.include_router(agent_tasks_router)
 
 # Agents will be passed via app.state.agents from main.py
 
@@ -161,7 +163,7 @@ async def startup_event():
                 successful_count += 1
             else:
                 logger.warning(f"❌ {service.capitalize()} service failed to initialize via Integration Manager.")
-        
+
         if total_count > 0:
             logger.info(f"Integration Manager reported {successful_count}/{total_count} services initialized during startup.")
         else:
@@ -228,7 +230,7 @@ async def health_check(request: Request): # Added request
         lead_agent_health = await lead_agent.check_health()
     else:
         logger.warning("Lead Capture Agent not available for health check.")
-        
+
     booking_agent_health = {"status": "unavailable", "reason": "Agent not found in app.state"}
     if booking_agent and hasattr(booking_agent, 'check_health'):
         booking_agent_health = await booking_agent.check_health()
@@ -536,7 +538,7 @@ def start(host: str, port: int, log_level: str, workers: int, agents: Optional[D
     """Start the API server, now accepting configuration and agents."""
     # Store agents in app state to make them accessible to endpoints
     app.state.agents = agents if agents is not None else {}
-    
+
     if not app.state.agents:
         logger.warning("API server (app.state.agents) starting without any agents provided.")
     else:

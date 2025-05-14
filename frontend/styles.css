@@ -1,0 +1,116 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.agent-list .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.agent-list .list-group-item:hover {
+    background-color: #f1f1f1;
+}
+
+.agent-list .list-group-item.active {
+    background-color: #e9ecef;
+    color: #212529;
+    border-color: #dee2e6;
+}
+
+.recent-tasks .list-group-item {
+    padding: 0.5rem 1rem;
+}
+
+.task-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.task-item:hover {
+    background-color: #f1f1f1;
+}
+
+.task-status-pending {
+    color: #fd7e14;
+}
+
+.task-status-completed {
+    color: #198754;
+}
+
+.task-status-failed {
+    color: #dc3545;
+}
+
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating .star {
+    font-size: 24px;
+    color: #ccc;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.rating .star:hover,
+.rating .star:hover ~ .star,
+.rating .star.selected,
+.rating .star.selected ~ .star {
+    color: #ffc107;
+}
+
+#resultCard {
+    transition: all 0.3s ease;
+}
+
+#taskResult {
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.priority-high {
+    border-left: 4px solid #dc3545;
+}
+
+.priority-medium {
+    border-left: 4px solid #fd7e14;
+}
+
+.priority-low {
+    border-left: 4px solid #0d6efd;
+}
+
+.task-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .col-md-4, .col-md-8 {
+        margin-bottom: 20px;
+    }
+}
