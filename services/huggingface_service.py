@@ -5,18 +5,19 @@ This module provides integration with Hugging Face's AI models.
 """
 
 import os
+import json
 import requests
 from typing import Dict, Any, Optional, List
-import json
 from datetime import datetime
 
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from models.base import ApiPlatform
 from services.base_service import BaseService
 from models.huggingface_models import HuggingFaceModelConfig, NotionHuggingFaceIntegration, HuggingFaceResponse
 from services.notion_service import NotionService
+from services.ai_providers.huggingface_provider import HuggingFaceProvider
 
 class HuggingFaceServiceConfig(BaseModel):
     """Configuration for Hugging Face service."""
@@ -57,9 +58,25 @@ class HuggingFaceService(BaseService):
         # Store Notion service for integration
         self.notion_service = notion_service
         
+        # Initialize the provider for completions
+        self.provider = HuggingFaceProvider(api_key=self.api_key)
+        
         # Log warning if credentials are missing
         if not self.api_key:
             logger.warning("Hugging Face API key not configured")
+    
+    async def initialize(self) -> bool:
+        """
+        Initialize the service and validate credentials.
+        
+        Returns:
+            True if initialization successful, False otherwise
+        """
+        if not self.api_key:
+            logger.error("Hugging Face API key not provided")
+            return False
+            
+        return await self.provider.initialize()
     
     def _get_headers(self) -> Dict[str, str]:
         """
@@ -248,3 +265,40 @@ class HuggingFaceService(BaseService):
                 await self.notion_service.update_workflow_state(workflow_id, "HuggingFace_Processing_Failed", "Failed")
             
             raise
+            
+    def get_available_models_for_task(self, task: str) -> List[Dict[str, str]]:
+        """
+        Get a list of recommended models for a specific task.
+        
+        Args:
+            task: Task type (e.g., 'text-generation', 'summarization')
+            
+        Returns:
+            List of model information dictionaries
+        """
+        # This is a simplified implementation - in production you might want to
+        # query the Hugging Face API for current models or maintain a curated list
+        task_models = {
+            "text-generation": [
+                {"id": "gpt2", "description": "OpenAI GPT-2 model for text generation"},
+                {"id": "distilgpt2", "description": "Distilled version of GPT-2"},
+                {"id": "EleutherAI/gpt-neo-1.3B", "description": "GPT-Neo 1.3B parameters model"}
+            ],
+            "summarization": [
+                {"id": "facebook/bart-large-cnn", "description": "BART model fine-tuned on CNN Daily Mail"},
+                {"id": "sshleifer/distilbart-cnn-12-6", "description": "Distilled BART for summarization"}
+            ],
+            "translation": [
+                {"id": "Helsinki-NLP/opus-mt-en-fr", "description": "English to French translation"},
+                {"id": "Helsinki-NLP/opus-mt-en-es", "description": "English to Spanish translation"}
+            ],
+            "sentiment-analysis": [
+                {"id": "distilbert-base-uncased-finetuned-sst-2-english", "description": "DistilBERT fine-tuned for sentiment"}
+            ],
+            "question-answering": [
+                {"id": "deepset/roberta-base-squad2", "description": "RoBERTa fine-tuned on SQuAD2"},
+                {"id": "distilbert-base-cased-distilled-squad", "description": "Distilled BERT for QA"}
+            ]
+        }
+        
+        return task_models.get(task, [])

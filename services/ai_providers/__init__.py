@@ -5,6 +5,7 @@ AI Provider integrations for The HigherSelf Network Server.
 from .base_provider import AIProvider, AIProviderConfig, AICompletionRequest, AICompletionResponse
 from .openai_provider import OpenAIProvider, OpenAIConfig
 from .anthropic_provider import AnthropicProvider, AnthropicConfig
+from .huggingface_provider import HuggingFaceProvider, HuggingFaceConfig
 
 # Import mock provider if available
 try:
@@ -22,6 +23,8 @@ __all__ = [
     'OpenAIConfig',
     'AnthropicProvider',
     'AnthropicConfig',
+    'HuggingFaceProvider',
+    'HuggingFaceConfig',
 ]
 
 # Add mock provider to __all__ if available

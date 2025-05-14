@@ -40,6 +40,7 @@ from api.video_router import router as video_router
 from api.crawl_router import router as crawl_router
 from api.voice_router import router as voice_router
 from api.rag_router import router as rag_router
+from api.huggingface_router import router as huggingface_router
 from api.routes.agent_tasks import router as agent_tasks_router
 from api.huggingface_router import router as huggingface_router
 from api.softr_router import router as softr_router
@@ -72,6 +73,7 @@ app.include_router(video_router)
 app.include_router(crawl_router)
 app.include_router(voice_router)
 app.include_router(rag_router)
+app.include_router(huggingface_router)
 app.include_router(agent_tasks_router)
 app.include_router(huggingface_router)
 app.include_router(softr_router)
@@ -216,6 +218,22 @@ async def startup_event():
             rag_pipeline = await get_rag_pipeline(ai_router)
             logger.info("✅ RAG pipeline initialized successfully")
 
+            # Initialize Hugging Face service and router
+            from services.huggingface_service import HuggingFaceService
+            from api.huggingface_router import init_router as init_huggingface_router
+
+            try:
+                # Create Hugging Face service
+                huggingface_service = HuggingFaceService(notion_service=integration_manager.get_notion_service())
+                if await huggingface_service.initialize():
+                    # Initialize the router with the service
+                    init_huggingface_router(huggingface_service, integration_manager.get_notion_service())
+                    logger.info("✅ Hugging Face service initialized successfully")
+                else:
+                    logger.warning("⚠️ Hugging Face service initialization failed")
+            except Exception as e:
+                logger.error(f"Error initializing Hugging Face service: {e}")
+
         except Exception as e:
             logger.error(f"Error initializing RAG services: {e}")
     except Exception as e:
@@ -286,10 +304,24 @@ async def health_check(request: Request): # Added request
     elif sum(1 for status in integration_status.values() if not status) / len(integration_status) > 0.3:
         overall_status = "degraded"
 
+    # Check Hugging Face service
+    huggingface_status = False
+    try:
+        from services.huggingface_service import HuggingFaceService
+        huggingface_service = HuggingFaceService()
+        huggingface_status = await huggingface_service.initialize()
+    except Exception as e:
+        logger.error(f"Error checking Hugging Face service: {e}")
+        huggingface_status = False
+
     # If RAG services are not healthy, system is degraded
     if not all(rag_services_status.get(service, False) for service in ["vector_store", "semantic_search"]):
         if overall_status == "healthy":
             overall_status = "degraded"
+
+    # If Hugging Face service is not healthy, system is degraded
+    if not huggingface_status and overall_status == "healthy":
+        overall_status = "degraded"
 
     return {
         "status": overall_status,
@@ -300,7 +332,8 @@ async def health_check(request: Request): # Added request
             "booking_agent": booking_agent_health
         },
         "integrations": integration_status,
-        "rag_services": rag_services_status
+        "rag_services": rag_services_status,
+        "huggingface_service": huggingface_status
     }
 
 
