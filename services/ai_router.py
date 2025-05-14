@@ -13,7 +13,8 @@ from services.ai_providers import (
     AICompletionRequest,
     AICompletionResponse,
     OpenAIProvider,
-    AnthropicProvider
+    AnthropicProvider,
+    HuggingFaceProvider
 )
 
 # Import mock provider for testing
@@ -30,6 +31,7 @@ class AIRouterConfig(BaseModel):
     default_model: Optional[str] = None
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
+    huggingface_api_key: Optional[str] = None
 
     class Config:
         env_prefix = "AI_ROUTER_"
@@ -72,6 +74,14 @@ class AIRouter:
                 if await anthropic_provider.initialize():
                     self.providers["anthropic"] = anthropic_provider
                     logger.info("Anthropic provider initialized")
+
+            # Initialize Hugging Face provider
+            huggingface_api_key = os.environ.get("HUGGINGFACE_API_KEY")
+            if huggingface_api_key:
+                huggingface_provider = HuggingFaceProvider(api_key=huggingface_api_key)
+                if await huggingface_provider.initialize():
+                    self.providers["huggingface"] = huggingface_provider
+                    logger.info("Hugging Face provider initialized")
 
             # Check if at least one provider is available
             if not self.providers:
@@ -234,6 +244,11 @@ class AIRouter:
             complex_keywords = ["analyze", "explain", "compare", "evaluate", "synthesize"]
             if any(keyword in request.prompt.lower() for keyword in complex_keywords) and "anthropic" in self.providers:
                 return "anthropic"  # Claude excels at complex reasoning
+
+            # For specific NLP tasks, prefer Hugging Face
+            nlp_keywords = ["summarize", "translate", "sentiment", "question", "classify"]
+            if any(keyword in request.prompt.lower() for keyword in nlp_keywords) and "huggingface" in self.providers:
+                return "huggingface"  # Hugging Face has specialized models for these tasks
 
             # Default to the router's default provider
             return self.default_provider

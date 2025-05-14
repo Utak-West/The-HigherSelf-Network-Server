@@ -91,6 +91,13 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Local Processing**: Process sensitive data locally with sentence-transformers
 - **Mock Providers**: Test without external API keys
 
+### Hugging Face Integration
+
+- **Specialized NLP Tasks**: Access to state-of-the-art models for summarization, translation, and more
+- **Notion Integration**: Process text from Notion pages with Hugging Face models
+- **Webhook Support**: Trigger Hugging Face processing from external systems
+- **Task-Specific Models**: Curated model recommendations for different NLP tasks
+
 </div>
 
 </div>
@@ -724,6 +731,11 @@ The HigherSelf Network Server connects with your essential business tools:
   <span style="color: #666; font-size: 0.9em;">Integration Platform</span>
 </div>
 
+<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+  <span style="font-weight: bold;">Hugging Face</span>
+  <span style="color: #666; font-size: 0.9em;">AI Models</span>
+</div>
+
 </div>
 
 <details>
@@ -752,6 +764,10 @@ The HigherSelf Network Server connects with your essential business tools:
 | `/workflows/{instance_id}` | GET | Workflow instance details |
 | `/api/status/{service_name}` | GET | Integration status check |
 | `/api/notion/sync` | POST | Manual Notion synchronization |
+| `/huggingface/` | GET | Hugging Face integration info |
+| `/huggingface/models/{task}` | GET | List models for a specific task |
+| `/huggingface/process` | POST | Process text with Hugging Face models |
+| `/huggingface/webhooks/notion` | POST | Notion to Hugging Face webhook |
 
 </details>
 
@@ -781,6 +797,12 @@ The HigherSelf Network Server connects with your essential business tools:
   <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/workflow-24.svg" alt="Workflow" width="18" height="18" /> N8N & Zapier Guide</h3>
   <p>Guide for integrating with N8N and Zapier workflow automation platforms.</p>
   <a href="./N8N_Zapier_Integration_Guide.md" style="color: #0366d6;">Read the Integration Guide →</a>
+</div>
+
+<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
+  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/huggingface-24.svg" alt="Hugging Face" width="18" height="18" /> Hugging Face Guide</h3>
+  <p>Guide for using Hugging Face models with Notion for specialized NLP tasks.</p>
+  <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Read the Hugging Face Guide →</a>
 </div>
 
 </div>
