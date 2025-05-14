@@ -29,6 +29,8 @@ from services.ai_provider_service import AIProviderService
 from services.airtable_service import AirtableService
 from services.snovio_service import SnovIOService  # Corrected import
 from services.plaud_service import PlaudService
+from services.huggingface_service import HuggingFaceService
+from services.softr_service import SoftrService
 
 # Singleton instance of the IntegrationManager
 _integration_manager = None
@@ -37,16 +39,16 @@ _integration_manager = None
 async def get_integration_manager() -> 'IntegrationManager':
     """
     Get or create a singleton instance of the IntegrationManager.
-    
+
     Returns:
         IntegrationManager: The singleton instance of the integration manager
     """
     global _integration_manager
-    
+
     if _integration_manager is None:
         _integration_manager = IntegrationManager()
         await _integration_manager.initialize()
-        
+
     return _integration_manager
 
 
@@ -67,6 +69,8 @@ class IntegrationManagerConfig(BaseModel):
     enable_plaud: bool = True
     enable_beehiiv: bool = True
     enable_circle: bool = True
+    enable_huggingface: bool = True
+    enable_softr: bool = True
 
     class Config:
         env_prefix = "INTEGRATION_"
@@ -250,6 +254,32 @@ class IntegrationManager:
                 self.services["plaud"] = PlaudService()
                 # Plaud doesn't have a specific validation method
                 self.initialization_status["plaud"] = True
+
+            # Hugging Face
+            if self.config.enable_huggingface:
+                logger.info("Initializing Hugging Face service...")
+                try:
+                    huggingface_service = HuggingFaceService(notion_service=self.notion_service)
+                    # Hugging Face doesn't have a specific validation method yet
+                    self.services["huggingface"] = huggingface_service
+                    self.initialization_status["huggingface"] = True
+                    logger.info("Hugging Face service initialized successfully")
+                except Exception as e:
+                    logger.error(f"Failed to initialize Hugging Face service: {e}")
+                    self.initialization_status["huggingface"] = False
+
+            # Softr
+            if self.config.enable_softr:
+                logger.info("Initializing Softr service...")
+                try:
+                    softr_service = SoftrService()
+                    # Softr doesn't have a specific validation method yet
+                    self.services["softr"] = softr_service
+                    self.initialization_status["softr"] = True
+                    logger.info("Softr service initialized successfully")
+                except Exception as e:
+                    logger.error(f"Failed to initialize Softr service: {e}")
+                    self.initialization_status["softr"] = False
 
             # AI Providers
             if self.config.enable_ai_providers:

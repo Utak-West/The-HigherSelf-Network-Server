@@ -41,6 +41,8 @@ from api.crawl_router import router as crawl_router
 from api.voice_router import router as voice_router
 from api.rag_router import router as rag_router
 from api.routes.agent_tasks import router as agent_tasks_router
+from api.huggingface_router import router as huggingface_router
+from api.softr_router import router as softr_router
 
 # Configure logging
 # logging.basicConfig removed - assuming setup_logging from utils is called in main.py
@@ -71,6 +73,8 @@ app.include_router(crawl_router)
 app.include_router(voice_router)
 app.include_router(rag_router)
 app.include_router(agent_tasks_router)
+app.include_router(huggingface_router)
+app.include_router(softr_router)
 
 # Agents will be passed via app.state.agents from main.py
 
