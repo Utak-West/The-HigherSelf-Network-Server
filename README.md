@@ -16,8 +16,7 @@ Welcome to **The HigherSelf Network Server** - an intelligent automation platfor
 
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
 
-<div align="center">
-</div>
+
 
 ### Notion as Your Central Hub
 
@@ -115,8 +114,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 ## Notion Database Structure
 
-<div align="center">
-</div>
+
 
 The HigherSelf Network Server uses a carefully designed system of 16 interconnected Notion databases that work together to create a powerful, flexible automation platform.
 
@@ -286,8 +284,7 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 
 ## Key Automation Flows
 
-<div align="center">
-</div>
+
 
 The HigherSelf Network Server implements powerful automation flows that streamline operations across your businesses. Each flow is handled by specialized agents working together through Notion.
 
@@ -295,7 +292,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 <div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
   <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">Star</div>
+
     <div>
       <h3 style="margin: 0;">Lead Capture & Nurturing</h3>
       <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Nyra & Ruvo</p>
@@ -411,8 +408,7 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 ## Meet Your Agent Team
 
-<div align="center">
-</div>
+
 
 The HigherSelf Network features a unique team of digital agents, each with their own personality and specialized skills. These aren't just algorithms - they're digital team members designed to bring intention and care to your automated processes.
 
@@ -515,7 +511,7 @@ python main.py
 </details>
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/cloud-24.svg" alt="Cloud" width="16" height="16" /> Cloud Deployment</b></summary>
+<summary><b> Cloud Deployment</b></summary>
 
 For detailed cloud deployment instructions, see our [Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md).
 
@@ -535,7 +531,7 @@ We support:
 The system is configured through environment variables in the `.env` file:
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/key-24.svg" alt="Key" width="16" height="16" /> API Credentials</b></summary>
+<summary><b> API Credentials</b></summary>
 
 ```env
 # Notion API (Required)
@@ -553,7 +549,7 @@ BEEHIIV_API_KEY=your_beehiiv_api_key
 </details>
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/briefcase-24.svg" alt="Briefcase" width="16" height="16" /> Notion Database Setup</b></summary>
+<summary><b> Notion Database Setup</b></summary>
 
 Run our automated setup tool to create all required Notion databases:
 
@@ -573,7 +569,7 @@ This will:
 </details>
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/lock-24.svg" alt="Lock" width="16" height="16" /> Security Settings</b></summary>
+<summary><b> Security Settings</b></summary>
 
 ```env
 # Webhook security
@@ -595,13 +591,13 @@ For production, we recommend:
 </div>
 
 <div align="center" style="margin-top: 30px;">
-  <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/book-24.svg" alt="Book" width="16" height="16" /> Complete Deployment Guide</a>
+  <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"> Complete Deployment Guide</a>
 </div>
 
 ## Business Workflows
 
 <div align="center">
-  <!-- Placeholder for Workflow Visualization. Consider creating a new image or using a tool to generate one. -->
+  
 </div>
 
 The HigherSelf Network Server automates key business workflows for your art gallery, wellness center, and consultancy operations:
@@ -609,7 +605,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 <div class="workflow-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px;">
 
 <div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/paintbrush-24.svg" alt="Paintbrush" width="18" height="18" /> Art Gallery Operations</h3>
+  <h3> Art Gallery Operations</h3>
   <ul>
     <li><strong>Exhibition Planning & Management</strong>: From concept to opening night</li>
     <li><strong>Artist Relationship Management</strong>: Track communications and agreements</li>
@@ -619,7 +615,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 </div>
 
 <div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/person-24.svg" alt="Person" width="18" height="18" /> Wellness Center Operations</h3>
+  <h3> Wellness Center Operations</h3>
   <ul>
     <li><strong>Retreat Booking Management</strong>: Handle registrations and preparations</li>
     <li><strong>Practitioner Scheduling</strong>: Coordinate sessions and resources</li>
@@ -629,7 +625,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 </div>
 
 <div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/briefcase-24.svg" alt="Briefcase" width="18" height="18" /> Consultancy Operations</h3>
+  <h3> Consultancy Operations</h3>
   <ul>
     <li><strong>Client Onboarding</strong>: Streamline the intake process</li>
     <li><strong>Project Management</strong>: Track deliverables and milestones</li>
@@ -639,7 +635,7 @@ The HigherSelf Network Server automates key business workflows for your art gall
 </div>
 
 <div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/globe-24.svg" alt="Globe" width="18" height="18" /> Cross-Business Operations</h3>
+  <h3> Cross-Business Operations</h3>
   <ul>
     <li><strong>Marketing Campaign Management</strong>: Coordinate multi-channel outreach</li>
     <li><strong>Content Creation & Distribution</strong>: Manage your content lifecycle</li>
@@ -757,7 +753,7 @@ The HigherSelf Network Server connects with your essential business tools:
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/person-24.svg" alt="Person" width="18" height="18" /> Agent System Guide</h3>
+  <h3> Agent System Guide</h3>
   <p>Detailed information about agent personalities and how to work with them.</p>
   <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="color: #0366d6;">Read the Agent Guide →</a>
 </div>
@@ -798,7 +794,7 @@ The HigherSelf Network Server connects with your essential business tools:
 The HigherSelf Network Server implements a hub-and-spoke architecture with Notion as the central hub:
 
 <div align="center">
-  <!-- Placeholder for System Architecture Diagram. Consider creating a new image or using a tool to generate one. -->
+  
 </div>
 
 ### Key Components
@@ -886,13 +882,13 @@ class MyNewPlatformService(BaseService):
 <div class="support-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
 <div class="support-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/mail-24.svg" alt="Mail" width="18" height="18" /> Contact Support</h3>
+  <h3> Contact Support</h3>
   <p>For questions or assistance, contact The HigherSelf Network team:</p>
   <p><a href="mailto:support@higherself.network">support@higherself.network</a></p>
 </div>
 
 <div class="support-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/star-24.svg" alt="Star" width="18" height="18" /> Training & Consulting</h3>
+  <h3> Training & Consulting</h3>
   <p>Need help getting started? We offer personalized training and consulting services.</p>
   <p><a href="https://higherself.network/training">Learn More</a></p>
 </div>
