@@ -414,78 +414,42 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 <div align="center">
 </div>
 
-The HigherSelf Network Server features a unique team of agent personalities, each with their own character, tone, and specialized skills. These aren't just algorithms - they're digital team members designed to bring intention and care to your automated processes.
+The HigherSelf Network features a unique team of digital agents, each with their own personality and specialized skills. These aren't just algorithms - they're digital team members designed to bring intention and care to your automated processes.
 
-<div class="agent-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
+### Agent Personalities
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Nyra</h3>
-  <p><strong>Lead Capture Specialist</strong></p>
-  <p><em>Intuitive & Responsive</em></p>
-  <p>Like flowing water (from Sanskrit <em>nira</em>), Nyra channels new connections from multiple sources into your Notion ecosystem with grace and attention to detail.</p>
-  <p><strong>Specialty:</strong> Capturing and nurturing new leads</p>
-</div>
+| Agent | Role | Personality | Key Capabilities |
+|-------|------|-------------|-----------------|
+| **Nyra** | Lead Capture Specialist | Intuitive & Responsive | Lead processing, contact management, workflow creation |
+| **Solari** | Booking & Order Manager | Clear & Luminous | Appointment scheduling, order processing, inventory tracking |
+| **Ruvo** | Task Orchestrator | Grounded & Task-driven | Task creation, deadline tracking, project coordination |
+| **Liora** | Marketing Strategist | Elegant & Strategic | Campaign management, performance tracking, audience targeting |
+| **Sage** | Community Curator | Warm & Connected | Community engagement, relationship building, discussion facilitation |
+| **Elan** | Content Choreographer | Creative & Adaptive | Content creation, distribution management, performance analysis |
+| **Zevi** | Audience Analyst | Analytical & Sharp | Data analysis, audience segmentation, trend identification |
+| **Grace** | System Orchestrator | Harmonious & Coordinating | Agent coordination, workflow orchestration, system monitoring |
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Solari</h3>
-  <p><strong>Booking & Order Manager</strong></p>
-  <p><em>Clear & Luminous</em></p>
-  <p>Bringing solar precision to appointment and order processes, Solari manages the structured flow of bookings and purchases with clarity and warmth.</p>
-  <p><strong>Specialty:</strong> Managing bookings, appointments, and orders</p>
-</div>
+### How They Work Together
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Ruvo</h3>
-  <p><strong>Task Orchestrator</strong></p>
-  <p><em>Grounded & Task-driven</em></p>
-  <p>From the Latin root <em>ruvus</em> (resolve), Ruvo handles the practical execution of workflow-generated tasks with calm efficiency and reliability.</p>
-  <p><strong>Specialty:</strong> Creating, assigning, and tracking tasks</p>
-</div>
+Our agents collaborate seamlessly across your business processes:
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Liora</h3>
-  <p><strong>Marketing Strategist</strong></p>
-  <p><em>Elegant & Strategic</em></p>
-  <p>Liora (Hebrew for "light") brings illumination and strategic thinking to your marketing campaigns, maintaining clarity amid complex promotional activities.</p>
-  <p><strong>Specialty:</strong> Managing marketing campaigns and outreach</p>
-</div>
+- **Nyra** captures a new lead, which **Ruvo** turns into follow-up tasks
+- **Liora** creates marketing campaigns based on **Zevi's** audience insights
+- **Elan** develops content that **Sage** shares with your community
+- **Solari** manages bookings that originated from **Liora's** campaigns
+- **Grace** ensures all agents work together harmoniously
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Sage</h3>
-  <p><strong>Community Curator</strong></p>
-  <p><em>Warm & Connected</em></p>
-  <p>Sage nurtures your community with wisdom and care, holding space for authentic relationships and meaningful engagement in your Circle.so community.</p>
-  <p><strong>Specialty:</strong> Facilitating community engagement</p>
-</div>
+### Business Applications
 
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Elan</h3>
-  <p><strong>Content Choreographer</strong></p>
-  <p><em>Creative & Adaptive</em></p>
-  <p>With both flair and disciplined order, Elan manages the lifecycle of your content from conception to publication across multiple platforms.</p>
-  <p><strong>Specialty:</strong> Managing content creation and distribution</p>
-</div>
-
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Zevi</h3>
-  <p><strong>Audience Analyst</strong></p>
-  <p><em>Analytical & Sharp</em></p>
-  <p>Like its wolf namesake, Zevi keenly observes patterns in audience behavior to create meaningful segments for targeted engagement.</p>
-  <p><strong>Specialty:</strong> Analyzing and segmenting audiences</p>
-</div>
-
-<div class="agent-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Grace Fields</h3>
-  <p><strong>System Orchestrator</strong></p>
-  <p><em>Harmonious & Coordinating</em></p>
-  <p>At the center of it all, Grace ensures that each agent is activated at the right time, maintaining the flow of information throughout the system.</p>
-  <p><strong>Specialty:</strong> Coordinating all agent activities</p>
-</div>
-
-</div>
+| Business Type | How Agents Help |
+|---------------|-----------------|
+| **Art Gallery** | Capture exhibition interest, process artwork sales, manage exhibitions, market artists, engage collectors |
+| **Wellness Center** | Process retreat inquiries, manage service bookings, coordinate practitioners, promote programs, nurture community |
+| **Consultancy** | Capture consultation requests, schedule meetings, track projects, market expertise, maintain relationships |
 
 <div align="center" style="margin-top: 30px;">
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Read the Complete Agent System Guide</a>
+  <a href="./documentation/AGENT_SYSTEM_SIMPLIFIED.md" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Read the Simple Agent System Guide</a>
+  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-left: 10px;">Technical Agent System Guide</a>
 </div>
 
 
