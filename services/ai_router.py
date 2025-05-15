@@ -160,13 +160,45 @@ class AIRouter:
 
         provider = self.providers[provider_name]
 
-        # Use default model if not specified
-        if not request.model and self.default_model:
-            request.model = self.default_model
+        # Determine the best model for this task if not specified
+        if not request.model:
+            # Try to infer task type from prompt
+            task_type = "generate"  # Default task type
+            prompt_lower = request.prompt.lower()
+
+            # Check for task-specific keywords
+            task_keywords = {
+                "summarize": ["summarize", "summary", "condense", "shorten"],
+                "translate": ["translate", "translation", "convert to", "in french", "in spanish"],
+                "sentiment": ["sentiment", "feeling", "emotion", "attitude", "opinion"],
+                "question": ["answer this question", "find in the text", "extract from passage"],
+                "classify": ["classify", "categorize", "label", "tag", "identify type"],
+                "analyze": ["analyze", "analysis", "examine", "investigate"]
+            }
+
+            for task, keywords in task_keywords.items():
+                if any(keyword in prompt_lower for keyword in keywords):
+                    task_type = task
+                    break
+
+            # Estimate content length
+            content_length = len(request.prompt)
+
+            # Select best model based on provider, task, and content length
+            selected_model = self.select_model_for_task(
+                provider_name=provider_name,
+                task_type=task_type,
+                content_length=content_length
+            )
+
+            if selected_model:
+                request.model = selected_model
+            elif self.default_model:
+                request.model = self.default_model
 
         # Get completion from the selected provider
         try:
-            logger.info(f"Routing completion request to {provider_name} provider")
+            logger.info(f"Routing completion request to {provider_name} provider with model {request.model or 'default'}")
             response = await provider.get_completion(request)
             return response
         except Exception as e:
@@ -228,30 +260,142 @@ class AIRouter:
         Returns:
             Provider name string
         """
-        # This method could be enhanced with more sophisticated routing logic
-        # based on task requirements, prompt complexity, cost considerations, etc.
-
-        # For now, use a simple approach based on token length and model availability
+        # Enhanced routing logic based on task requirements, prompt complexity, and model capabilities
         try:
             # Estimate token count (very rough approximation)
             estimated_tokens = len(request.prompt.split()) * 1.3
 
+            # Check if a specific model is requested
+            if request.model:
+                # If model is a Hugging Face model and provider is available, use it
+                try:
+                    from models.huggingface_model_registry import model_registry
+                    if request.model in model_registry.get_all_model_ids() and "huggingface" in self.providers:
+                        return "huggingface"
+                except ImportError:
+                    # Model registry not available, fall back to other selection methods
+                    pass
+
             # For very long prompts, prefer models with larger context windows
-            if estimated_tokens > 8000 and "openai" in self.providers:
-                return "openai"  # GPT models have large context windows
+            if estimated_tokens > 8000:
+                if "anthropic" in self.providers:
+                    return "anthropic"  # Claude has large context window
+                elif "openai" in self.providers:
+                    return "openai"  # GPT models have large context windows
 
-            # For complex reasoning tasks, prefer Claude
-            complex_keywords = ["analyze", "explain", "compare", "evaluate", "synthesize"]
-            if any(keyword in request.prompt.lower() for keyword in complex_keywords) and "anthropic" in self.providers:
-                return "anthropic"  # Claude excels at complex reasoning
+            # Task-specific routing based on prompt content
+            prompt_lower = request.prompt.lower()
 
-            # For specific NLP tasks, prefer Hugging Face
-            nlp_keywords = ["summarize", "translate", "sentiment", "question", "classify"]
-            if any(keyword in request.prompt.lower() for keyword in nlp_keywords) and "huggingface" in self.providers:
-                return "huggingface"  # Hugging Face has specialized models for these tasks
+            # For complex reasoning, creative, or analytical tasks, prefer Claude or GPT
+            complex_keywords = ["analyze", "explain", "compare", "evaluate", "synthesize",
+                               "reason", "critique", "assess", "review", "examine"]
+            if any(keyword in prompt_lower for keyword in complex_keywords):
+                if "anthropic" in self.providers:
+                    return "anthropic"  # Claude excels at complex reasoning
+                elif "openai" in self.providers:
+                    return "openai"  # GPT is also good at reasoning
+
+            # For specific NLP tasks, prefer Hugging Face specialized models
+            nlp_tasks = {
+                "summarize": ["summarize", "summary", "condense", "shorten"],
+                "translate": ["translate", "translation", "convert to", "in french", "in spanish"],
+                "sentiment": ["sentiment", "feeling", "emotion", "attitude", "opinion"],
+                "question": ["answer this question", "find in the text", "extract from passage"],
+                "classify": ["classify", "categorize", "label", "tag", "identify type"]
+            }
+
+            # Check if prompt contains any NLP task keywords
+            for task, keywords in nlp_tasks.items():
+                if any(keyword in prompt_lower for keyword in keywords) and "huggingface" in self.providers:
+                    return "huggingface"  # Hugging Face has specialized models for these tasks
+
+            # For creative content generation
+            creative_keywords = ["creative", "story", "poem", "write", "generate", "imagine"]
+            if any(keyword in prompt_lower for keyword in creative_keywords):
+                if "openai" in self.providers:
+                    return "openai"  # GPT is good at creative content
+                elif "anthropic" in self.providers:
+                    return "anthropic"  # Claude is also good at creative content
 
             # Default to the router's default provider
             return self.default_provider
         except Exception as e:
             logger.error(f"Error in provider selection: {e}")
             return self.default_provider
+
+    def select_model_for_task(self, provider_name: str, task_type: str,
+                             content_length: Optional[int] = None,
+                             performance_priority: str = "balanced") -> Optional[str]:
+        """
+        Select the best model for a specific task and provider.
+
+        Args:
+            provider_name: Name of the provider
+            task_type: Type of task to perform
+            content_length: Optional length of content to process
+            performance_priority: Priority (speed, quality, balanced)
+
+        Returns:
+            Model identifier or None if no suitable model found
+        """
+        # For Hugging Face, use the model registry if available
+        if provider_name == "huggingface":
+            try:
+                from models.huggingface_model_registry import model_registry
+
+                # Map task type to Hugging Face task
+                task_mapping = {
+                    "summarize": "summarization",
+                    "translate": "translation",
+                    "sentiment": "sentiment-analysis",
+                    "question": "question-answering",
+                    "generate": "text-generation",
+                    "classify": "text-classification"
+                }
+
+                hf_task = task_mapping.get(task_type, "text-generation")
+
+                # Map performance priority to size and speed preferences
+                size_mapping = {
+                    "speed": "small",
+                    "balanced": "medium",
+                    "quality": "large"
+                }
+
+                speed_mapping = {
+                    "speed": "fast",
+                    "balanced": "medium",
+                    "quality": "slow"
+                }
+
+                # Select model from registry
+                model_metadata = model_registry.select_model_for_task(
+                    task=hf_task,
+                    size_preference=size_mapping.get(performance_priority, "medium"),
+                    speed_preference=speed_mapping.get(performance_priority, "medium")
+                )
+
+                if model_metadata:
+                    return model_metadata.id
+            except ImportError:
+                # Model registry not available, fall back to default model selection
+                pass
+
+        # For OpenAI, select based on task and content length
+        elif provider_name == "openai":
+            if task_type in ["summarize", "translate", "sentiment"]:
+                return "gpt-3.5-turbo"  # Good balance for most tasks
+            elif task_type in ["question", "generate"] and (content_length or 0) > 4000:
+                return "gpt-4"  # Better for complex or long content
+            else:
+                return "gpt-3.5-turbo"  # Default
+
+        # For Anthropic, select based on task complexity
+        elif provider_name == "anthropic":
+            if task_type in ["question", "generate", "analyze"] and performance_priority == "quality":
+                return "claude-2"  # Best quality for complex tasks
+            else:
+                return "claude-instant-1"  # Faster for most tasks
+
+        # If no specific selection logic, return None to use provider's default
+        return None

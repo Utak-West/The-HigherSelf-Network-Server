@@ -98,6 +98,9 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Notion Integration**: Process text from Notion pages with Hugging Face models
 - **Webhook Support**: Trigger Hugging Face processing from external systems
 - **Task-Specific Models**: Curated model recommendations for different NLP tasks
+- **Intelligent Model Selection**: Automatic selection of the best model based on task and agent capabilities
+- **Agent Mixin**: Easy integration of Hugging Face capabilities into any agent
+- **Performance Optimization**: Balance between speed and quality based on task requirements
 
 ### Softr Integration
 
@@ -808,9 +811,11 @@ The HigherSelf Network Server connects with your essential business tools:
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/huggingface-24.svg" alt="Hugging Face" width="18" height="18" /> Hugging Face Guide</h3>
-  <p>Guide for using Hugging Face models with Notion for specialized NLP tasks.</p>
-  <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Read the Hugging Face Guide →</a>
+  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/huggingface-24.svg" alt="Hugging Face" width="18" height="18" /> Hugging Face Guides</h3>
+  <p>Guides for using Hugging Face models with agents and Notion for specialized NLP tasks.</p>
+  <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Integration Guide</a> |
+  <a href="./documentation/HUGGINGFACE_AGENT_INTEGRATION.md" style="color: #0366d6;">Agent Integration Guide</a> |
+  <a href="./documentation/HUGGINGFACE_OPTIMIZATION_PLAN.md" style="color: #0366d6;">Optimization Plan</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
