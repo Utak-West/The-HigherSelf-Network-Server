@@ -1,10 +1,6 @@
 # The HigherSelf Network Server
 
-<div align="center">
-
 **Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations**
-
-</div>
 
 ## Overview
 
@@ -20,9 +16,8 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 ## Core Features
 
-<div class="features-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+## Feature Overview
 
-<div class="feature-card">
 
 ### Notion-Powered Operations
 
@@ -31,9 +26,8 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Visual Workflow Tracking**: See exactly where every process stands
 - **Customizable Views**: Adapt Notion views to your team's needs
 
-</div>
 
-<div class="feature-card">
+
 
 ### Intelligent Agent System
 
@@ -42,9 +36,8 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Autonomous Decision Making**: Agents handle routine tasks independently
 - **Graceful Orchestration**: Coordinated by the Grace Fields system
 
-</div>
 
-<div class="feature-card">
+
 
 ### Seamless Integrations
 
@@ -54,9 +47,8 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Secure Authentication**: All connections use modern security standards
 - **Softr Integration**: Staff interfaces with agents through Softr
 
-</div>
 
-<div class="feature-card">
+
 
 ### Robust Architecture
 
@@ -65,20 +57,14 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Comprehensive Logging**: Complete audit trail of all activities
 - **Extensible Design**: Easily add new capabilities as you grow
 
-</div>
 
-<div class="feature-card">
 
 ### Retrieval Augmented Generation (RAG)
 
-- **Knowledge Retrieval**: Access relevant information from various sources
-- **Web Crawling**: Automatically extract content from websites using Crawl4AI
-- **Vector Embeddings**: Convert content into semantic vector representations
-- **Contextual Generation**: Generate responses enhanced with retrieved context
-
-</div>
-
-<div class="feature-card">
+- Knowledge Retrieval: Access relevant information from various sources
+- Web Crawling: Automatically extract content from websites using Crawl4AI
+- Vector Embeddings: Convert content into semantic vector representations
+- Contextual Generation: Generate responses enhanced with retrieved context
 
 ### Flexible Embedding Providers
 
@@ -104,305 +90,348 @@ All data, workflows, and communications flow through Notion, creating a unified 
 - **Interaction History**: Track and manage staff-agent interactions
 - **Webhook Support**: Process events from Softr in real-time
 
-</div>
 
-</div>
 
-## Notion Database Structure
+
+
+## Database Structure
 
 The HigherSelf Network Server uses a carefully designed system of 16 interconnected Notion databases that work together to create a powerful, flexible automation platform.
 
-<div class="database-container" style="margin-top: 30px;">
+### Database Organization
 
-<details open>
-<summary><h3>Core Operational Databases</h3></summary>
+#### Core Operational Databases
 
-<div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Business Entities</h4>
-  <p>Registry of all business entities using the system (art gallery, wellness center, consultancy)</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Type, Contact Info, Logo</p>
-    <p><strong>Relations:</strong> Products, Workflows, Team Members</p>
-  </div>
-</div>
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Contacts & Profiles</h4>
-  <p>Unified customer/contact database for all entities and interactions</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Email, Phone, Tags</p>
-    <p><strong>Relations:</strong> Bookings, Orders, Feedback</p>
-  </div>
-</div>
+### 
+Business Entities
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Community Hub</h4>
-  <p>Community member profiles and engagement tracking</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Member Since, Engagement Level</p>
-    <p><strong>Relations:</strong> Events, Content, Discussions</p>
-  </div>
-</div>
+Registry of all business entities using the system (art gallery, wellness center, consultancy)
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Products & Services</h4>
-  <p>Catalog of all available products and services across businesses</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Type, Price, Availability</p>
-    <p><strong>Relations:</strong> Business Entity, Orders, Content</p>
-  </div>
-</div>
+**Key Properties:** Name, Type, Contact Info, Logo
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Active Workflows</h4>
-  <p>Currently active workflow instances being processed</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Status, Stage, Start Date</p>
-    <p><strong>Relations:</strong> Tasks, Contacts, Template</p>
-  </div>
-</div>
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Marketing Campaigns</h4>
-  <p>Marketing initiatives and performance tracking</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Channel, Status, Metrics</p>
-    <p><strong>Relations:</strong> Audience Segments, Content</p>
-  </div>
-</div>
+**Relations:** Products, Workflows, Team Members
+  
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Feedback & Surveys</h4>
-  <p>Customer feedback and survey responses</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Type, Rating, Date, Source</p>
-    <p><strong>Relations:</strong> Contact, Product/Service</p>
-  </div>
-</div>
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Rewards & Bounties</h4>
-  <p>Incentive programs and achievements</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Type, Value, Criteria</p>
-    <p><strong>Relations:</strong> Contacts, Campaigns</p>
-  </div>
-</div>
+### 
+Contacts & Profiles
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Master Tasks</h4>
-  <p>Centralized task management system</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Title, Status, Due Date, Priority</p>
-    <p><strong>Relations:</strong> Assignee, Workflow, Business Entity</p>
-  </div>
-</div>
+Unified customer/contact database for all entities and interactions
 
-</div>
-</details>
+**Key Properties:** Name, Email, Phone, Tags
+
+
+**Relations:** Bookings, Orders, Feedback
+  
+
+
+### 
+Community Hub
+
+Community member profiles and engagement tracking
+
+**Key Properties:** Member Since, Engagement Level
+
+
+**Relations:** Events, Content, Discussions
+  
+
+
+### 
+Products & Services
+
+Catalog of all available products and services across businesses
+
+**Key Properties:** Name, Type, Price, Availability
+
+
+**Relations:** Business Entity, Orders, Content
+  
+
+
+### 
+Active Workflows
+
+Currently active workflow instances being processed
+
+**Key Properties:** Status, Stage, Start Date
+
+
+**Relations:** Tasks, Contacts, Template
+  
+
+
+### 
+Marketing Campaigns
+
+Marketing initiatives and performance tracking
+
+**Key Properties:** Name, Channel, Status, Metrics
+
+
+**Relations:** Audience Segments, Content
+  
+
+
+### 
+Feedback & Surveys
+
+Customer feedback and survey responses
+
+**Key Properties:** Type, Rating, Date, Source
+
+
+**Relations:** Contact, Product/Service
+  
+
+
+### 
+Rewards & Bounties
+
+Incentive programs and achievements
+
+**Key Properties:** Type, Value, Criteria
+
+
+**Relations:** Contacts, Campaigns
+  
+
+
+### 
+Master Tasks
+
+Centralized task management system
+
+**Key Properties:** Title, Status, Due Date, Priority
+
+
+**Relations:** Assignee, Workflow, Business Entity
+  
+
+
+
+
 
 <details open>
 <summary><h3>Agent & System Support Databases</h3></summary>
 
-<div class="database-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;">
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Agent Communication</h4>
-  <p>Record of all agent interactions and messages</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Sender, Recipient, Message Type</p>
-    <p><strong>Relations:</strong> Workflows, Tasks</p>
-  </div>
-</div>
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Agent Registry</h4>
-  <p>Inventory of all available agents and their capabilities</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Type, Status, Version</p>
-    <p><strong>Relations:</strong> APIs Used, Business Entities</p>
-  </div>
-</div>
+### 
+Agent Communication
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>API Integrations</h4>
-  <p>Catalog of all integrated external services</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Service Name, Status, Last Sync</p>
-    <p><strong>Relations:</strong> Agents, Workflows</p>
-  </div>
-</div>
+Record of all agent interactions and messages
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Data Transformations</h4>
-  <p>Data mapping configurations between systems</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Source, Target, Mapping Rules</p>
-    <p><strong>Relations:</strong> API Integrations</p>
-  </div>
-</div>
+**Key Properties:** Sender, Recipient, Message Type
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Notification Templates</h4>
-  <p>Templates for system and user notifications</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Type, Channel, Subject, Body</p>
-    <p><strong>Relations:</strong> Workflows, Triggers</p>
-  </div>
-</div>
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Use Cases Library</h4>
-  <p>Documented use cases for reference</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Title, Category, Steps</p>
-    <p><strong>Relations:</strong> Workflows, Business Entities</p>
-  </div>
-</div>
+**Relations:** Workflows, Tasks
+  
 
-<div class="database-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 15px; background-color: #f6f8fa;">
-  <h4>Workflows Library</h4>
-  <p>Template workflows that can be instantiated</p>
-  <div style="font-size: 0.8em; color: #666;">
-    <p><strong>Key Properties:</strong> Name, Type, Stages, Triggers</p>
-    <p><strong>Relations:</strong> Tasks, Agents, Business Entities</p>
-  </div>
-</div>
 
-</div>
-</details>
+### 
+Agent Registry
 
-</div>
+Inventory of all available agents and their capabilities
+
+**Key Properties:** Name, Type, Status, Version
+
+
+**Relations:** APIs Used, Business Entities
+  
+
+
+### 
+API Integrations
+
+Catalog of all integrated external services
+
+**Key Properties:** Service Name, Status, Last Sync
+
+
+**Relations:** Agents, Workflows
+  
+
+
+### 
+Data Transformations
+
+Data mapping configurations between systems
+
+**Key Properties:** Source, Target, Mapping Rules
+
+
+**Relations:** API Integrations
+  
+
+
+### 
+Notification Templates
+
+Templates for system and user notifications
+
+**Key Properties:** Type, Channel, Subject, Body
+
+
+**Relations:** Workflows, Triggers
+  
+
+
+### 
+Use Cases Library
+
+Documented use cases for reference
+
+**Key Properties:** Title, Category, Steps
+
+
+**Relations:** Workflows, Business Entities
+  
+
+
+### 
+Workflows Library
+
+Template workflows that can be instantiated
+
+**Key Properties:** Name, Type, Stages, Triggers
+
+
+**Relations:** Tasks, Agents, Business Entities
+  
+
+
+
+
+
+
 
 ## Key Automation Flows
 
-
-
 The HigherSelf Network Server implements powerful automation flows that streamline operations across your businesses. Each flow is handled by specialized agents working together through Notion.
 
-<div class="flows-container" style="margin-top: 30px;">
+## Business Workflows
 
-<div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
-  <div style="display: flex; align-items: center; margin-bottom: 15px;">
+### 
 
-    <div>
-      <h3 style="margin: 0;">Lead Capture & Nurturing</h3>
-      <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Nyra & Ruvo</p>
-    </div>
-  </div>
 
-  <p>Consolidates leads from multiple sources (Typeform, website forms, social media) and nurtures them through personalized follow-up sequences.</p>
+### Lead Capture & Nurturing
 
-  <div style="background-color: #e6f7ff; border-radius: 5px; padding: 10px; margin-top: 10px;">
-    <p style="margin: 0; font-weight: bold;">Key Features:</p>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-      <li>Automatic lead qualification and scoring</li>
-      <li>Personalized follow-up task creation</li>
-      <li>Interest-based tagging and segmentation</li>
-      <li>Conversion tracking across touchpoints</li>
-    </ul>
-  </div>
-</div>
+*Handled by Nyra & Ruvo
+    
+  
 
-<div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
-  <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">Calendar</div>
-    <div>
-      <h3 style="margin: 0;">Booking & Order Management</h3>
-      <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Solari & Ruvo</p>
-    </div>
-  </div>
 
-  <p>Manages the complete lifecycle of bookings (retreats, consultations) and orders (art pieces, products) from initial purchase through fulfillment.</p>
+Consolidates leads from multiple sources (Typeform, website forms, social media) and nurtures them through personalized follow-up sequences.
 
-  <div style="background-color: #e6f7ff; border-radius: 5px; padding: 10px; margin-top: 10px;">
-    <p style="margin: 0; font-weight: bold;">Key Features:</p>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-      <li>Automated confirmation and reminder emails</li>
-      <li>Preparation task creation for team members</li>
-      <li>Payment tracking and receipt generation</li>
-      <li>Post-experience follow-up sequences</li>
-    </ul>
-  </div>
-</div>
 
-<div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
-  <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">Megaphone</div>
-    <div>
-      <h3 style="margin: 0;">Marketing Campaign Orchestration</h3>
-      <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Liora, Elan & Zevi</p>
-    </div>
-  </div>
+**Key Features:**
 
-  <p>Coordinates multi-channel marketing campaigns across email, social media, and other platforms with targeted messaging for different audience segments.</p>
+- Automatic lead qualification and scoring
+- Personalized follow-up task creation
+- Interest-based tagging and segmentation
+- Conversion tracking across touchpoints
 
-  <div style="background-color: #e6f7ff; border-radius: 5px; padding: 10px; margin-top: 10px;">
-    <p style="margin: 0; font-weight: bold;">Key Features:</p>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-      <li>Audience segmentation and targeting</li>
-      <li>Content scheduling and distribution</li>
-      <li>Performance tracking and analytics</li>
-      <li>A/B testing and optimization</li>
-    </ul>
-  </div>
-</div>
+  
 
-<div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
-  <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">Person</div>
-    <div>
-      <h3 style="margin: 0;">Community Engagement</h3>
-      <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Sage & Elan</p>
-    </div>
-  </div>
 
-  <p>Nurtures community relationships through Circle.so, facilitating discussions, events, and content sharing to build a vibrant, engaged community.</p>
+### 
 
-  <div style="background-color: #e6f7ff; border-radius: 5px; padding: 10px; margin-top: 10px;">
-    <p style="margin: 0; font-weight: bold;">Key Features:</p>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-      <li>New member welcome sequences</li>
-      <li>Engagement tracking and nurturing</li>
-      <li>Content curation and sharing</li>
-      <li>Event coordination and follow-up</li>
-    </ul>
-  </div>
-</div>
+### Booking & Order Management
 
-<div class="flow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: #f6f8fa;">
-  <div style="display: flex; align-items: center; margin-bottom: 15px;">
-    <div style="font-size: 2em; margin-right: 15px;">File</div>
-    <div>
-      <h3 style="margin: 0;">Content Lifecycle Management</h3>
-      <p style="margin: 5px 0 0 0; color: #666; font-style: italic;">Handled by Elan & Liora</p>
-    </div>
-  </div>
+*Handled by Solari & Ruvo
+    
+  
 
-  <p>Manages the complete content creation process from ideation through creation, review, publication, and performance analysis.</p>
 
-  <div style="background-color: #e6f7ff; border-radius: 5px; padding: 10px; margin-top: 10px;">
-    <p style="margin: 0; font-weight: bold;">Key Features:</p>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-      <li>Content calendar management</li>
-      <li>Review and approval workflows</li>
-      <li>Multi-platform distribution</li>
-      <li>Performance tracking and insights</li>
-    </ul>
-  </div>
-</div>
+Manages the complete lifecycle of bookings (retreats, consultations) and orders (art pieces, products) from initial purchase through fulfillment.
 
-</div>
 
-<div align="center" style="margin-top: 30px;">
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">View All Business Workflows</a>
-</div>
+**Key Features:**
+
+- Automated confirmation and reminder emails
+- Preparation task creation for team members
+- Payment tracking and receipt generation
+- Post-experience follow-up sequences
+
+  
+
+
+### 
+
+### Marketing Campaign Orchestration
+
+*Handled by Liora, Elan & Zevi
+    
+  
+
+
+Coordinates multi-channel marketing campaigns across email, social media, and other platforms with targeted messaging for different audience segments.
+
+
+**Key Features:**
+
+- Audience segmentation and targeting
+- Content scheduling and distribution
+- Performance tracking and analytics
+- A/B testing and optimization
+
+  
+
+
+### 
+
+### Community Engagement
+
+*Handled by Sage & Elan
+    
+  
+
+
+Nurtures community relationships through Circle.so, facilitating discussions, events, and content sharing to build a vibrant, engaged community.
+
+
+**Key Features:**
+
+- New member welcome sequences
+- Engagement tracking and nurturing
+- Content curation and sharing
+- Event coordination and follow-up
+
+  
+
+
+### 
+
+### Content Lifecycle Management
+
+*Handled by Elan & Liora
+    
+  
+
+
+Manages the complete content creation process from ideation through creation, review, publication, and performance analysis.
+
+
+**Key Features:**
+
+- Content calendar management
+- Review and approval workflows
+- Multi-platform distribution
+- Performance tracking and insights
+
+  
+
+
+
+
+[View All Business Workflows](./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows)
+
 
 ## Meet Your Agent Team
-
-
 
 The HigherSelf Network features a unique team of digital agents, each with their own personality and specialized skills. These aren't just algorithms - they're digital team members designed to bring intention and care to your automated processes.
 
@@ -437,18 +466,11 @@ Our agents collaborate seamlessly across your business processes:
 | **Wellness Center** | Process retreat inquiries, manage service bookings, coordinate practitioners, promote programs, nurture community |
 | **Consultancy** | Capture consultation requests, schedule meetings, track projects, market expertise, maintain relationships |
 
-<div align="center" style="margin-top: 30px;">
-  <a href="./documentation/AGENT_SYSTEM_SIMPLIFIED.md" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Read the Simple Agent System Guide</a>
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-left: 10px;">Technical Agent System Guide</a>
-</div>
-
+[Read the Simple Agent System Guide](./documentation/AGENT_SYSTEM_SIMPLIFIED.md) | [Technical Agent System Guide](./documentation/AGENT_SYSTEM_GUIDE.md)
 
 
 ## Getting Started
 
-<div class="getting-started-container" style="display: flex; gap: 30px; margin-top: 20px;">
-
-<div class="installation-guide" style="flex: 1;">
 ### Prerequisites
 
 Before you begin, ensure you have:
@@ -477,7 +499,7 @@ docker-compose up -d
 ```
 
 This will start the server and all required services in containers.
-</details>
+
 
 <details>
 <summary><b>Direct Python Installation</b></summary>
@@ -501,7 +523,7 @@ cp .env.example .env
 # Start the server
 python main.py
 ```
-</details>
+
 
 <details>
 <summary><b> Cloud Deployment</b></summary>
@@ -513,11 +535,10 @@ We support:
 - Google Cloud Run
 - Azure Container Instances
 - Digital Ocean App Platform
-</details>
 
-</div>
 
-<div class="configuration-guide" style="flex: 1;">
+
+
 
 ### Configuration
 
@@ -539,7 +560,7 @@ AMELIA_API_KEY=your_amelia_api_key
 CIRCLE_API_TOKEN=your_circle_api_token
 BEEHIIV_API_KEY=your_beehiiv_api_key
 ```
-</details>
+
 
 <details>
 <summary><b> Notion Database Setup</b></summary>
@@ -559,7 +580,7 @@ This will:
 2. Configure proper relations between databases
 3. Update your `.env` file with all database IDs
 4. Set up initial templates and views
-</details>
+
 
 <details>
 <summary><b> Security Settings</b></summary>
@@ -577,237 +598,127 @@ For production, we recommend:
 - Using a strong, randomly generated webhook secret
 - Setting up SSL/TLS encryption
 - Implementing proper access controls
-</details>
 
-</div>
 
-</div>
 
-<div align="center" style="margin-top: 30px;">
-  <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="display: inline-block; padding: 10px 20px; background-color: #4361EE; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;"> Complete Deployment Guide</a>
-</div>
+
+
+
+[Complete Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md)
+
 
 ## Business Workflows
 
 <div align="center">
-  
-</div>
 
 The HigherSelf Network Server automates key business workflows for your art gallery, wellness center, and consultancy operations:
 
-<div class="workflow-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px;">
+### Art Gallery Operations
 
-<div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Art Gallery Operations</h3>
-  <ul>
-    <li><strong>Exhibition Planning & Management</strong>: From concept to opening night</li>
-    <li><strong>Artist Relationship Management</strong>: Track communications and agreements</li>
-    <li><strong>Artwork Sales Processing</strong>: Handle purchases, shipping, and commissions</li>
-    <li><strong>Collector Engagement</strong>: Nurture relationships with art collectors</li>
-  </ul>
-</div>
+- Exhibition Planning & Management: From concept to opening night
+- Artist Relationship Management: Track communications and agreements
+- Artwork Sales Processing: Handle purchases, shipping, and commissions
+- Collector Engagement: Nurture relationships with art collectors
 
-<div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Wellness Center Operations</h3>
-  <ul>
-    <li><strong>Retreat Booking Management</strong>: Handle registrations and preparations</li>
-    <li><strong>Practitioner Scheduling</strong>: Coordinate sessions and resources</li>
-    <li><strong>Client Journey Tracking</strong>: Monitor wellness progress and engagement</li>
-    <li><strong>Program Development</strong>: Create and refine wellness offerings</li>
-  </ul>
-</div>
+### Wellness Center Operations
 
-<div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Consultancy Operations</h3>
-  <ul>
-    <li><strong>Client Onboarding</strong>: Streamline the intake process</li>
-    <li><strong>Project Management</strong>: Track deliverables and milestones</li>
-    <li><strong>Knowledge Management</strong>: Organize insights and resources</li>
-    <li><strong>Client Reporting</strong>: Generate and deliver professional reports</li>
-  </ul>
-</div>
+- Retreat Booking Management: Handle registrations and preparations
+- Practitioner Scheduling: Coordinate sessions and resources
+- Client Journey Tracking: Monitor wellness progress and engagement
+- Program Development: Create and refine wellness offerings
 
-<div class="workflow-card" style="border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Cross-Business Operations</h3>
-  <ul>
-    <li><strong>Marketing Campaign Management</strong>: Coordinate multi-channel outreach</li>
-    <li><strong>Content Creation & Distribution</strong>: Manage your content lifecycle</li>
-    <li><strong>Community Engagement</strong>: Nurture your online community</li>
-    <li><strong>Lead Capture & Nurturing</strong>: Convert interest into engagement</li>
-  </ul>
-</div>
+### Consultancy Operations
 
-</div>
+- Client Onboarding: Streamline the intake process
+- Project Management: Track deliverables and milestones
+- Knowledge Management: Organize insights and resources
+- Client Reporting: Generate and deliver professional reports
+
+### Cross-Business Operations
+
+- Marketing Campaign Management: Coordinate multi-channel outreach
+- Content Creation & Distribution: Manage your content lifecycle
+- Community Engagement: Nurture your online community
+- Lead Capture & Nurturing: Convert interest into engagement
 
 ## Integration Ecosystem
 
 The HigherSelf Network Server connects with your essential business tools:
 
-<div class="integration-container" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px;">
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Notion</span>
-  <span style="color: #666; font-size: 0.9em;">Central Hub</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Typeform</span>
-  <span style="color: #666; font-size: 0.9em;">Form Capture</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">WooCommerce</span>
-  <span style="color: #666; font-size: 0.9em;">E-commerce</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Amelia</span>
-  <span style="color: #666; font-size: 0.9em;">Booking</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Circle.so</span>
-  <span style="color: #666; font-size: 0.9em;">Community</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Beehiiv</span>
-  <span style="color: #666; font-size: 0.9em;">Newsletters</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Plaud</span>
-  <span style="color: #666; font-size: 0.9em;">Transcription</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">TutorLM</span>
-  <span style="color: #666; font-size: 0.9em;">Learning</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">N8N</span>
-  <span style="color: #666; font-size: 0.9em;">Workflow Automation</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Zapier</span>
-  <span style="color: #666; font-size: 0.9em;">Integration Platform</span>
-</div>
-
-<div class="integration-badge" style="background-color: #f0f0f0; padding: 10px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-  <span style="font-weight: bold;">Hugging Face</span>
-  <span style="color: #666; font-size: 0.9em;">AI Models</span>
-</div>
-
-</div>
-
-<details>
-<summary><b>API Endpoints Reference</b></summary>
-
-### Webhook Endpoints
-
-| Service | Endpoint | Description |
-|---------|----------|-------------|
-| Typeform | `/webhooks/typeform` | Receives form submissions |
-| WooCommerce | `/webhooks/woocommerce` | Processes orders and products |
-| Amelia | `/webhooks/amelia` | Handles booking events |
-| Circle.so | `/webhooks/circleso/new_member` | Processes new community members |
-| Circle.so | `/webhooks/circleso/member_activity` | Tracks community engagement |
-| Beehiiv | `/webhooks/beehiiv/newsletter/metrics` | Collects newsletter performance |
-| Beehiiv | `/webhooks/beehiiv/subscriber` | Manages newsletter subscribers |
-| N8N | `/external/n8n/callback` | Receives workflow data from N8N |
-| Zapier | `/external/zapier/callback` | Receives workflow data from Zapier |
-
-### General API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | System health check |
-| `/api/forms/submit` | POST | Direct form submission |
-| `/workflows/{instance_id}` | GET | Workflow instance details |
-| `/api/status/{service_name}` | GET | Integration status check |
-| `/api/notion/sync` | POST | Manual Notion synchronization |
-| `/huggingface/` | GET | Hugging Face integration info |
-| `/huggingface/models/{task}` | GET | List models for a specific task |
-| `/huggingface/process` | POST | Process text with Hugging Face models |
-| `/huggingface/webhooks/notion` | POST | Notion to Hugging Face webhook |
-
-</details>
+- Notion
+- Typeform
+- WooCommerce
+- Amelia
+- Circle.so
+- Beehiiv
+- Plaud
+- TutorLM
+- N8N
+- Zapier
+- Hugging Face
 
 ## Documentation
 
-<div class="docs-container" style="display: flex; gap: 20px; margin-top: 20px;">
+### Deployment Guide
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Deployment Guide</h3>
-  <p>Comprehensive instructions for deploying the system in various environments.</p>
-  <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="color: #0366d6;">Read the Deployment Guide →</a>
-</div>
+Comprehensive instructions for deploying the system in various environments.
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Agent System Guide</h3>
-  <p>Detailed information about agent personalities and how to work with them.</p>
-  <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="color: #0366d6;">Read the Agent Guide →</a>
-</div>
+[Read the Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md)
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Monitoring Guide</h3>
-  <p>Instructions for monitoring system health and troubleshooting issues.</p>
-  <a href="./documentation/MONITORING_AND_TROUBLESHOOTING.md" style="color: #0366d6;">Read the Monitoring Guide →</a>
-</div>
+### Agent System Guide
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>N8N & Zapier Guide</h3>
-  <p>Guide for integrating with N8N and Zapier workflow automation platforms.</p>
-  <a href="./N8N_Zapier_Integration_Guide.md" style="color: #0366d6;">Read the Integration Guide →</a>
-</div>
+Detailed information about agent personalities and how to work with them.
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Hugging Face Guides</h3>
-  <p>Guides for using Hugging Face models with agents and Notion for specialized NLP tasks.</p>
-  <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Integration Guide</a> |
-  <a href="./documentation/HUGGINGFACE_AGENT_INTEGRATION.md" style="color: #0366d6;">Agent Integration Guide</a> |
-  <a href="./documentation/HUGGINGFACE_OPTIMIZATION_PLAN.md" style="color: #0366d6;">Optimization Plan</a>
-</div>
+[Read the Agent Guide](./documentation/AGENT_SYSTEM_GUIDE.md)
 
-<div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3>Softr Integration Guide</h3>
-  <p>Guide for enabling staff to interface with agents through Softr.</p>
-  <a href="./documentation/SOFTR_INTEGRATION.md" style="color: #0366d6;">Read the Softr Integration Guide →</a>
-</div>
+### Monitoring Guide
 
-</div>
+Instructions for monitoring system health and troubleshooting issues.
+
+[Read the Monitoring Guide](./documentation/MONITORING_AND_TROUBLESHOOTING.md)
+
+### N8N & Zapier Guide
+
+Guide for integrating with N8N and Zapier workflow automation platforms.
+
+[Read the Integration Guide](./N8N_Zapier_Integration_Guide.md)
+
+### Hugging Face Guides
+
+Guides for using Hugging Face models with agents and Notion for specialized NLP tasks.
+
+[Read the Hugging Face Integration Guide](./documentation/HUGGINGFACE_INTEGRATION.md)
+[Read the Hugging Face Agent Integration Guide](./documentation/HUGGINGFACE_AGENT_INTEGRATION.md)
+[Read the Hugging Face Optimization Plan](./documentation/HUGGINGFACE_OPTIMIZATION_PLAN.md)
+
+### Softr Integration Guide
+
+Guide for enabling staff to interface with agents through Softr.
+
+[Read the Softr Integration Guide](./documentation/SOFTR_INTEGRATION.md)
 
 ## For Developers
 
-<details>
-<summary><b>System Architecture</b></summary>
+### System Architecture
 
 The HigherSelf Network Server implements a hub-and-spoke architecture with Notion as the central hub:
 
-<div align="center">
-  
-</div>
+#### Key Components
 
-### Key Components
+1. Models (`/models`): Pydantic models defining data structures
+2. Services (`/services`): Service classes for external API interactions
+3. Agents (`/agents`): Agent implementations with specific responsibilities
+4. API (`/api`): FastAPI server for external communication
 
-1. **Models (`/models`)**: Pydantic models defining data structures
-2. **Services (`/services`)**: Service classes for external API interactions
-3. **Agents (`/agents`)**: Agent implementations with specific responsibilities
-4. **API (`/api`)**: FastAPI server for external communication
-
-### Data Flow
+#### Data Flow
 
 1. External events trigger webhook calls to the API
 2. Events are processed by appropriate agents
 3. Agents create or update records in Notion via the NotionService
 4. Workflow instances track the state of business processes
 5. History logs maintain a complete audit trail
-</details>
 
-<details>
-<summary><b>Adding a New Agent</b></summary>
+### Adding a New Agent
 
 1. Create a new file in the `agents` directory
 2. Extend the `BaseAgent` class
@@ -836,10 +747,8 @@ class MyNewAgent(BaseAgent):
         """Check the health status of this agent."""
         return {"status": "healthy"}
 ```
-</details>
 
-<details>
-<summary><b>Adding a New Integration</b></summary>
+### Adding a New Integration
 
 To add support for a new integration:
 
@@ -868,27 +777,25 @@ class MyNewPlatformService(BaseService):
         # Implementation here
         return True
 ```
-</details>
 
 ## Support & Community
 
-<div class="support-container" style="display: flex; gap: 20px; margin-top: 20px;">
+### Contact Support
 
-<div class="support-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Contact Support</h3>
-  <p>For questions or assistance, contact The HigherSelf Network team:</p>
-  <p><a href="mailto:support@higherself.network">support@higherself.network</a></p>
-</div>
+For questions or assistance, contact The HigherSelf Network team:
 
-<div class="support-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Training & Consulting</h3>
-  <p>Need help getting started? We offer personalized training and consulting services.</p>
-  <p><a href="https://higherself.network/training">Learn More</a></p>
-</div>
+["mailto:support@higherself.network">support@higherself.network
 
-</div>
+### Training & Consulting
 
-<div align="center" style="margin-top: 50px; padding: 20px; background-color: #f6f8fa; border-radius: 10px;">
-  <p>&copy; 2023-2025 The HigherSelf Network - All Rights Reserved</p>
-  <p><small>Proprietary software for art gallery, wellness center, and consultancy automation</small></p>
-</div>
+Need help getting started? We offer personalized training and consulting services.
+
+["https://higherself.network/training">Learn More
+
+
+---
+
+&copy; 2023-2025 The HigherSelf Network - All Rights Reserved
+
+<small>Proprietary software for art gallery, wellness center, and consultancy automation</small>
+
