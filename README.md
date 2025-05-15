@@ -2,9 +2,7 @@
 
 <div align="center">
 
-
 **Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations**
-
 
 </div>
 
@@ -15,8 +13,6 @@ Welcome to **The HigherSelf Network Server** - an intelligent automation platfor
 ### What Makes Us Special
 
 The HigherSelf Network Server features a team of **named agent personalities**, each with distinct characteristics and responsibilities. These agents work together seamlessly to automate your workflows while maintaining the human touch that makes your business special.
-
-
 
 ### Notion as Your Central Hub
 
@@ -113,8 +109,6 @@ All data, workflows, and communications flow through Notion, creating a unified 
 </div>
 
 ## Notion Database Structure
-
-
 
 The HigherSelf Network Server uses a carefully designed system of 16 interconnected Notion databases that work together to create a powerful, flexible automation platform.
 
@@ -455,7 +449,6 @@ Our agents collaborate seamlessly across your business processes:
 <div class="getting-started-container" style="display: flex; gap: 30px; margin-top: 20px;">
 
 <div class="installation-guide" style="flex: 1;">
-
 ### Prerequisites
 
 Before you begin, ensure you have:
@@ -710,7 +703,7 @@ The HigherSelf Network Server connects with your essential business tools:
 </div>
 
 <details>
-<summary><b><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/rss-24.svg" alt="RSS" width="16" height="16" /> API Endpoints Reference</b></summary>
+<summary><b>API Endpoints Reference</b></summary>
 
 ### Webhook Endpoints
 
@@ -747,31 +740,31 @@ The HigherSelf Network Server connects with your essential business tools:
 <div class="docs-container" style="display: flex; gap: 20px; margin-top: 20px;">
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/play-24.svg" alt="Play" width="18" height="18" /> Deployment Guide</h3>
+  <h3>Deployment Guide</h3>
   <p>Comprehensive instructions for deploying the system in various environments.</p>
   <a href="./documentation/DEPLOYMENT_AND_TRAINING.md" style="color: #0366d6;">Read the Deployment Guide →</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3> Agent System Guide</h3>
+  <h3>Agent System Guide</h3>
   <p>Detailed information about agent personalities and how to work with them.</p>
   <a href="./documentation/AGENT_SYSTEM_GUIDE.md" style="color: #0366d6;">Read the Agent Guide →</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/search-24.svg" alt="Search" width="18" height="18" /> Monitoring Guide</h3>
+  <h3>Monitoring Guide</h3>
   <p>Instructions for monitoring system health and troubleshooting issues.</p>
   <a href="./documentation/MONITORING_AND_TROUBLESHOOTING.md" style="color: #0366d6;">Read the Monitoring Guide →</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/workflow-24.svg" alt="Workflow" width="18" height="18" /> N8N & Zapier Guide</h3>
+  <h3>N8N & Zapier Guide</h3>
   <p>Guide for integrating with N8N and Zapier workflow automation platforms.</p>
   <a href="./N8N_Zapier_Integration_Guide.md" style="color: #0366d6;">Read the Integration Guide →</a>
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/huggingface-24.svg" alt="Hugging Face" width="18" height="18" /> Hugging Face Guides</h3>
+  <h3>Hugging Face Guides</h3>
   <p>Guides for using Hugging Face models with agents and Notion for specialized NLP tasks.</p>
   <a href="./documentation/HUGGINGFACE_INTEGRATION.md" style="color: #0366d6;">Integration Guide</a> |
   <a href="./documentation/HUGGINGFACE_AGENT_INTEGRATION.md" style="color: #0366d6;">Agent Integration Guide</a> |
@@ -779,7 +772,7 @@ The HigherSelf Network Server connects with your essential business tools:
 </div>
 
 <div class="doc-card" style="flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; background-color: #f6f8fa;">
-  <h3><img src="https://raw.githubusercontent.com/readme-workflows/readme-icons/main/icons/octicons/people-24.svg" alt="Softr" width="18" height="18" /> Softr Integration Guide</h3>
+  <h3>Softr Integration Guide</h3>
   <p>Guide for enabling staff to interface with agents through Softr.</p>
   <a href="./documentation/SOFTR_INTEGRATION.md" style="color: #0366d6;">Read the Softr Integration Guide →</a>
 </div>
