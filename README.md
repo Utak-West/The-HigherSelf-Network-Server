@@ -1,6 +1,6 @@
 # The HigherSelf Network Server
 
-**Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations**
+## Intelligent Automation for Art Gallery, Wellness Center & Consultancy Operations
 
 ## Overview
 
@@ -16,83 +16,65 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 ## Core Features
 
-## Feature Overview
-
-
 ### Notion-Powered Operations
 
-- **Centralized Database Hub**: 16 interconnected Notion databases
-- **Real-time Synchronization**: All systems stay in perfect harmony
-- **Visual Workflow Tracking**: See exactly where every process stands
-- **Customizable Views**: Adapt Notion views to your team's needs
-
-
-
+* **Centralized Database Hub**: 16 interconnected Notion databases
+* **Real-time Synchronization**: All systems stay in perfect harmony
+* **Visual Workflow Tracking**: See exactly where every process stands
+* **Customizable Views**: Adapt Notion views to your team's needs
 
 ### Intelligent Agent System
 
-- **Named Agent Personalities**: Each with unique characteristics
-- **Specialized Capabilities**: Experts in their respective domains
-- **Autonomous Decision Making**: Agents handle routine tasks independently
-- **Graceful Orchestration**: Coordinated by the Grace Fields system
-
-
-
+* **Named Agent Personalities**: Each with unique characteristics
+* **Specialized Capabilities**: Experts in their respective domains
+* **Autonomous Decision Making**: Agents handle routine tasks independently
+* **Graceful Orchestration**: Coordinated by the Grace Fields system
 
 ### Seamless Integrations
 
-- **Comprehensive API Support**: Connect with all your essential tools
-- **Webhook Endpoints**: Receive real-time data from external systems
-- **Bidirectional Sync**: Data flows both ways between systems
-- **Secure Authentication**: All connections use modern security standards
-- **Softr Integration**: Staff interfaces with agents through Softr
-
-
-
+* **Comprehensive API Support**: Connect with all your essential tools
+* **Webhook Endpoints**: Receive real-time data from external systems
+* **Bidirectional Sync**: Data flows both ways between systems
+* **Secure Authentication**: All connections use modern security standards
+* **Softr Integration**: Staff interfaces with agents through Softr
 
 ### Robust Architecture
 
-- **Pydantic Data Validation**: Ensures data integrity throughout
-- **State Machine Workflows**: Structured processes with clear stages
-- **Comprehensive Logging**: Complete audit trail of all activities
-- **Extensible Design**: Easily add new capabilities as you grow
-
-
+* **Pydantic Data Validation**: Ensures data integrity throughout
+* **State Machine Workflows**: Structured processes with clear stages
+* **Comprehensive Logging**: Complete audit trail of all activities
+* **Extensible Design**: Easily add new capabilities as you grow
 
 ### Retrieval Augmented Generation (RAG)
 
-- Knowledge Retrieval: Access relevant information from various sources
-- Web Crawling: Automatically extract content from websites using Crawl4AI
-- Vector Embeddings: Convert content into semantic vector representations
-- Contextual Generation: Generate responses enhanced with retrieved context
+* Knowledge Retrieval: Access relevant information from various sources
+* Web Crawling: Automatically extract content from websites using Crawl4AI
+* Vector Embeddings: Convert content into semantic vector representations
+* Contextual Generation: Generate responses enhanced with retrieved context
 
 ### Flexible Embedding Providers
 
-- **Multiple Providers**: Support for OpenAI, Anthropic, and local embeddings
-- **Automatic Fallback**: Gracefully degrade to available providers
-- **Local Processing**: Process sensitive data locally with sentence-transformers
-- **Mock Providers**: Test without external API keys
+* **Multiple Providers**: Support for OpenAI, Anthropic, and local embeddings
+* **Automatic Fallback**: Gracefully degrade to available providers
+* **Local Processing**: Process sensitive data locally with sentence-transformers
+* **Mock Providers**: Test without external API keys
 
 ### Hugging Face Integration
 
-- **Specialized NLP Tasks**: Access to state-of-the-art models for summarization, translation, and more
-- **Notion Integration**: Process text from Notion pages with Hugging Face models
-- **Webhook Support**: Trigger Hugging Face processing from external systems
-- **Task-Specific Models**: Curated model recommendations for different NLP tasks
-- **Intelligent Model Selection**: Automatic selection of the best model based on task and agent capabilities
-- **Agent Mixin**: Easy integration of Hugging Face capabilities into any agent
-- **Performance Optimization**: Balance between speed and quality based on task requirements
+* **Specialized NLP Tasks**: Access to state-of-the-art models for summarization, translation, and more
+* **Notion Integration**: Process text from Notion pages with Hugging Face models
+* **Webhook Support**: Trigger Hugging Face processing from external systems
+* **Task-Specific Models**: Curated model recommendations for different NLP tasks
+* **Intelligent Model Selection**: Automatic selection of the best model based on task and agent capabilities
+* **Agent Mixin**: Easy integration of Hugging Face capabilities into any agent
+* **Performance Optimization**: Balance between speed and quality based on task requirements
 
 ### Softr Integration
 
-- **Staff Agent Interface**: Allow staff to interact with agents through Softr
-- **Secure Authentication**: Staff authentication and authorization
-- **Interaction History**: Track and manage staff-agent interactions
-- **Webhook Support**: Process events from Softr in real-time
-
-
-
-
+* **Staff Agent Interface**: Allow staff to interact with agents through Softr
+* **Secure Authentication**: Staff authentication and authorization
+* **Interaction History**: Track and manage staff-agent interactions
+* **Webhook Support**: Process events from Softr in real-time
 
 ## Database Structure
 
@@ -102,212 +84,57 @@ The HigherSelf Network Server uses a carefully designed system of 16 interconnec
 
 #### Core Operational Databases
 
-
-
-### 
-Business Entities
-
-Registry of all business entities using the system (art gallery, wellness center, consultancy)
-
-**Key Properties:** Name, Type, Contact Info, Logo
-
-
-**Relations:** Products, Workflows, Team Members
-  
-
-
-### 
-Contacts & Profiles
-
-Unified customer/contact database for all entities and interactions
-
-**Key Properties:** Name, Email, Phone, Tags
-
-
-**Relations:** Bookings, Orders, Feedback
-  
-
-
-### 
-Community Hub
-
-Community member profiles and engagement tracking
-
-**Key Properties:** Member Since, Engagement Level
-
-
-**Relations:** Events, Content, Discussions
-  
-
-
-### 
-Products & Services
-
-Catalog of all available products and services across businesses
-
-**Key Properties:** Name, Type, Price, Availability
-
-
-**Relations:** Business Entity, Orders, Content
-  
-
-
-### 
-Active Workflows
-
-Currently active workflow instances being processed
-
-**Key Properties:** Status, Stage, Start Date
-
-
-**Relations:** Tasks, Contacts, Template
-  
-
-
-### 
-Marketing Campaigns
-
-Marketing initiatives and performance tracking
-
-**Key Properties:** Name, Channel, Status, Metrics
-
-
-**Relations:** Audience Segments, Content
-  
-
-
-### 
-Feedback & Surveys
-
-Customer feedback and survey responses
-
-**Key Properties:** Type, Rating, Date, Source
-
-
-**Relations:** Contact, Product/Service
-  
-
-
-### 
-Rewards & Bounties
-
-Incentive programs and achievements
-
-**Key Properties:** Type, Value, Criteria
-
-
-**Relations:** Contacts, Campaigns
-  
-
-
-### 
-Master Tasks
-
-Centralized task management system
-
-**Key Properties:** Title, Status, Due Date, Priority
-
-
-**Relations:** Assignee, Workflow, Business Entity
-  
-
-
-
-
-
-<details open>
-<summary><h3>Agent & System Support Databases</h3></summary>
-
-
-
-### 
-Agent Communication
-
-Record of all agent interactions and messages
-
-**Key Properties:** Sender, Recipient, Message Type
-
-
-**Relations:** Workflows, Tasks
-  
-
-
-### 
-Agent Registry
-
-Inventory of all available agents and their capabilities
-
-**Key Properties:** Name, Type, Status, Version
-
-
-**Relations:** APIs Used, Business Entities
-  
-
-
-### 
-API Integrations
-
-Catalog of all integrated external services
-
-**Key Properties:** Service Name, Status, Last Sync
-
-
-**Relations:** Agents, Workflows
-  
-
-
-### 
-Data Transformations
-
-Data mapping configurations between systems
-
-**Key Properties:** Source, Target, Mapping Rules
-
-
-**Relations:** API Integrations
-  
-
-
-### 
-Notification Templates
-
-Templates for system and user notifications
-
-**Key Properties:** Type, Channel, Subject, Body
-
-
-**Relations:** Workflows, Triggers
-  
-
-
-### 
-Use Cases Library
-
-Documented use cases for reference
-
-**Key Properties:** Title, Category, Steps
-
-
-**Relations:** Workflows, Business Entities
-  
-
-
-### 
-Workflows Library
-
-Template workflows that can be instantiated
-
-**Key Properties:** Name, Type, Stages, Triggers
-
-
-**Relations:** Tasks, Agents, Business Entities
-  
-
-
-
-
-
-
+* **Business Entities**: Registry of all business entities using the system (art gallery, wellness center, consultancy)
+  * **Key Properties:** Name, Type, Contact Info, Logo
+  * **Relations:** Products, Workflows, Team Members
+* **Contacts & Profiles**: Unified customer/contact database for all entities and interactions
+  * **Key Properties:** Name, Email, Phone, Tags
+  * **Relations:** Bookings, Orders, Feedback
+* **Community Hub**: Community member profiles and engagement tracking
+  * **Key Properties:** Member Since, Engagement Level
+  * **Relations:** Events, Content, Discussions
+* **Products & Services**: Catalog of all available products and services across businesses
+  * **Key Properties:** Name, Type, Price, Availability
+  * **Relations:** Business Entity, Orders, Content
+* **Active Workflows**: Currently active workflow instances being processed
+  * **Key Properties:** Status, Stage, Start Date
+  * **Relations:** Tasks, Contacts, Template
+* **Marketing Campaigns**: Marketing initiatives and performance tracking
+  * **Key Properties:** Name, Channel, Status, Metrics
+  * **Relations:** Audience Segments, Content
+* **Feedback & Surveys**: Customer feedback and survey responses
+  * **Key Properties:** Type, Rating, Date, Source
+  * **Relations:** Contact, Product/Service
+* **Rewards & Bounties**: Incentive programs and achievements
+  * **Key Properties:** Type, Value, Criteria
+  * **Relations:** Contacts, Campaigns
+* **Master Tasks**: Centralized task management system
+  * **Key Properties:** Title, Status, Due Date, Priority
+  * **Relations:** Assignee, Workflow, Business Entity
+
+#### Agent & System Support Databases
+
+* **Agent Communication**: Record of all agent interactions and messages
+  * **Key Properties:** Sender, Recipient, Message Type
+  * **Relations:** Workflows, Tasks
+* **Agent Registry**: Inventory of all available agents and their capabilities
+  * **Key Properties:** Name, Type, Status, Version
+  * **Relations:** APIs Used, Business Entities
+* **API Integrations**: Catalog of all integrated external services
+  * **Key Properties:** Service Name, Status, Last Sync
+  * **Relations:** Agents, Workflows
+* **Data Transformations**: Data mapping configurations between systems
+  * **Key Properties:** Source, Target, Mapping Rules
+  * **Relations:** API Integrations
+* **Notification Templates**: Templates for system and user notifications
+  * **Key Properties:** Type, Channel, Subject, Body
+  * **Relations:** Workflows, Triggers
+* **Use Cases Library**: Documented use cases for reference
+  * **Key Properties:** Title, Category, Steps
+  * **Relations:** Workflows, Business Entities
+* **Workflows Library**: Template workflows that can be instantiated
+  * **Key Properties:** Name, Type, Stages, Triggers
+  * **Relations:** Tasks, Agents, Business Entities
 
 ## Key Automation Flows
 
@@ -315,121 +142,57 @@ The HigherSelf Network Server implements powerful automation flows that streamli
 
 ## Business Workflows
 
-### 
-
+### Customer Acquisition
 
 ### Lead Capture & Nurturing
 
-*Handled by Nyra & Ruvo
-    
-  
-
-
-Consolidates leads from multiple sources (Typeform, website forms, social media) and nurtures them through personalized follow-up sequences.
-
-
-**Key Features:**
-
-- Automatic lead qualification and scoring
-- Personalized follow-up task creation
-- Interest-based tagging and segmentation
-- Conversion tracking across touchpoints
-
-  
-
-
-### 
+* **Handled by Nyra & Ruvo**
+* Consolidates leads from multiple sources (Typeform, website forms, social media) and nurtures them through personalized follow-up sequences.
+* **Key Features:**
+  * Automatic lead qualification and scoring
+  * Personalized follow-up task creation
+  * Interest-based tagging and segmentation
+  * Conversion tracking across touchpoints
 
 ### Booking & Order Management
 
-*Handled by Solari & Ruvo
-    
-  
-
-
-Manages the complete lifecycle of bookings (retreats, consultations) and orders (art pieces, products) from initial purchase through fulfillment.
-
-
-**Key Features:**
-
-- Automated confirmation and reminder emails
-- Preparation task creation for team members
-- Payment tracking and receipt generation
-- Post-experience follow-up sequences
-
-  
-
-
-### 
+* **Handled by Solari & Ruvo**
+* Manages the complete lifecycle of bookings (retreats, consultations) and orders (art pieces, products) from initial purchase through fulfillment.
+* **Key Features:**
+  * Automated confirmation and reminder emails
+  * Preparation task creation for team members
+  * Payment tracking and receipt generation
+  * Post-experience follow-up sequences
 
 ### Marketing Campaign Orchestration
 
-*Handled by Liora, Elan & Zevi
-    
-  
-
-
-Coordinates multi-channel marketing campaigns across email, social media, and other platforms with targeted messaging for different audience segments.
-
-
-**Key Features:**
-
-- Audience segmentation and targeting
-- Content scheduling and distribution
-- Performance tracking and analytics
-- A/B testing and optimization
-
-  
-
-
-### 
+* **Handled by Liora, Elan & Zevi**
+* Coordinates multi-channel marketing campaigns across email, social media, and other platforms with targeted messaging for different audience segments.
+* **Key Features:**
+  * Audience segmentation and targeting
+  * Content scheduling and distribution
+  * Performance tracking and analytics
+  * A/B testing and optimization
 
 ### Community Engagement
 
-*Handled by Sage & Elan
-    
-  
-
-
-Nurtures community relationships through Circle.so, facilitating discussions, events, and content sharing to build a vibrant, engaged community.
-
-
-**Key Features:**
-
-- New member welcome sequences
-- Engagement tracking and nurturing
-- Content curation and sharing
-- Event coordination and follow-up
-
-  
-
-
-### 
+* **Handled by Sage & Elan**
+* Nurtures community relationships through Circle.so, facilitating discussions, events, and content sharing to build a vibrant, engaged community.
+* **Key Features:**
+  * New member welcome sequences
+  * Engagement tracking and nurturing
+  * Content curation and sharing
+  * Event coordination and follow-up
 
 ### Content Lifecycle Management
 
-*Handled by Elan & Liora
-    
-  
-
-
-Manages the complete content creation process from ideation through creation, review, publication, and performance analysis.
-
-
-**Key Features:**
-
-- Content calendar management
-- Review and approval workflows
-- Multi-platform distribution
-- Performance tracking and insights
-
-  
-
-
-
-
-[View All Business Workflows](./documentation/AGENT_SYSTEM_GUIDE.md#business-workflows)
-
+* **Handled by Elan & Liora**
+* Manages the complete content creation process from ideation through creation, review, publication, and performance analysis.
+* **Key Features:**
+  * Content calendar management
+  * Review and approval workflows
+  * Multi-platform distribution
+  * Performance tracking and insights
 
 ## Meet Your Agent Team
 
@@ -452,11 +215,11 @@ The HigherSelf Network features a unique team of digital agents, each with their
 
 Our agents collaborate seamlessly across your business processes:
 
-- **Nyra** captures a new lead, which **Ruvo** turns into follow-up tasks
-- **Liora** creates marketing campaigns based on **Zevi's** audience insights
-- **Elan** develops content that **Sage** shares with your community
-- **Solari** manages bookings that originated from **Liora's** campaigns
-- **Grace** ensures all agents work together harmoniously
+* **Nyra** captures a new lead, which **Ruvo** turns into follow-up tasks
+* **Liora** creates marketing campaigns based on **Zevi's** audience insights
+* **Elan** develops content that **Sage** shares with your community
+* **Solari** manages bookings that originated from **Liora's** campaigns
+* **Grace** ensures all agents work together harmoniously
 
 ### Business Applications
 
@@ -466,24 +229,20 @@ Our agents collaborate seamlessly across your business processes:
 | **Wellness Center** | Process retreat inquiries, manage service bookings, coordinate practitioners, promote programs, nurture community |
 | **Consultancy** | Capture consultation requests, schedule meetings, track projects, market expertise, maintain relationships |
 
-[Read the Simple Agent System Guide](./documentation/AGENT_SYSTEM_SIMPLIFIED.md) | [Technical Agent System Guide](./documentation/AGENT_SYSTEM_GUIDE.md)
-
-
 ## Getting Started
 
 ### Prerequisites
 
 Before you begin, ensure you have:
 
-- Python 3.10 or higher
-- Docker (recommended for production)
-- Notion account with admin access
-- API keys for your integrated services
+* Python 3.10 or higher
+* Docker (recommended for production)
+* Notion account with admin access
+* API keys for your integrated services
 
 ### Installation Options
 
-<details>
-<summary><b>Docker Installation (Recommended)</b></summary>
+### Docker Installation (Recommended)
 
 ```bash
 # Clone the repository
@@ -500,9 +259,7 @@ docker-compose up -d
 
 This will start the server and all required services in containers.
 
-
-<details>
-<summary><b>Direct Python Installation</b></summary>
+### Direct Python Installation
 
 ```bash
 # Clone the repository
@@ -524,138 +281,72 @@ cp .env.example .env
 python main.py
 ```
 
-
-<details>
-<summary><b> Cloud Deployment</b></summary>
-
 For detailed cloud deployment instructions, see our [Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md).
 
-We support:
-- AWS Elastic Container Service
-- Google Cloud Run
-- Azure Container Instances
-- Digital Ocean App Platform
+We recommend using the following providers:
 
-
-
-
+* AWS Elastic Container Service
+* Google Cloud Run
+* Azure Container Instances
+* Digital Ocean App Platform
 
 ### Configuration
 
 The system is configured through environment variables in the `.env` file:
 
-<details>
-<summary><b> API Credentials</b></summary>
+### API Credentials
 
-```env
-# Notion API (Required)
-NOTION_API_TOKEN=your_notion_api_token
-NOTION_PARENT_PAGE_ID=your_parent_page_id
+* Using a strong, randomly generated webhook secret
+* Setting up SSL/TLS encryption
+* Implementing proper access controls
 
-# Third-party Services
-TYPEFORM_API_KEY=your_typeform_api_key
-WOOCOMMERCE_CONSUMER_KEY=your_woocommerce_key
-WOOCOMMERCE_CONSUMER_SECRET=your_woocommerce_secret
-AMELIA_API_KEY=your_amelia_api_key
-CIRCLE_API_TOKEN=your_circle_api_token
-BEEHIIV_API_KEY=your_beehiiv_api_key
-```
-
-
-<details>
-<summary><b> Notion Database Setup</b></summary>
-
-Run our automated setup tool to create all required Notion databases:
-
-```bash
-# Using Docker
-docker-compose run --rm windsurf-agent python -m tools.notion_db_setup
-
-# Using Python directly
-python -m tools.notion_db_setup
-```
-
-This will:
-1. Create 16 interconnected databases in your Notion workspace
-2. Configure proper relations between databases
-3. Update your `.env` file with all database IDs
-4. Set up initial templates and views
-
-
-<details>
-<summary><b> Security Settings</b></summary>
-
-```env
-# Webhook security
-WEBHOOK_SECRET=your_secure_random_string
-
-# Server settings
-SERVER_PORT=8000
-LOG_LEVEL=INFO
-```
-
-For production, we recommend:
-- Using a strong, randomly generated webhook secret
-- Setting up SSL/TLS encryption
-- Implementing proper access controls
-
-
-
-
-
-
-[Complete Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md)
-
-
-## Business Workflows
-
-<div align="center">
+## Business Application Workflows
 
 The HigherSelf Network Server automates key business workflows for your art gallery, wellness center, and consultancy operations:
 
 ### Art Gallery Operations
 
-- Exhibition Planning & Management: From concept to opening night
-- Artist Relationship Management: Track communications and agreements
-- Artwork Sales Processing: Handle purchases, shipping, and commissions
-- Collector Engagement: Nurture relationships with art collectors
+* Exhibition Planning & Management: From concept to opening night
+* Artist Relationship Management: Track communications and agreements
+* Artwork Sales Processing: Handle purchases, shipping, and commissions
+* Collector Engagement: Nurture relationships with art collectors
 
 ### Wellness Center Operations
 
-- Retreat Booking Management: Handle registrations and preparations
-- Practitioner Scheduling: Coordinate sessions and resources
-- Client Journey Tracking: Monitor wellness progress and engagement
-- Program Development: Create and refine wellness offerings
+* Retreat Booking Management: Handle registrations and preparations
+* Practitioner Scheduling: Coordinate sessions and resources
+* Client Journey Tracking: Monitor wellness progress and engagement
+* Program Development: Create and refine wellness offerings
 
 ### Consultancy Operations
 
-- Client Onboarding: Streamline the intake process
-- Project Management: Track deliverables and milestones
-- Knowledge Management: Organize insights and resources
-- Client Reporting: Generate and deliver professional reports
+* Client Onboarding: Streamline the intake process
+* Project Management: Track deliverables and milestones
+* Knowledge Management: Organize insights and resources
+* Client Reporting: Generate and deliver professional reports
 
 ### Cross-Business Operations
 
-- Marketing Campaign Management: Coordinate multi-channel outreach
-- Content Creation & Distribution: Manage your content lifecycle
-- Community Engagement: Nurture your online community
-- Lead Capture & Nurturing: Convert interest into engagement
+* Marketing Campaign Management: Coordinate multi-channel outreach
+* Content Creation & Distribution: Manage your content lifecycle
+* Community Engagement: Nurture your online community
+* Lead Capture & Nurturing: Convert interest into engagement
 
 ## Integration Ecosystem
 
 The HigherSelf Network Server connects with your essential business tools:
 
-- Notion
-- Typeform
-- WooCommerce
-- Amelia
-- Circle.so
-- Beehiiv
-- Plaud
-- TutorLM
-- N8N
-- Zapier
-- Hugging Face
+* Notion
+* Typeform
+* WooCommerce
+* Amelia
+* Circle.so
+* Beehiiv
+* Plaud
+* TutorLM
+* N8N
+* Zapier
+* Hugging Face
 
 ## Documentation
 
@@ -790,12 +481,10 @@ For questions or assistance, contact The HigherSelf Network team:
 
 Need help getting started? We offer personalized training and consulting services.
 
-["https://higherself.network/training">Learn More
-
+[Learn More](https://higherself.network/training)
 
 ---
 
 &copy; 2023-2025 The HigherSelf Network - All Rights Reserved
 
-<small>Proprietary software for art gallery, wellness center, and consultancy automation</small>
-
+Proprietary software for art gallery, wellness center, and consultancy automation
