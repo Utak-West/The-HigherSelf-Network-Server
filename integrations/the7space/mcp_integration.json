@@ -1,0 +1,200 @@
+{
+    "name": "the7space-mcp-integration",
+    "description": "MCP server configuration for The 7 Space integration with WordPress, Elementor Pro, and Amelia booking system",
+    "version": "0.1.0",
+    "mcpServer": {
+        "command": "node",
+        "args": [
+            "~/Documents/Cline/MCP/the7space-integration/build/index.js"
+        ],
+        "env": {
+            "WP_API_URL": "https://the7space.com",
+            "WP_USERNAME": "REPLACE_WITH_USERNAME",
+            "WP_APP_PASSWORD": "REPLACE_WITH_APP_PASSWORD",
+            "AMELIA_API_KEY": "REPLACE_WITH_AMELIA_API_KEY"
+        },
+        "disabled": false,
+        "alwaysAllow": []
+    },
+    "tools": [
+        {
+            "name": "get_wp_posts",
+            "description": "Retrieve WordPress posts with filtering options",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "post_type": {
+                        "type": "string",
+                        "description": "Post type (post, page, etc.)",
+                        "default": "post"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Post status (publish, draft, etc.)",
+                        "default": "publish"
+                    },
+                    "per_page": {
+                        "type": "number",
+                        "description": "Number of posts to retrieve",
+                        "default": 10
+                    },
+                    "page": {
+                        "type": "number",
+                        "description": "Page number",
+                        "default": 1
+                    },
+                    "search": {
+                        "type": "string",
+                        "description": "Search term"
+                    }
+                }
+            }
+        },
+        {
+            "name": "create_wp_post",
+            "description": "Create a new WordPress post or page",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Post title"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Post content"
+                    },
+                    "post_type": {
+                        "type": "string",
+                        "description": "Post type (post, page, etc.)",
+                        "default": "post"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Post status (publish, draft, etc.)",
+                        "default": "draft"
+                    }
+                },
+                "required": [
+                    "title",
+                    "content"
+                ]
+            }
+        },
+        {
+            "name": "get_amelia_services",
+            "description": "Get available Amelia services",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "category_id": {
+                        "type": "number",
+                        "description": "Filter by category ID"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Service status (visible, hidden, disabled)",
+                        "default": "visible"
+                    }
+                }
+            }
+        },
+        {
+            "name": "get_amelia_appointments",
+            "description": "Get Amelia appointments with filtering options",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "start_date": {
+                        "type": "string",
+                        "description": "Start date (YYYY-MM-DD)"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "End date (YYYY-MM-DD)"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Appointment status (pending, approved, canceled, rejected)"
+                    }
+                }
+            }
+        },
+        {
+            "name": "create_amelia_appointment",
+            "description": "Create a new Amelia appointment",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "service_id": {
+                        "type": "number",
+                        "description": "Service ID"
+                    },
+                    "provider_id": {
+                        "type": "number",
+                        "description": "Provider ID"
+                    },
+                    "booking_start": {
+                        "type": "string",
+                        "description": "Booking start time (ISO format)"
+                    },
+                    "customer_first_name": {
+                        "type": "string",
+                        "description": "Customer first name"
+                    },
+                    "customer_last_name": {
+                        "type": "string",
+                        "description": "Customer last name"
+                    },
+                    "customer_email": {
+                        "type": "string",
+                        "description": "Customer email"
+                    }
+                },
+                "required": [
+                    "service_id",
+                    "provider_id",
+                    "booking_start",
+                    "customer_first_name",
+                    "customer_last_name",
+                    "customer_email"
+                ]
+            }
+        }
+    ],
+    "resources": [],
+    "integration": {
+        "agents": [
+            "content_lifecycle_agent",
+            "booking_agent",
+            "lead_capture_agent"
+        ],
+        "workflows": [
+            "content_management",
+            "booking_management",
+            "customer_acquisition"
+        ],
+        "requiredCredentials": [
+            {
+                "name": "WP_API_URL",
+                "description": "WordPress API URL",
+                "type": "url"
+            },
+            {
+                "name": "WP_USERNAME",
+                "description": "WordPress admin username",
+                "type": "text"
+            },
+            {
+                "name": "WP_APP_PASSWORD",
+                "description": "WordPress application password",
+                "type": "password"
+            },
+            {
+                "name": "AMELIA_API_KEY",
+                "description": "Amelia Booking API key",
+                "type": "password"
+            }
+        ]
+    }
+}

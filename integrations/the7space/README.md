@@ -1,130 +1,110 @@
-# The 7 Space - Integration and Visualization Templates
+# The 7 Space MCP Integration
 
-This project provides integration components and templates for The 7 Space (Art Gallery & Wellness Center) to connect Softr interfaces with the Higher Self Network server.
+This integration connects The HigherSelf Network Server with The 7 Space website, providing tools for WordPress, Elementor Pro, and Amelia booking system integration through MCP (Model Context Protocol).
 
-## Project Overview
+## Overview
 
-The 7 Space requires comprehensive interfaces for managing art gallery and wellness center operations. This project implements:
+This integration includes:
 
-1. **Softr Template Prompts** - Ready-to-use templates for building Softr interfaces
-2. **Pydantic Models** - Data models for the Higher Self Network server integration
-3. **API Integration** - Connectivity between Softr interfaces and backend services
-4. **Dashboard Configurations** - Visualization templates for business intelligence
+1. **MCP Server** - A TypeScript-based MCP server that exposes tools for interacting with The 7 Space website
+2. **Service Module** - A Python module that integrates with the MCP tools from the main server
+3. **Agent Integration** - Helper classes to connect the HigherSelf agents with The 7 Space service
 
-## Directory Structure
+## MCP Tools
 
-```
-the7space-notion-integration/
-│
-├── src/
-│   ├── models/              # Pydantic data models
-│   │   ├── the7space_models.py       # Business domain models
-│   │   └── softr_integration_models.py # API integration models
-│   │
-│   ├── api/                 # API connectivity
-│   │   └── higherself_network_api.py  # Higher Self Network API client
-│   │
-│   ├── visualizations/      # Dashboard templates
-│   │   └── dashboard_config.py       # Dashboard configuration
-│   │
-│   └── app.py              # Main application for API endpoints
-│
-├── config/                 # Configuration files
-├── tests/                  # Test suite
-├── docs/                   # Documentation
-└── softr_template_prompts.md  # Softr interface templates
-```
+The integration provides the following MCP tools:
 
-## Softr Templates
+### WordPress Tools
 
-The project includes comprehensive template prompts for building Softr interfaces:
+- `get_wp_posts`: Retrieve WordPress posts with filtering options
+- `create_wp_post`: Create a new WordPress post or page
+- `update_wp_post`: Update an existing WordPress post or page
 
-- **Client Portal** - Personalized interface for clients
-- **Artist Dashboard** - Tools for gallery artists
-- **Public Gallery Website** - Public-facing art gallery interface
-- **Wellness Center Booking** - Service booking system
-- **Sales Dashboard** - Financial analytics
-- **Client Acquisition Workflow** - Lead generation and nurturing
-- **Inventory Management** - Art inventory system
-- **Event Management** - Exhibition and event organization
+### Elementor Pro Tools
 
-## Data Models
+- `get_elementor_templates`: Get available Elementor templates
+- `apply_elementor_template`: Apply an Elementor template to a page
 
-The project implements Pydantic models to define the data structures needed for the integration:
+### Amelia Booking Tools
 
-1. **Business Domain Models**
-   - Artist, Artwork, Client, Sale, Event, WellnessService, Booking, etc.
-
-2. **API Integration Models**
-   - WebhookPayload, ApiResponse, ArtworkListRequest, ServiceBookingRequest, etc.
-
-## Integration with Higher Self Network Server
-
-The API integration follows the centralized deployment principles specified in The HigherSelf Network guidelines, ensuring:
-
-1. All data flows through the Higher Self Network server
-2. Secure API authentication and webhook handling
-3. Proper error handling and logging
-4. Workflow instance management through the API
-
-## Dashboard Configurations
-
-Visualization templates are provided for:
-
-- Sales performance tracking
-- Inventory management
-- Event planning and analysis
-- Wellness service monitoring
-- Client relationship management
+- `get_amelia_services`: Get available Amelia services
+- `get_amelia_appointments`: Get Amelia appointments with filtering options
+- `create_amelia_appointment`: Create a new Amelia appointment
 
 ## Setup Instructions
 
-1. Install dependencies:
+### Prerequisites
+
+1. **WordPress Website** with:
+   - WordPress REST API enabled
+   - Application password created for an admin user
+   - Elementor Pro installed
+   - Amelia booking plugin installed and configured
+
+2. **Required Python Dependencies**:
+
+   ```
+   pydantic>=2.0.0
+   loguru>=0.7.0
+   ```
+
+### Configuration
+
+1. Set up the MCP server:
+
    ```bash
-   cd /Users/utakwest/CascadeProjects/the7space-notion-integration
-   pip install -r requirements.txt
+   # Navigate to the MCP server directory
+   cd ~/Documents/Cline/MCP/the7space-integration
+   
+   # Install dependencies
+   npm install
+   
+   # Build the server
+   npm run build
    ```
 
-2. Configure environment variables:
-   ```
-   HIGHERSELF_SERVER_API_ENDPOINT=https://api.higherselfnetwork.com
-   HIGHERSELF_API_KEY=your_api_key
-   HIGHERSELF_WEBHOOK_SECRET=your_webhook_secret
-   HIGHERSELF_SOFTR_SITE_ID=your_softr_site_id
-   ```
+2. Add environment variables to your `.env` file:
 
-3. Run the API server:
-   ```bash
-   cd /Users/utakwest/CascadeProjects/the7space-notion-integration/src
-   python app.py
+   ```
+   THE7SPACE_WP_API_URL=https://the7space.com
+   THE7SPACE_WP_USERNAME=your_admin_username
+   THE7SPACE_WP_APP_PASSWORD=your_application_password
+   THE7SPACE_AMELIA_API_KEY=your_amelia_api_key
    ```
 
-## Using Softr Templates
+3. Add the MCP server configuration to your MCP settings file (see `mcp_integration.json` for details)
 
-1. Copy the desired template from `softr_template_prompts.md`
-2. Create a new Softr project or page
-3. Use the prompt to guide your Softr interface development
-4. Connect Softr to the Higher Self Network server using the API endpoints
+## Agent Integration
 
-## API Endpoints
+This integration extends the capabilities of these agents:
 
-The integration API provides endpoints for:
+1. **Content Lifecycle Agent** - For managing WordPress content
+2. **Booking Agent** - For managing Amelia bookings
+3. **Lead Capture Agent** - For processing leads from The 7 Space website
 
-- Artwork listings and details
-- Event management
-- Service bookings
-- Art purchases
-- User profiles
-- Dashboard data
+To register with an agent:
 
-## Next Steps
+```python
+from integrations.the7space.agent_integration import get_the7space_integration
 
-1. Configure your Softr interface according to the templates
-2. Deploy the integration API to the Higher Self Network server
-3. Connect your Softr interfaces to the API endpoints
-4. Test the full integration flow
-5. Deploy to production
+# Get the integration
+the7space_integration = await get_the7space_integration()
 
-## Contributing
+# Register with an agent
+await the7space_integration.register_with_content_lifecycle_agent(content_agent)
+await the7space_integration.register_with_booking_agent(booking_agent)
+await the7space_integration.register_with_lead_capture_agent(lead_agent)
+```
 
-When extending this project, ensure all additions adhere to The HigherSelf Network principles, particularly the centralized deployment and data management guidelines.
+## Implementation Notes
+
+- The agent integration requires extending the base agent classes with registration methods for providers and handlers.
+- The service file has placeholder implementations that would be replaced with actual MCP tool calls in a production environment.
+- Error handling and logging follow the same patterns used in the rest of the codebase.
+
+## Future Enhancements
+
+- Add tools for WooCommerce integration
+- Implement media upload and management
+- Add support for custom post types and taxonomies
+- Extend Elementor integration with custom widget support
