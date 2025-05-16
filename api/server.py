@@ -44,6 +44,7 @@ from api.huggingface_router import router as huggingface_router
 from api.routes.agent_tasks import router as agent_tasks_router
 from api.huggingface_router import router as huggingface_router
 from api.softr_router import router as softr_router
+from api.capcut_pipit_router import router as capcut_pipit_router
 
 # Configure logging
 # logging.basicConfig removed - assuming setup_logging from utils is called in main.py
@@ -77,6 +78,7 @@ app.include_router(huggingface_router)
 app.include_router(agent_tasks_router)
 app.include_router(huggingface_router)
 app.include_router(softr_router)
+app.include_router(capcut_pipit_router)
 
 # Agents will be passed via app.state.agents from main.py
 

@@ -31,6 +31,8 @@ from services.snovio_service import SnovIOService  # Corrected import
 from services.plaud_service import PlaudService
 from services.huggingface_service import HuggingFaceService
 from services.softr_service import SoftrService
+from services.capcut_service import CapCutService
+from services.pipit_service import PipitService
 
 # Singleton instance of the IntegrationManager
 _integration_manager = None
@@ -71,6 +73,8 @@ class IntegrationManagerConfig(BaseModel):
     enable_circle: bool = True
     enable_huggingface: bool = True
     enable_softr: bool = True
+    enable_capcut: bool = True
+    enable_pipit: bool = True
 
     class Config:
         env_prefix = "INTEGRATION_"
@@ -280,6 +284,32 @@ class IntegrationManager:
                 except Exception as e:
                     logger.error(f"Failed to initialize Softr service: {e}")
                     self.initialization_status["softr"] = False
+
+            # CapCut
+            if self.config.enable_capcut:
+                logger.info("Initializing CapCut service...")
+                try:
+                    capcut_service = CapCutService(notion_service=self.notion_service)
+                    # CapCut doesn't have a specific validation method yet
+                    self.services["capcut"] = capcut_service
+                    self.initialization_status["capcut"] = True
+                    logger.info("CapCut service initialized successfully")
+                except Exception as e:
+                    logger.error(f"Failed to initialize CapCut service: {e}")
+                    self.initialization_status["capcut"] = False
+
+            # Pipit
+            if self.config.enable_pipit:
+                logger.info("Initializing Pipit service...")
+                try:
+                    pipit_service = PipitService(notion_service=self.notion_service)
+                    # Pipit doesn't have a specific validation method yet
+                    self.services["pipit"] = pipit_service
+                    self.initialization_status["pipit"] = True
+                    logger.info("Pipit service initialized successfully")
+                except Exception as e:
+                    logger.error(f"Failed to initialize Pipit service: {e}")
+                    self.initialization_status["pipit"] = False
 
             # AI Providers
             if self.config.enable_ai_providers:

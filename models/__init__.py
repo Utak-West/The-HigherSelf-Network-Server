@@ -35,6 +35,15 @@ from models.audience_models import *
 # Video models
 from models.video_models import *
 
+# CapCut integration models
+from models.capcut_models import *
+
+# Pipit payment integration models
+from models.pipit_models import *
+
+# Video transaction models
+from models.video_transaction_models import *
+
 __all__ = [
     'EntityType', 'ApiPlatform', 'AgentCapability', 'AgentStatus',
     'RuntimeEnvironment', 'WorkflowStatus', 'InstanceStatus',
