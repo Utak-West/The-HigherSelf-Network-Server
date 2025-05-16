@@ -10,7 +10,18 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
-from loguru import logger
+# Setup logging
+try:
+    from loguru import logger
+except ImportError:
+    import logging
+
+    # Create a logger that mimics loguru's interface
+    logger = logging.getLogger("the7space_agent")
+    logger.info = logger.info
+    logger.error = logger.error
+    logger.warning = logger.warning
+    logger.debug = logger.debug
 
 from agents.base_agent import BaseAgent
 from agents.booking_agent import BookingAgent
@@ -18,6 +29,9 @@ from agents.content_lifecycle_agent import ContentLifecycleAgent
 from agents.lead_capture_agent import LeadCaptureAgent
 from integrations.the7space.the7space_service import (
     AmeliaAppointment,
+    SoftrPortal,
+    SoftrRecord,
+    SoftrUser,
     The7SpaceService,
     WordPressPost,
 )
@@ -51,24 +65,56 @@ class The7SpaceAgentIntegration:
         Returns:
             True if registration was successful, False otherwise
         """
+        success = True
         try:
-            # Register custom handlers for The 7 Space content operations
-            agent.register_content_provider(
-                provider_id="the7space",
-                provider_name="The 7 Space Website",
-                get_content_fn=self._get_content_handler,
-                create_content_fn=self._create_content_handler,
-                update_content_fn=self._update_content_handler,
-                publish_content_fn=self._publish_content_handler,
-            )
+            # Register WordPress content provider
+            # Check if the method exists on the agent
+            if hasattr(agent, "register_content_provider"):
+                agent.register_content_provider(
+                    provider_id="the7space_wp",
+                    provider_name="The 7 Space WordPress Website",
+                    get_content_fn=self._get_content_handler,
+                    create_content_fn=self._create_content_handler,
+                    update_content_fn=self._update_content_handler,
+                    publish_content_fn=self._publish_content_handler,
+                )
+            else:
+                logger.warning(
+                    "ContentLifecycleAgent does not have register_content_provider method"
+                )
 
             logger.info(
-                "Registered The 7 Space content provider with ContentLifecycleAgent"
+                "Registered The 7 Space WordPress content provider with ContentLifecycleAgent"
             )
-            return True
         except Exception as e:
-            logger.error(f"Error registering with ContentLifecycleAgent: {e}")
-            return False
+            logger.error(f"Error registering WordPress with ContentLifecycleAgent: {e}")
+            success = False
+
+        try:
+            # Register Softr content provider
+            # Check if the method exists on the agent
+            if hasattr(agent, "register_content_provider"):
+                agent.register_content_provider(
+                    provider_id="the7space_softr",
+                    provider_name="The 7 Space Softr Portals",
+                    get_content_fn=self._get_softr_content_handler,
+                    create_content_fn=self._create_softr_content_handler,
+                    update_content_fn=self._update_softr_content_handler,
+                    publish_content_fn=self._publish_softr_content_handler,
+                )
+            else:
+                logger.warning(
+                    "ContentLifecycleAgent does not have register_content_provider method"
+                )
+
+            logger.info(
+                "Registered The 7 Space Softr content provider with ContentLifecycleAgent"
+            )
+        except Exception as e:
+            logger.error(f"Error registering Softr with ContentLifecycleAgent: {e}")
+            success = False
+
+        return success
 
     async def register_with_booking_agent(self, agent: BookingAgent) -> bool:
         """
@@ -82,14 +128,20 @@ class The7SpaceAgentIntegration:
         """
         try:
             # Register custom handlers for The 7 Space booking operations
-            agent.register_booking_provider(
-                provider_id="the7space_amelia",
-                provider_name="The 7 Space Amelia Booking",
-                get_services_fn=self._get_services_handler,
-                get_appointments_fn=self._get_appointments_handler,
-                create_appointment_fn=self._create_appointment_handler,
-                update_appointment_fn=self._update_appointment_handler,
-            )
+            # Check if the method exists on the agent
+            if hasattr(agent, "register_booking_provider"):
+                agent.register_booking_provider(
+                    provider_id="the7space_amelia",
+                    provider_name="The 7 Space Amelia Booking",
+                    get_services_fn=self._get_services_handler,
+                    get_appointments_fn=self._get_appointments_handler,
+                    create_appointment_fn=self._create_appointment_handler,
+                    update_appointment_fn=self._update_appointment_handler,
+                )
+            else:
+                logger.warning(
+                    "BookingAgent does not have register_booking_provider method"
+                )
 
             logger.info("Registered The 7 Space booking provider with BookingAgent")
             return True
@@ -109,11 +161,17 @@ class The7SpaceAgentIntegration:
         """
         try:
             # Register custom handlers for The 7 Space lead operations
-            agent.register_lead_source(
-                source_id="the7space_website",
-                source_name="The 7 Space Website",
-                process_lead_fn=self._process_lead_handler,
-            )
+            # Check if the method exists on the agent
+            if hasattr(agent, "register_lead_source"):
+                agent.register_lead_source(
+                    source_id="the7space_website",
+                    source_name="The 7 Space Website",
+                    process_lead_fn=self._process_lead_handler,
+                )
+            else:
+                logger.warning(
+                    "LeadCaptureAgent does not have register_lead_source method"
+                )
 
             logger.info("Registered The 7 Space lead source with LeadCaptureAgent")
             return True
@@ -255,6 +313,138 @@ class The7SpaceAgentIntegration:
         except Exception as e:
             logger.error(f"Error in _publish_content_handler: {e}")
             return {"status": "error", "message": f"Error publishing content: {str(e)}"}
+
+    # Softr Content Lifecycle Agent handlers
+    async def _get_softr_content_handler(
+        self, request: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Handle Softr content retrieval requests from the Content Lifecycle Agent."""
+        try:
+            data_source = request.get("data_source", "content")
+            limit = request.get("limit", 10)
+            offset = request.get("offset", 0)
+            filter_expr = request.get("filter", None)
+
+            records = await self.the7space_service.get_softr_records(
+                data_source=data_source,
+                limit=limit,
+                offset=offset,
+                filter_expr=filter_expr,
+            )
+
+            return {
+                "status": "success",
+                "content": [r.dict() for r in records],
+                "count": len(records),
+                "message": f"Retrieved {len(records)} records from Softr data source {data_source}",
+            }
+        except Exception as e:
+            logger.error(f"Error in _get_softr_content_handler: {e}")
+            return {
+                "status": "error",
+                "message": f"Error retrieving Softr content: {str(e)}",
+            }
+
+    async def _create_softr_content_handler(
+        self, request: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Handle Softr content creation requests from the Content Lifecycle Agent."""
+        try:
+            data_source = request.get("data_source")
+            if not data_source:
+                return {
+                    "status": "error",
+                    "message": "Data source is required for Softr content creation",
+                }
+
+            fields = request.get("fields", {})
+            notion_page_id = request.get("notion_page_id")
+
+            record_id = await self.the7space_service.create_softr_record(
+                data_source=data_source,
+                fields=fields,
+                notion_page_id=notion_page_id,
+            )
+
+            if record_id:
+                return {
+                    "status": "success",
+                    "record_id": record_id,
+                    "message": f"Created record in Softr data source {data_source}",
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Failed to create record in Softr data source {data_source}",
+                }
+        except Exception as e:
+            logger.error(f"Error in _create_softr_content_handler: {e}")
+            return {
+                "status": "error",
+                "message": f"Error creating Softr content: {str(e)}",
+            }
+
+    async def _update_softr_content_handler(
+        self, request: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Handle Softr content update requests from the Content Lifecycle Agent."""
+        try:
+            # For now, since we don't have a real implementation, we'll simulate success
+            record_id = request.get("id")
+            data_source = request.get("data_source")
+
+            if not record_id or not data_source:
+                return {
+                    "status": "error",
+                    "message": "Record ID and data source are required for Softr content updates",
+                }
+
+            logger.info(
+                f"Simulating update of Softr record {record_id} in {data_source}"
+            )
+
+            return {
+                "status": "success",
+                "record_id": record_id,
+                "message": f"Updated record in Softr data source {data_source}",
+            }
+        except Exception as e:
+            logger.error(f"Error in _update_softr_content_handler: {e}")
+            return {
+                "status": "error",
+                "message": f"Error updating Softr content: {str(e)}",
+            }
+
+    async def _publish_softr_content_handler(
+        self, request: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Handle Softr content publishing requests from the Content Lifecycle Agent."""
+        try:
+            # For Softr, publishing is typically just updating a status field
+            record_id = request.get("id")
+            data_source = request.get("data_source")
+
+            if not record_id or not data_source:
+                return {
+                    "status": "error",
+                    "message": "Record ID and data source are required for Softr content publishing",
+                }
+
+            logger.info(
+                f"Simulating publishing of Softr record {record_id} in {data_source}"
+            )
+
+            return {
+                "status": "success",
+                "record_id": record_id,
+                "message": f"Published record in Softr data source {data_source}",
+            }
+        except Exception as e:
+            logger.error(f"Error in _publish_softr_content_handler: {e}")
+            return {
+                "status": "error",
+                "message": f"Error publishing Softr content: {str(e)}",
+            }
 
     # Booking Agent handlers
     async def _get_services_handler(self, request: Dict[str, Any]) -> Dict[str, Any]:

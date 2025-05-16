@@ -160,6 +160,111 @@
                     "customer_email"
                 ]
             }
+        },
+        {
+            "name": "update_wp_post",
+            "description": "Update an existing WordPress post or page",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "Post ID to update"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Post title"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Post content"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Post status (publish, draft, etc.)"
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        },
+                        "description": "Array of category IDs"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        },
+                        "description": "Array of tag IDs"
+                    },
+                    "featured_media": {
+                        "type": "number",
+                        "description": "Featured media ID"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            }
+        },
+        {
+            "name": "update_wp_custom_fields",
+            "description": "Update custom fields (ACF) for a WordPress post",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "post_id": {
+                        "type": "number",
+                        "description": "Post ID to update custom fields for"
+                    },
+                    "fields": {
+                        "type": "object",
+                        "description": "Object containing field names and values"
+                    }
+                },
+                "required": [
+                    "post_id",
+                    "fields"
+                ]
+            }
+        },
+        {
+            "name": "get_wp_categories",
+            "description": "Get WordPress categories",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "per_page": {
+                        "type": "number",
+                        "description": "Number of categories to retrieve",
+                        "default": 20
+                    },
+                    "page": {
+                        "type": "number",
+                        "description": "Page number",
+                        "default": 1
+                    }
+                }
+            }
+        },
+        {
+            "name": "get_wp_tags",
+            "description": "Get WordPress tags",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "per_page": {
+                        "type": "number",
+                        "description": "Number of tags to retrieve",
+                        "default": 20
+                    },
+                    "page": {
+                        "type": "number",
+                        "description": "Page number",
+                        "default": 1
+                    }
+                }
+            }
         }
     ],
     "resources": [],
