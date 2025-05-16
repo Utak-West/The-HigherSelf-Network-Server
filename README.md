@@ -47,10 +47,12 @@ All data, workflows, and communications flow through Notion, creating a unified 
 
 ### Retrieval Augmented Generation (RAG)
 
-* Knowledge Retrieval: Access relevant information from various sources
-* Web Crawling: Automatically extract content from websites using Crawl4AI
-* Vector Embeddings: Convert content into semantic vector representations
-* Contextual Generation: Generate responses enhanced with retrieved context
+* **Knowledge Retrieval**: Access relevant information from various sources
+* **Web Crawling**: Automatically extract content from websites using Crawl4AI
+* **Vector Embeddings**: Convert content into semantic vector representations
+* **Contextual Generation**: Generate responses enhanced with retrieved context
+* **Atlas Integration**: Dedicated RAG agent (Atlas) for knowledge management
+* **Cross-Agent Knowledge Sharing**: All agents can request contextual information from Atlas
 
 ### Flexible Embedding Providers
 
@@ -209,6 +211,7 @@ The HigherSelf Network features a unique team of digital agents, each with their
 | **Sage** | Community Curator | Warm & Connected | Community engagement, relationship building, discussion facilitation |
 | **Elan** | Content Choreographer | Creative & Adaptive | Content creation, distribution management, performance analysis |
 | **Zevi** | Audience Analyst | Analytical & Sharp | Data analysis, audience segmentation, trend identification |
+| **Atlas** | Knowledge Retrieval Specialist | Knowledgeable & Resourceful | RAG-enhanced knowledge retrieval, semantic search, content indexing |
 | **Grace** | System Orchestrator | Harmonious & Coordinating | Agent coordination, workflow orchestration, system monitoring |
 
 ### How They Work Together
@@ -219,6 +222,7 @@ Our agents collaborate seamlessly across your business processes:
 * **Liora** creates marketing campaigns based on **Zevi's** audience insights
 * **Elan** develops content that **Sage** shares with your community
 * **Solari** manages bookings that originated from **Liora's** campaigns
+* **Atlas** provides contextual knowledge to enhance all agents' capabilities
 * **Grace** ensures all agents work together harmoniously
 
 ### Business Applications
@@ -361,6 +365,12 @@ Comprehensive instructions for deploying the system in various environments.
 Detailed information about agent personalities and how to work with them.
 
 [Read the Agent Guide](./documentation/AGENT_SYSTEM_GUIDE.md)
+
+### RAG Agent Guide
+
+Learn how to use Atlas, the Knowledge Retrieval Specialist, for enhanced contextual capabilities.
+
+[Read the RAG Agent Guide](./documentation/RAG_AGENT_GUIDE.md)
 
 ### Monitoring Guide
 

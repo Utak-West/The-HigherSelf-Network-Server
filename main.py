@@ -4,36 +4,46 @@ Main entry point for The HigherSelf Network Server.
 This script initializes the API server and agent system.
 """
 
+import asyncio
 import os
 import sys
-import asyncio
-# import logging # Unused directly, setup_logging handles interception
-from dotenv import load_dotenv
 from pathlib import Path
 
+# import logging # Unused directly, setup_logging handles interception
+from dotenv import load_dotenv
 from loguru import logger
+
+# Import named agent personalities
+from agents import (  # Legacy agent imports (for backwards compatibility); Named agent personalities; Orchestration
+    Atlas,
+    AudienceSegmentationAgent,
+    BookingAgent,
+    CommunityEngagementAgent,
+    ContentLifecycleAgent,
+    Elan,
+    GraceOrchestrator,
+    LeadCaptureAgent,
+    Liora,
+    MarketingCampaignAgent,
+    Nyra,
+    RAGAgent,
+    Ruvo,
+    Sage,
+    Solari,
+    TaskManagementAgent,
+    Zevi,
+    create_agent_collective,
+    create_grace_orchestrator,
+)
 from api.server import start as start_api
-from services.integration_manager import get_integration_manager # Changed
-from services.notion_service import NotionService
 
 # Import configuration and utilities
 from config.settings import settings
+from services.ai_router import AIRouter
+from services.integration_manager import get_integration_manager  # Changed
+from services.notion_service import NotionService
 from utils.logging_setup import setup_logging
 from utils.message_bus import MessageBus
-
-# Import named agent personalities
-from agents import (
-    # Legacy agent imports (for backwards compatibility)
-    LeadCaptureAgent, BookingAgent, ContentLifecycleAgent,
-    AudienceSegmentationAgent, TaskManagementAgent,
-    MarketingCampaignAgent, CommunityEngagementAgent,
-
-    # Named agent personalities
-    Nyra, Solari, Ruvo, Liora, Sage, Elan, Zevi,
-
-    # Orchestration
-    GraceOrchestrator, create_agent_collective, create_grace_orchestrator
-)
 
 
 def configure_logging():
@@ -44,21 +54,14 @@ def configure_logging():
     log_file = settings.server.log_file
 
     # Set up logging with our new utility
-    setup_logging(
-        log_level=log_level,
-        json_output=json_logs,
-        log_file=log_file
-    )
+    setup_logging(log_level=log_level, json_output=json_logs, log_file=log_file)
 
     # Add Docker log path if running in container
     if os.environ.get("RUNNING_IN_CONTAINER") == "true":
         container_log_path = "/app/logs/higherself_agents.log"
         os.makedirs(os.path.dirname(container_log_path), exist_ok=True)
         logger.add(
-            container_log_path,
-            rotation="500 MB",
-            retention="30 days",
-            level=log_level
+            container_log_path, rotation="500 MB", retention="30 days", level=log_level
         )
 
     logger.info("Logging configured with level: {}", log_level)
@@ -85,24 +88,36 @@ async def initialize_integrations():
 
     # Log overall status based on Notion, as it's critical
     if not status.get("notion", False):
-        logger.error("Integration Manager's Notion service failed to initialize. This may impact core functionality.")
+        logger.error(
+            "Integration Manager's Notion service failed to initialize. This may impact core functionality."
+        )
     else:
         logger.info("Integration Manager's Notion service appears to be initialized.")
 
     # Log detailed status for all services
     successful_count = 0
-    total_count = len(status) if status else 0 # Handle case where status might be None if manager failed badly
+    total_count = (
+        len(status) if status else 0
+    )  # Handle case where status might be None if manager failed badly
     for service, initialized in status.items():
         if initialized:
-            logger.info(f"✅ {service.capitalize()} service initialized successfully via Integration Manager.")
+            logger.info(
+                f"✅ {service.capitalize()} service initialized successfully via Integration Manager."
+            )
             successful_count += 1
         else:
-            logger.warning(f"❌ {service.capitalize()} service failed to initialize via Integration Manager.")
-    
+            logger.warning(
+                f"❌ {service.capitalize()} service failed to initialize via Integration Manager."
+            )
+
     if total_count > 0:
-        logger.info(f"Integration Manager reported {successful_count}/{total_count} services initialized.")
+        logger.info(
+            f"Integration Manager reported {successful_count}/{total_count} services initialized."
+        )
     else:
-        logger.warning("Integration Manager reported no services or status unavailable.")
+        logger.warning(
+            "Integration Manager reported no services or status unavailable."
+        )
 
     return integration_manager
 
@@ -126,10 +141,24 @@ async def register_agents(message_bus=None):
     elan = Elan(notion_client=notion_service)  # Content Choreographer
     zevi = Zevi(notion_client=notion_service)  # Audience Analyst
 
+    # Initialize AI router for RAG agent
+    ai_router = AIRouter()
+    await ai_router.initialize()
+
+    # Initialize Atlas (RAG agent)
+    atlas = Atlas(
+        notion_client=notion_service, ai_router=ai_router
+    )  # Knowledge Retrieval Specialist
+
     # Create Grace Fields orchestrator with message bus for enhanced communication
     grace = create_grace_orchestrator(notion_service, message_bus)
 
-    logger.info("🌸 Grace Fields orchestration system initialized with enhanced capabilities")
+    logger.info(
+        "🌸 Grace Fields orchestration system initialized with enhanced capabilities"
+    )
+    logger.info(
+        "📚 Atlas Knowledge Retrieval Specialist initialized with RAG capabilities"
+    )
 
     # Register all agents in Notion
     await nyra.register_in_notion()
@@ -153,20 +182,23 @@ async def register_agents(message_bus=None):
     await zevi.register_in_notion()
     logger.info("🐺 Zevi (Audience Analyst) registered successfully")
 
+    # Register Atlas in Notion
+    await atlas.register_in_notion()
+    logger.info("📚 Atlas (Knowledge Retrieval Specialist) registered successfully")
+
     # Return all agents and orchestrator for use by the API server
     return {
         # Named agent personalities with unique character
-        "nyra": nyra,      # Lead Capture Specialist
+        "nyra": nyra,  # Lead Capture Specialist
         "solari": solari,  # Booking & Order Manager
-        "ruvo": ruvo,      # Task Orchestrator
-        "liora": liora,    # Marketing Strategist
-        "sage": sage,      # Community Curator
-        "elan": elan,      # Content Choreographer
-        "zevi": zevi,      # Audience Analyst
-
+        "ruvo": ruvo,  # Task Orchestrator
+        "liora": liora,  # Marketing Strategist
+        "sage": sage,  # Community Curator
+        "elan": elan,  # Content Choreographer
+        "zevi": zevi,  # Audience Analyst
+        "atlas": atlas,  # Knowledge Retrieval Specialist
         # Orchestration
-        "grace": grace,     # System Orchestrator
-
+        "grace": grace,  # System Orchestrator
         # Legacy references (for backwards compatibility)
         "lead_capture_agent": nyra,
         "booking_agent": solari,
@@ -174,7 +206,8 @@ async def register_agents(message_bus=None):
         "marketing_campaign_agent": liora,
         "community_engagement_agent": sage,
         "content_lifecycle_agent": elan,
-        "audience_segmentation_agent": zevi
+        "audience_segmentation_agent": zevi,
+        "rag_agent": atlas,
     }
 
 
@@ -215,25 +248,30 @@ def main():
     logger.info("Starting The HigherSelf Network Server")
     logger.info(f"Environment: {settings.environment.value}")
     logger.info("Notion is configured as the central hub for all operations")
-    logger.info("Initializing the named agent personality system - Grace Fields Orchestration")
+    logger.info(
+        "Initializing the named agent personality system - Grace Fields Orchestration"
+    )
 
     # Initialize integrations and register agents asynchronously
-    agents_dict = None # Initialize to None
+    agents_dict = None  # Initialize to None
     try:
         # Run both initialization tasks and get the agents dictionary
-        agents_dict = asyncio.run(async_initialization(message_bus)) # Capture returned agents
+        agents_dict = asyncio.run(
+            async_initialization(message_bus)
+        )  # Capture returned agents
     except Exception as e:
         logger.error("Failed during initialization: {}", e)
         logger.exception(e)
         # Potentially exit or handle critical failure if agents_dict is None and required
 
     if agents_dict is None:
-        logger.critical("Agent initialization failed. API server cannot start with agents.")
+        logger.critical(
+            "Agent initialization failed. API server cannot start with agents."
+        )
         # Decide on behavior: exit, or start API without agents (if that's a valid state)
         # For now, let's assume we log and it might proceed without agents if start_api allows
         # Or, more robustly:
         # sys.exit("Critical: Agent initialization failed.")
-
 
     # Start the API server with configured settings and pass the agents
     start_api(
@@ -241,7 +279,7 @@ def main():
         port=settings.server.port,
         log_level=settings.server.log_level.value.lower(),
         workers=settings.server.workers,
-        agents=agents_dict  # Pass agents to the API server
+        agents=agents_dict,  # Pass agents to the API server
     )
 
 
@@ -258,7 +296,7 @@ async def async_initialization(message_bus=None):
         logger.info("All integrations initialized successfully")
 
         # If we have a message bus, set its Notion service
-        if message_bus and hasattr(integration_manager, 'notion_service'):
+        if message_bus and hasattr(integration_manager, "notion_service"):
             message_bus.notion_service = integration_manager.notion_service
             logger.info("Message bus connected to Notion service")
     except Exception as e:
@@ -266,7 +304,7 @@ async def async_initialization(message_bus=None):
         logger.exception(e)
         # Continue even if some integrations fail, as long as Notion works
 
-    agents = None # Initialize to None
+    agents = None  # Initialize to None
     # Then register agents which require Notion connection
     try:
         # Pass the message bus to register_agents for enhanced orchestration
@@ -275,20 +313,25 @@ async def async_initialization(message_bus=None):
 
         # If we have a message bus, register agents as subscribers
         if message_bus and agents:
-            for agent_id, agent_instance in agents.items(): # Renamed 'agent' to 'agent_instance' for clarity
-                if hasattr(agent_instance, 'process_message'):
+            for (
+                agent_id,
+                agent_instance,
+            ) in agents.items():  # Renamed 'agent' to 'agent_instance' for clarity
+                if hasattr(agent_instance, "process_message"):
                     message_bus.subscribe(agent_id, agent_instance.process_message)
                     logger.info(f"Agent {agent_id} subscribed to message bus")
 
             # Subscribe the message bus to the GraceOrchestrator for centralized event handling
             if "grace" in agents:
-                logger.info("Enhanced Grace Orchestrator connected to message bus for multi-agent workflows")
+                logger.info(
+                    "Enhanced Grace Orchestrator connected to message bus for multi-agent workflows"
+                )
     except Exception as e:
         logger.error("Failed to register agents: {}", e)
         logger.exception(e)
         # agents will remain None if registration fails
 
-    return agents # Return the dictionary of initialized agents
+    return agents  # Return the dictionary of initialized agents
 
 
 if __name__ == "__main__":
