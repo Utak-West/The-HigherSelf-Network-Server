@@ -5,10 +5,11 @@ This module provides a complete RAG pipeline for enhancing AI completions
 with relevant context from the vector store.
 """
 
-import re
 import json
-from typing import List, Dict, Any, Optional, Union, Tuple
+import re
+from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID
+
 from loguru import logger
 from pydantic import BaseModel, Field
 
@@ -20,6 +21,7 @@ from services.ai_router import AIRouter
 
 class RAGRequest(BaseModel):
     """Request for RAG-enhanced AI completion."""
+
     query: str
     max_tokens: int = 1000
     temperature: float = 0.7
@@ -33,6 +35,7 @@ class RAGRequest(BaseModel):
 
 class SourceReference(BaseModel):
     """Reference to a source document."""
+
     id: str
     content_type: str
     title: Optional[str] = None
@@ -43,6 +46,7 @@ class SourceReference(BaseModel):
 
 class RAGResponse(BaseModel):
     """Response from RAG-enhanced AI completion."""
+
     text: str
     sources: List[SourceReference] = []
     success: bool = True
@@ -95,10 +99,7 @@ class RAGPipeline:
         """
         if not self._initialized:
             return RAGResponse(
-                text="",
-                sources=[],
-                success=False,
-                error="RAG pipeline not initialized"
+                text="", sources=[], success=False, error="RAG pipeline not initialized"
             )
 
         try:
@@ -108,7 +109,7 @@ class RAGPipeline:
                 content_types=request.content_types,
                 notion_database_ids=request.notion_database_ids,
                 limit=request.search_limit,
-                threshold=request.similarity_threshold
+                threshold=request.similarity_threshold,
             )
 
             if not search_results:
@@ -128,45 +129,26 @@ class RAGPipeline:
                     title=result.get("title"),
                     url=self._extract_url(result),
                     source=result["source"],
-                    similarity=result["score"]
+                    similarity=result["score"],
                 )
                 sources.append(source_ref)
 
             # Generate completion with context
             completion = await self._generate_with_context(request, context)
 
-            # Handle AICompletionResponse object
-            if hasattr(completion, "text"):
-                # This is an AICompletionResponse object
-                if hasattr(completion, "metadata") and completion.metadata and completion.metadata.get("error"):
-                    logger.error(f"Error generating completion: {completion.metadata.get('error')}")
-                    return RAGResponse(
-                        text="",
-                        sources=sources,
-                        success=False,
-                        error=completion.metadata.get("error", "Failed to generate completion")
-                    )
-                response_text = completion.text
-            # Handle dictionary response (legacy format)
-            elif isinstance(completion, dict):
-                if not completion.get("success", False):
-                    logger.error(f"Error generating completion: {completion.get('error', 'Unknown error')}")
-                    return RAGResponse(
-                        text="",
-                        sources=sources,
-                        success=False,
-                        error=completion.get("error", "Failed to generate completion")
-                    )
-                response_text = completion.get("text", "")
-            else:
-                # Unknown response type
-                logger.error(f"Unknown completion response type: {type(completion)}")
+            # Process completion response using helper method
+            response_result = self._process_completion_response(completion)
+
+            if not response_result["success"]:
+                logger.error(f"Error generating completion: {response_result['error']}")
                 return RAGResponse(
                     text="",
                     sources=sources,
                     success=False,
-                    error="Unknown completion response type"
+                    error=response_result["error"],
                 )
+
+            response_text = response_result["text"]
 
             # Format the response
 
@@ -174,20 +156,11 @@ class RAGPipeline:
             if request.include_sources:
                 response_text = self._add_source_citations(response_text, sources)
 
-            return RAGResponse(
-                text=response_text,
-                sources=sources,
-                success=True
-            )
+            return RAGResponse(text=response_text, sources=sources, success=True)
 
         except Exception as e:
             logger.error(f"Error in RAG pipeline: {e}")
-            return RAGResponse(
-                text="",
-                sources=[],
-                success=False,
-                error=str(e)
-            )
+            return RAGResponse(text="", sources=[], success=False, error=str(e))
 
     async def _retrieve_context(
         self,
@@ -195,7 +168,7 @@ class RAGPipeline:
         content_types: Optional[List[str]] = None,
         notion_database_ids: Optional[List[str]] = None,
         limit: int = 5,
-        threshold: float = 0.7
+        threshold: float = 0.7,
     ) -> List[Dict[str, Any]]:
         """
         Retrieve relevant context from the vector store.
@@ -220,7 +193,7 @@ class RAGPipeline:
                     content_types=content_types,
                     notion_database_id=db_id,
                     limit=limit,
-                    threshold=threshold
+                    threshold=threshold,
                 )
                 results.extend(db_results)
         else:
@@ -229,7 +202,7 @@ class RAGPipeline:
                 query=query,
                 content_types=content_types,
                 limit=limit,
-                threshold=threshold
+                threshold=threshold,
             )
 
         # Sort by score and limit
@@ -293,7 +266,9 @@ class RAGPipeline:
 
         return None
 
-    async def _generate_with_context(self, request: RAGRequest, context: str) -> Dict[str, Any]:
+    async def _generate_with_context(
+        self, request: RAGRequest, context: str
+    ) -> Dict[str, Any]:
         """
         Generate a completion with context.
 
@@ -305,10 +280,15 @@ class RAGPipeline:
             Completion response
         """
         # Create system message with context
-        system_message = request.system_message or "You are a helpful assistant that answers questions based on the provided context."
+        system_message = (
+            request.system_message
+            or "You are a helpful assistant that answers questions based on the provided context."
+        )
         system_message += "\n\nContext information is below. Use this information to answer the user's question.\n"
         system_message += "If the answer cannot be found in the context, say 'I don't have enough information to answer this question.'\n"
-        system_message += "Do not make up information that is not supported by the context.\n\n"
+        system_message += (
+            "Do not make up information that is not supported by the context.\n\n"
+        )
         system_message += context
 
         # Create completion request
@@ -318,7 +298,7 @@ class RAGPipeline:
             prompt=request.query,
             max_tokens=request.max_tokens,
             temperature=request.temperature,
-            system_message=system_message
+            system_message=system_message,
         )
 
         # Get completion
@@ -335,7 +315,10 @@ class RAGPipeline:
             RAG response
         """
         # Create system message
-        system_message = request.system_message or "You are a helpful assistant that answers questions based on your knowledge."
+        system_message = (
+            request.system_message
+            or "You are a helpful assistant that answers questions based on your knowledge."
+        )
         system_message += "\n\nIf you don't know the answer, say 'I don't have enough information to answer this question.'"
 
         # Create completion request
@@ -345,52 +328,24 @@ class RAGPipeline:
             prompt=request.query,
             max_tokens=request.max_tokens,
             temperature=request.temperature,
-            system_message=system_message
+            system_message=system_message,
         )
 
         # Get completion
         completion = await self.ai_router.get_completion(completion_request)
 
-        # Handle AICompletionResponse object
-        if hasattr(completion, "text"):
-            # This is an AICompletionResponse object
-            if hasattr(completion, "metadata") and completion.metadata and completion.metadata.get("error"):
-                return RAGResponse(
-                    text="",
-                    sources=[],
-                    success=False,
-                    error=completion.metadata.get("error", "Failed to generate completion")
-                )
+        # Process completion response using helper method
+        response_result = self._process_completion_response(completion)
 
-            return RAGResponse(
-                text=completion.text,
-                sources=[],
-                success=True
+        if not response_result["success"]:
+            logger.error(
+                f"Error generating completion without context: {response_result['error']}"
             )
-        # Handle dictionary response (legacy format)
-        elif isinstance(completion, dict):
-            if not completion.get("success", False):
-                return RAGResponse(
-                    text="",
-                    sources=[],
-                    success=False,
-                    error=completion.get("error", "Failed to generate completion")
-                )
+            return RAGResponse(
+                text="", sources=[], success=False, error=response_result["error"]
+            )
 
-            return RAGResponse(
-                text=completion.get("text", ""),
-                sources=[],
-                success=True
-            )
-        else:
-            # Unknown response type
-            logger.error(f"Unknown completion response type: {type(completion)}")
-            return RAGResponse(
-                text="",
-                sources=[],
-                success=False,
-                error="Unknown completion response type"
-            )
+        return RAGResponse(text=response_result["text"], sources=[], success=True)
 
     def _add_source_citations(self, text: str, sources: List[SourceReference]) -> str:
         """
@@ -415,9 +370,63 @@ class RAGPipeline:
 
         return text + sources_text
 
+    def _process_completion_response(self, completion):
+        """
+        Helper method to process completion responses consistently.
+
+        Args:
+            completion: The completion response from AI router
+
+        Returns:
+            Dict with keys:
+                - success: Boolean indicating success
+                - text: Response text (empty string if failed)
+                - error: Error message (None if successful)
+        """
+        result = {"success": False, "text": "", "error": None}
+
+        # Handle AICompletionResponse object
+        if hasattr(completion, "text"):
+            # Check for errors in metadata
+            if (
+                hasattr(completion, "metadata")
+                and completion.metadata
+                and completion.metadata.get("error")
+            ):
+                result["error"] = completion.metadata.get(
+                    "error", "Failed to generate completion"
+                )
+                return result
+
+            # Success case
+            result["success"] = True
+            result["text"] = completion.text
+            return result
+
+        # Handle dictionary response (legacy format)
+        elif isinstance(completion, dict):
+            if not completion.get("success", False):
+                result["error"] = completion.get(
+                    "error", "Failed to generate completion"
+                )
+                return result
+
+            # Success case
+            result["success"] = True
+            result["text"] = completion.get("text", "")
+            return result
+
+        # Unknown response type
+        else:
+            error_msg = f"Unknown completion response type: {type(completion)}"
+            logger.error(error_msg)
+            result["error"] = error_msg
+            return result
+
 
 # Singleton instance
 _rag_pipeline = None
+
 
 async def get_rag_pipeline(ai_router: AIRouter) -> RAGPipeline:
     """Get or create the RAG pipeline singleton."""

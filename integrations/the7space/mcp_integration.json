@@ -5,13 +5,13 @@
     "mcpServer": {
         "command": "node",
         "args": [
-            "~/Documents/Cline/MCP/the7space-integration/build/index.js"
+            "./build/index.js"
         ],
         "env": {
-            "WP_API_URL": "https://the7space.com",
-            "WP_USERNAME": "REPLACE_WITH_USERNAME",
-            "WP_APP_PASSWORD": "REPLACE_WITH_APP_PASSWORD",
-            "AMELIA_API_KEY": "REPLACE_WITH_AMELIA_API_KEY"
+            "WP_API_URL": "${env:WP_API_URL}",
+            "WP_USERNAME": "${env:WP_USERNAME}",
+            "WP_APP_PASSWORD": "${env:WP_APP_PASSWORD}",
+            "AMELIA_API_KEY": "${env:AMELIA_API_KEY}"
         },
         "disabled": false,
         "alwaysAllow": []
