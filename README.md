@@ -419,6 +419,15 @@ The HigherSelf Network Server implements a hub-and-spoke architecture with Notio
 4. Workflow instances track the state of business processes
 5. History logs maintain a complete audit trail
 
+#### API Endpoints
+
+The server exposes several API endpoints for integration with external systems:
+
+| Platform | Endpoint | Description |
+|----------|----------|-------------|
+| N8N | `/api/external/n8n/callback` | Receives workflow data from N8N |
+| Zapier | `/api/external/zapier/callback` | Receives workflow data from Zapier |
+
 ### Adding a New Agent
 
 1. Create a new file in the `agents` directory

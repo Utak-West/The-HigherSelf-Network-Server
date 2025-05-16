@@ -41,16 +41,18 @@ The HigherSelf Network Server uses a sophisticated agent system with named perso
 ### Setting Up N8N
 
 1. **Install N8N** (if self-hosting):
+
    ```bash
    npm install n8n -g
    ```
 
 2. **Start N8N**:
+
    ```bash
    n8n start
    ```
 
-3. **Access the N8N interface** (default: http://localhost:5678)
+3. **Access the N8N interface** (default: <http://localhost:5678>)
 
 4. **Configure environment variables**:
    - Create a `.env` file in your N8N directory
@@ -80,7 +82,7 @@ For secure communication between your server and N8N:
 
 #### Lead Capture Agent (Nyra)
 
-```
+```yaml
 1. Webhook Trigger Node
    - Endpoint: /n8n/webhooks/lead-capture
    - Method: POST
@@ -114,7 +116,7 @@ For secure communication between your server and N8N:
 
 #### Booking Agent (Solari)
 
-```
+```yaml
 1. Webhook Trigger Node
    - Endpoint: /n8n/webhooks/booking
    - Method: POST
@@ -168,9 +170,9 @@ All Zapier Zaps should follow this general structure:
 
 ### Zapier Agent Examples
 
-#### Lead Capture Agent (Nyra)
+#### Lead Capture Agent (Nyra) - Zapier Version
 
-```
+```yaml
 1. Webhook Trigger
    - URL: Provided by Zapier
    - Method: POST
@@ -197,7 +199,7 @@ All Zapier Zaps should follow this general structure:
 
 #### Task Management Agent (Ruvo)
 
-```
+```yaml
 1. Schedule Trigger
    - Run daily to check for tasks
 
@@ -247,7 +249,7 @@ Extend your agent system to work with workflow platforms:
 
 Update your environment configuration to include workflow platform settings:
 
-```
+```env
 # Workflow Platform Settings
 ENABLE_N8N=true
 N8N_API_KEY=your_n8n_api_key
@@ -266,16 +268,28 @@ ZAPIER_WEBHOOK_SECRET=your_zapier_webhook_secret
    - Use webhook secrets or API keys for authentication
    - Store credentials securely in N8N and Zapier
    - Implement signature verification for all webhooks
+   - Use HTTPS for all communications
+   - Rotate API keys and secrets regularly
 
 2. **Data Validation**
    - Validate all incoming data before processing
    - Implement proper error handling
    - Sanitize data to prevent injection attacks
+   - Validate data types and formats
+   - Implement schema validation using Pydantic models
 
 3. **Rate Limiting**
    - Implement rate limiting to prevent abuse
    - Monitor API usage
    - Set up alerts for unusual activity
+   - Implement exponential backoff for retries
+   - Add circuit breakers for failing services
+
+4. **Access Control**
+   - Implement role-based access control
+   - Limit access to sensitive operations
+   - Audit all access to sensitive data
+   - Implement IP whitelisting for critical endpoints
 
 ## Testing and Deployment
 
