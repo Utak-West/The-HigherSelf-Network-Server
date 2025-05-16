@@ -11,6 +11,12 @@ This document defines key operational workflows that align with the server rules
 6. [Multi-Channel Marketing Campaign Workflow](#multi-channel-marketing-campaign-workflow)
 7. [Content Creation and Distribution Workflow](#content-creation-and-distribution-workflow)
 8. [Staff Permission Management Workflow](#staff-permission-management-workflow)
+9. [Inventory Management Workflow](#inventory-management-workflow)
+10. [Client Retention and Referral Workflow](#client-retention-and-referral-workflow)
+11. [Knowledge Base Development Workflow](#knowledge-base-development-workflow)
+12. [Agent Onboarding Workflow](#agent-onboarding-workflow)
+13. [Notion Database Synchronization Workflow](#notion-database-synchronization-workflow)
+14. [Hugging Face Model Integration Workflow](#hugging-face-model-integration-workflow)
 
 ---
 
@@ -768,3 +774,741 @@ This document defines key operational workflows that align with the server rules
 - Enforces the Staff Permission Boundaries rule
 - Implements Authentication Flow rule for Softr interfaces
 - Maintains comprehensive audit trail for all permission changes
+
+---
+
+## Inventory Management Workflow
+
+**Purpose**: Manage inventory for artwork, wellness products, and educational materials across all business entities.
+
+**Workflow ID**: WF-INV-MGT
+
+### States
+- `item_registration`: New item registration in inventory system
+- `quality_check`: Quality assessment of new items
+- `pricing_approval`: Setting and approving prices
+- `listing_creation`: Creating listings for online/in-person sales
+- `in_stock`: Item available for sale
+- `reserved`: Item temporarily reserved for client
+- `sold`: Item sold to client
+- `shipped`: Item shipped to buyer
+- `delivered`: Item delivered to buyer
+- `returned`: Item returned by buyer
+- `restock`: Item being restored to available inventory
+- `discontinued`: Item no longer available
+
+### Transitions
+```json
+[
+  {
+    "from_state": "item_registration",
+    "to_state": "quality_check",
+    "event": "registration_complete"
+  },
+  {
+    "from_state": "quality_check",
+    "to_state": "pricing_approval",
+    "event": "quality_verified"
+  },
+  {
+    "from_state": "pricing_approval",
+    "to_state": "listing_creation",
+    "event": "price_approved"
+  },
+  {
+    "from_state": "listing_creation",
+    "to_state": "in_stock",
+    "event": "listing_published"
+  },
+  {
+    "from_state": "in_stock",
+    "to_state": "reserved",
+    "event": "client_reserved"
+  },
+  {
+    "from_state": "reserved",
+    "to_state": "in_stock",
+    "event": "reservation_expired"
+  },
+  {
+    "from_state": "reserved",
+    "to_state": "sold",
+    "event": "purchase_completed"
+  },
+  {
+    "from_state": "in_stock",
+    "to_state": "sold",
+    "event": "direct_purchase"
+  },
+  {
+    "from_state": "sold",
+    "to_state": "shipped",
+    "event": "item_shipped"
+  },
+  {
+    "from_state": "shipped",
+    "to_state": "delivered",
+    "event": "delivery_confirmed"
+  },
+  {
+    "from_state": "shipped",
+    "to_state": "returned",
+    "event": "return_initiated"
+  },
+  {
+    "from_state": "delivered",
+    "to_state": "returned",
+    "event": "return_requested"
+  },
+  {
+    "from_state": "returned",
+    "to_state": "restock",
+    "event": "return_approved"
+  },
+  {
+    "from_state": "restock",
+    "to_state": "in_stock",
+    "event": "item_restored"
+  },
+  {
+    "from_state": "in_stock",
+    "to_state": "discontinued",
+    "event": "discontinue_item"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Booking Agent (Solari)**: Manages inventory status transitions
+- **Task Management Agent (Ruvo)**: Creates tasks for shipping, restocking
+- **Marketing Campaign Agent (Liora)**: Updates product listings information
+
+### Rule Compliance
+- Adheres to Entity Relationship Integrity between products and business entities
+- Maintains Schema Consistency for inventory data
+- Implements comprehensive logging for inventory changes
+
+---
+
+## Client Retention and Referral Workflow
+
+**Purpose**: Systematically nurture client relationships to encourage repeat business and referrals across all business entities.
+
+**Workflow ID**: WF-CLIENT-RET
+
+### States
+- `new_client`: Recently acquired client
+- `onboarding`: Client onboarding process
+- `active_relationship`: Ongoing business relationship
+- `check_in`: Periodic relationship check-in
+- `feedback_collection`: Collecting client feedback
+- `retention_risk`: Client identified as at-risk
+- `win_back`: Attempting to re-engage client
+- `referral_request`: Requesting referrals from client
+- `referral_received`: Client has provided referrals
+- `reward_delivery`: Delivering rewards for referrals
+- `dormant`: Inactive but potential future client
+- `reactivated`: Formerly dormant client now active again
+
+### Transitions
+```json
+[
+  {
+    "from_state": "new_client",
+    "to_state": "onboarding",
+    "event": "client_registered"
+  },
+  {
+    "from_state": "onboarding",
+    "to_state": "active_relationship",
+    "event": "onboarding_complete"
+  },
+  {
+    "from_state": "active_relationship",
+    "to_state": "check_in",
+    "event": "scheduled_check_in"
+  },
+  {
+    "from_state": "check_in",
+    "to_state": "feedback_collection",
+    "event": "check_in_completed"
+  },
+  {
+    "from_state": "check_in",
+    "to_state": "retention_risk",
+    "event": "issues_identified"
+  },
+  {
+    "from_state": "feedback_collection",
+    "to_state": "active_relationship",
+    "event": "positive_feedback"
+  },
+  {
+    "from_state": "feedback_collection",
+    "to_state": "retention_risk",
+    "event": "negative_feedback"
+  },
+  {
+    "from_state": "feedback_collection",
+    "to_state": "referral_request",
+    "event": "eligible_for_referral"
+  },
+  {
+    "from_state": "retention_risk",
+    "to_state": "win_back",
+    "event": "retention_plan_created"
+  },
+  {
+    "from_state": "win_back",
+    "to_state": "active_relationship",
+    "event": "client_reengaged"
+  },
+  {
+    "from_state": "win_back",
+    "to_state": "dormant",
+    "event": "win_back_failed"
+  },
+  {
+    "from_state": "referral_request",
+    "to_state": "referral_received",
+    "event": "client_referred"
+  },
+  {
+    "from_state": "referral_received",
+    "to_state": "reward_delivery",
+    "event": "referral_converted"
+  },
+  {
+    "from_state": "reward_delivery",
+    "to_state": "active_relationship",
+    "event": "reward_delivered"
+  },
+  {
+    "from_state": "active_relationship",
+    "to_state": "dormant",
+    "event": "inactivity_threshold"
+  },
+  {
+    "from_state": "dormant",
+    "to_state": "reactivated",
+    "event": "dormant_client_engaged"
+  },
+  {
+    "from_state": "reactivated",
+    "to_state": "active_relationship",
+    "event": "reactivation_complete"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Lead Capture Agent (Nyra)**: Monitors new client onboarding
+- **Community Engagement Agent**: Manages active relationships and check-ins
+- **Marketing Campaign Agent (Liora)**: Handles win-back campaigns and referral requests
+
+### Rule Compliance
+- Implements Named Agent Personalities in client communications
+- Follows Audience Segmentation Logic for personalized engagement
+- Maintains proper relationships in the Contacts & Profiles database
+
+---
+
+## Knowledge Base Development Workflow
+
+**Purpose**: Create and maintain a comprehensive knowledge base for staff training, client education, and agent reference.
+
+**Workflow ID**: WF-KB-DEV
+
+### States
+- `topic_identification`: Identifying knowledge needs
+- `content_planning`: Planning knowledge base article
+- `research`: Researching topic information
+- `draft_creation`: Creating initial draft
+- `expert_review`: Review by subject matter expert
+- `revision`: Implementing feedback
+- `final_approval`: Final approval of content
+- `publishing`: Publishing to knowledge base
+- `categorization`: Properly categorizing and tagging
+- `embedding_creation`: Creating vector embeddings for RAG
+- `active`: Content active in knowledge base
+- `review_scheduled`: Periodic content review
+- `update_needed`: Content marked for updates
+- `archived`: Outdated content archived
+
+### Transitions
+```json
+[
+  {
+    "from_state": "topic_identification",
+    "to_state": "content_planning",
+    "event": "topic_approved"
+  },
+  {
+    "from_state": "content_planning",
+    "to_state": "research",
+    "event": "plan_finalized"
+  },
+  {
+    "from_state": "research",
+    "to_state": "draft_creation",
+    "event": "research_complete"
+  },
+  {
+    "from_state": "draft_creation",
+    "to_state": "expert_review",
+    "event": "draft_completed"
+  },
+  {
+    "from_state": "expert_review",
+    "to_state": "revision",
+    "event": "changes_requested"
+  },
+  {
+    "from_state": "expert_review",
+    "to_state": "final_approval",
+    "event": "expert_approved"
+  },
+  {
+    "from_state": "revision",
+    "to_state": "expert_review",
+    "event": "revision_complete"
+  },
+  {
+    "from_state": "final_approval",
+    "to_state": "publishing",
+    "event": "content_approved"
+  },
+  {
+    "from_state": "publishing",
+    "to_state": "categorization",
+    "event": "content_published"
+  },
+  {
+    "from_state": "categorization",
+    "to_state": "embedding_creation",
+    "event": "categorization_complete"
+  },
+  {
+    "from_state": "embedding_creation",
+    "to_state": "active",
+    "event": "embeddings_created"
+  },
+  {
+    "from_state": "active",
+    "to_state": "review_scheduled",
+    "event": "review_time_reached"
+  },
+  {
+    "from_state": "review_scheduled",
+    "to_state": "active",
+    "event": "content_still_accurate"
+  },
+  {
+    "from_state": "review_scheduled",
+    "to_state": "update_needed",
+    "event": "updates_required"
+  },
+  {
+    "from_state": "update_needed",
+    "to_state": "research",
+    "event": "update_initiated"
+  },
+  {
+    "from_state": "active",
+    "to_state": "archived",
+    "event": "content_deprecated"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Content Lifecycle Agent**: Primary agent for this workflow
+- **Task Management Agent (Ruvo)**: Tracks review schedules
+- **All Agents**: Contribute expertise to relevant areas
+
+### Rule Compliance
+- Uses local embedding providers for sensitive content (Data Residency rule)
+- Follows Model Selection Governance for knowledge processing
+- Implements proper data validation for all knowledge content
+
+---
+
+## Agent Onboarding Workflow
+
+**Purpose**: Streamline the process of onboarding new agent personalities or enhanced capabilities to the Higher Self Network Server.
+
+**Workflow ID**: WF-AGENT-ONB
+
+### States
+- `requirements_gathering`: Defining agent requirements
+- `capability_design`: Designing agent capabilities
+- `personality_development`: Developing agent personality traits
+- `code_implementation`: Implementing agent code
+- `pattern_registration`: Registering communication patterns
+- `integration_testing`: Testing agent integrations
+- `staging_deployment`: Deploying to staging environment
+- `supervised_operation`: Operation with human supervision
+- `performance_review`: Reviewing agent performance
+- `adjustment`: Making adjustments to agent behavior
+- `final_approval`: Final approval for production
+- `production_deployment`: Deploying to production
+- `monitoring`: Ongoing monitoring of agent operations
+
+### Transitions
+```json
+[
+  {
+    "from_state": "requirements_gathering",
+    "to_state": "capability_design",
+    "event": "requirements_approved"
+  },
+  {
+    "from_state": "capability_design",
+    "to_state": "personality_development",
+    "event": "capabilities_defined"
+  },
+  {
+    "from_state": "personality_development",
+    "to_state": "code_implementation",
+    "event": "personality_approved"
+  },
+  {
+    "from_state": "code_implementation",
+    "to_state": "pattern_registration",
+    "event": "code_complete"
+  },
+  {
+    "from_state": "pattern_registration",
+    "to_state": "integration_testing",
+    "event": "patterns_registered"
+  },
+  {
+    "from_state": "integration_testing",
+    "to_state": "code_implementation",
+    "event": "tests_failed"
+  },
+  {
+    "from_state": "integration_testing",
+    "to_state": "staging_deployment",
+    "event": "tests_passed"
+  },
+  {
+    "from_state": "staging_deployment",
+    "to_state": "supervised_operation",
+    "event": "staging_deployment_complete"
+  },
+  {
+    "from_state": "supervised_operation",
+    "to_state": "performance_review",
+    "event": "supervision_period_ended"
+  },
+  {
+    "from_state": "performance_review",
+    "to_state": "adjustment",
+    "event": "adjustments_needed"
+  },
+  {
+    "from_state": "adjustment",
+    "to_state": "integration_testing",
+    "event": "adjustments_completed"
+  },
+  {
+    "from_state": "performance_review",
+    "to_state": "final_approval",
+    "event": "performance_satisfactory"
+  },
+  {
+    "from_state": "final_approval",
+    "to_state": "production_deployment",
+    "event": "agent_approved"
+  },
+  {
+    "from_state": "production_deployment",
+    "to_state": "monitoring",
+    "event": "deployment_successful"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Base Agent Class**: Provides foundation for new agents
+- **Task Management Agent (Ruvo)**: Tracks onboarding milestones
+- **All Agents**: Assist with communication pattern testing
+
+### Rule Compliance
+- Enforces Agent Autonomy Boundaries in new agent design
+- Follows Agent Communication Security protocols
+- Maintains Named Agent Personalities consistency
+
+---
+
+## Notion Database Synchronization Workflow
+
+**Purpose**: Ensure reliable synchronization between the 16 Notion databases and any external systems, maintaining data integrity.
+
+**Workflow ID**: WF-DB-SYNC
+
+### States
+- `idle`: No synchronization in progress
+- `change_detection`: Detecting changes in Notion
+- `external_change_detection`: Detecting external system changes
+- `conflict_analysis`: Analyzing potential conflicts
+- `pre_sync_validation`: Validating data before sync
+- `notion_to_external`: Syncing from Notion to external systems
+- `external_to_notion`: Syncing from external systems to Notion
+- `conflict_resolution`: Resolving sync conflicts
+- `post_sync_validation`: Validating after synchronization
+- `error_handling`: Handling synchronization errors
+- `logging`: Logging synchronization results
+- `recovery`: Recovering from failed sync
+
+### Transitions
+```json
+[
+  {
+    "from_state": "idle",
+    "to_state": "change_detection",
+    "event": "sync_scheduled"
+  },
+  {
+    "from_state": "idle",
+    "to_state": "external_change_detection",
+    "event": "external_webhook_received"
+  },
+  {
+    "from_state": "change_detection",
+    "to_state": "pre_sync_validation",
+    "event": "notion_changes_detected"
+  },
+  {
+    "from_state": "change_detection",
+    "to_state": "idle",
+    "event": "no_changes_detected"
+  },
+  {
+    "from_state": "external_change_detection",
+    "to_state": "pre_sync_validation",
+    "event": "external_changes_detected"
+  },
+  {
+    "from_state": "pre_sync_validation",
+    "to_state": "conflict_analysis",
+    "event": "validation_passed"
+  },
+  {
+    "from_state": "pre_sync_validation",
+    "to_state": "error_handling",
+    "event": "validation_failed"
+  },
+  {
+    "from_state": "conflict_analysis",
+    "to_state": "notion_to_external",
+    "event": "no_conflicts_notion_to_external"
+  },
+  {
+    "from_state": "conflict_analysis",
+    "to_state": "external_to_notion",
+    "event": "no_conflicts_external_to_notion"
+  },
+  {
+    "from_state": "conflict_analysis",
+    "to_state": "conflict_resolution",
+    "event": "conflicts_detected"
+  },
+  {
+    "from_state": "conflict_resolution",
+    "to_state": "notion_to_external",
+    "event": "conflicts_resolved_notion_priority"
+  },
+  {
+    "from_state": "conflict_resolution",
+    "to_state": "external_to_notion",
+    "event": "conflicts_resolved_external_priority"
+  },
+  {
+    "from_state": "notion_to_external",
+    "to_state": "post_sync_validation",
+    "event": "notion_sync_completed"
+  },
+  {
+    "from_state": "external_to_notion",
+    "to_state": "post_sync_validation",
+    "event": "external_sync_completed"
+  },
+  {
+    "from_state": "post_sync_validation",
+    "to_state": "logging",
+    "event": "validation_passed"
+  },
+  {
+    "from_state": "post_sync_validation",
+    "to_state": "error_handling",
+    "event": "validation_failed"
+  },
+  {
+    "from_state": "error_handling",
+    "to_state": "recovery",
+    "event": "recovery_initiated"
+  },
+  {
+    "from_state": "error_handling",
+    "to_state": "logging",
+    "event": "error_logged"
+  },
+  {
+    "from_state": "recovery",
+    "to_state": "pre_sync_validation",
+    "event": "recovery_successful"
+  },
+  {
+    "from_state": "recovery",
+    "to_state": "logging",
+    "event": "recovery_failed"
+  },
+  {
+    "from_state": "logging",
+    "to_state": "idle",
+    "event": "sync_cycle_completed"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Base Agent Class**: Handles basic database operations
+- **All Agents**: Respect database synchronization in progress
+
+### Rule Compliance
+- Enforces Schema Consistency across all databases
+- Implements Real-time Sync Protection to prevent data corruption
+- Maintains comprehensive Audit Trail Requirements
+
+---
+
+## Hugging Face Model Integration Workflow
+
+**Purpose**: Manage the evaluation, integration, and usage of Hugging Face models within the Higher Self Network Server for specialized NLP tasks.
+
+**Workflow ID**: WF-HF-INTEG
+
+### States
+- `model_evaluation`: Evaluating potential Hugging Face models
+- `requirements_definition`: Defining model requirements
+- `model_selection`: Selecting appropriate model
+- `integration_planning`: Planning the integration
+- `api_setup`: Setting up API connections
+- `local_deployment`: Deploying model locally if needed
+- `function_mapping`: Mapping model to system functions
+- `testing`: Testing model integration
+- `performance_tuning`: Tuning model performance
+- `deployment_preparation`: Preparing for production deployment
+- `production_deployment`: Deploying to production
+- `monitoring`: Monitoring model performance
+- `fine_tuning`: Fine-tuning model for specific tasks
+- `version_update`: Updating model version
+- `deprecation`: Deprecating obsolete models
+
+### Transitions
+```json
+[
+  {
+    "from_state": "model_evaluation",
+    "to_state": "requirements_definition",
+    "event": "evaluation_complete"
+  },
+  {
+    "from_state": "requirements_definition",
+    "to_state": "model_selection",
+    "event": "requirements_finalized"
+  },
+  {
+    "from_state": "model_selection",
+    "to_state": "integration_planning",
+    "event": "model_selected"
+  },
+  {
+    "from_state": "integration_planning",
+    "to_state": "api_setup",
+    "event": "hosted_api_preferred"
+  },
+  {
+    "from_state": "integration_planning",
+    "to_state": "local_deployment",
+    "event": "local_deployment_preferred"
+  },
+  {
+    "from_state": "api_setup",
+    "to_state": "function_mapping",
+    "event": "api_configured"
+  },
+  {
+    "from_state": "local_deployment",
+    "to_state": "function_mapping",
+    "event": "local_model_deployed"
+  },
+  {
+    "from_state": "function_mapping",
+    "to_state": "testing",
+    "event": "functions_mapped"
+  },
+  {
+    "from_state": "testing",
+    "to_state": "function_mapping",
+    "event": "tests_failed"
+  },
+  {
+    "from_state": "testing",
+    "to_state": "performance_tuning",
+    "event": "tests_passed"
+  },
+  {
+    "from_state": "performance_tuning",
+    "to_state": "deployment_preparation",
+    "event": "tuning_complete"
+  },
+  {
+    "from_state": "deployment_preparation",
+    "to_state": "production_deployment",
+    "event": "preparation_complete"
+  },
+  {
+    "from_state": "production_deployment",
+    "to_state": "monitoring",
+    "event": "deployment_successful"
+  },
+  {
+    "from_state": "monitoring",
+    "to_state": "fine_tuning",
+    "event": "fine_tuning_needed"
+  },
+  {
+    "from_state": "monitoring",
+    "to_state": "version_update",
+    "event": "new_version_available"
+  },
+  {
+    "from_state": "fine_tuning",
+    "to_state": "testing",
+    "event": "fine_tuning_complete"
+  },
+  {
+    "from_state": "version_update",
+    "to_state": "model_evaluation",
+    "event": "update_initiated"
+  },
+  {
+    "from_state": "monitoring",
+    "to_state": "deprecation",
+    "event": "model_obsolete"
+  }
+]
+```
+
+### Agent Responsibilities
+- **Content Lifecycle Agent**: Uses models for content generation
+- **Lead Capture Agent (Nyra)**: Uses models for lead classification
+- **All Agents**: Can utilize appropriate Hugging Face models
+
+### Rule Compliance
+- Follows Model Selection Governance for choosing appropriate models
+- Balances Processing Optimization for speed and quality
+- Adheres to Fine-tuning Guidance from the optimization plan
