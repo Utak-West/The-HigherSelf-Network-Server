@@ -22,6 +22,11 @@ wheels/
 
 # Environment files
 .env
+.env.development
+.env.testing
+.env.production
+.env.mcp
+.env.local
 .venv
 env/
 venv/
@@ -29,6 +34,10 @@ ENV/
 env.bak/
 venv.bak/
 .env.notion
+
+# Allow environment templates to be versioned
+!.env.example
+!.env.*.template
 
 # Logs
 logs/*
