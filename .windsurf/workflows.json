@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "workflows": [
+    {
+      "id": "WF-SFTR-PUB",
+      "name": "Softr Interface Publishing Workflow",
+      "description": "Manage the development, testing, and deployment of Softr interfaces for client portals, artist dashboards, wellness booking systems, and other public interfaces.",
+      "initialState": "draft",
+      "states": ["draft", "internal_review", "client_feedback", "revision", "testing", "staging", "published", "maintenance"],
+      "agentOwners": ["MarketingCampaignAgent", "ContentLifecycleAgent", "CommunityEngagementAgent"]
+    },
+    {
+      "id": "WF-AGT-COMM",
+      "name": "Agent Communication Security Workflow",
+      "description": "Ensure secure and properly authorized communication between agents in compliance with the Agent Communication Patterns defined in the registry.",
+      "initialState": "request_initiated",
+      "states": ["request_initiated", "pattern_verification", "permissions_check", "data_validation", "communication_approved", "communication_denied", "communication_completed", "error_state"],
+      "agentOwners": ["BaseAgent"]
+    },
+    {
+      "id": "WF-GALLERY-EXH",
+      "name": "Gallery Exhibit Management Workflow",
+      "description": "Manage the complete lifecycle of art exhibits from planning to post-exhibit analysis.",
+      "initialState": "concept",
+      "states": ["concept", "artist_selection", "planning", "artwork_submission", "curation", "marketing_prep", "setup", "active", "closing", "post_analysis", "archived"],
+      "agentOwners": ["MarketingCampaignAgent", "ContentLifecycleAgent", "CommunityEngagementAgent"]
+    },
+    {
+      "id": "WF-WELL-BOOK",
+      "name": "Wellness Service Booking Workflow",
+      "description": "Manage the end-to-end process for booking wellness services, retreats, and classes.",
+      "initialState": "inquiry",
+      "states": ["inquiry", "consultation", "quote_provided", "payment_pending", "payment_confirmed", "booking_confirmed", "preparation", "service_delivery", "follow_up", "feedback_collection", "completed", "canceled"],
+      "agentOwners": ["BookingAgent", "LeadCaptureAgent", "TaskManagementAgent"]
+    },
+    {
+      "id": "WF-CONSULT",
+      "name": "Consultation Project Management Workflow",
+      "description": "Manage consultancy projects from initial client contact through delivery and follow-up.",
+      "initialState": "lead_qualification",
+      "states": ["lead_qualification", "discovery", "proposal", "negotiation", "contract", "kickoff", "execution", "review", "delivery", "acceptance", "invoicing", "payment", "feedback", "completed"],
+      "agentOwners": ["LeadCaptureAgent", "TaskManagementAgent", "MarketingCampaignAgent"]
+    },
+    {
+      "id": "WF-MKTG-CAMP",
+      "name": "Multi-Channel Marketing Campaign Workflow",
+      "description": "Coordinate marketing campaigns across multiple channels with audience segmentation.",
+      "initialState": "campaign_planning",
+      "states": ["campaign_planning", "audience_segmentation", "content_creation", "content_approval", "channel_setup", "campaign_activation", "monitoring", "optimization", "final_push", "wrap_up", "analysis"],
+      "agentOwners": ["MarketingCampaignAgent", "AudienceSegmentationAgent", "ContentLifecycleAgent"]
+    },
+    {
+      "id": "WF-CONT-CYCLE",
+      "name": "Content Creation and Distribution Workflow",
+      "description": "Manage the lifecycle of content from ideation to distribution and analysis.",
+      "initialState": "ideation",
+      "states": ["ideation", "planning", "creation", "review", "revision", "approval", "scheduling", "publishing", "distribution", "monitoring", "repurposing", "archiving"],
+      "agentOwners": ["ContentLifecycleAgent", "MarketingCampaignAgent", "AudienceSegmentationAgent"]
+    },
+    {
+      "id": "WF-PERM-MGT",
+      "name": "Staff Permission Management Workflow",
+      "description": "Manage staff permissions for accessing the Higher Self Network Server through Softr interfaces.",
+      "initialState": "request_received",
+      "states": ["request_received", "manager_review", "security_verification", "permission_setup", "notification", "training", "active", "audit", "modification", "revocation"],
+      "agentOwners": ["TaskManagementAgent", "BaseAgent"]
+    },
+    {
+      "id": "WF-INV-MGT",
+      "name": "Inventory Management Workflow",
+      "description": "Manage inventory for artwork, wellness products, and educational materials across all business entities.",
+      "initialState": "item_registration",
+      "states": ["item_registration", "quality_check", "pricing_approval", "listing_creation", "in_stock", "reserved", "sold", "shipped", "delivered", "returned", "restock", "discontinued"],
+      "agentOwners": ["BookingAgent", "TaskManagementAgent", "MarketingCampaignAgent"]
+    },
+    {
+      "id": "WF-CLIENT-RET",
+      "name": "Client Retention and Referral Workflow",
+      "description": "Systematically nurture client relationships to encourage repeat business and referrals across all business entities.",
+      "initialState": "new_client",
+      "states": ["new_client", "onboarding", "active_relationship", "check_in", "feedback_collection", "retention_risk", "win_back", "referral_request", "referral_received", "reward_delivery", "dormant", "reactivated"],
+      "agentOwners": ["LeadCaptureAgent", "CommunityEngagementAgent", "MarketingCampaignAgent"]
+    },
+    {
+      "id": "WF-KB-DEV",
+      "name": "Knowledge Base Development Workflow",
+      "description": "Create and maintain a comprehensive knowledge base for staff training, client education, and agent reference.",
+      "initialState": "topic_identification",
+      "states": ["topic_identification", "content_planning", "research", "draft_creation", "expert_review", "revision", "final_approval", "publishing", "categorization", "embedding_creation", "active", "review_scheduled", "update_needed", "archived"],
+      "agentOwners": ["ContentLifecycleAgent", "TaskManagementAgent"]
+    },
+    {
+      "id": "WF-AGENT-ONB",
+      "name": "Agent Onboarding Workflow",
+      "description": "Streamline the process of onboarding new agent personalities or enhanced capabilities to the Higher Self Network Server.",
+      "initialState": "requirements_gathering",
+      "states": ["requirements_gathering", "capability_design", "personality_development", "code_implementation", "pattern_registration", "integration_testing", "staging_deployment", "supervised_operation", "performance_review", "adjustment", "final_approval", "production_deployment", "monitoring"],
+      "agentOwners": ["BaseAgent", "TaskManagementAgent"]
+    },
+    {
+      "id": "WF-DB-SYNC",
+      "name": "Notion Database Synchronization Workflow",
+      "description": "Ensure reliable synchronization between the 16 Notion databases and any external systems, maintaining data integrity.",
+      "initialState": "idle",
+      "states": ["idle", "change_detection", "external_change_detection", "conflict_analysis", "pre_sync_validation", "notion_to_external", "external_to_notion", "conflict_resolution", "post_sync_validation", "error_handling", "logging", "recovery"],
+      "agentOwners": ["BaseAgent"]
+    },
+    {
+      "id": "WF-HF-INTEG",
+      "name": "Hugging Face Model Integration Workflow",
+      "description": "Manage the evaluation, integration, and usage of Hugging Face models within the Higher Self Network Server for specialized NLP tasks.",
+      "initialState": "model_evaluation",
+      "states": ["model_evaluation", "requirements_definition", "model_selection", "integration_planning", "api_setup", "local_deployment", "function_mapping", "testing", "performance_tuning", "deployment_preparation", "production_deployment", "monitoring", "fine_tuning", "version_update", "deprecation"],
+      "agentOwners": ["ContentLifecycleAgent", "LeadCaptureAgent"]
+    }
+  ],
+  "settings": {
+    "workflowLibraryDatabase": "Workflows Library",
+    "activeWorkflowInstancesDatabase": "Active Workflow Instances",
+    "notionApiVersion": "2022-06-28",
+    "stateMachineValidation": true,
+    "auditLoggingEnabled": true,
+    "notifyOnStateChange": true,
+    "maxConcurrentWorkflows": 25,
+    "defaultAgentTimeout": 120,
+    "autoArchiveCompletedWorkflows": true,
+    "archiveDurationDays": 30,
+    "syncWithNotionInterval": 15,
+    "enabledInTestingMode": false,
+    "developerNotifications": true
+  }
+}
