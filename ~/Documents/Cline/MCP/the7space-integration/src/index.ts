@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/// <reference types="node" />
 
 import { Server } from '@modelcontextprotocol/sdk/server';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
@@ -1138,10 +1137,10 @@ class The7SpaceIntegrationServer {
 
         try {
             // First check if the post exists
-            const getResponse = await this.wpAxiosInstance.get(`/any/${post_id}`);
+            await this.wpAxiosInstance.get(`/any/${post_id}`);
 
             // We'll use the ACF REST API endpoint to update custom fields
-            const response = await this.wpAxiosInstance.post(`/acf/v3/posts/${post_id}`, {
+            await this.wpAxiosInstance.post(`/acf/v3/posts/${post_id}`, {
                 fields: fields
             });
 
@@ -1298,7 +1297,7 @@ class The7SpaceIntegrationServer {
         // This requires custom endpoint or using Elementor's REST API
         // For now, we'll make a custom endpoint assumption
         try {
-            const response = await this.wpAxiosInstance.post('/elementor/v1/apply_template', {
+            await this.wpAxiosInstance.post('/elementor/v1/apply_template', {
                 page_id,
                 template_id,
             });
@@ -1570,7 +1569,7 @@ class The7SpaceIntegrationServer {
             );
         }
 
-        const { email, first_name, last_name, password, user_group } = args;
+        const { email, first_name, last_name, /* password, */ user_group } = args;
 
         try {
             // In a real implementation, this would call the Softr API
@@ -1612,7 +1611,7 @@ class The7SpaceIntegrationServer {
             );
         }
 
-        const { data_source, limit = 100, offset = 0, filter } = args;
+        const { data_source, limit = 100, /* offset = 0, */ filter } = args;
 
         try {
             // In a real implementation, this would call the Softr API

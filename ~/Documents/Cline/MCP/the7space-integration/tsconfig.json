@@ -8,12 +8,10 @@
         "strict": true,
         "declaration": true,
         "sourceMap": true,
-        "types": [
-            "node"
-        ],
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
         "src/**/*"
