@@ -97,7 +97,7 @@ class RedisService:
     _connection_pool = None
     _async_connection_pool = None
     _health_status = {"status": "unknown", "last_check": 0, "errors": []}
-    _metrics = {"operations": 0, "errors": 0, "latency_sum": 0, "latency_count": 0}
+    _metrics = {"operations": 0, "errors": 0, "latency_sum": 0.0, "latency_count": 0}
 
     def __new__(cls):
         """Singleton pattern to ensure only one instance of the service exists."""
@@ -266,143 +266,422 @@ class RedisService:
             logger.error(f"Async Redis health check failed: {e}")
             return self._health_status
 
-    # Synchronous operations
+    # Synchronous operations with retry logic
 
+    @with_retry(max_retries=3)
     def set(self, key: str, value: Any, ex: Optional[int] = None) -> bool:
         """Set a key with a value and optional expiration time in seconds."""
-        if isinstance(value, (dict, list)):
-            value = json.dumps(value)
-        return self._sync_client.set(key, value, ex=ex)
+        start_time = time.time()
+        try:
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+            result = self._sync_client.set(key, value, ex=ex)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def get(self, key: str, as_json: bool = False) -> Any:
         """Get a value by key, with option to parse as JSON."""
-        value = self._sync_client.get(key)
-        if value and as_json:
-            try:
-                return json.loads(value)
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse Redis value as JSON: {value}")
-                return value
-        return value
+        start_time = time.time()
+        try:
+            value = self._sync_client.get(key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            if value and as_json:
+                try:
+                    return json.loads(value)
+                except json.JSONDecodeError:
+                    logger.warning(f"Failed to parse Redis value as JSON: {value}")
+                    return value
+            return value
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def delete(self, key: str) -> int:
         """Delete a key and return the number of keys removed."""
-        return self._sync_client.delete(key)
+        start_time = time.time()
+        try:
+            result = self._sync_client.delete(key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def exists(self, key: str) -> bool:
         """Check if a key exists."""
-        return bool(self._sync_client.exists(key))
+        start_time = time.time()
+        try:
+            result = bool(self._sync_client.exists(key))
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def expire(self, key: str, seconds: int) -> bool:
         """Set a key's time to live in seconds."""
-        return bool(self._sync_client.expire(key, seconds))
+        start_time = time.time()
+        try:
+            result = bool(self._sync_client.expire(key, seconds))
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def ttl(self, key: str) -> int:
         """Get the time to live for a key in seconds."""
-        return self._sync_client.ttl(key)
+        start_time = time.time()
+        try:
+            result = self._sync_client.ttl(key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def incr(self, key: str, amount: int = 1) -> int:
         """Increment the value of a key by the given amount."""
-        return self._sync_client.incr(key, amount)
+        start_time = time.time()
+        try:
+            result = self._sync_client.incr(key, amount)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def decr(self, key: str, amount: int = 1) -> int:
         """Decrement the value of a key by the given amount."""
-        return self._sync_client.decr(key, amount)
+        start_time = time.time()
+        try:
+            result = self._sync_client.decr(key, amount)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def hset(self, name: str, key: str, value: Any) -> int:
         """Set a hash field to a value."""
-        if isinstance(value, (dict, list)):
-            value = json.dumps(value)
-        return self._sync_client.hset(name, key, value)
+        start_time = time.time()
+        try:
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+            result = self._sync_client.hset(name, key, value)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def hget(self, name: str, key: str, as_json: bool = False) -> Any:
         """Get the value of a hash field."""
-        value = self._sync_client.hget(name, key)
-        if value and as_json:
-            try:
-                return json.loads(value)
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse Redis hash value as JSON: {value}")
-                return value
-        return value
+        start_time = time.time()
+        try:
+            value = self._sync_client.hget(name, key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            if value and as_json:
+                try:
+                    return json.loads(value)
+                except json.JSONDecodeError:
+                    logger.warning(f"Failed to parse Redis hash value as JSON: {value}")
+                    return value
+            return value
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def hgetall(self, name: str) -> Dict[str, str]:
         """Get all the fields and values in a hash."""
-        return self._sync_client.hgetall(name)
+        start_time = time.time()
+        try:
+            result = self._sync_client.hgetall(name)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def hdel(self, name: str, *keys) -> int:
         """Delete one or more hash fields."""
-        return self._sync_client.hdel(name, *keys)
+        start_time = time.time()
+        try:
+            result = self._sync_client.hdel(name, *keys)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_retry(max_retries=3)
     def publish(self, channel: str, message: Any) -> int:
         """Publish a message to a channel."""
-        if isinstance(message, (dict, list)):
-            message = json.dumps(message)
-        return self._sync_client.publish(channel, message)
+        start_time = time.time()
+        try:
+            if isinstance(message, (dict, list)):
+                message = json.dumps(message)
+            result = self._sync_client.publish(channel, message)
 
-    # Asynchronous operations
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
 
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    # Asynchronous operations with retry logic
+
+    @with_async_retry(max_retries=3)
     async def async_set(self, key: str, value: Any, ex: Optional[int] = None) -> bool:
         """Set a key with a value and optional expiration time in seconds (async)."""
-        client = await self.get_async_client()
-        if isinstance(value, (dict, list)):
-            value = json.dumps(value)
-        return await client.set(key, value, ex=ex)
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+            result = await client.set(key, value, ex=ex)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
     async def async_get(self, key: str, as_json: bool = False) -> Any:
         """Get a value by key, with option to parse as JSON (async)."""
-        client = await self.get_async_client()
-        value = await client.get(key)
-        if value and as_json:
-            try:
-                return json.loads(value)
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse Redis value as JSON: {value}")
-                return value
-        return value
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            value = await client.get(key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            if value and as_json:
+                try:
+                    return json.loads(value)
+                except json.JSONDecodeError:
+                    logger.warning(f"Failed to parse Redis value as JSON: {value}")
+                    return value
+            return value
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
     async def async_delete(self, key: str) -> int:
         """Delete a key and return the number of keys removed (async)."""
-        client = await self.get_async_client()
-        return await client.delete(key)
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.delete(key)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
     async def async_publish(self, channel: str, message: Any) -> int:
         """Publish a message to a channel (async)."""
-        client = await self.get_async_client()
-        if isinstance(message, (dict, list)):
-            message = json.dumps(message)
-        return await client.publish(channel, message)
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            if isinstance(message, (dict, list)):
+                message = json.dumps(message)
+            result = await client.publish(channel, message)
 
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
     async def subscribe(self, channel: str) -> aioredis.client.PubSub:
         """Subscribe to a channel and return a pubsub instance."""
-        client = await self.get_async_client()
-        pubsub = client.pubsub()
-        await pubsub.subscribe(channel)
-        return pubsub
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            pubsub = client.pubsub()
+            await pubsub.subscribe(channel)
+
+            # Update metrics
+            self._metrics["operations"] += 1
+            self._metrics["latency_sum"] += time.time() - start_time
+            self._metrics["latency_count"] += 1
+
+            return pubsub
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
 
     async def listen(self, pubsub: aioredis.client.PubSub, callback: Callable):
         """Listen for messages on a pubsub channel and call the callback."""
-        async for message in pubsub.listen():
-            if message["type"] == "message":
-                data = message["data"]
-                try:
-                    # Try to parse as JSON
-                    data = json.loads(data)
-                except (json.JSONDecodeError, TypeError):
-                    pass
-                await callback(data)
+        try:
+            async for message in pubsub.listen():
+                if message["type"] == "message":
+                    data = message["data"]
+                    try:
+                        # Try to parse as JSON
+                        data = json.loads(data)
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+                    await callback(data)
+
+                    # Update metrics
+                    self._metrics["operations"] += 1
+        except Exception as e:
+            self._metrics["errors"] += 1
+            logger.error(f"Error in Redis pubsub listener: {e}")
+            # Don't re-raise as this would break the listener loop
+            # Instead, we'll log and continue
 
     def close(self):
         """Close Redis connections."""
-        if self._sync_client:
-            self._sync_client.close()
-        logger.info("Redis connections closed")
+        try:
+            if self._sync_client:
+                self._sync_client.close()
+            if self._connection_pool:
+                self._connection_pool.disconnect()
+            logger.info("Redis connections closed")
+        except Exception as e:
+            logger.error(f"Error closing Redis connections: {e}")
 
     async def async_close(self):
         """Close async Redis connections."""
-        if self._async_client:
-            await self._async_client.close()
-        logger.info("Async Redis connections closed")
+        try:
+            if self._async_client:
+                await self._async_client.close()
+            logger.info("Async Redis connections closed")
+        except Exception as e:
+            logger.error(f"Error closing async Redis connections: {e}")
+
+    # Metrics and monitoring methods
+
+    def get_metrics(self) -> Dict[str, Any]:
+        """Get Redis metrics."""
+        metrics = self._metrics.copy()
+
+        # Calculate average latency
+        if metrics["latency_count"] > 0:
+            metrics["avg_latency"] = metrics["latency_sum"] / metrics["latency_count"]
+        else:
+            metrics["avg_latency"] = 0.0
+
+        # Add health status
+        metrics["health"] = self._health_status.copy()
+
+        # Add Redis info if available
+        try:
+            if self._sync_client:
+                info = self._sync_client.info()
+                metrics["redis_info"] = {
+                    "version": info.get("redis_version", "unknown"),
+                    "uptime_seconds": info.get("uptime_in_seconds", 0),
+                    "connected_clients": info.get("connected_clients", 0),
+                    "used_memory_human": info.get("used_memory_human", "unknown"),
+                    "total_commands_processed": info.get("total_commands_processed", 0),
+                }
+        except Exception as e:
+            logger.error(f"Error getting Redis info: {e}")
+            metrics["redis_info"] = {"error": str(e)}
+
+        return metrics
 
 
 # For easy import and use throughout the application
