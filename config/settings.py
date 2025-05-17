@@ -14,21 +14,11 @@ from dotenv import load_dotenv  # Added
 # Load .env file at the very beginning when this module is imported
 load_dotenv()  # Added
 
-try:
-    # Try to import from pydantic-settings first (Pydantic v2)
-    from pydantic import (  # For Pydantic v2, validator is field_validator
-        AnyHttpUrl,
-        Field,
-        field_validator,
-    )
-    from pydantic_settings import BaseSettings
+# Since we're now using Pydantic v1 as specified in requirements.txt
+from pydantic import AnyHttpUrl, BaseSettings, Field, validator
 
-    PYDANTIC_V2 = True
-except ImportError:
-    # Fall back to Pydantic v1
-    from pydantic import AnyHttpUrl, BaseSettings, Field, validator
-
-    PYDANTIC_V2 = False
+# Explicitly set to False since we're using Pydantic v1
+PYDANTIC_V2 = False
 
 
 class LogLevel(str, Enum):
@@ -54,6 +44,14 @@ class NotionSettings(BaseSettings):
     """Notion API configuration."""
 
     api_token: str = Field(..., env="NOTION_API_TOKEN")
+
+    @property
+    def is_token_valid(self) -> bool:
+        """Check if the API token appears to be properly formatted."""
+        return (
+            self.api_token and len(self.api_token) >= 50
+        )  # Notion tokens are typically very long
+
     parent_page_id: Optional[str] = Field(None, env="NOTION_PARENT_PAGE_ID")
 
     # Database IDs
@@ -86,11 +84,14 @@ class NotionSettings(BaseSettings):
 
     if PYDANTIC_V2:
 
+        # This code will not be used since PYDANTIC_V2 is False
         @field_validator("api_token")
         def validate_api_token(cls, v):
             """Validate Notion API token."""
-            if not v or len(v) < 10:
-                raise ValueError("Invalid Notion API token")
+            if not v or len(v) < 50:
+                raise ValueError(
+                    "Invalid Notion API token - must be at least 50 characters"
+                )
             return v
 
     else:
@@ -98,8 +99,10 @@ class NotionSettings(BaseSettings):
         @validator("api_token")
         def validate_api_token(cls, v):
             """Validate Notion API token."""
-            if not v or len(v) < 10:
-                raise ValueError("Invalid Notion API token")
+            if not v or len(v) < 50:
+                raise ValueError(
+                    "Invalid Notion API token - must be at least 50 characters"
+                )
             return v
 
     def get_database_mappings(self) -> Dict[str, str]:
@@ -237,6 +240,34 @@ class Settings(BaseSettings):
     testing: bool = Field(False, env="TESTING")
     disable_webhooks: bool = Field(False, env="DISABLE_WEBHOOKS")
 
+    def log_configuration_status(self):
+        """Log configuration status for debugging purposes."""
+        from loguru import logger
+
+        logger.info(f"Environment: {self.environment.value}")
+        logger.info(f"Debug mode: {self.debug}")
+        logger.info(f"Testing mode: {self.testing}")
+
+        # Check Notion configuration
+        logger.info(f"Notion API token present: {bool(self.notion.api_token)}")
+        if self.notion.api_token:
+            # Only log a truncated version for security
+            masked_token = (
+                self.notion.api_token[:4] + "..." + self.notion.api_token[-4:]
+                if len(self.notion.api_token) > 8
+                else "***"
+            )
+            logger.info(f"Notion API token (masked): {masked_token}")
+            logger.info(
+                f"Notion API token appears valid by length: {self.notion.is_token_valid}"
+            )
+
+        # Log database mappings availability
+        db_mappings = self.notion.get_database_mappings()
+        for model_name, db_id in db_mappings.items():
+            if not db_id:
+                logger.warning(f"Missing database ID for {model_name}")
+
     # Component settings - don't initialize here for Pydantic v2
     notion: NotionSettings = Field(default_factory=NotionSettings)
     server: ServerSettings = Field(default_factory=ServerSettings)
@@ -263,6 +294,15 @@ class Settings(BaseSettings):
 
 # Create global settings instance
 settings = Settings()
+
+# Log settings on module import for debugging
+from loguru import logger
+
+logger.info("Configuration settings loaded")
+try:
+    settings.log_configuration_status()
+except Exception as e:
+    logger.error(f"Error logging configuration status: {e}")
 
 
 # Function to reload settings (useful after environment changes)

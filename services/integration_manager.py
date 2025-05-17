@@ -3,42 +3,47 @@ Integration Manager for The HigherSelf Network Server.
 This service coordinates all third-party integrations and ensures Notion remains the central hub.
 """
 
-import os
 import asyncio
-from typing import Dict, List, Any, Optional, Type, Union
+import os
 from datetime import datetime
-from pydantic import BaseModel, validator
+from typing import Any, Dict, List, Optional, Type, Union
+
 from loguru import logger
+from pydantic import BaseModel, validator
+
+from config.settings import settings as global_settings  # Added
+from models.notion import NotionIntegrationConfig  # Added
+from services.acuity_service import AcuityService
+from services.ai_provider_service import AIProviderService
+from services.airtable_service import AirtableService
+from services.amelia_service import AmeliaServiceClient as AmeliaService
 
 # Import base service
 from services.base_service import BaseService
+from services.capcut_service import CapCutService
+from services.huggingface_service import HuggingFaceService
 
 # Import service classes
 from services.notion_service import NotionService
-from models.notion import NotionIntegrationConfig # Added
-from config.settings import settings as global_settings # Added
-from services.typeform_service import TypeFormService
-from services.woocommerce_service import WooCommerceService
-from services.acuity_service import AcuityService
-from services.amelia_service import AmeliaServiceClient as AmeliaService
-from services.user_feedback_service import UserFeedbackService
-from services.userfeedback_service import UserFeedbackService as LegacyUserFeedbackService
+from services.pipit_service import PipitService
+from services.plaud_service import PlaudService
+from services.snovio_service import SnovIOService  # Corrected import
+from services.softr_service import SoftrService
 from services.tutor_lm_service import TutorLMService
 from services.tutorlm_service import TutorLMService as LegacyTutorLMService
-from services.ai_provider_service import AIProviderService
-from services.airtable_service import AirtableService
-from services.snovio_service import SnovIOService  # Corrected import
-from services.plaud_service import PlaudService
-from services.huggingface_service import HuggingFaceService
-from services.softr_service import SoftrService
-from services.capcut_service import CapCutService
-from services.pipit_service import PipitService
+from services.typeform_service import TypeFormService
+from services.user_feedback_service import UserFeedbackService
+from services.userfeedback_service import (
+    UserFeedbackService as LegacyUserFeedbackService,
+)
+from services.woocommerce_service import WooCommerceService
 
 # Singleton instance of the IntegrationManager
 _integration_manager = None
 
+
 # Function to get or create the IntegrationManager instance
-async def get_integration_manager() -> 'IntegrationManager':
+async def get_integration_manager() -> "IntegrationManager":
     """
     Get or create a singleton instance of the IntegrationManager.
 
@@ -56,6 +61,7 @@ async def get_integration_manager() -> 'IntegrationManager':
 
 class IntegrationManagerConfig(BaseModel):
     """Configuration for the Integration Manager."""
+
     notion_api_token: str
     enable_typeform: bool = True
     enable_woocommerce: bool = True
@@ -79,7 +85,7 @@ class IntegrationManagerConfig(BaseModel):
     class Config:
         env_prefix = "INTEGRATION_"
 
-    @validator('notion_api_token')
+    @validator("notion_api_token")
     def validate_notion_token(cls, v):
         if not v:
             raise ValueError("Notion API token is required")
@@ -104,13 +110,26 @@ class IntegrationManager:
             try:
                 self.config = IntegrationManagerConfig(
                     notion_api_token=os.environ.get("NOTION_API_TOKEN", ""),
-                    enable_typeform=os.environ.get("ENABLE_TYPEFORM", "true").lower() == "true",
-                    enable_woocommerce=os.environ.get("ENABLE_WOOCOMMERCE", "true").lower() == "true",
-                    enable_acuity=os.environ.get("ENABLE_ACUITY", "true").lower() == "true",
-                    enable_amelia=os.environ.get("ENABLE_AMELIA", "true").lower() == "true",
-                    enable_user_feedback=os.environ.get("ENABLE_USER_FEEDBACK", "true").lower() == "true",
-                    enable_tutor_lm=os.environ.get("ENABLE_TUTOR_LM", "true").lower() == "true",
-                    enable_ai_providers=os.environ.get("ENABLE_AI_PROVIDERS", "true").lower() == "true"
+                    enable_typeform=os.environ.get("ENABLE_TYPEFORM", "true").lower()
+                    == "true",
+                    enable_woocommerce=os.environ.get(
+                        "ENABLE_WOOCOMMERCE", "true"
+                    ).lower()
+                    == "true",
+                    enable_acuity=os.environ.get("ENABLE_ACUITY", "true").lower()
+                    == "true",
+                    enable_amelia=os.environ.get("ENABLE_AMELIA", "true").lower()
+                    == "true",
+                    enable_user_feedback=os.environ.get(
+                        "ENABLE_USER_FEEDBACK", "true"
+                    ).lower()
+                    == "true",
+                    enable_tutor_lm=os.environ.get("ENABLE_TUTOR_LM", "true").lower()
+                    == "true",
+                    enable_ai_providers=os.environ.get(
+                        "ENABLE_AI_PROVIDERS", "true"
+                    ).lower()
+                    == "true",
                 )
             except ValueError as e:
                 logger.error(f"Error initializing IntegrationManager config: {e}")
@@ -143,8 +162,50 @@ class IntegrationManager:
         try:
             # Initialize Notion service first (required)
             logger.info("Initializing Notion service...")
-            notion_initialized = await self.notion_service.validate_token()
-            self.initialization_status["notion"] = notion_initialized
+
+            # Log detailed Notion configuration information
+            if hasattr(global_settings, "notion") and global_settings.notion:
+                notion_config = global_settings.notion
+                token_present = bool(notion_config.api_token)
+                token_length = len(notion_config.api_token) if token_present else 0
+
+                # Only log a masked version of the token
+                masked_token = "None"
+                if token_present and token_length > 8:
+                    masked_token = (
+                        notion_config.api_token[:4]
+                        + "..."
+                        + notion_config.api_token[-4:]
+                    )
+                elif token_present:
+                    masked_token = "***"
+
+                logger.info(f"Notion API token present: {token_present}")
+                logger.info(f"Notion API token length: {token_length}")
+                logger.info(f"Notion API token (masked): {masked_token}")
+
+                # Log database mappings
+                db_mappings = notion_config.get_database_mappings()
+                missing_dbs = [name for name, db_id in db_mappings.items() if not db_id]
+                if missing_dbs:
+                    logger.warning(
+                        f"Missing Notion database IDs for: {', '.join(missing_dbs)}"
+                    )
+
+            # Attempt to validate the token
+            try:
+                logger.info("Validating Notion API token...")
+                notion_initialized = await self.notion_service.validate_token()
+                self.initialization_status["notion"] = notion_initialized
+
+                if notion_initialized:
+                    logger.info("✅ Notion API token validated successfully")
+                else:
+                    logger.error("❌ Notion API token validation failed")
+            except Exception as e:
+                logger.error(f"❌ Exception during Notion API token validation: {e}")
+                notion_initialized = False
+                self.initialization_status["notion"] = False
 
             if not notion_initialized:
                 logger.error("Failed to initialize Notion service. Cannot continue.")
@@ -176,12 +237,16 @@ class IntegrationManager:
                 logger.info("Initializing WooCommerce service...")
                 try:
                     woocommerce_service = WooCommerceService()
-                    woocommerce_initialized = await woocommerce_service.validate_connection()
+                    woocommerce_initialized = (
+                        await woocommerce_service.validate_connection()
+                    )
                     if woocommerce_initialized:
                         self.services["woocommerce"] = woocommerce_service
                         logger.info("WooCommerce service initialized successfully")
                     else:
-                        logger.warning("WooCommerce service failed connection validation")
+                        logger.warning(
+                            "WooCommerce service failed connection validation"
+                        )
                 except Exception as e:
                     logger.error(f"Failed to initialize WooCommerce service: {e}")
                     woocommerce_initialized = False
@@ -233,10 +298,14 @@ class IntegrationManager:
             if self.config.enable_snovio:
                 logger.info("Initializing SnovIO service...")
                 self.services["snovio"] = SnovioService()
-                snovio_initialized = await self.services["snovio"].validate_credentials()
+                snovio_initialized = await self.services[
+                    "snovio"
+                ].validate_credentials()
                 self.initialization_status["snovio"] = snovio_initialized
                 if not snovio_initialized:
-                    logger.warning("SnovIO service failed to initialize. Some features may be unavailable.")
+                    logger.warning(
+                        "SnovIO service failed to initialize. Some features may be unavailable."
+                    )
 
             # UserFeedback
             if self.config.enable_user_feedback or self.config.enable_userfeedback:
@@ -263,7 +332,9 @@ class IntegrationManager:
             if self.config.enable_huggingface:
                 logger.info("Initializing Hugging Face service...")
                 try:
-                    huggingface_service = HuggingFaceService(notion_service=self.notion_service)
+                    huggingface_service = HuggingFaceService(
+                        notion_service=self.notion_service
+                    )
                     # Hugging Face doesn't have a specific validation method yet
                     self.services["huggingface"] = huggingface_service
                     self.initialization_status["huggingface"] = True
@@ -318,8 +389,12 @@ class IntegrationManager:
                     ai_provider_service = AIProviderService()
 
                     # Try to validate both OpenAI and Anthropic providers
-                    openai_initialized = await ai_provider_service.validate_connection("openai")
-                    anthropic_initialized = await ai_provider_service.validate_connection("anthropic")
+                    openai_initialized = await ai_provider_service.validate_connection(
+                        "openai"
+                    )
+                    anthropic_initialized = (
+                        await ai_provider_service.validate_connection("anthropic")
+                    )
 
                     # Consider service initialized if at least one provider works
                     ai_initialized = openai_initialized or anthropic_initialized
@@ -332,7 +407,9 @@ class IntegrationManager:
                         if anthropic_initialized:
                             logger.info("Anthropic provider validated successfully")
                     else:
-                        logger.warning("AI Provider service failed - no providers validated")
+                        logger.warning(
+                            "AI Provider service failed - no providers validated"
+                        )
                 except Exception as e:
                     logger.error(f"Failed to initialize AI Provider service: {e}")
                     ai_initialized = False
@@ -340,9 +417,13 @@ class IntegrationManager:
                 self.initialization_status["ai_provider"] = ai_initialized
 
             # Log initialization summary
-            successful = sum(1 for status in self.initialization_status.values() if status)
+            successful = sum(
+                1 for status in self.initialization_status.values() if status
+            )
             total = len(self.initialization_status)
-            logger.info(f"Integration Manager initialization complete. {successful}/{total} services initialized successfully.")
+            logger.info(
+                f"Integration Manager initialization complete. {successful}/{total} services initialized successfully."
+            )
 
             return True
         except Exception as e:
@@ -373,7 +454,9 @@ class IntegrationManager:
         """
         return self.initialization_status
 
-    async def sync_to_notion(self, service_name: str, data: Dict[str, Any], model_type: Type[BaseModel]) -> Optional[str]:
+    async def sync_to_notion(
+        self, service_name: str, data: Dict[str, Any], model_type: Type[BaseModel]
+    ) -> Optional[str]:
         """
         Synchronize data from an integration to Notion.
 
@@ -387,7 +470,9 @@ class IntegrationManager:
         """
         try:
             # Verify Notion service is available
-            if not self.notion_service or not self.initialization_status.get("notion", False):
+            if not self.notion_service or not self.initialization_status.get(
+                "notion", False
+            ):
                 logger.error("Notion service not initialized - cannot sync")
                 return None
 
@@ -421,7 +506,9 @@ class IntegrationManager:
             logger.error(f"Error synchronizing data from {service_name} to Notion: {e}")
             return None
 
-    async def sync_from_notion(self, service_name: str, notion_page_id: str, model_type: Type[BaseModel]) -> bool:
+    async def sync_from_notion(
+        self, service_name: str, notion_page_id: str, model_type: Type[BaseModel]
+    ) -> bool:
         """
         Synchronize data from Notion to an integration.
 
@@ -435,7 +522,9 @@ class IntegrationManager:
         """
         try:
             # Verify Notion service is available
-            if not self.notion_service or not self.initialization_status.get("notion", False):
+            if not self.notion_service or not self.initialization_status.get(
+                "notion", False
+            ):
                 logger.error("Notion service not initialized - cannot sync")
                 return False
 
@@ -473,10 +562,14 @@ class IntegrationManager:
             # The implementation will depend on the specific service
             if hasattr(service, "sync_from_notion"):
                 success = await service.sync_from_notion(model_instance)
-                logger.info(f"Synchronized data from Notion to {service_name}: {success}")
+                logger.info(
+                    f"Synchronized data from Notion to {service_name}: {success}"
+                )
                 return success
             else:
-                logger.warning(f"Service {service_name} does not support sync_from_notion")
+                logger.warning(
+                    f"Service {service_name} does not support sync_from_notion"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error synchronizing data from Notion to {service_name}: {e}")
@@ -500,9 +593,13 @@ class IntegrationManager:
                     if result:
                         logger.info(f"Connection validated for {service_name}")
                     else:
-                        logger.warning(f"Connection validation failed for {service_name}")
+                        logger.warning(
+                            f"Connection validation failed for {service_name}"
+                        )
                 else:
-                    logger.warning(f"Service {service_name} does not support connection validation")
+                    logger.warning(
+                        f"Service {service_name} does not support connection validation"
+                    )
                     validation_results[service_name] = False
             except Exception as e:
                 logger.error(f"Error validating connection for {service_name}: {e}")
