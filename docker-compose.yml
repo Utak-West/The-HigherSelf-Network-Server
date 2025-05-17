@@ -13,6 +13,7 @@ services:
       - PYTHONUNBUFFERED=1
       - MONGODB_URI=mongodb://mongodb:27017/higherselfnetwork
       - REDIS_URI=redis://redis:6379/0
+      - CONSUL_HTTP_ADDR=consul:8500
     env_file:
       - .env
     volumes:
@@ -28,6 +29,49 @@ services:
     depends_on:
       - mongodb
       - redis
+      - consul
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=8000"
+      - "prometheus.path=/metrics"
+
+  celery-worker:
+    image: thehigherselfnetworkserver
+    environment:
+      - RUNNING_IN_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - MONGODB_URI=mongodb://mongodb:27017/higherselfnetwork
+      - REDIS_URI=redis://redis:6379/0
+      - CONSUL_HTTP_ADDR=consul:8500
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - redis
+      - mongodb
+    restart: unless-stopped
+    command: celery -A services.task_queue_service:task_queue worker --loglevel=info --concurrency=4
+
+  celery-beat:
+    image: thehigherselfnetworkserver
+    environment:
+      - RUNNING_IN_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - MONGODB_URI=mongodb://mongodb:27017/higherselfnetwork
+      - REDIS_URI=redis://redis:6379/0
+      - CONSUL_HTTP_ADDR=consul:8500
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - redis
+      - celery-worker
+    restart: unless-stopped
+    command: celery -A services.task_queue_service:task_queue beat --loglevel=info
 
   nginx:
     image: nginx:alpine
@@ -60,6 +104,9 @@ services:
       start_period: 40s
     restart: unless-stopped
     command: ["--auth", "--bind_ip_all"]
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=27017"
 
   redis:
     image: redis:7.0-alpine
@@ -76,9 +123,63 @@ services:
       start_period: 10s
     restart: unless-stopped
     command: redis-server /usr/local/etc/redis/redis.conf
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=6379"
+
+  consul:
+    image: hashicorp/consul:1.15
+    ports:
+      - 8500:8500
+    volumes:
+      - consul_data:/consul/data
+    command: agent -server -ui -client=0.0.0.0 -bootstrap-expect=1 -data-dir=/consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./deployment/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - windsurf-agent
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./deployment/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    depends_on:
+      - prometheus
+    restart: unless-stopped
 
 volumes:
   logs:
   data:
   mongodb_data:
   redis_data:
+  consul_data:
+  prometheus_data:
+  grafana_data:

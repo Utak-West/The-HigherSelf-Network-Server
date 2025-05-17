@@ -10,8 +10,9 @@ import json
 
 from models.agent_models import Agent
 from api.auth import get_current_agent
-from integrations.mcp_tools import MCPToolRegistry, mcp_config
-from integrations.mcp_tools.registry import mcp_tool_registry
+from integrations.mcp_tools.mcp_tools_registry import mcp_tools_registry, ToolCapability
+from services.analytics_service import agent_analytics
+from services.cache_service import multi_level_cache, CacheType, CacheLevel
 from services.redis_service import redis_service
 
 router = APIRouter(prefix="/api/mcp_tools", tags=["MCP Tools"])
@@ -19,8 +20,9 @@ router = APIRouter(prefix="/api/mcp_tools", tags=["MCP Tools"])
 class ToolExecuteRequest(BaseModel):
     """Request model for tool execution."""
     tool_name: str
-    operation: str
     parameters: Dict[str, Any]
+    use_cache: bool = True
+    cache_ttl: Optional[int] = None
 
 class ToolExecuteResponse(BaseModel):
     """Response model for tool execution."""
@@ -39,7 +41,17 @@ async def list_available_tools(agent: Agent = Depends(get_current_agent)):
     Returns:
         Dictionary of tool names to list of supported operations
     """
-    return mcp_tool_registry.list_available_tools(agent)
+    # Record analytics
+    await agent_analytics.record_agent_action(
+        agent_id=agent.agent_id,
+        action_type="list_mcp_tools",
+        context={},
+        duration_ms=0,
+        outcome="success"
+    )
+    
+    # Map capabilities to tool names
+    return mcp_tools_registry.get_capabilities()
 
 @router.post("/execute", response_model=ToolExecuteResponse)
 async def execute_tool(
@@ -56,8 +68,12 @@ async def execute_tool(
     Returns:
         Result of the tool execution
     """
-    result = await mcp_tool_registry.execute_tool(
-        agent, request.tool_name, request.operation, request.parameters
+    result = await mcp_tools_registry.execute_tool(
+        tool_name=request.tool_name,
+        parameters=request.parameters,
+        agent_id=agent.agent_id,
+        use_cache=request.use_cache,
+        cache_ttl=request.cache_ttl
     )
     
     if "error" in result:
@@ -88,67 +104,103 @@ async def get_tool_config(
     Returns:
         Tool configuration information (redacted)
     """
-    config = mcp_config.get_config(tool_name)
-    if not config:
+    tool = mcp_tools_registry.get_tool(tool_name)
+    if not tool:
         raise HTTPException(status_code=404, detail=f"Tool {tool_name} not found")
     
-    # Convert to dict and redact sensitive information
-    config_dict = config.dict()
-    if "api_key" in config_dict and config_dict["api_key"]:
-        config_dict["api_key"] = "***REDACTED***"
+    # Get tool metadata
+    metadata = tool.metadata
     
-    return config_dict
+    # Record analytics
+    await agent_analytics.record_agent_action(
+        agent_id=agent.agent_id,
+        action_type="get_tool_config",
+        context={"tool_name": tool_name},
+        duration_ms=0,
+        outcome="success"
+    )
+    
+    return {
+        "name": metadata.name,
+        "description": metadata.description,
+        "version": metadata.version,
+        "capabilities": [cap for cap in metadata.capabilities],
+        "parameters_schema": metadata.parameters_schema,
+        "response_schema": metadata.response_schema,
+        "requires_api_key": metadata.requires_api_key,
+        "available": tool.available,
+        "rate_limit": metadata.rate_limit,
+        "examples": metadata.examples
+    }
 
-@router.get("/context7/collections", response_model=Dict[str, Any])
-async def get_context7_collections(agent: Agent = Depends(get_current_agent)):
+@router.get("/tools/metadata", response_model=List[Dict[str, Any]])
+async def get_tools_metadata(agent: Agent = Depends(get_current_agent)):
     """
-    Get list of available Context7 RAG collections.
+    Get metadata for all available MCP tools.
     
     Args:
         agent: The authenticated agent
         
     Returns:
-        List of available collections
+        List of tool metadata
     """
-    from integrations.mcp_tools.context7_rag import context7_rag
+    # Record analytics
+    await agent_analytics.record_agent_action(
+        agent_id=agent.agent_id,
+        action_type="get_tools_metadata",
+        context={},
+        duration_ms=0,
+        outcome="success"
+    )
     
-    if not context7_rag.enabled:
-        raise HTTPException(status_code=400, detail="Context7 RAG is not enabled")
-    
-    result = await context7_rag.get_collections()
-    if "error" in result:
-        raise HTTPException(status_code=500, detail=result["error"])
-    
-    return result
+    return mcp_tools_registry.list_tools_with_metadata()
 
-@router.post("/context7/query", response_model=Dict[str, Any])
-async def query_context7(
-    query: str = Body(..., embed=True),
-    collection: str = Body("default", embed=True),
-    top_k: int = Body(5, embed=True),
-    filters: Dict[str, Any] = Body(None, embed=True),
+@router.post("/bulk_execute", response_model=List[ToolExecuteResponse])
+async def bulk_execute_tools(
+    requests: List[ToolExecuteRequest],
+    parallel: bool = Query(True, description="Whether to execute tools in parallel"),
     agent: Agent = Depends(get_current_agent)
 ):
     """
-    Query the Context7 RAG system.
+    Execute multiple MCP tools in a single request.
     
     Args:
-        query: The query text
-        collection: Name of the collection to search in
-        top_k: Number of results to return
-        filters: Optional filters to apply
+        requests: List of tool execution requests
+        parallel: Whether to execute tools in parallel
         agent: The authenticated agent
         
     Returns:
-        Query results
+        List of tool execution results
     """
-    from integrations.mcp_tools.context7_rag import context7_rag
+    executions = [
+        {
+            "tool_name": req.tool_name,
+            "parameters": req.parameters,
+            "cache_ttl": req.cache_ttl
+        }
+        for req in requests
+    ]
     
-    if not context7_rag.enabled:
-        raise HTTPException(status_code=400, detail="Context7 RAG is not enabled")
+    results = await mcp_tools_registry.bulk_execute_tools(
+        executions=executions,
+        agent_id=agent.agent_id,
+        use_cache=all(req.use_cache for req in requests),
+        parallel=parallel
+    )
     
-    result = await context7_rag.query(query, collection, filters, top_k)
-    if "error" in result:
-        raise HTTPException(status_code=500, detail=result["error"])
+    # Format responses
+    responses = []
+    for result in results:
+        if "error" in result:
+            responses.append(ToolExecuteResponse(
+                result=result,
+                success=False,
+                error=result["error"]
+            ))
+        else:
+            responses.append(ToolExecuteResponse(
+                result=result,
+                success=True
+            ))
     
-    return result
+    return responses
