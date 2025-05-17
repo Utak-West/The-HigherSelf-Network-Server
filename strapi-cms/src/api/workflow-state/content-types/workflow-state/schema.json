@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "workflow_states",
+  "info": {
+    "singularName": "workflow-state",
+    "pluralName": "workflow-states",
+    "displayName": "Workflow State",
+    "description": "Defines possible states for workflow state machines"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "stateKey": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "workflowType": {
+      "type": "string",
+      "required": true
+    },
+    "isInitialState": {
+      "type": "boolean",
+      "default": false
+    },
+    "isFinalState": {
+      "type": "boolean",
+      "default": false
+    },
+    "transitionsFrom": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::workflow-transition.workflow-transition",
+      "mappedBy": "fromState"
+    },
+    "transitionsTo": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::workflow-transition.workflow-transition",
+      "mappedBy": "toState"
+    },
+    "requiredActions": {
+      "type": "json",
+      "description": "Actions that must be completed while in this state"
+    },
+    "notificationRecipients": {
+      "type": "json",
+      "description": "Who to notify when entering this state"
+    },
+    "slaTimeframe": {
+      "type": "integer",
+      "description": "Time in hours within which this state should be completed"
+    }
+  }
+}

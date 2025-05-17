@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "agents",
+  "info": {
+    "singularName": "agent",
+    "pluralName": "agents",
+    "displayName": "Agent",
+    "description": "System agents with unique responsibilities and personalities"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "agentKey": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "personality": {
+      "type": "text",
+      "description": "Personality traits for consistent brand voice"
+    },
+    "primaryResponsibility": {
+      "type": "string",
+      "required": true
+    },
+    "secondaryResponsibilities": {
+      "type": "json"
+    },
+    "permittedCommunicationPatterns": {
+      "type": "json",
+      "description": "Patterns of communication this agent can initiate or respond to"
+    },
+    "fallbackMechanisms": {
+      "type": "json",
+      "description": "Fallback mechanisms for service unavailability"
+    },
+    "accessLevel": {
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 10
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "lastActivity": {
+      "type": "datetime"
+    },
+    "notionSyncId": {
+      "type": "string",
+      "private": true
+    }
+  }
+}

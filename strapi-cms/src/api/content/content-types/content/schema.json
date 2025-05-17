@@ -1,0 +1,115 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contents",
+  "info": {
+    "singularName": "content",
+    "pluralName": "contents",
+    "displayName": "Content",
+    "description": "Content pieces for distribution across channels"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "contentType": {
+      "type": "enumeration",
+      "enum": [
+        "blog_post",
+        "social_media",
+        "email_newsletter",
+        "video",
+        "podcast",
+        "infographic",
+        "case_study",
+        "whitepaper",
+        "press_release",
+        "promotional"
+      ],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "ideation",
+        "brief_creation",
+        "production",
+        "review",
+        "revision",
+        "approved",
+        "scheduled",
+        "published",
+        "archived"
+      ],
+      "default": "ideation",
+      "required": true
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "summary": {
+      "type": "text"
+    },
+    "featuredImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "mediaFiles": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "author": {
+      "type": "string"
+    },
+    "publishDate": {
+      "type": "datetime"
+    },
+    "channels": {
+      "type": "json",
+      "description": "Distribution channels for this content"
+    },
+    "targetAudience": {
+      "type": "json"
+    },
+    "seoKeywords": {
+      "type": "json"
+    },
+    "seoDescription": {
+      "type": "text"
+    },
+    "campaigns": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::campaign.campaign",
+      "mappedBy": "content"
+    },
+    "performanceMetrics": {
+      "type": "json"
+    },
+    "contentReference": {
+      "type": "string",
+      "unique": true
+    },
+    "notionSyncId": {
+      "type": "string",
+      "private": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    }
+  }
+}

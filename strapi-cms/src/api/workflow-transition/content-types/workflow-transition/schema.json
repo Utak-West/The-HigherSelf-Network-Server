@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "workflow_transitions",
+  "info": {
+    "singularName": "workflow-transition",
+    "pluralName": "workflow-transitions",
+    "displayName": "Workflow Transition",
+    "description": "Defines possible transitions between workflow states"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "transitionKey": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "fromState": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::workflow-state.workflow-state",
+      "inversedBy": "transitionsFrom"
+    },
+    "toState": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::workflow-state.workflow-state",
+      "inversedBy": "transitionsTo"
+    },
+    "triggerEvent": {
+      "type": "string",
+      "required": true
+    },
+    "preconditions": {
+      "type": "json",
+      "description": "Conditions that must be met for this transition to be allowed"
+    },
+    "permittedRoles": {
+      "type": "json",
+      "description": "Roles allowed to trigger this transition"
+    },
+    "permittedAgents": {
+      "type": "json",
+      "description": "Agents allowed to trigger this transition"
+    },
+    "postActions": {
+      "type": "json",
+      "description": "Actions to perform after transition completes"
+    },
+    "auditRequired": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this transition requires audit logging"
+    }
+  }
+}
