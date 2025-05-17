@@ -3,8 +3,7 @@ Extended Pydantic models that represent the complete 16-database Notion structur
 These models enable comprehensive automation flows and data management through Notion as the central hub.
 """
 
-from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any, List, Union
+from pydantic import BaseModel, Field, field_validatorfrom typing import Optional, Dict, Any, List, Union
 from datetime import datetime, date
 from uuid import uuid4
 

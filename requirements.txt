@@ -1,14 +1,13 @@
 # Core dependencies
-# NOTE: Pydantic version is set to 1.10.12 (v1) to be compatible with redis-om==0.2.1
-# If you want to use Pydantic v2, you'll need to replace redis-om with a compatible alternative
-pydantic==1.10.12
+# NOTE: Updated to Pydantic v2.6.1 (removed redis-om dependency)
+pydantic==2.6.1
 notion-client==2.0.0
 python-dotenv==1.0.0
 # aiohttp==3.9.1 # Potentially unused or transitive
 loguru==0.7.2
 # requests==2.31.0 # Potentially unused or transitive
-# NOTE: FastAPI version adjusted to be compatible with Pydantic v1
-fastapi==0.95.2
+# NOTE: FastAPI version updated to be compatible with Pydantic v2
+fastapi==0.110.0
 uvicorn==0.23.2
 gunicorn==21.2.0
 python-dateutil==2.8.2
@@ -19,12 +18,12 @@ python-dateutil==2.8.2
 sqlalchemy==2.0.23
 alembic==1.12.1
 email-validator==2.0.0
-# NOTE: Using pydantic-settings v1 since we're using Pydantic v1
-pydantic-settings==1.0.0
+# NOTE: Using pydantic-settings v2 for compatibility with Pydantic v2
+pydantic-settings==2.2.1
 pymongo==4.6.1
 motor==3.3.2
 redis==5.0.1
-redis-om==0.2.1  # Redis Object Mapper for Python
+# redis-om==0.2.1 removed - not compatible with Pydantic v2 and not in use
 
 # AI Providers
 openai==0.27.8

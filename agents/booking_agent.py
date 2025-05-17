@@ -16,8 +16,7 @@ import json
 import asyncio
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
-from loguru import logger
+from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
 
 from models.base import AgentCapability, ApiPlatform
 from models.notion_db_models import WorkflowInstance, BusinessEntity, Workflow

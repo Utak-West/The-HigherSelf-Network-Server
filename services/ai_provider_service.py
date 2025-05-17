@@ -8,8 +8,7 @@ import json
 from typing import Dict, List, Any, Optional, Union, Literal
 from datetime import datetime
 from loguru import logger
-from pydantic import BaseModel, Field, validator
-
+from pydantic import BaseModel, Field, field_validator
 # Import base service
 from services.base_service import BaseService, ServiceCredentials
 
@@ -23,15 +22,13 @@ class AIProviderCredentials(ServiceCredentials):
     class Config:
         env_prefix = "AI_PROVIDER_"
     
-    @validator('provider_type')
-    def validate_provider_type(cls, v):
+@field_validator('provider_type', mode='before')    def validate_provider_type(cls, v):
         valid_providers = ["openai", "anthropic", "custom"]
         if v not in valid_providers:
             raise ValueError(f"Provider type must be one of: {', '.join(valid_providers)}")
         return v
     
-    @validator('api_key')
-    def validate_api_key(cls, v):
+@field_validator('api_key', mode='before')    def validate_api_key(cls, v):
         if not v:
             raise ValueError("API key is required")
         return v
@@ -42,15 +39,13 @@ class AIMessage(BaseModel):
     role: str  # "system", "user", "assistant"
     content: str
     
-    @validator('role')
-    def validate_role(cls, v):
+@field_validator('role', mode='before')    def validate_role(cls, v):
         valid_roles = ["system", "user", "assistant", "function"]
         if v not in valid_roles:
             raise ValueError(f"Role must be one of: {', '.join(valid_roles)}")
         return v
     
-    @validator('content')
-    def validate_content(cls, v):
+@field_validator('content', mode='before')    def validate_content(cls, v):
         if not v:
             raise ValueError("Content is required")
         return v
@@ -70,26 +65,22 @@ class AIRequest(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('messages')
-    def validate_messages(cls, v):
+@field_validator('messages', mode='before')    def validate_messages(cls, v):
         if not v:
             raise ValueError("At least one message is required")
         return v
     
-    @validator('model')
-    def validate_model(cls, v):
+@field_validator('model', mode='before')    def validate_model(cls, v):
         if not v:
             raise ValueError("Model is required")
         return v
     
-    @validator('temperature')
-    def validate_temperature(cls, v):
+@field_validator('temperature', mode='before')    def validate_temperature(cls, v):
         if v is not None and (v < 0 or v > 2):
             raise ValueError("Temperature must be between 0 and 2")
         return v
     
-    @validator('top_p')
-    def validate_top_p(cls, v):
+@field_validator('top_p', mode='before')    def validate_top_p(cls, v):
         if v is not None and (v < 0 or v > 1):
             raise ValueError("Top_p must be between 0 and 1")
         return v

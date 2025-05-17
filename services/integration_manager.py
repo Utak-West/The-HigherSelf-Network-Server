@@ -9,8 +9,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Type, Union
 
 from loguru import logger
-from pydantic import BaseModel, validator
-
+from pydantic import BaseModel, field_validator
 from config.settings import settings as global_settings  # Added
 from models.notion import NotionIntegrationConfig  # Added
 from services.acuity_service import AcuityService
@@ -85,8 +84,7 @@ class IntegrationManagerConfig(BaseModel):
     class Config:
         env_prefix = "INTEGRATION_"
 
-    @validator("notion_api_token")
-    def validate_notion_token(cls, v):
+@field_validator("notion_api_token", mode='before')    def validate_notion_token(cls, v):
         if not v:
             raise ValueError("Notion API token is required")
         return v

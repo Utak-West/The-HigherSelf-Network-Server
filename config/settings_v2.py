@@ -10,8 +10,7 @@ from typing import Dict, List, Optional, Union, Any
 from enum import Enum
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, field_validator, AnyHttpUrl
-
+from pydantic import Field, field_field_validator, AnyHttpUrl
 
 class LogLevel(str, Enum):
     """Valid log levels."""

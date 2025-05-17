@@ -6,8 +6,7 @@ structured interaction with the Notion API.
 
 # NotionIntegrationConfig - Used for webhook handling and API configurations
 
-from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any, List, Union
+from pydantic import BaseModel, Field, field_validatorfrom typing import Optional, Dict, Any, List, Union
 from datetime import datetime
 from uuid import uuid4
 import os
@@ -27,8 +26,7 @@ class NotionSetupConfig(BaseModel):
     parent_page_id: Optional[str] = Field(None, description="Parent page ID for database creation")
     webhook_secret: Optional[str] = Field(None, description="Secret for webhook verification")
     
-    @validator('api_token')
-    def validate_token(cls, v):
+@field_validator('api_token', mode='before')    def validate_token(cls, v):
         if not v:
             raise ValueError("Notion API token is required")
         return v

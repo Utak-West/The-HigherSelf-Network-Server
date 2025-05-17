@@ -2,8 +2,7 @@
 Pydantic models for Hugging Face Pro integration with Notion.
 These models enforce data validation and structure for all Hugging Face API interactions.
 """
-from pydantic import BaseModel, Field, HttpUrl, validator
-from typing import List, Optional, Dict, Any, Union
+from pydantic import BaseModel, Field, HttpUrl, field_validatorfrom typing import List, Optional, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
 
@@ -70,8 +69,7 @@ class HuggingFaceModelReference(NotionHuggingFaceModel):
     fine_tuned: bool = False
     parameters: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('hub_url')
-    def validate_hub_url(cls, v, values):
+@field_validator('hub_url', mode='before')    def validate_hub_url(cls, v, values):
         """Validate that the hub URL contains the model ID."""
         if 'model_id' in values and values['model_id'] not in v:
             raise ValueError(f"hub_url must contain model_id {values['model_id']}")

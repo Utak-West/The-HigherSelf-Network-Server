@@ -5,8 +5,7 @@ This module contains Pydantic models that represent the MongoDB collections
 used throughout the system, aligned with the existing Notion database structure.
 """
 
-from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any, List, Union
+from pydantic import BaseModel, Field, field_validatorfrom typing import Optional, Dict, Any, List, Union
 from datetime import datetime
 from uuid import UUID, uuid4
 from enum import Enum
@@ -47,8 +46,7 @@ class AgentDocument(MongoBaseModel):
     last_active: Optional[datetime] = None
     version: str = "1.0.0"
     
-    @validator('name')
-    def name_must_not_be_empty(cls, v):
+@field_validator('name', mode='before')    def name_must_not_be_empty(cls, v):
         """Validate that name is not empty."""
         if not v or not v.strip():
             raise ValueError('Name must not be empty')
@@ -67,8 +65,7 @@ class WorkflowDocument(MongoBaseModel):
     required_integrations: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     
-    @validator('name')
-    def name_must_not_be_empty(cls, v):
+@field_validator('name', mode='before')    def name_must_not_be_empty(cls, v):
         """Validate that name is not empty."""
         if not v or not v.strip():
             raise ValueError('Name must not be empty')
@@ -88,8 +85,7 @@ class WorkflowInstanceDocument(MongoBaseModel):
     error_message: Optional[str] = None
     assigned_agents: List[str] = Field(default_factory=list)
     
-    @validator('workflow_id')
-    def workflow_id_must_not_be_empty(cls, v):
+@field_validator('workflow_id', mode='before')    def workflow_id_must_not_be_empty(cls, v):
         """Validate that workflow_id is not empty."""
         if not v or not v.strip():
             raise ValueError('Workflow ID must not be empty')
@@ -109,8 +105,7 @@ class TaskDocument(MongoBaseModel):
     created_by: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
     
-    @validator('title')
-    def title_must_not_be_empty(cls, v):
+@field_validator('title', mode='before')    def title_must_not_be_empty(cls, v):
         """Validate that title is not empty."""
         if not v or not v.strip():
             raise ValueError('Title must not be empty')
@@ -128,8 +123,7 @@ class AgentCommunicationDocument(MongoBaseModel):
     optional_fields: List[str] = Field(default_factory=list)
     examples: List[Dict[str, Any]] = Field(default_factory=list)
     
-    @validator('pattern_name')
-    def pattern_name_must_not_be_empty(cls, v):
+@field_validator('pattern_name', mode='before')    def pattern_name_must_not_be_empty(cls, v):
         """Validate that pattern_name is not empty."""
         if not v or not v.strip():
             raise ValueError('Pattern name must not be empty')
@@ -148,8 +142,7 @@ class ApiIntegrationDocument(MongoBaseModel):
     credentials: Dict[str, str] = Field(default_factory=dict)
     rate_limits: Optional[Dict[str, Any]] = None
     
-    @validator('name')
-    def name_must_not_be_empty(cls, v):
+@field_validator('name', mode='before')    def name_must_not_be_empty(cls, v):
         """Validate that name is not empty."""
         if not v or not v.strip():
             raise ValueError('Name must not be empty')

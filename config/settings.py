@@ -15,8 +15,7 @@ from dotenv import load_dotenv  # Added
 load_dotenv()  # Added
 
 # Since we're now using Pydantic v1 as specified in requirements.txt
-from pydantic import AnyHttpUrl, BaseSettings, Field, validator
-
+from pydantic import AnyHttpUrl, BaseSettings, Field, field_validator
 # Explicitly set to False since we're using Pydantic v1
 PYDANTIC_V2 = False
 
@@ -96,8 +95,7 @@ class NotionSettings(BaseSettings):
 
     else:
 
-        @validator("api_token")
-        def validate_api_token(cls, v):
+@field_validator("api_token", mode='before')        def validate_api_token(cls, v):
             """Validate Notion API token."""
             if not v or len(v) < 50:
                 raise ValueError(
@@ -150,8 +148,7 @@ class ServerSettings(BaseSettings):
 
     else:
 
-        @validator("port")
-        def validate_port(cls, v):
+@field_validator("port", mode='before')        def validate_port(cls, v):
             """Validate port number."""
             if not 1024 <= v <= 65535:
                 raise ValueError("Port must be between 1024 and 65535")
@@ -177,8 +174,7 @@ class RedisSettings(BaseSettings):
 
     else:
 
-        @validator("timeout")
-        def validate_timeout(cls, v):
+@field_validator("timeout", mode='before')        def validate_timeout(cls, v):
             """Validate timeout value."""
             if v < 1:
                 raise ValueError("Timeout must be at least 1 second")

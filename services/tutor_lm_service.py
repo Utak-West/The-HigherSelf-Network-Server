@@ -8,8 +8,7 @@ import json
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 from loguru import logger
-from pydantic import BaseModel, Field, validator
-
+from pydantic import BaseModel, Field, field_validator
 # Import base service
 from services.base_service import BaseService, ServiceCredentials
 
@@ -22,8 +21,7 @@ class TutorLMCredentials(ServiceCredentials):
     class Config:
         env_prefix = "TUTOR_LM_"
     
-    @validator('api_key')
-    def validate_required_fields(cls, v):
+@field_validator('api_key', mode='before')    def validate_required_fields(cls, v):
         if not v:
             raise ValueError("API key is required")
         return v
@@ -46,28 +44,24 @@ class TutorSession(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('topic', 'subject_area')
-    def validate_required_text(cls, v, values, **kwargs):
+@field_validator('topic', 'subject_area', mode='before')    def validate_required_text(cls, v, values, **kwargs):
         if not v:
             field_name = kwargs.get('field', 'This field')
             raise ValueError(f"{field_name} is required")
         return v
     
-    @validator('difficulty_level')
-    def validate_difficulty(cls, v):
+@field_validator('difficulty_level', mode='before')    def validate_difficulty(cls, v):
         valid_levels = ["beginner", "intermediate", "advanced", "expert"]
         if v not in valid_levels:
             raise ValueError(f"Difficulty level must be one of: {', '.join(valid_levels)}")
         return v
     
-    @validator('duration_minutes')
-    def validate_duration(cls, v):
+@field_validator('duration_minutes', mode='before')    def validate_duration(cls, v):
         if v < 15 or v > 120:
             raise ValueError("Duration must be between 15 and 120 minutes")
         return v
     
-    @validator('status')
-    def validate_status(cls, v):
+@field_validator('status', mode='before')    def validate_status(cls, v):
         valid_statuses = ["scheduled", "in_progress", "completed", "cancelled"]
         if v not in valid_statuses:
             raise ValueError(f"Status must be one of: {', '.join(valid_statuses)}")

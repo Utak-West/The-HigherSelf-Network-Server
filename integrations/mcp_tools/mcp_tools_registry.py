@@ -8,8 +8,7 @@ import json
 import asyncio
 from typing import Dict, List, Any, Optional, Set, Callable, TypeVar, Generic
 from enum import Enum
-from pydantic import BaseModel, Field, validator
-from loguru import logger
+from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
 
 from services.consul_service import consul_service
 from services.cache_service import multi_level_cache, CacheType, CacheLevel

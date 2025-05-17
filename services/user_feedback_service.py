@@ -8,8 +8,7 @@ import json
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 from loguru import logger
-from pydantic import BaseModel, Field, validator
-
+from pydantic import BaseModel, Field, field_validator
 # Import base service
 from services.base_service import BaseService, ServiceCredentials
 
@@ -22,8 +21,7 @@ class UserFeedbackCredentials(ServiceCredentials):
     class Config:
         env_prefix = "USER_FEEDBACK_"
 
-    @validator('api_key')
-    def validate_required_fields(cls, v):
+@field_validator('api_key', mode='before')    def validate_required_fields(cls, v):
         if not v:
             raise ValueError("API key is required")
         return v
@@ -43,21 +41,18 @@ class UserFeedbackItem(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
 
-    @validator('feedback_type')
-    def validate_feedback_type(cls, v):
+@field_validator('feedback_type', mode='before')    def validate_feedback_type(cls, v):
         valid_types = ["suggestion", "bug", "comment", "rating"]
         if v not in valid_types:
             raise ValueError(f"Feedback type must be one of: {', '.join(valid_types)}")
         return v
 
-    @validator('rating')
-    def validate_rating(cls, v, values):
+@field_validator('rating', mode='before')    def validate_rating(cls, v, values):
         if values.get('feedback_type') == "rating" and (v is None or not 1 <= v <= 5):
             raise ValueError("Rating must be between 1 and 5 for rating feedback type")
         return v
 
-    @validator('content')
-    def validate_content(cls, v):
+@field_validator('content', mode='before')    def validate_content(cls, v):
         if not v:
             raise ValueError("Feedback content is required")
         if len(v) < 3:

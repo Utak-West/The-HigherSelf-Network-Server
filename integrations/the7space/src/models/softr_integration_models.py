@@ -4,8 +4,7 @@ These models define the API contract between Softr interfaces and backend servic
 """
 from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
-from enum import Enum
+from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
 from uuid import UUID, uuid4
 
 
@@ -42,8 +41,7 @@ class WebhookPayload(BaseModel):
     data: Dict[str, Any]
     signature: str
     
-    @validator('timestamp', pre=True)
-    def parse_timestamp(cls, v):
+@field_validator('timestamp', pre=True, mode='before')    def parse_timestamp(cls, v):
         if isinstance(v, str):
             return datetime.fromisoformat(v.replace('Z', '+00:00'))
         return v
@@ -193,8 +191,7 @@ class ServiceBookingRequest(BaseModel):
     notes: Optional[str] = None
     payment_method: Optional[str] = None
     
-    @validator('end_time', always=True)
-    def set_end_time(cls, v, values):
+@field_validator('end_time', always=True, mode='before')    def set_end_time(cls, v, values):
         if v is None and 'start_time' in values:
             # Default to 1 hour if not specified
             return values['start_time'] + datetime.timedelta(hours=1)
