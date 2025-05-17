@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "artworks",
+  "info": {
+    "singularName": "artwork",
+    "pluralName": "artworks",
+    "displayName": "Artwork",
+    "description": "Artworks displayed in The 7 Space gallery"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "medium": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "year_created": {
+      "type": "integer"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "available",
+        "on_hold",
+        "sold",
+        "not_for_sale",
+        "on_loan"
+      ],
+      "default": "available"
+    },
+    "artist": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::artist.artist",
+      "inversedBy": "artworks"
+    },
+    "exhibits": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::exhibit.exhibit",
+      "mappedBy": "artworks"
+    },
+    "tags": {
+      "type": "json"
+    },
+    "inventory_id": {
+      "type": "string",
+      "unique": true
+    },
+    "acquisition_date": {
+      "type": "date"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "consignment_details": {
+      "type": "text",
+      "private": true
+    }
+  }
+}

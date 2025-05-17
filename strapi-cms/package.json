@@ -1,0 +1,30 @@
+{
+  "name": "higher-self-strapi-cms",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Strapi CMS for The Higher Self Network",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/strapi": "^4.16.0",
+    "@strapi/plugin-users-permissions": "^4.16.0",
+    "@strapi/plugin-i18n": "^4.16.0",
+    "@strapi/plugin-cloud": "^4.16.0",
+    "better-sqlite3": "^8.6.0",
+    "winston": "^3.8.2",
+    "jsonwebtoken": "^9.0.0",
+    "cors": "^2.8.5",
+    "helmet": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0 <=20.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "higher-self-network-strapi"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "artists",
+  "info": {
+    "singularName": "artist",
+    "pluralName": "artists",
+    "displayName": "Artist",
+    "description": "Artists whose works are featured in The 7 Space gallery"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "biography": {
+      "type": "richtext"
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "email": {
+      "type": "email"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "socialLinks": {
+      "type": "json"
+    },
+    "exhibits": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::exhibit.exhibit",
+      "mappedBy": "artists"
+    },
+    "artworks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::artwork.artwork",
+      "mappedBy": "artist"
+    },
+    "artistic_style": {
+      "type": "string"
+    },
+    "primary_medium": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "commission_rate": {
+      "type": "decimal",
+      "private": true
+    },
+    "contract_details": {
+      "type": "text",
+      "private": true
+    }
+  }
+}

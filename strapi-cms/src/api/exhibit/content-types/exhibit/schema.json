@@ -1,0 +1,103 @@
+{
+  "kind": "collectionType",
+  "collectionName": "exhibits",
+  "info": {
+    "singularName": "exhibit",
+    "pluralName": "exhibits",
+    "displayName": "Exhibit",
+    "description": "Art gallery exhibits management for The 7 Space"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "exhibitStatus": {
+      "type": "enumeration",
+      "enum": [
+        "concept",
+        "artist_selection",
+        "planning",
+        "artwork_collection",
+        "curation",
+        "promotion",
+        "installation",
+        "active",
+        "closing",
+        "post_analysis",
+        "archived"
+      ],
+      "default": "concept",
+      "required": true
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "endDate": {
+      "type": "date"
+    },
+    "featuredImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "galleryLocation": {
+      "type": "string"
+    },
+    "artists": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::artist.artist",
+      "inversedBy": "exhibits"
+    },
+    "artworks": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::artwork.artwork",
+      "inversedBy": "exhibits"
+    },
+    "curatorNotes": {
+      "type": "richtext"
+    },
+    "targetAudience": {
+      "type": "string"
+    },
+    "marketingMaterials": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "files",
+        "images",
+        "videos"
+      ]
+    },
+    "attendanceGoal": {
+      "type": "integer"
+    },
+    "actualAttendance": {
+      "type": "integer"
+    },
+    "budget": {
+      "type": "decimal"
+    },
+    "revenue": {
+      "type": "decimal"
+    },
+    "postEventAnalysis": {
+      "type": "richtext"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wellness_services",
+  "info": {
+    "singularName": "wellness-service",
+    "pluralName": "wellness-services",
+    "displayName": "Wellness Service",
+    "description": "Wellness services offered at The 7 Space wellness center"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
+    },
+    "duration": {
+      "type": "integer",
+      "required": true,
+      "min": 15,
+      "default": 60,
+      "description": "Duration in minutes"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "serviceImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "massage",
+        "meditation",
+        "yoga",
+        "energy_healing",
+        "counseling",
+        "nutrition",
+        "holistic_health",
+        "sound_therapy",
+        "other"
+      ],
+      "required": true
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "service"
+    },
+    "practitioners": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::practitioner.practitioner",
+      "inversedBy": "services"
+    },
+    "benefits": {
+      "type": "richtext"
+    },
+    "preparation": {
+      "type": "richtext",
+      "description": "How clients should prepare for this service"
+    },
+    "aftercare": {
+      "type": "richtext",
+      "description": "Aftercare instructions for clients"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "availability": {
+      "type": "json",
+      "description": "JSON object defining availability schedule"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    }
+  }
+}

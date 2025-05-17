@@ -1,0 +1,102 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookings",
+  "info": {
+    "singularName": "booking",
+    "pluralName": "bookings",
+    "displayName": "Booking",
+    "description": "Wellness service bookings for The 7 Space"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "startTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "endTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "inquiry",
+        "consultation",
+        "quote_provided",
+        "booked",
+        "confirmed",
+        "preparation",
+        "service_delivery",
+        "follow_up",
+        "feedback_collection",
+        "completed",
+        "canceled"
+      ],
+      "default": "inquiry",
+      "required": true
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "service": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::wellness-service.wellness-service",
+      "inversedBy": "bookings"
+    },
+    "practitioner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::practitioner.practitioner",
+      "inversedBy": "bookings"
+    },
+    "notes": {
+      "type": "richtext"
+    },
+    "specialRequests": {
+      "type": "text"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "unpaid",
+        "partially_paid",
+        "paid",
+        "refunded"
+      ],
+      "default": "unpaid"
+    },
+    "paymentAmount": {
+      "type": "decimal"
+    },
+    "feedbackRating": {
+      "type": "integer",
+      "min": 1,
+      "max": 5
+    },
+    "feedbackComments": {
+      "type": "text"
+    },
+    "bookingReference": {
+      "type": "string",
+      "unique": true
+    },
+    "reminderSent": {
+      "type": "boolean",
+      "default": false
+    },
+    "followUpSent": {
+      "type": "boolean",
+      "default": false
+    },
+    "notionSyncId": {
+      "type": "string",
+      "private": true
+    }
+  }
+}

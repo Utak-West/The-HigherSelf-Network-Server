@@ -1,0 +1,83 @@
+{
+  "kind": "collectionType",
+  "collectionName": "practitioners",
+  "info": {
+    "singularName": "practitioner",
+    "pluralName": "practitioners",
+    "displayName": "Practitioner",
+    "description": "Wellness practitioners at The 7 Space"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "richtext"
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string"
+    },
+    "specialties": {
+      "type": "json"
+    },
+    "certifications": {
+      "type": "json"
+    },
+    "availability": {
+      "type": "json",
+      "description": "JSON object defining regular availability schedule"
+    },
+    "services": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::wellness-service.wellness-service",
+      "mappedBy": "practitioners"
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "practitioner"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "active",
+        "on_leave",
+        "inactive"
+      ],
+      "default": "active"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "notionSyncId": {
+      "type": "string",
+      "private": true
+    },
+    "commissionRate": {
+      "type": "decimal",
+      "private": true
+    }
+  }
+}
