@@ -11,6 +11,8 @@ services:
     environment:
       - RUNNING_IN_CONTAINER=true
       - PYTHONUNBUFFERED=1
+      - MONGODB_URI=mongodb://mongodb:27017/higherselfnetwork
+      - REDIS_URI=redis://redis:6379/0
     env_file:
       - .env
     volumes:
@@ -23,6 +25,9 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
+    depends_on:
+      - mongodb
+      - redis
 
   nginx:
     image: nginx:alpine
@@ -36,6 +41,44 @@ services:
       - windsurf-agent
     restart: unless-stopped
 
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+      - ./deployment/mongodb:/docker-entrypoint-initdb.d
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD:-securepassword}
+      - MONGO_INITDB_DATABASE=higherselfnetwork
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/higherselfnetwork --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    command: ["--auth", "--bind_ip_all"]
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+      - ./deployment/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+
 volumes:
   logs:
   data:
+  mongodb_data:
+  redis_data:
