@@ -6,26 +6,34 @@ with support for environment variables, .env files, and validation.
 """
 
 import os
-from typing import Dict, List, Optional, Union, Any
 from enum import Enum
-from dotenv import load_dotenv # Added
+from typing import Any, Dict, List, Optional, Union
+
+from dotenv import load_dotenv  # Added
 
 # Load .env file at the very beginning when this module is imported
-load_dotenv() # Added
+load_dotenv()  # Added
 
 try:
     # Try to import from pydantic-settings first (Pydantic v2)
+    from pydantic import (  # For Pydantic v2, validator is field_validator
+        AnyHttpUrl,
+        Field,
+        field_validator,
+    )
     from pydantic_settings import BaseSettings
-    from pydantic import Field, field_validator, AnyHttpUrl # For Pydantic v2, validator is field_validator
+
     PYDANTIC_V2 = True
 except ImportError:
     # Fall back to Pydantic v1
-    from pydantic import BaseSettings, Field, validator, AnyHttpUrl
+    from pydantic import AnyHttpUrl, BaseSettings, Field, validator
+
     PYDANTIC_V2 = False
 
 
 class LogLevel(str, Enum):
     """Valid log levels."""
+
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -35,6 +43,7 @@ class LogLevel(str, Enum):
 
 class Environment(str, Enum):
     """Valid deployment environments."""
+
     DEVELOPMENT = "development"
     TESTING = "testing"
     STAGING = "staging"
@@ -43,6 +52,7 @@ class Environment(str, Enum):
 
 class NotionSettings(BaseSettings):
     """Notion API configuration."""
+
     api_token: str = Field(..., env="NOTION_API_TOKEN")
     parent_page_id: Optional[str] = Field(None, env="NOTION_PARENT_PAGE_ID")
 
@@ -51,28 +61,41 @@ class NotionSettings(BaseSettings):
     contacts_profiles_db: Optional[str] = Field(None, env="NOTION_CONTACTS_PROFILES_DB")
     community_hub_db: Optional[str] = Field(None, env="NOTION_COMMUNITY_HUB_DB")
     products_services_db: Optional[str] = Field(None, env="NOTION_PRODUCTS_SERVICES_DB")
-    active_workflow_instances_db: Optional[str] = Field(None, env="NOTION_ACTIVE_WORKFLOW_INSTANCES_DB")
-    marketing_campaigns_db: Optional[str] = Field(None, env="NOTION_MARKETING_CAMPAIGNS_DB")
+    active_workflow_instances_db: Optional[str] = Field(
+        None, env="NOTION_ACTIVE_WORKFLOW_INSTANCES_DB"
+    )
+    marketing_campaigns_db: Optional[str] = Field(
+        None, env="NOTION_MARKETING_CAMPAIGNS_DB"
+    )
     feedback_surveys_db: Optional[str] = Field(None, env="NOTION_FEEDBACK_SURVEYS_DB")
     rewards_bounties_db: Optional[str] = Field(None, env="NOTION_REWARDS_BOUNTIES_DB")
     tasks_db: Optional[str] = Field(None, env="NOTION_TASKS_DB")
-    agent_communication_db: Optional[str] = Field(None, env="NOTION_AGENT_COMMUNICATION_DB")
+    agent_communication_db: Optional[str] = Field(
+        None, env="NOTION_AGENT_COMMUNICATION_DB"
+    )
     agent_registry_db: Optional[str] = Field(None, env="NOTION_AGENT_REGISTRY_DB")
     api_integrations_db: Optional[str] = Field(None, env="NOTION_API_INTEGRATIONS_DB")
-    data_transformations_db: Optional[str] = Field(None, env="NOTION_DATA_TRANSFORMATIONS_DB")
-    notifications_templates_db: Optional[str] = Field(None, env="NOTION_NOTIFICATIONS_TEMPLATES_DB")
+    data_transformations_db: Optional[str] = Field(
+        None, env="NOTION_DATA_TRANSFORMATIONS_DB"
+    )
+    notifications_templates_db: Optional[str] = Field(
+        None, env="NOTION_NOTIFICATIONS_TEMPLATES_DB"
+    )
     use_cases_db: Optional[str] = Field(None, env="NOTION_USE_CASES_DB")
     workflows_library_db: Optional[str] = Field(None, env="NOTION_WORKFLOWS_LIBRARY_DB")
 
     if PYDANTIC_V2:
-        @field_validator('api_token')
+
+        @field_validator("api_token")
         def validate_api_token(cls, v):
             """Validate Notion API token."""
             if not v or len(v) < 10:
                 raise ValueError("Invalid Notion API token")
             return v
+
     else:
-        @validator('api_token')
+
+        @validator("api_token")
         def validate_api_token(cls, v):
             """Validate Notion API token."""
             if not v or len(v) < 10:
@@ -103,6 +126,7 @@ class NotionSettings(BaseSettings):
 
 class ServerSettings(BaseSettings):
     """Server configuration."""
+
     host: str = Field("0.0.0.0", env="SERVER_HOST")
     port: int = Field(8000, env="SERVER_PORT")
     reload: bool = Field(False, env="SERVER_RELOAD")
@@ -113,23 +137,54 @@ class ServerSettings(BaseSettings):
     webhook_secret: str = Field(..., env="WEBHOOK_SECRET")
 
     if PYDANTIC_V2:
-        @field_validator('port')
+
+        @field_validator("port")
         def validate_port(cls, v):
             """Validate port number."""
             if not 1024 <= v <= 65535:
                 raise ValueError("Port must be between 1024 and 65535")
             return v
+
     else:
-        @validator('port')
+
+        @validator("port")
         def validate_port(cls, v):
             """Validate port number."""
             if not 1024 <= v <= 65535:
                 raise ValueError("Port must be between 1024 and 65535")
+            return v
+
+
+class RedisSettings(BaseSettings):
+    """Redis configuration."""
+
+    uri: str = Field("redis://localhost:6379/0", env="REDIS_URI")
+    password: Optional[str] = Field("", env="REDIS_PASSWORD")
+    timeout: int = Field(5, env="REDIS_TIMEOUT")
+    cache_enabled: bool = Field(True, env="REDIS_CACHE_ENABLED")
+
+    if PYDANTIC_V2:
+
+        @field_validator("timeout")
+        def validate_timeout(cls, v):
+            """Validate timeout value."""
+            if v < 1:
+                raise ValueError("Timeout must be at least 1 second")
+            return v
+
+    else:
+
+        @validator("timeout")
+        def validate_timeout(cls, v):
+            """Validate timeout value."""
+            if v < 1:
+                raise ValueError("Timeout must be at least 1 second")
             return v
 
 
 class IntegrationSettings(BaseSettings):
     """Third-party integration configuration."""
+
     # Integration toggles
     enable_typeform: bool = Field(True, env="ENABLE_TYPEFORM")
     enable_woocommerce: bool = Field(True, env="ENABLE_WOOCOMMERCE")
@@ -143,11 +198,16 @@ class IntegrationSettings(BaseSettings):
     enable_plaud: bool = Field(True, env="ENABLE_PLAUD")
     enable_beehiiv: bool = Field(True, env="ENABLE_BEEHIIV")
     enable_circle: bool = Field(True, env="ENABLE_CIRCLE")
+    enable_redis: bool = Field(True, env="ENABLE_REDIS")
 
     # API credentials
     typeform_api_key: Optional[str] = Field(None, env="TYPEFORM_API_KEY")
-    woocommerce_consumer_key: Optional[str] = Field(None, env="WOOCOMMERCE_CONSUMER_KEY")
-    woocommerce_consumer_secret: Optional[str] = Field(None, env="WOOCOMMERCE_CONSUMER_SECRET")
+    woocommerce_consumer_key: Optional[str] = Field(
+        None, env="WOOCOMMERCE_CONSUMER_KEY"
+    )
+    woocommerce_consumer_secret: Optional[str] = Field(
+        None, env="WOOCOMMERCE_CONSUMER_SECRET"
+    )
     woocommerce_url: Optional[AnyHttpUrl] = Field(None, env="WOOCOMMERCE_URL")
     acuity_user_id: Optional[str] = Field(None, env="ACUITY_USER_ID")
     acuity_api_key: Optional[str] = Field(None, env="ACUITY_API_KEY")
@@ -171,6 +231,7 @@ class IntegrationSettings(BaseSettings):
 
 class Settings(BaseSettings):
     """Main application settings."""
+
     environment: Environment = Field(Environment.DEVELOPMENT, env="ENVIRONMENT")
     debug: bool = Field(False, env="DEBUG")
     testing: bool = Field(False, env="TESTING")
@@ -179,6 +240,7 @@ class Settings(BaseSettings):
     # Component settings - don't initialize here for Pydantic v2
     notion: NotionSettings = Field(default_factory=NotionSettings)
     server: ServerSettings = Field(default_factory=ServerSettings)
+    redis: RedisSettings = Field(default_factory=RedisSettings)
     integrations: IntegrationSettings = Field(default_factory=IntegrationSettings)
 
     if PYDANTIC_V2:
@@ -186,11 +248,13 @@ class Settings(BaseSettings):
             "env_file": ".env",
             "env_file_encoding": "utf-8",
             "case_sensitive": True,
-            "extra": "ignore"
+            "extra": "ignore",
         }
     else:
+
         class Config:
             """Pydantic configuration."""
+
             env_file = ".env"
             env_file_encoding = "utf-8"
             case_sensitive = True

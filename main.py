@@ -42,6 +42,7 @@ from config.settings import settings
 from services.ai_router import AIRouter
 from services.integration_manager import get_integration_manager  # Changed
 from services.notion_service import NotionService
+from services.redis_service import redis_service
 from utils.logging_setup import setup_logging
 from utils.message_bus import MessageBus
 
@@ -290,6 +291,21 @@ async def async_initialization(message_bus=None):
     Args:
         message_bus: Optional MessageBus instance for agent communication
     """
+    # Initialize Redis service
+    try:
+        # Redis service is initialized as a singleton when imported
+        # Test connection by pinging
+        redis_service._sync_client.ping()
+        logger.info("Redis service initialized successfully")
+
+        # Check if we're using Redis Cloud
+        redis_uri = os.environ.get("REDIS_URI", "")
+        if "redns.redis-cloud.com" in redis_uri:
+            logger.info("Using Redis Cloud for caching and messaging")
+    except Exception as e:
+        logger.error(f"Failed to initialize Redis service: {e}")
+        logger.warning("Continuing without Redis - some features may be unavailable")
+
     # First initialize integrations to ensure Notion connection is established
     try:
         integration_manager = await initialize_integrations()
