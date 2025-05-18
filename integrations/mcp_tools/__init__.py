@@ -4,25 +4,37 @@ This package provides access to Model Context Protocol (MCP) tools that agents c
 """
 
 # Import registry and tool metadata
-from .mcp_tools_registry import mcp_tools_registry, MCPTool, ToolMetadata, ToolCapability
+from .mcp_tools_registry import (
+    MCPTool,
+    ToolCapability,
+    ToolMetadata,
+    mcp_tools_registry,
+)
 
 # Import individual tools
-from .tools import memory_tool, web_browser_tool, perplexity_tool, available_tools
+from .tools import (
+    available_tools,
+    memory_tool,
+    perplexity_tool,
+    tesseract_tool,
+    web_browser_tool,
+)
 
 # Legacy imports maintained for backward compatibility
 try:
-    from .registry import MCPToolRegistry
     from .config import MCPConfig
+    from .registry import MCPToolRegistry
 except ImportError:
     pass
 
 __all__ = [
-    'mcp_tools_registry',
-    'MCPTool',
-    'ToolMetadata',
-    'ToolCapability',
-    'memory_tool',
-    'web_browser_tool',
-    'perplexity_tool',
-    'available_tools'
+    "mcp_tools_registry",
+    "MCPTool",
+    "ToolMetadata",
+    "ToolCapability",
+    "memory_tool",
+    "web_browser_tool",
+    "perplexity_tool",
+    "tesseract_tool",
+    "available_tools",
 ]
