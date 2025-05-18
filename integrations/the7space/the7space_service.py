@@ -25,7 +25,8 @@ except ImportError:
     logger.debug = logger.debug
 
 try:
-from pydantic import BaseModel, Field, field_validatorexcept ImportError:
+    from pydantic import BaseModel, Field, field_validator
+except ImportError:
     # Fallback imports if pydantic is not available
     from typing import Any, Dict, List, Optional, Union
 

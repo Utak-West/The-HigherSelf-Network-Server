@@ -188,13 +188,16 @@ class RAGAgent(BaseAgent):
 
         # Generate completion
         try:
+            if self.rag_pipeline is None:
+                raise ValueError("RAG pipeline not initialized")
+
             result = await self.rag_pipeline.generate(request)
 
             return {
                 "status": "success",
                 "text": result.text,
                 "sources": (
-                    [source.dict() for source in result.sources]
+                    [source.model_dump() for source in result.sources]
                     if result.sources
                     else []
                 ),
@@ -225,6 +228,9 @@ class RAGAgent(BaseAgent):
         try:
             # Call search method on the semantic_search instance
             semantic_search_instance = self.semantic_search
+            if semantic_search_instance is None:
+                raise ValueError("Semantic search not initialized")
+
             results = await semantic_search_instance.search(
                 query=query,
                 content_types=kwargs.get("content_types"),
@@ -271,6 +277,9 @@ class RAGAgent(BaseAgent):
             )
 
             # Crawl and store
+            if self.crawl_service is None:
+                raise ValueError("Crawl service not initialized")
+
             result = await self.crawl_service.crawl_and_store(config=config)
 
             return {

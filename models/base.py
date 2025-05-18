@@ -9,7 +9,8 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
+
 
 class EntityType(str, Enum):
     """Types of business entities supported in the system."""
@@ -183,7 +184,7 @@ class NotionPage(BaseModel):
                 # For enum values
                 properties[field_name] = {"select": {"name": field_value.value}}
 
-        return cls(database_id=database_id, properties=properties)
+        return cls(database_id=database_id, properties=properties, page_id=None)
 
 
 class NotionIntegrationConfig(BaseModel):
