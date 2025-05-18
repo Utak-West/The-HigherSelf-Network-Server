@@ -74,3 +74,5 @@ edge-tts==6.1.19
 # OCR integration
 pytesseract==0.3.10
 Pillow==10.1.0
+google-cloud-vision==3.4.5
+abbyy-cloud-ocr-sdk==1.0.0  # This is a placeholder, use the actual ABBYY SDK package
