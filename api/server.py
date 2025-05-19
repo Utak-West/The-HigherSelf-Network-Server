@@ -25,6 +25,7 @@ from api.capcut_pipit_router import router as capcut_pipit_router
 from api.crawl_router import router as crawl_router
 from api.huggingface_router import router as huggingface_router
 from api.mcp_tools_router import router as mcp_tools_router
+from api.openml_router import router as openml_router
 from api.rag_router import router as rag_router
 from api.routes.agent_tasks import router as agent_tasks_router
 from api.softr_router import router as softr_router
@@ -80,7 +81,12 @@ app.include_router(huggingface_router)
 app.include_router(agent_tasks_router)
 app.include_router(softr_router)
 app.include_router(capcut_pipit_router)
-app.include_router(mcp_tools_router)  # Added MCP tools router for Context7 and other MCP services
+app.include_router(
+    mcp_tools_router
+)  # Added MCP tools router for Context7 and other MCP services
+app.include_router(
+    openml_router
+)  # Added OpenML router for dataset management and training
 
 # Agents will be passed via app.state.agents from main.py
 
