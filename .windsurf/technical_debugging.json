@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0",
+  "technicalDebugging": {
+    "enabled": true,
+    "loggingConfiguration": {
+      "levels": ["debug", "info", "warning", "error", "critical"],
+      "defaultLevel": "info",
+      "format": "{timestamp} [{level}] {agent}: {message}",
+      "destinations": [
+        {
+          "type": "console",
+          "colorized": true,
+          "minLevel": "info"
+        },
+        {
+          "type": "file",
+          "path": "logs/server.log",
+          "rotation": {
+            "size": "10MB",
+            "count": 10
+          },
+          "minLevel": "debug"
+        },
+        {
+          "type": "redis",
+          "channel": "logs:higherselfnetwork",
+          "minLevel": "warning"
+        }
+      ]
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        {
+          "type": "jaeger",
+          "endpoint": "http://jaeger:14268/api/traces"
+        }
+      ],
+      "contextPropagation": true
+    },
+    "profiling": {
+      "enabled": true,
+      "cpuProfiler": {
+        "enabled": true,
+        "sampleRate": 100,
+        "outputPath": "profiles/cpu/"
+      },
+      "memoryProfiler": {
+        "enabled": true,
+        "interval": 300,
+        "outputPath": "profiles/memory/"
+      }
+    },
+    "errorHandling": {
+      "detailedErrors": true,
+      "stackTraces": true,
+      "errorReporting": {
+        "enabled": true,
+        "service": "sentry",
+        "dsn": "${SENTRY_DSN}"
+      }
+    },
+    "debugEndpoints": {
+      "enabled": true,
+      "routes": [
+        {
+          "path": "/debug/health",
+          "method": "GET",
+          "description": "Health check endpoint"
+        },
+        {
+          "path": "/debug/metrics",
+          "method": "GET",
+          "description": "Prometheus metrics endpoint"
+        },
+        {
+          "path": "/debug/agents",
+          "method": "GET",
+          "description": "Agent status and configuration"
+        },
+        {
+          "path": "/debug/workflows",
+          "method": "GET",
+          "description": "Active workflow instances"
+        }
+      ],
+      "authentication": {
+        "required": true,
+        "type": "api_key",
+        "headerName": "X-Debug-Key"
+      }
+    },
+    "testingTools": {
+      "mockServices": {
+        "enabled": true,
+        "notion": {
+          "enabled": true,
+          "responseDelay": 100,
+          "dataPath": "tests/mock_data/notion/"
+        },
+        "redis": {
+          "enabled": true,
+          "inMemory": true
+        },
+        "mongodb": {
+          "enabled": true,
+          "inMemory": true
+        }
+      },
+      "scenarioTesting": {
+        "enabled": true,
+        "scenarios": [
+          "lead_capture_to_booking",
+          "content_creation_to_publishing",
+          "community_engagement",
+          "task_assignment_and_completion"
+        ],
+        "dataGenerators": {
+          "contacts": true,
+          "tasks": true,
+          "content": true,
+          "events": true
+        }
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ This integration connects CapCut (video editing platform) and Pipit (payment pro
 
 ## Architecture
 
-The integration follows the central hub architecture of The HigherSelf Network Server, with Notion serving as the central data store. All interactions with CapCut and Pipit are managed through dedicated service classes, and all data is synchronized with Notion.
+The integration follows the central hub architecture of The HigherSelf Network Server, with Notion serving as the central data store. All interactions with CapCut and Pipit are managed through dedicated service classes, and all data is synchronized with Notion. The integration is coordinated by the Grace Fields Master Orchestrator, which ensures proper workflow management and business entity routing.
 
 ## Components
 
@@ -20,6 +20,7 @@ The integration follows the central hub architecture of The HigherSelf Network S
 - **Pipit Service**: Handles communication with the Pipit API for payment processing
 - **API Router**: Provides endpoints for interacting with CapCut and Pipit
 - **Notion Integration**: Stores video and transaction data in Notion databases
+- **Grace Fields Integration**: Coordinates with the Master Orchestrator for workflow management and business entity routing
 
 ## Setup
 

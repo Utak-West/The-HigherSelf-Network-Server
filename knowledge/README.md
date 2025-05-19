@@ -1,6 +1,6 @@
 # Knowledge Module
 
-The Knowledge module provides Retrieval Augmented Generation (RAG) capabilities for The HigherSelf Network Server. It enables the system to retrieve relevant information from various sources and use it to generate more accurate and contextually relevant responses.
+The Knowledge module provides Retrieval Augmented Generation (RAG) capabilities for The HigherSelf Network Server. It enables the system to retrieve relevant information from various sources and use it to generate more accurate and contextually relevant responses. This module is integrated with the Grace Fields Master Orchestrator to enhance all agent interactions with contextual knowledge.
 
 ## Overview
 
@@ -83,6 +83,32 @@ response = await rag_pipeline.generate(
 )
 
 print(response.text)
+```
+
+### Integration with Grace Fields
+
+```python
+from agents.agent_personalities import create_grace_orchestrator
+from knowledge.rag_pipeline import get_rag_pipeline
+from services.notion_service import get_notion_client
+
+# Get Notion client
+notion_client = get_notion_client()
+
+# Create Grace Fields orchestrator
+grace_fields = create_grace_orchestrator(notion_client)
+
+# Get the RAG pipeline
+rag_pipeline = await get_rag_pipeline(grace_fields.ai_router)
+
+# Register RAG pipeline with Grace Fields
+await grace_fields.register_rag_pipeline(rag_pipeline)
+
+# Now Grace Fields can use RAG capabilities in agent interactions
+result = await grace_fields.route_event("knowledge_query", {
+    "query": "What are the key features of The 7 Space?",
+    "business_entity_id": "7space"
+})
 ```
 
 ### Crawling a Website

@@ -6,7 +6,7 @@ This document explains how to integrate the Newark Well specialized agents with 
 
 The Newark Well initiative introduces five specialized agents to support wellness, crisis intervention, and homelessness outreach programs in the City of Newark:
 
-1. **Grace Fields** - Orchestration Agent
+1. **Grace Fields** - Master Orchestrator Agent
 2. **Cora** - Knowledge Management Agent
 3. **Cassia** - Wellness Coordinator Agent
 4. **Terra** - Outreach Coordinator Agent
@@ -69,7 +69,7 @@ Copy the Newark Well protocol files to your server's module directory:
 ```
 ├── server_protocols/
 │   ├── newark_agent_protocol.py
-│   ├── newark_orchestration.py (Grace Fields)
+│   ├── newark_orchestration.py (Grace Fields Master Orchestrator)
 │   ├── newark_knowledge_agent.py (Cora)
 │   ├── newark_wellness_agent.py (Cassia)
 │   ├── newark_outreach_agent.py (Terra)
@@ -144,7 +144,7 @@ Once integrated, the following endpoints will be available:
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                         Grace Fields Agent                   │
+│                  Grace Fields Master Orchestrator            │
 └───┬───────────────────┬───────────────────┬─────────────────┘
     │                   │                   │                  │
     ▼                   ▼                   ▼                  ▼

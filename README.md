@@ -28,7 +28,7 @@ All data, workflows, and communications flow through Notion, creating a unified 
 * **Named Agent Personalities**: Each with unique characteristics
 * **Specialized Capabilities**: Experts in their respective domains
 * **Autonomous Decision Making**: Agents handle routine tasks independently
-* **Graceful Orchestration**: Coordinated by the Grace Fields system
+* **Graceful Orchestration**: Coordinated by the Grace Fields Master Orchestrator
 
 ### Seamless Integrations
 
@@ -212,7 +212,7 @@ The HigherSelf Network features a unique team of digital agents, each with their
 | **Elan** | Content Choreographer | Creative & Adaptive | Content creation, distribution management, performance analysis |
 | **Zevi** | Audience Analyst | Analytical & Sharp | Data analysis, audience segmentation, trend identification |
 | **Atlas** | Knowledge Retrieval Specialist | Knowledgeable & Resourceful | RAG-enhanced knowledge retrieval, semantic search, content indexing |
-| **Grace** | System Orchestrator | Harmonious & Coordinating | Agent coordination, workflow orchestration, system monitoring |
+| **Grace Fields** | Master Orchestrator | Harmonious & Coordinating | Agent coordination, workflow orchestration, system monitoring |
 
 ### How They Work Together
 
@@ -223,7 +223,7 @@ Our agents collaborate seamlessly across your business processes:
 * **Elan** develops content that **Sage** shares with your community
 * **Solari** manages bookings that originated from **Liora's** campaigns
 * **Atlas** provides contextual knowledge to enhance all agents' capabilities
-* **Grace** ensures all agents work together harmoniously
+* **Grace Fields** ensures all agents work together harmoniously
 
 ### Business Applications
 

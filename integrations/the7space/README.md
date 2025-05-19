@@ -55,10 +55,10 @@ The integration provides the following MCP tools:
    ```bash
    # Navigate to the MCP server directory
    cd ~/Documents/Cline/MCP/the7space-integration
-   
+
    # Install dependencies
    npm install
-   
+
    # Build the server
    npm run build
    ```
@@ -78,9 +78,11 @@ The integration provides the following MCP tools:
 
 This integration extends the capabilities of these agents:
 
-1. **Content Lifecycle Agent** - For managing WordPress content
-2. **Booking Agent** - For managing Amelia bookings
-3. **Lead Capture Agent** - For processing leads from The 7 Space website
+1. **Elan (Content Choreographer)** - For managing WordPress content
+2. **Solari (Booking & Order Manager)** - For managing Amelia bookings
+3. **Nyra (Lead Capture Specialist)** - For processing leads from The 7 Space website
+
+All agent interactions are coordinated by the Grace Fields Master Orchestrator, ensuring seamless workflow management across The 7 Space business entity.
 
 To register with an agent:
 
@@ -90,10 +92,20 @@ from integrations.the7space.agent_integration import get_the7space_integration
 # Get the integration
 the7space_integration = await get_the7space_integration()
 
-# Register with an agent
-await the7space_integration.register_with_content_lifecycle_agent(content_agent)
-await the7space_integration.register_with_booking_agent(booking_agent)
-await the7space_integration.register_with_lead_capture_agent(lead_agent)
+# Get Grace Fields orchestrator
+grace_fields = create_grace_orchestrator(notion_client)
+
+# Register with specialized agents
+await the7space_integration.register_with_content_agent(grace_fields.agents["Elan"])
+await the7space_integration.register_with_booking_agent(grace_fields.agents["Solari"])
+await the7space_integration.register_with_lead_agent(grace_fields.agents["Nyra"])
+
+# Register business entity with Grace Fields
+await grace_fields.register_business_entity(
+    entity_id="7space",
+    name="The 7 Space | Art Gallery & Wellness Center",
+    integrations=[the7space_integration]
+)
 ```
 
 ## Implementation Notes

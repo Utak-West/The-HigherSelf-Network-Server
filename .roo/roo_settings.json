@@ -1,0 +1,26 @@
+{
+  "diffStrategy": "UnifiedDiff",
+  "diffPrecision": 98,
+  "autoApproval": {
+    "fileOperations": true,
+    "browserActions": false,
+    "apiRetries": true
+  },
+  "modelConfiguration": {
+    "provider": "Anthropic",
+    "model": "claude-3-opus-20240229",
+    "temperature": 0.2
+  },
+  "contextManagement": {
+    "enableIntelligentCondensing": true,
+    "useVectorRetrieval": true,
+    "persistMemory": true
+  },
+  "allowedAutoExecuteCommands": [
+    "pytest",
+    "python",
+    "docker-compose",
+    "git status",
+    "git diff"
+  ]
+}

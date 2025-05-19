@@ -1,6 +1,6 @@
 # Hugging Face Pro Integration for The HigherSelf Network
 
-This integration connects Hugging Face Pro capabilities with The HigherSelf Network Server, maintaining Notion as the central data hub for all operations as required by The HigherSelf Network standards.
+This integration connects Hugging Face Pro capabilities with The HigherSelf Network Server, maintaining Notion as the central data hub for all operations as required by The HigherSelf Network standards. The integration is coordinated by the Grace Fields Master Orchestrator to ensure seamless workflow management and business entity awareness.
 
 ## Features
 
@@ -76,20 +76,32 @@ Create a Notion database with the following properties:
 
 ```python
 from integrations.huggingface.utils import create_huggingface_service
+from agents.agent_personalities import create_grace_orchestrator
+from services.notion_service import get_notion_client
+
+# Get Notion client
+notion_client = get_notion_client()
+
+# Create Grace Fields orchestrator
+grace_fields = create_grace_orchestrator(notion_client)
 
 # Create service instance
 hf = create_huggingface_service()
+
+# Register with Grace Fields
+await grace_fields.register_service("huggingface", hf)
 
 # List available models
 models = hf.list_models({"search": "text-generation", "limit": 10})
 print(f"Found {len(models)} models")
 
-# Run inference
-result = hf.run_inference(
-    model_id="gpt2",
-    inputs="The HigherSelf Network is",
-    parameters={"max_length": 50}
-)
+# Run inference through Grace Fields for proper business entity routing
+result = await grace_fields.route_event("huggingface_inference", {
+    "model_id": "gpt2",
+    "inputs": "The HigherSelf Network is",
+    "parameters": {"max_length": 50},
+    "business_entity_id": "connection_practice"
+})
 print(result)
 ```
 
