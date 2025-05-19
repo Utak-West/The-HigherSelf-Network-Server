@@ -20,6 +20,7 @@ from services.amelia_service import AmeliaServiceClient as AmeliaService
 
 # Import base service
 from services.base_service import BaseService
+from services.bettermode_service import BetterModeService
 from services.capcut_service import CapCutService
 from services.huggingface_service import HuggingFaceService
 
@@ -77,6 +78,7 @@ class IntegrationManagerConfig(BaseModel):
     enable_plaud: bool = True
     enable_beehiiv: bool = True
     enable_circle: bool = True
+    enable_bettermode: bool = True  # Added for BetterMode integration
     enable_huggingface: bool = True
     enable_softr: bool = True
     enable_capcut: bool = True
@@ -354,6 +356,27 @@ class IntegrationManager:
                 except Exception as e:
                     logger.error(f"Failed to initialize Softr service: {e}")
                     self.initialization_status["softr"] = False
+
+            # BetterMode
+            if self.config.enable_bettermode:
+                logger.info("Initializing BetterMode service...")
+                try:
+                    bettermode_service = BetterModeService()
+                    bettermode_initialized = (
+                        await bettermode_service.validate_connection()
+                    )
+                    if bettermode_initialized:
+                        self.services["bettermode"] = bettermode_service
+                        logger.info("BetterMode service initialized successfully")
+                    else:
+                        logger.warning(
+                            "BetterMode service failed connection validation"
+                        )
+                except Exception as e:
+                    logger.error(f"Failed to initialize BetterMode service: {e}")
+                    bettermode_initialized = False
+
+                self.initialization_status["bettermode"] = bettermode_initialized
 
             # CapCut
             if self.config.enable_capcut:

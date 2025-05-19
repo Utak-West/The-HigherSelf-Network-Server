@@ -33,6 +33,7 @@ from api.video_router import router as video_router
 from api.voice_router import router as voice_router
 from api.webhooks import router as webhook_router
 from api.webhooks_beehiiv import router as beehiiv_router
+from api.webhooks_bettermode import router as bettermode_router
 from api.webhooks_circleso import router as circleso_router
 from models.base import ApiPlatform, NotionIntegrationConfig
 from models.notion_db_models import WorkflowInstance
@@ -71,7 +72,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(webhook_router)
-app.include_router(circleso_router)
+app.include_router(bettermode_router)  # Added BetterMode router
+app.include_router(circleso_router)  # Legacy Circle.so router
 app.include_router(beehiiv_router)
 app.include_router(video_router)
 app.include_router(crawl_router)
