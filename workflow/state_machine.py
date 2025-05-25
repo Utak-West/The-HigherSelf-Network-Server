@@ -15,7 +15,8 @@ import time
 import random
 from enum import Enum
 from typing import Dict, List, Any, Optional, Callable, Union, Set, Tuple, TypeVar, Generic
-from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
+from pydantic import BaseModel, Field, field_validator
+from loguru import logger
 
 from models.notion_db_models import WorkflowInstance
 from services.notion_service import NotionService
@@ -41,7 +42,8 @@ class AgentAssignment(BaseModel):
     context_condition: Optional[Dict[str, Any]] = None
     timeout_seconds: Optional[int] = None
     
-@field_validator('selection_strategy', mode='before')    def validate_selection_strategy(cls, v):
+    @field_validator('selection_strategy', mode='before')
+    def validate_selection_strategy(cls, v):
         valid_strategies = ['first_available', 'round_robin', 'load_balancing', 'semantic_match']
         if v not in valid_strategies:
             raise ValueError(f"Strategy must be one of {valid_strategies}")

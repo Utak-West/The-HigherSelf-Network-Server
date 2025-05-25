@@ -51,6 +51,48 @@ try:
     )
     CACHE_HEALTH = Gauge(
         'enhanced_cache_health',
+        'Cache health status (1 = healthy, 0 = unhealthy)',
+        ['cache_type']
+    )
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+    # Define dummy metrics if prometheus_client is not available
+    class DummyMetric:
+        def labels(self, *args, **kwargs): return self
+        def inc(self, *args, **kwargs): pass
+        def set(self, *args, **kwargs): pass
+        def observe(self, *args, **kwargs): pass
+
+    CACHE_HITS = DummyMetric()
+    CACHE_MISSES = DummyMetric()
+    CACHE_SIZE = DummyMetric()
+    CACHE_LATENCY = DummyMetric()
+    CACHE_ERRORS = DummyMetric()
+    CACHE_HEALTH = DummyMetric()
+
+
+class CacheType(str, Enum):
+    """Enum for different cache types."""
+
+    NOTION = "notion"
+    AGENT = "agent"
+    VECTOR = "vector"
+    API = "api"
+    MCP = "mcp"  # MCP Tools specific cache
+    WORKFLOW = "workflow"
+    CONFIG = "config"
+    USER = "user"
+    SESSION = "session"
+
+
+class CacheService:
+    """
+    Enhanced Redis-based cache service.
+    """
+
+    def __init__(
+        self,
         default_ttl: int = 300,  # 5 minutes default
         logger: Optional[logging.Logger] = None,
     ):

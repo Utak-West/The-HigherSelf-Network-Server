@@ -5,7 +5,8 @@ sales dashboards, and other visualizations.
 """
 from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from pydantic import BaseModel, Field, field_validator
+from enum import Enum
 from uuid import UUID
 
 

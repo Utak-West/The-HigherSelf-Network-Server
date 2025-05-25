@@ -135,5 +135,3 @@ def test_schema_usage_example_script(capsys):
         # Add more assertions based on expected output of the script if necessary
     except Exception as e:
         pytest.fail(f"schema_usage_example.main() raised an exception: {e}")
-
-```
