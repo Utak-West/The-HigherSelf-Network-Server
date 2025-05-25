@@ -198,3 +198,27 @@ class NotionIntegrationConfig(BaseModel):
         None, description="Last synchronization timestamp"
     )
     sync_frequency: int = Field(3600, description="Sync frequency in seconds")
+
+
+class AgentPersonality(str, Enum):
+    NYRA = "nyra"
+    SOLARI = "solari"
+    RUVO = "ruvo"
+    LIORA = "liora"
+    SAGE = "sage"
+    ELAN = "elan"
+    ZEVI = "zevi"
+    ATLAS = "atlas"
+    GRACE_FIELDS = "grace_fields"
+
+
+class AgentRole(str, Enum):
+    LEAD_CAPTURE = "lead_capture"
+    BOOKING_MANAGER = "booking_manager"
+    TASK_ORCHESTRATOR = "task_orchestrator"
+    MARKETING_STRATEGIST = "marketing_strategist"
+    COMMUNITY_CURATOR = "community_curator"
+    CONTENT_CHOREOGRAPHER = "content_choreographer"
+    AUDIENCE_ANALYST = "audience_analyst"
+    KNOWLEDGE_RETRIEVAL = "knowledge_retrieval"
+    MASTER_ORCHESTRATOR = "master_orchestrator"

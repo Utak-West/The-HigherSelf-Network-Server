@@ -1,0 +1,235 @@
+{
+  "version": "1.0.0",
+  "components": [
+    {
+      "name": "Core API Server",
+      "description": "Handles main API requests and business logic for The HigherSelf Network.",
+      "dependencies": ["Database Service", "Authentication Service", "Notion Client"],
+      "configuration_requirements": {
+        "DATABASE_URL": "PostgreSQL connection string for application data",
+        "JWT_SECRET": "Secret key for JWT signing and verification",
+        "NOTION_API_TOKEN": "API Token for Notion Integration"
+      }
+    },
+    {
+      "name": "Agent Workflow Engine",
+      "description": "Manages the execution of automated workflows by various agents.",
+      "dependencies": ["Core API Server", "Task Queue Service (Redis)", "RAG Component"],
+      "configuration_requirements": {
+        "REDIS_URL": "Connection string for Redis",
+        "LLM_API_KEY": "API key for the language model provider (e.g., OpenAI)"
+      }
+    }
+  ],
+  "api_endpoints": [
+    {
+      "path": "/api/v1/agents",
+      "method": "GET",
+      "description": "Retrieves a list of available agents and their statuses.",
+      "parameters": {"capability": "string (optional, e.g., 'LEAD_PROCESSING')"},
+      "response_schema": {"agents": "List[Agent]"},
+      "authentication_required": true,
+      "example_request": "GET /api/v1/agents?capability=LEAD_PROCESSING",
+      "example_response": "[{\"personality\":\"nyra\", \"role\":\"lead_capture\", ...}]"
+    },
+    {
+      "path": "/api/v1/workflows/trigger",
+      "method": "POST",
+      "description": "Triggers a specific workflow by its name or ID.",
+      "parameters": {"workflow_name": "string", "payload": "object"},
+      "response_schema": {"status": "string", "instance_id": "string"},
+      "authentication_required": true,
+      "example_request": "POST /api/v1/workflows/trigger\n{\n  \"workflow_name\": \"Standard Lead Processing\",\n  \"payload\": {\"email\": \"newlead@example.com\", \"name\": \"John Doe\"}\n}",
+      "example_response": "{\"status\": \"initiated\", \"instance_id\": \"wf_inst_123abc\"}"
+    }
+  ],
+  "integrations": [
+    {
+      "type": "notion",
+      "name": "Main Notion Workspace Integration",
+      "description": "Handles all data synchronization and operations with the primary Notion workspace.",
+      "configuration_keys": ["NOTION_API_TOKEN", "NOTION_ROOT_PAGE_ID", "NOTION_DATABASE_MAPPINGS"],
+      "setup_instructions": "1. Create a Notion integration and get the API token. 2. Define the root page ID for the integration. 3. Map Notion databases to system models in configuration.",
+      "limitations": ["Notion API rate limits (average 3 requests/sec).", "Schema changes in Notion require manual updates in mappings."],
+      "best_practices": ["Use selective property updates to minimize data transfer.", "Implement local caching for frequently accessed, less volatile data."]
+    },
+    {
+      "type": "huggingface",
+      "name": "Hugging Face Model Hub Integration",
+      "description": "Provides access to pre-trained models for NLP tasks like summarization, translation, and classification.",
+      "configuration_keys": ["HF_API_TOKEN", "DEFAULT_MODEL_CHECKPOINT"],
+      "setup_instructions": "1. Obtain a Hugging Face API token. 2. Specify default model checkpoints for common tasks if needed.",
+      "limitations": ["Model inference times can vary.", "Requires internet connectivity to Hugging Face Hub unless models are locally cached."],
+      "best_practices": ["Select models appropriate for the task complexity and performance requirements.", "Cache model downloads to reduce startup time."]
+    }
+  ],
+  "agents": [
+    {
+      "personality": "nyra",
+      "role": "lead_capture",
+      "personality_traits": ["Intuitive", "Responsive", "Efficient", "Proactive"],
+      "primary_capabilities": ["LEAD_PROCESSING", "CLIENT_COMMUNICATION", "CRM_SYNC"],
+      "collaborates_with": ["solari", "ruvo"],
+      "database_access": ["contacts_profiles", "active_workflows", "tasks"]
+    },
+    {
+      "personality": "solari",
+      "role": "booking_manager",
+      "personality_traits": ["Organized", "Detail-oriented", "Reliable"],
+      "primary_capabilities": ["BOOKING_MANAGEMENT", "TASK_CREATION", "NOTIFICATION_DISPATCH"],
+      "collaborates_with": ["nyra", "elan"],
+      "database_access": ["products_services", "active_workflows", "agent_communication"]
+    }
+  ],
+  "notion_databases": [
+    {
+      "type": "contacts_profiles",
+      "description": "Stores comprehensive information about all contacts, leads, and clients.",
+      "key_properties": {
+        "Name": "Title",
+        "Email": "Email",
+        "Phone": "Phone Number",
+        "Status": "Select (e.g., Lead, Prospect, Customer, Archived)",
+        "Source": "Select (e.g., Website, Referral, Event)"
+      },
+      "relations": {
+        "Active Workflows": "active_workflows",
+        "Bookings": "products_services", 
+        "Tasks": "tasks"
+      },
+      "example_records": [
+        {"Name": "Jane Doe", "Email": "jane.doe@example.com", "Status": "Customer", "Source": "Website"}
+      ]
+    },
+    {
+      "type": "agent_registry",
+      "description": "Maintains a registry of all agents in The HigherSelf Network, their capabilities, and configurations.",
+      "key_properties": {
+        "Agent ID": "Title", 
+        "Personality": "Select (Nyra, Solari, etc.)",
+        "Role": "Select (Lead Capture, Booking Manager, etc.)",
+        "Status": "Select (Active, Inactive, Development)"
+      },
+      "relations": {
+        "Assigned Tasks": "tasks",
+        "Handled Workflows": "workflows_library"
+      },
+      "example_records": [
+        {"Agent ID": "NYRA-001", "Personality": "Nyra", "Role": "Lead Capture", "Status": "Active"}
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Standard Lead Processing Workflow",
+      "description": "Automates the process of handling a new lead from initial capture through qualification to first contact.",
+      "business_application": ["Lead Management", "Sales Automation", "Client Onboarding"],
+      "states": ["initiated", "in_progress", "waiting_for_input", "completed", "error"],
+      "transitions": [
+        {
+          "from_state": "initiated",
+          "to_state": "in_progress",
+          "trigger": "New lead submission (e.g., Typeform, Webhook)",
+          "conditions": ["Lead data contains valid email and name."],
+          "actions": ["Create/Update contact profile in 'contacts_profiles'", "Assign lead to Nyra", "Log interaction in 'agent_communication'"],
+          "responsible_agent": "nyra"
+        },
+        {
+          "from_state": "in_progress",
+          "to_state": "completed",
+          "trigger": "Successful first contact and qualification",
+          "conditions": ["Nyra confirms lead qualification."],
+          "actions": ["Update lead status to 'Qualified'", "Schedule follow-up task for Ruvo"],
+          "responsible_agent": "ruvo"
+        }
+      ],
+      "involved_agents": ["nyra", "ruvo"],
+      "involved_databases": ["contacts_profiles", "tasks", "agent_communication"],
+      "example_execution": "A new lead from a website form submission triggers the workflow. Nyra processes the lead, and if qualified, Ruvo is assigned a follow-up task."
+    }
+  ],
+  "rag_components": [
+    {
+      "name": "General Purpose Knowledge Base RAG",
+      "description": "Provides retrieval-augmented generation capabilities using OpenAI's text embeddings for general queries and content creation.",
+      "embedding_provider": "openai",
+      "vector_dimensions": 1536,
+      "retrieval_strategy": "Cosine Similarity with Max Marginal Relevance",
+      "context_window_size": 8192,
+      "example_usage": "rag_component.generate_response(query='Explain the benefits of mindfulness meditation.', context_docs=['doc_id_1', 'doc_id_2'])"
+    },
+    {
+      "name": "Internal Documentation Search RAG",
+      "description": "Specialized RAG for searching and retrieving information from internal SOPs, guides, and technical documentation, using a local sentence transformer model.",
+      "embedding_provider": "local",
+      "vector_dimensions": 768,
+      "retrieval_strategy": "Dot Product with re-ranking",
+      "context_window_size": 4096,
+      "example_usage": "internal_rag.search_docs(query='How to reset Notion API token?', top_k=3)"
+    }
+  ],
+  "deployment_options": [
+    {
+      "option": "docker",
+      "prerequisites": ["Docker Engine (latest stable)", "Docker Compose V2"],
+      "environment_variables": {
+        "PYTHON_ENV": "production",
+        "PORT": "8000",
+        "LOG_LEVEL": "INFO",
+        "DATABASE_URL": "env_var_for_postgres_connection_string",
+        "REDIS_URL": "env_var_for_redis_connection_string"
+      },
+      "setup_steps": [
+        "Build Docker image: `docker-compose build`",
+        "Run containers: `docker-compose up -d`",
+        "Run database migrations (if applicable): `docker-compose exec api python manage.py migrate`"
+      ],
+      "monitoring_setup": "Integration with Prometheus for metrics scraping and Grafana for dashboards (configurations provided in `deployment/monitoring/`).",
+      "scaling_configuration": {
+        "api_service": "Horizontal scaling via replica count in docker-compose.yml or Kubernetes deployment.",
+        "worker_service": "Adjust number of worker containers based on task queue length."
+      },
+      "estimated_resources": {"cpu": "Minimum 2 vCPUs", "memory": "Minimum 4GB RAM", "disk_space": "20GB for images and volumes"}
+    }
+  ],
+  "learning_modules": [
+    {
+      "title": "Introduction to The HigherSelf Network Architecture",
+      "difficulty": "beginner",
+      "prerequisites": ["Basic understanding of web servers and APIs.", "Familiarity with JSON data format."],
+      "learning_objectives": [
+        "Understand the overall architecture of The HigherSelf Network server.",
+        "Identify key components and their roles (API, Agents, Integrations).",
+        "Learn how data flows between Notion and the server."
+      ],
+      "key_concepts": {
+        "Pydantic Models": "Data validation and settings management.",
+        "Agent Personalities": "Specialized AI assistants for various tasks.",
+        "Notion as a CMS/DB": "Central role of Notion in data management.",
+        "Workflow Automation": "How agents automate processes."
+      },
+      "practical_exercises": ["Trace a sample API request through the system components.", "Identify which agent would handle a specific task scenario."],
+      "evaluation_criteria": ["Diagram the major components of the server.", "Explain the function of three different agent personalities.", "Describe two types of integrations used."],
+      "estimated_completion_time": "3 hours"
+    },
+    {
+      "title": "Developing Custom Workflows",
+      "difficulty": "intermediate",
+      "prerequisites": ["Completed 'Introduction to The HigherSelf Network Architecture' module.", "Basic Python programming skills."],
+      "learning_objectives": [
+        "Understand the structure of a workflow definition.",
+        "Learn how to define states, transitions, and actions.",
+        "Practice creating a simple workflow involving two agents and a Notion database update."
+      ],
+      "key_concepts": {
+        "Workflow States": "Different stages of a process (e.g., initiated, in_progress, completed).",
+        "Workflow Transitions": "Rules that govern movement between states.",
+        "Agent Collaboration": "How multiple agents participate in a single workflow.",
+        "Idempotency": "Ensuring actions can be repeated without adverse effects."
+      },
+      "practical_exercises": ["Design a workflow for customer feedback processing.", "Implement a transition action using Python to update a Notion page."],
+      "evaluation_criteria": ["Successfully design and document a new workflow.", "Implement a functional workflow transition action."],
+      "estimated_completion_time": "5 hours"
+    }
+  ]
+}
