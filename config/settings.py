@@ -16,6 +16,7 @@ load_dotenv()  # Added
 
 # Since we're now using Pydantic v1 as specified in requirements.txt
 from pydantic import AnyHttpUrl, BaseSettings, Field, field_validator
+
 # Explicitly set to False since we're using Pydantic v1
 PYDANTIC_V2 = False
 
@@ -95,7 +96,8 @@ class NotionSettings(BaseSettings):
 
     else:
 
-@field_validator("api_token", mode='before')        def validate_api_token(cls, v):
+        @field_validator("api_token")
+        def validate_api_token(cls, v):
             """Validate Notion API token."""
             if not v or len(v) < 50:
                 raise ValueError(
@@ -148,7 +150,8 @@ class ServerSettings(BaseSettings):
 
     else:
 
-@field_validator("port", mode='before')        def validate_port(cls, v):
+        @field_validator("port")
+        def validate_port(cls, v):
             """Validate port number."""
             if not 1024 <= v <= 65535:
                 raise ValueError("Port must be between 1024 and 65535")
@@ -174,7 +177,8 @@ class RedisSettings(BaseSettings):
 
     else:
 
-@field_validator("timeout", mode='before')        def validate_timeout(cls, v):
+        @field_validator("timeout")
+        def validate_timeout(cls, v):
             """Validate timeout value."""
             if v < 1:
                 raise ValueError("Timeout must be at least 1 second")
@@ -198,6 +202,7 @@ class IntegrationSettings(BaseSettings):
     enable_beehiiv: bool = Field(True, env="ENABLE_BEEHIIV")
     enable_circle: bool = Field(True, env="ENABLE_CIRCLE")
     enable_redis: bool = Field(True, env="ENABLE_REDIS")
+    enable_gohighlevel: bool = Field(True, env="ENABLE_GOHIGHLEVEL")
 
     # API credentials
     typeform_api_key: Optional[str] = Field(None, env="TYPEFORM_API_KEY")
@@ -226,6 +231,79 @@ class IntegrationSettings(BaseSettings):
     openai_organization_id: Optional[str] = Field(None, env="OPENAI_ORGANIZATION_ID")
     anthropic_api_key: Optional[str] = Field(None, env="ANTHROPIC_API_KEY")
     tutorlm_api_key: Optional[str] = Field(None, env="TUTORLM_API_KEY")
+
+    # GoHighLevel CRM credentials
+    gohighlevel_client_id: Optional[str] = Field(None, env="GOHIGHLEVEL_CLIENT_ID")
+    gohighlevel_client_secret: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_CLIENT_SECRET"
+    )
+    gohighlevel_redirect_uri: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_REDIRECT_URI"
+    )
+    gohighlevel_webhook_secret: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_WEBHOOK_SECRET"
+    )
+    gohighlevel_scope: str = Field(
+        "contacts.read contacts.write opportunities.read opportunities.write campaigns.read campaigns.write calendars.read calendars.write",
+        env="GOHIGHLEVEL_SCOPE",
+    )
+
+    # GoHighLevel Sub-Account Tokens
+    gohighlevel_core_business_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_CORE_BUSINESS_TOKEN"
+    )
+    gohighlevel_home_services_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_HOME_SERVICES_TOKEN"
+    )
+    gohighlevel_extended_wellness_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_EXTENDED_WELLNESS_TOKEN"
+    )
+    gohighlevel_development_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_DEVELOPMENT_TOKEN"
+    )
+    gohighlevel_analytics_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_ANALYTICS_TOKEN"
+    )
+
+    # GoHighLevel Sub-Account Location IDs
+    gohighlevel_core_business_location: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_CORE_BUSINESS_LOCATION"
+    )
+    gohighlevel_home_services_location: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_HOME_SERVICES_LOCATION"
+    )
+    gohighlevel_extended_wellness_location: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_EXTENDED_WELLNESS_LOCATION"
+    )
+    gohighlevel_development_location: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_DEVELOPMENT_LOCATION"
+    )
+    gohighlevel_analytics_location: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_ANALYTICS_LOCATION"
+    )
+
+    # GoHighLevel CRM credentials
+    gohighlevel_client_id: Optional[str] = Field(None, env="GOHIGHLEVEL_CLIENT_ID")
+    gohighlevel_client_secret: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_CLIENT_SECRET"
+    )
+    gohighlevel_redirect_uri: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_REDIRECT_URI"
+    )
+    gohighlevel_webhook_secret: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_WEBHOOK_SECRET"
+    )
+    gohighlevel_access_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_ACCESS_TOKEN"
+    )
+    gohighlevel_refresh_token: Optional[str] = Field(
+        None, env="GOHIGHLEVEL_REFRESH_TOKEN"
+    )
+    gohighlevel_location_id: Optional[str] = Field(None, env="GOHIGHLEVEL_LOCATION_ID")
+    gohighlevel_scope: str = Field(
+        "contacts.read contacts.write opportunities.read opportunities.write campaigns.read campaigns.write",
+        env="GOHIGHLEVEL_SCOPE",
+    )
 
 
 class Settings(BaseSettings):
