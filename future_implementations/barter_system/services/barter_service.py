@@ -15,15 +15,23 @@ from uuid import UUID
 from loguru import logger
 
 from models.barter_models import (
+    BarterAuditLog,
     BarterListing,
     BarterMatch,
+    BarterMetric,
     BarterProfile,
     BarterRequest,
+    BarterSearchCache,
     BarterTransaction,
+    BarterTranslation,
+    BarterUserProfile,
     CulturalAdaptation,
     CulturalRegion,
+    LanguageCode,
     Location,
     ServiceCategory,
+    TranslationEntity,
+    VerificationStatus,
 )
 from services.redis_service import redis_service
 

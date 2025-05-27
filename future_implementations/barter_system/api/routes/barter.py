@@ -18,14 +18,22 @@ from models.barter_models import (
     BarterProfile,
     BarterRequest,
     BarterTransaction,
+    BarterTranslation,
+    BarterUserProfile,
     CulturalRegion,
+    LanguageCode,
     Location,
     ServiceCategory,
+    TranslationEntity,
+    VerificationStatus,
 )
 from services.barter_service import BarterService
+from services.barter_translation_service import get_translation_service
+from services.barter_user_service import get_barter_user_service
 
 # Create router
 router = APIRouter(prefix="/barter", tags=["Barter System"])
+
 
 # Dependency to get barter service
 def get_barter_service() -> BarterService:
@@ -35,6 +43,7 @@ def get_barter_service() -> BarterService:
 # Request/Response Models
 class SearchRequest(BaseModel):
     """Request model for searching barter listings."""
+
     location: Location
     radius_km: float = 50
     category: Optional[ServiceCategory] = None
@@ -44,12 +53,14 @@ class SearchRequest(BaseModel):
 
 class MatchRequest(BaseModel):
     """Request model for finding matches."""
+
     request_id: UUID
     limit: int = 10
 
 
 class TransactionCreateRequest(BaseModel):
     """Request model for creating a transaction."""
+
     match_id: UUID
     provider_id: str
     requester_id: str
@@ -58,8 +69,7 @@ class TransactionCreateRequest(BaseModel):
 # Listing Endpoints
 @router.post("/listings", response_model=BarterListing)
 async def create_listing(
-    listing: BarterListing,
-    barter_service: BarterService = Depends(get_barter_service)
+    listing: BarterListing, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Create a new barter listing."""
     try:
@@ -77,9 +87,11 @@ async def search_listings(
     country: str = Query(..., description="Country name"),
     cultural_region: CulturalRegion = Query(..., description="Cultural region"),
     radius_km: float = Query(50, description="Search radius in kilometers"),
-    category: Optional[ServiceCategory] = Query(None, description="Service category filter"),
+    category: Optional[ServiceCategory] = Query(
+        None, description="Service category filter"
+    ),
     limit: int = Query(20, description="Maximum number of results"),
-    barter_service: BarterService = Depends(get_barter_service)
+    barter_service: BarterService = Depends(get_barter_service),
 ):
     """Search for barter listings based on location and criteria."""
     try:
@@ -88,15 +100,15 @@ async def search_listings(
             country=country,
             latitude=lat,
             longitude=lon,
-            cultural_region=cultural_region
+            cultural_region=cultural_region,
         )
-        
+
         return await barter_service.search_listings(
             location=location,
             radius_km=radius_km,
             category=category,
             cultural_region=cultural_region,
-            limit=limit
+            limit=limit,
         )
     except Exception as e:
         logger.error(f"Error searching listings: {e}")
@@ -106,8 +118,7 @@ async def search_listings(
 # Request Endpoints
 @router.post("/requests", response_model=BarterRequest)
 async def create_request(
-    request: BarterRequest,
-    barter_service: BarterService = Depends(get_barter_service)
+    request: BarterRequest, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Create a new barter request."""
     try:
@@ -121,7 +132,7 @@ async def create_request(
 async def find_matches(
     request_id: UUID,
     limit: int = Query(10, description="Maximum number of matches"),
-    barter_service: BarterService = Depends(get_barter_service)
+    barter_service: BarterService = Depends(get_barter_service),
 ):
     """Find potential matches for a barter request."""
     try:
@@ -129,7 +140,7 @@ async def find_matches(
         request = await barter_service.get_request(request_id)
         if not request:
             raise HTTPException(status_code=404, detail="Request not found")
-        
+
         return await barter_service.find_matches(request, limit=limit)
     except HTTPException:
         raise
@@ -142,7 +153,7 @@ async def find_matches(
 @router.post("/transactions", response_model=BarterTransaction)
 async def create_transaction(
     transaction_request: TransactionCreateRequest,
-    barter_service: BarterService = Depends(get_barter_service)
+    barter_service: BarterService = Depends(get_barter_service),
 ):
     """Create a confirmed barter transaction from a match."""
     try:
@@ -150,11 +161,11 @@ async def create_transaction(
         match = await barter_service.get_match(transaction_request.match_id)
         if not match:
             raise HTTPException(status_code=404, detail="Match not found")
-        
+
         return await barter_service.create_transaction(
             match=match,
             provider_id=transaction_request.provider_id,
-            requester_id=transaction_request.requester_id
+            requester_id=transaction_request.requester_id,
         )
     except HTTPException:
         raise
@@ -165,15 +176,14 @@ async def create_transaction(
 
 @router.get("/transactions/{transaction_id}", response_model=BarterTransaction)
 async def get_transaction(
-    transaction_id: UUID,
-    barter_service: BarterService = Depends(get_barter_service)
+    transaction_id: UUID, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Get a specific barter transaction."""
     try:
         transaction = await barter_service.get_transaction(transaction_id)
         if not transaction:
             raise HTTPException(status_code=404, detail="Transaction not found")
-        
+
         return transaction
     except HTTPException:
         raise
@@ -187,20 +197,20 @@ async def update_transaction_progress(
     transaction_id: UUID,
     provider_progress: Optional[float] = None,
     requester_progress: Optional[float] = None,
-    barter_service: BarterService = Depends(get_barter_service)
+    barter_service: BarterService = Depends(get_barter_service),
 ):
     """Update progress on a barter transaction."""
     try:
         transaction = await barter_service.get_transaction(transaction_id)
         if not transaction:
             raise HTTPException(status_code=404, detail="Transaction not found")
-        
+
         if provider_progress is not None:
             transaction.provider_progress_percentage = provider_progress
-        
+
         if requester_progress is not None:
             transaction.requester_progress_percentage = requester_progress
-        
+
         return await barter_service.update_transaction(transaction)
     except HTTPException:
         raise
@@ -212,15 +222,14 @@ async def update_transaction_progress(
 # Profile Endpoints
 @router.get("/profiles/{entity_id}", response_model=BarterProfile)
 async def get_profile(
-    entity_id: str,
-    barter_service: BarterService = Depends(get_barter_service)
+    entity_id: str, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Get barter profile for an entity."""
     try:
         profile = await barter_service.get_profile(entity_id)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
-        
+
         return profile
     except HTTPException:
         raise
@@ -231,8 +240,7 @@ async def get_profile(
 
 @router.post("/profiles", response_model=BarterProfile)
 async def create_or_update_profile(
-    profile: BarterProfile,
-    barter_service: BarterService = Depends(get_barter_service)
+    profile: BarterProfile, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Create or update a barter profile."""
     try:
@@ -245,8 +253,7 @@ async def create_or_update_profile(
 # Cultural Adaptation Endpoints
 @router.get("/cultural-adaptation/{region}")
 async def get_cultural_adaptation(
-    region: CulturalRegion,
-    barter_service: BarterService = Depends(get_barter_service)
+    region: CulturalRegion, barter_service: BarterService = Depends(get_barter_service)
 ):
     """Get cultural adaptation settings for a region."""
     try:
@@ -261,7 +268,7 @@ async def get_cultural_adaptation(
 async def get_seasonal_services(
     region: CulturalRegion,
     season: str,
-    barter_service: BarterService = Depends(get_barter_service)
+    barter_service: BarterService = Depends(get_barter_service),
 ):
     """Get seasonal service recommendations for a region."""
     try:
@@ -269,6 +276,161 @@ async def get_seasonal_services(
         return {"region": region, "season": season, "recommended_services": services}
     except Exception as e:
         logger.error(f"Error getting seasonal services: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Enhanced User Profile Endpoints
+@router.post("/users/profiles", response_model=BarterUserProfile)
+async def create_user_profile(
+    user_id: str,
+    preferred_language: LanguageCode = LanguageCode.ENGLISH,
+    timezone_name: Optional[str] = None,
+    user_service=Depends(get_barter_user_service),
+):
+    """Create a new barter user profile."""
+    try:
+        profile = await user_service.create_user_profile(
+            user_id=user_id,
+            preferred_language=preferred_language,
+            timezone_name=timezone_name,
+        )
+        return profile
+    except Exception as e:
+        logger.error(f"Error creating user profile: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/users/{user_id}/profile", response_model=BarterUserProfile)
+async def get_user_profile(user_id: str, user_service=Depends(get_barter_user_service)):
+    """Get user profile by user ID."""
+    try:
+        profile = await user_service.get_user_profile(user_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="User profile not found")
+        return profile
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting user profile: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/users/{user_id}/verification")
+async def update_verification_status(
+    user_id: str,
+    status: VerificationStatus,
+    user_service=Depends(get_barter_user_service),
+):
+    """Update user verification status."""
+    try:
+        success = await user_service.update_verification_status(user_id, status)
+        if not success:
+            raise HTTPException(status_code=404, detail="User profile not found")
+        return {"status": "success", "verification_status": status}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating verification status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Translation Endpoints
+@router.post("/translations")
+async def create_translation(
+    entity_type: TranslationEntity,
+    entity_id: UUID,
+    field_name: str,
+    translated_text: str,
+    language_code: LanguageCode,
+    translation_service=Depends(get_translation_service),
+):
+    """Create a new translation."""
+    try:
+        translation = await translation_service.create_translation(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            field_name=field_name,
+            translated_text=translated_text,
+            language_code=language_code,
+        )
+        return translation
+    except Exception as e:
+        logger.error(f"Error creating translation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/translations/{entity_type}/{entity_id}")
+async def get_entity_translations(
+    entity_type: TranslationEntity,
+    entity_id: UUID,
+    language_code: LanguageCode,
+    translation_service=Depends(get_translation_service),
+):
+    """Get all translations for an entity in a specific language."""
+    try:
+        translations = await translation_service.get_entity_translations(
+            entity_type=entity_type, entity_id=entity_id, language_code=language_code
+        )
+        return translations
+    except Exception as e:
+        logger.error(f"Error getting translations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/translations/auto-translate")
+async def auto_translate_entity(
+    entity_type: TranslationEntity,
+    entity_id: UUID,
+    target_languages: List[LanguageCode],
+    entity_data: dict,
+    source_language: Optional[LanguageCode] = None,
+    translation_service=Depends(get_translation_service),
+):
+    """Automatically translate all fields of an entity."""
+    try:
+        results = await translation_service.auto_translate_entity(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            entity_data=entity_data,
+            target_languages=target_languages,
+            source_language=source_language,
+        )
+        return results
+    except Exception as e:
+        logger.error(f"Error in auto-translation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Enhanced Search Endpoints
+@router.get("/search/enhanced")
+async def enhanced_search(
+    lat: float = Query(..., description="Latitude"),
+    lon: float = Query(..., description="Longitude"),
+    radius_km: float = Query(50, description="Search radius in kilometers"),
+    category: Optional[ServiceCategory] = Query(None, description="Service category"),
+    language: LanguageCode = Query(LanguageCode.ENGLISH, description="Language"),
+    limit: int = Query(20, description="Maximum results"),
+    barter_service: BarterService = Depends(get_barter_service),
+):
+    """Enhanced search with multi-language support."""
+    try:
+        # This would use the enhanced search function from the database
+        # For now, we'll use the existing search and add language support
+        location = Location(
+            city="Search Location",
+            country="Unknown",
+            latitude=lat,
+            longitude=lon,
+            cultural_region=CulturalRegion.NORTH_AMERICA,  # Default
+        )
+
+        listings = await barter_service.search_listings(
+            location=location, radius_km=radius_km, category=category, limit=limit
+        )
+
+        return {"results": listings, "language": language, "total_count": len(listings)}
+    except Exception as e:
+        logger.error(f"Error in enhanced search: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

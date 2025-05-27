@@ -468,6 +468,176 @@ class BarterProfile(BaseModel):
     # Integration
     notion_page_id: Optional[str] = None
 
+
+# Enhanced Models for Multi-language and User Integration
+
+
+class LanguageCode(str, Enum):
+    """Supported language codes (ISO 639-1 with optional country codes)."""
+
+    ENGLISH = "en"
+    ENGLISH_US = "en-US"
+    ENGLISH_UK = "en-UK"
+    SPANISH = "es"
+    SPANISH_ES = "es-ES"
+    SPANISH_MX = "es-MX"
+    FRENCH = "fr"
+    FRENCH_FR = "fr-FR"
+    FRENCH_CA = "fr-CA"
+    GERMAN = "de"
+    ITALIAN = "it"
+    PORTUGUESE = "pt"
+    PORTUGUESE_BR = "pt-BR"
+    MANDARIN = "zh"
+    JAPANESE = "ja"
+    KOREAN = "ko"
+    ARABIC = "ar"
+    HINDI = "hi"
+    RUSSIAN = "ru"
+    DUTCH = "nl"
+    SWEDISH = "sv"
+    NORWEGIAN = "no"
+    DANISH = "da"
+    FINNISH = "fi"
+
+
+class TranslationEntity(str, Enum):
+    """Types of entities that can be translated."""
+
+    LISTING = "listing"
+    REQUEST = "request"
+    PROFILE = "profile"
+    CATEGORY = "category"
+
+
+class BarterTranslation(BaseModel):
+    """Translation model for multi-language support."""
+
+    id: UUID = Field(default_factory=uuid4)
+    entity_type: TranslationEntity
+    entity_id: UUID
+    language_code: LanguageCode
+    field_name: str = Field(..., max_length=100)
+    translated_text: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Config:
+        use_enum_values = True
+
+
+class VerificationStatus(str, Enum):
+    """User verification status options."""
+
+    PENDING = "pending"
+    VERIFIED = "verified"
+    REJECTED = "rejected"
+
+
+class PrivacyLevel(str, Enum):
+    """Location privacy level options."""
+
+    EXACT = "exact"
+    APPROXIMATE = "approximate"
+    CITY_ONLY = "city_only"
+
+
+class BarterUserProfile(BaseModel):
+    """Enhanced user profile with multi-language and privacy settings."""
+
+    id: UUID = Field(default_factory=uuid4)
+    user_id: str = Field(..., description="Links to main user system")
+    barter_profile_id: Optional[UUID] = None
+    preferred_language: LanguageCode = Field(default=LanguageCode.ENGLISH)
+    timezone_name: Optional[str] = Field(None, max_length=50)
+    notification_preferences: Dict[str, Any] = Field(default_factory=dict)
+    privacy_settings: Dict[str, Any] = Field(default_factory=dict)
+    verification_status: VerificationStatus = Field(default=VerificationStatus.PENDING)
+    verification_documents: List[Dict[str, Any]] = Field(default_factory=list)
+    last_activity: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Config:
+        use_enum_values = True
+
+
+class NotificationFrequency(str, Enum):
+    """Notification frequency options."""
+
+    IMMEDIATE = "immediate"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+
+
+class BarterNotificationPreference(BaseModel):
+    """User notification preferences for barter system."""
+
+    id: UUID = Field(default_factory=uuid4)
+    user_id: str
+    notification_type: str = Field(..., max_length=50)
+    enabled: bool = Field(default=True)
+    channels: List[str] = Field(default_factory=lambda: ["in_app"])
+    frequency: NotificationFrequency = Field(default=NotificationFrequency.IMMEDIATE)
+    quiet_hours: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"start": "22:00", "end": "08:00"}
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Config:
+        use_enum_values = True
+
+
+class BarterSearchCache(BaseModel):
+    """Search result caching for performance optimization."""
+
+    id: UUID = Field(default_factory=uuid4)
+    search_hash: str = Field(
+        ..., max_length=64, description="Hash of search parameters"
+    )
+    search_params: Dict[str, Any]
+    results: Dict[str, Any]
+    result_count: int
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: datetime
+
+    @field_validator("search_hash")
+    @classmethod
+    def validate_search_hash(cls, v):
+        """Validate search hash format."""
+        if len(v) != 64:
+            raise ValueError("Search hash must be 64 characters long")
+        return v
+
+
+class BarterMetric(BaseModel):
+    """Performance and usage metrics for the barter system."""
+
+    id: UUID = Field(default_factory=uuid4)
+    metric_type: str = Field(..., max_length=50)
+    metric_name: str = Field(..., max_length=100)
+    metric_value: float
+    dimensions: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class BarterAuditLog(BaseModel):
+    """Audit trail for barter system operations."""
+
+    id: UUID = Field(default_factory=uuid4)
+    entity_type: str = Field(..., max_length=50)
+    entity_id: UUID
+    action: str = Field(..., max_length=50)
+    user_id: Optional[str] = None
+    old_values: Optional[Dict[str, Any]] = None
+    new_values: Optional[Dict[str, Any]] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
     class Config:
         schema_extra = {
             "example": {
