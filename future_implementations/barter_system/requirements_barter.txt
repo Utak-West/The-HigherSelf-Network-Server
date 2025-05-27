@@ -1,0 +1,29 @@
+# Enhanced Barter System Dependencies
+# These dependencies should be added to the main requirements.txt during Phase 2 implementation
+
+# Translation and Language Support
+googletrans==4.0.0rc1
+azure-cognitiveservices-language-translator==3.0.0
+langdetect==1.0.9
+pycountry==22.3.5
+
+# Geolocation and Mapping
+geopy==2.3.0
+pyproj==3.6.1
+
+# Additional Database Support for PostGIS
+asyncpg==0.29.0
+geoalchemy2==0.14.2
+psycopg2-binary==2.9.9
+
+# File Processing and Validation
+python-magic==0.4.27
+
+# Additional Utilities for Barter System
+python-dateutil==2.8.2  # May already be in main requirements
+
+# Installation Instructions:
+# 1. Ensure PostgreSQL with PostGIS extension is installed
+# 2. Install these dependencies: pip install -r requirements_barter.txt
+# 3. Configure translation service API keys in environment variables
+# 4. Set up Redis with enhanced configuration for caching

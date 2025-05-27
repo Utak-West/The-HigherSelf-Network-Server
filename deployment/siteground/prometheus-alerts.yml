@@ -1,0 +1,198 @@
+groups:
+  - name: siteground_resource_alerts
+    rules:
+      # CPU Usage Alerts
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: cpu
+        annotations:
+          summary: "High CPU usage detected on SiteGround server"
+          description: "CPU usage is {{ $value }}% which exceeds 80% threshold for 5 minutes"
+          
+      - alert: CriticalCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 90
+        for: 2m
+        labels:
+          severity: critical
+          service: higherself-network
+          resource: cpu
+        annotations:
+          summary: "Critical CPU usage on SiteGround server"
+          description: "CPU usage is {{ $value }}% which exceeds 90% threshold"
+
+      # Memory Usage Alerts (8GB total)
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: memory
+        annotations:
+          summary: "High memory usage on SiteGround server"
+          description: "Memory usage is {{ $value }}% of 8GB, exceeding 80% threshold"
+          
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 2m
+        labels:
+          severity: critical
+          service: higherself-network
+          resource: memory
+        annotations:
+          summary: "Critical memory usage on SiteGround server"
+          description: "Memory usage is {{ $value }}% of 8GB, exceeding 90% threshold"
+
+      # Disk Usage Alerts (40GB total)
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: disk
+        annotations:
+          summary: "High disk usage on SiteGround server"
+          description: "Disk usage is {{ $value }}% of 40GB SSD, exceeding 80% threshold"
+          
+      - alert: CriticalDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 90
+        for: 2m
+        labels:
+          severity: critical
+          service: higherself-network
+          resource: disk
+        annotations:
+          summary: "Critical disk usage on SiteGround server"
+          description: "Disk usage is {{ $value }}% of 40GB SSD, exceeding 90% threshold"
+
+      # Application Performance Alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: performance
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile response time is {{ $value }}s, exceeding 1s threshold"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: errors
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }}, exceeding 5% threshold"
+
+      # Redis Performance Alerts
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: redis
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis is using {{ $value | humanizePercentage }} of allocated memory"
+
+      - alert: RedisConnectionsHigh
+        expr: redis_connected_clients > 40
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: redis
+        annotations:
+          summary: "High Redis connections"
+          description: "Redis has {{ $value }} connections, approaching limit of 50"
+
+      # MongoDB Performance Alerts
+      - alert: MongoDBHighConnections
+        expr: mongodb_connections{state="current"} > 16
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: mongodb
+        annotations:
+          summary: "High MongoDB connections"
+          description: "MongoDB has {{ $value }} connections, approaching limit of 20"
+
+      - alert: MongoDBSlowQueries
+        expr: rate(mongodb_op_counters_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: mongodb
+        annotations:
+          summary: "High MongoDB query rate"
+          description: "MongoDB query rate is {{ $value }} ops/sec"
+
+  - name: siteground_service_alerts
+    rules:
+      # Service Health Alerts
+      - alert: ServiceDown
+        expr: up{job="windsurf-agent"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: higherself-network
+        annotations:
+          summary: "HigherSelf Network service is down"
+          description: "The main application service has been down for more than 1 minute"
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: higherself-network
+          resource: redis
+        annotations:
+          summary: "Redis service is down"
+          description: "Redis service has been down for more than 1 minute"
+
+      - alert: MongoDBDown
+        expr: up{job="mongodb"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: higherself-network
+          resource: mongodb
+        annotations:
+          summary: "MongoDB service is down"
+          description: "MongoDB service has been down for more than 1 minute"
+
+      # Celery Worker Alerts
+      - alert: CeleryWorkersDown
+        expr: celery_workers_active < 1
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: celery
+        annotations:
+          summary: "No active Celery workers"
+          description: "No Celery workers are currently active"
+
+      - alert: CeleryQueueBacklog
+        expr: celery_queue_length > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: higherself-network
+          resource: celery
+        annotations:
+          summary: "High Celery queue backlog"
+          description: "Celery queue has {{ $value }} pending tasks"

@@ -133,7 +133,9 @@ class ServerSettings(BaseSettings):
     host: str = Field("0.0.0.0", env="SERVER_HOST")
     port: int = Field(8000, env="SERVER_PORT")
     reload: bool = Field(False, env="SERVER_RELOAD")
-    workers: int = Field(1, env="SERVER_WORKERS")
+    workers: int = Field(
+        2, env="SERVER_WORKERS"
+    )  # Optimized for 4-core SiteGround plan
     log_level: LogLevel = Field(LogLevel.INFO, env="LOG_LEVEL")
     json_logs: bool = Field(False, env="JSON_LOGS")
     log_file: Optional[str] = Field("logs/app.log", env="LOG_FILE")
@@ -173,8 +175,8 @@ class RedisSettings(BaseSettings):
     password: Optional[str] = Field(default="", env="REDIS_PASSWORD")
     username: Optional[str] = Field(default="default", env="REDIS_USERNAME")
 
-    # Connection pool settings
-    max_connections: int = Field(default=10, env="REDIS_MAX_CONNECTIONS")
+    # Connection pool settings - Optimized for SiteGround
+    max_connections: int = Field(default=8, env="REDIS_MAX_CONNECTIONS")
     timeout: int = Field(default=5, env="REDIS_TIMEOUT")
     socket_connect_timeout: int = Field(default=5, env="REDIS_SOCKET_CONNECT_TIMEOUT")
     socket_timeout: int = Field(default=5, env="REDIS_SOCKET_TIMEOUT")
