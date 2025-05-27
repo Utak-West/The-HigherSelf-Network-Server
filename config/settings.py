@@ -159,30 +159,155 @@ class ServerSettings(BaseSettings):
 
 
 class RedisSettings(BaseSettings):
-    """Redis configuration."""
+    """Redis configuration for HigherSelf Network Server.
 
-    uri: str = Field("redis://localhost:6379/0", env="REDIS_URI")
-    password: Optional[str] = Field("", env="REDIS_PASSWORD")
-    timeout: int = Field(5, env="REDIS_TIMEOUT")
-    cache_enabled: bool = Field(True, env="REDIS_CACHE_ENABLED")
+    Supports both local Redis instances and Redis Cloud deployments
+    with comprehensive connection management and security features.
+    """
+
+    # Connection settings
+    uri: str = Field(default="redis://localhost:6379/0", env="REDIS_URI")
+    host: str = Field(default="localhost", env="REDIS_HOST")
+    port: int = Field(default=6379, env="REDIS_PORT")
+    database: int = Field(default=0, env="REDIS_DATABASE")
+    password: Optional[str] = Field(default="", env="REDIS_PASSWORD")
+    username: Optional[str] = Field(default="default", env="REDIS_USERNAME")
+
+    # Connection pool settings
+    max_connections: int = Field(default=10, env="REDIS_MAX_CONNECTIONS")
+    timeout: int = Field(default=5, env="REDIS_TIMEOUT")
+    socket_connect_timeout: int = Field(default=5, env="REDIS_SOCKET_CONNECT_TIMEOUT")
+    socket_timeout: int = Field(default=5, env="REDIS_SOCKET_TIMEOUT")
+    health_check_interval: int = Field(default=30, env="REDIS_HEALTH_CHECK_INTERVAL")
+
+    # Security settings
+    ssl_enabled: bool = Field(default=False, env="REDIS_SSL")
+    ssl_cert_reqs: str = Field(default="required", env="REDIS_SSL_CERT_REQS")
+    ssl_ca_certs: Optional[str] = Field(default=None, env="REDIS_SSL_CA_CERTS")
+    ssl_certfile: Optional[str] = Field(default=None, env="REDIS_SSL_CERTFILE")
+    ssl_keyfile: Optional[str] = Field(default=None, env="REDIS_SSL_KEYFILE")
+
+    # Feature flags
+    cache_enabled: bool = Field(default=True, env="REDIS_CACHE_ENABLED")
+    pubsub_enabled: bool = Field(default=True, env="REDIS_PUBSUB_ENABLED")
+    session_store_enabled: bool = Field(default=True, env="REDIS_SESSION_STORE_ENABLED")
+    rate_limiting_enabled: bool = Field(default=True, env="REDIS_RATE_LIMITING_ENABLED")
+
+    # Performance settings
+    retry_on_timeout: bool = Field(default=True, env="REDIS_RETRY_ON_TIMEOUT")
+    retry_on_error: bool = Field(default=True, env="REDIS_RETRY_ON_ERROR")
+    max_retries: int = Field(default=3, env="REDIS_MAX_RETRIES")
+    retry_delay: float = Field(default=0.5, env="REDIS_RETRY_DELAY")
+
+    # Monitoring settings
+    metrics_enabled: bool = Field(default=True, env="REDIS_METRICS_ENABLED")
+    slow_query_threshold: float = Field(default=1.0, env="REDIS_SLOW_QUERY_THRESHOLD")
 
     if PYDANTIC_V2:
 
-        @field_validator("timeout")
-        def validate_timeout(cls, v):
-            """Validate timeout value."""
+        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
+        def validate_timeout_values(cls, v):
+            """Validate timeout values."""
             if v < 1:
                 raise ValueError("Timeout must be at least 1 second")
+            return v
+
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1 <= v <= 65535:
+                raise ValueError("Port must be between 1 and 65535")
+            return v
+
+        @field_validator("max_connections")
+        def validate_max_connections(cls, v):
+            """Validate max connections."""
+            if v < 1:
+                raise ValueError("Max connections must be at least 1")
+            return v
+
+        @field_validator("max_retries")
+        def validate_max_retries(cls, v):
+            """Validate max retries."""
+            if v < 0:
+                raise ValueError("Max retries cannot be negative")
             return v
 
     else:
 
-        @field_validator("timeout")
-        def validate_timeout(cls, v):
-            """Validate timeout value."""
+        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
+        def validate_timeout_values(cls, v):
+            """Validate timeout values."""
             if v < 1:
                 raise ValueError("Timeout must be at least 1 second")
             return v
+
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1 <= v <= 65535:
+                raise ValueError("Port must be between 1 and 65535")
+            return v
+
+        @field_validator("max_connections")
+        def validate_max_connections(cls, v):
+            """Validate max connections."""
+            if v < 1:
+                raise ValueError("Max connections must be at least 1")
+            return v
+
+        @field_validator("max_retries")
+        def validate_max_retries(cls, v):
+            """Validate max retries."""
+            if v < 0:
+                raise ValueError("Max retries cannot be negative")
+            return v
+
+    def get_connection_url(self) -> str:
+        """Generate Redis connection URL from individual components."""
+        if self.uri and self.uri != "redis://localhost:6379/0":
+            return self.uri
+
+        # Build URL from components
+        scheme = "rediss" if self.ssl_enabled else "redis"
+        auth = ""
+        if self.password:
+            if self.username and self.username != "default":
+                auth = f"{self.username}:{self.password}@"
+            else:
+                auth = f":{self.password}@"
+
+        return f"{scheme}://{auth}{self.host}:{self.port}/{self.database}"
+
+    def get_connection_kwargs(self) -> Dict[str, Any]:
+        """Get connection kwargs for Redis client."""
+        kwargs = {
+            "decode_responses": True,
+            "socket_timeout": self.socket_timeout,
+            "socket_connect_timeout": self.socket_connect_timeout,
+            "max_connections": self.max_connections,
+            "health_check_interval": self.health_check_interval,
+            "retry_on_timeout": self.retry_on_timeout,
+            "retry_on_error": self.retry_on_error,
+        }
+
+        if self.password:
+            kwargs["password"] = self.password
+
+        if self.username and self.username != "default":
+            kwargs["username"] = self.username
+
+        if self.ssl_enabled:
+            kwargs["ssl"] = True
+            kwargs["ssl_cert_reqs"] = self.ssl_cert_reqs
+            if self.ssl_ca_certs:
+                kwargs["ssl_ca_certs"] = self.ssl_ca_certs
+            if self.ssl_certfile:
+                kwargs["ssl_certfile"] = self.ssl_certfile
+            if self.ssl_keyfile:
+                kwargs["ssl_keyfile"] = self.ssl_keyfile
+
+        return kwargs
 
 
 class IntegrationSettings(BaseSettings):

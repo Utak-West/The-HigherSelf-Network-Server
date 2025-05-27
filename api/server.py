@@ -28,6 +28,8 @@ from api.mcp_tools_router import router as mcp_tools_router
 from api.openml_router import router as openml_router
 from api.rag_router import router as rag_router
 from api.routes.agent_tasks import router as agent_tasks_router
+from api.routes.barter import router as barter_router
+from api.routes.redis_health import router as redis_health_router
 from api.softr_router import router as softr_router
 from api.video_router import router as video_router
 from api.voice_router import router as voice_router
@@ -83,6 +85,8 @@ app.include_router(huggingface_router)
 app.include_router(agent_tasks_router)
 app.include_router(softr_router)
 app.include_router(capcut_pipit_router)
+app.include_router(redis_health_router)  # Added Redis health monitoring router
+app.include_router(barter_router)  # Added Barter system router
 app.include_router(
     mcp_tools_router
 )  # Added MCP tools router for Context7 and other MCP services
@@ -400,6 +404,34 @@ async def health_check(request: Request):  # Added request
     if not huggingface_status and overall_status == "healthy":
         overall_status = "degraded"
 
+    # Check Redis service
+    redis_status = {"status": "unavailable", "error": "Redis service not available"}
+    try:
+        from services.redis_service import redis_service
+
+        redis_health = redis_service.health_check()
+        redis_status = {
+            "status": redis_health.get("status", "unknown"),
+            "latency_ms": (
+                redis_health.get("latency", 0) * 1000
+                if redis_health.get("latency")
+                else None
+            ),
+            "last_check": redis_health.get("last_check"),
+            "enabled": True,
+        }
+
+        # If Redis is not healthy, system is degraded
+        if redis_health.get("status") != "healthy" and overall_status == "healthy":
+            overall_status = "degraded"
+
+    except Exception as e:
+        logger.error(f"Error checking Redis service: {e}")
+        redis_status = {"status": "error", "error": str(e), "enabled": False}
+        # Redis failure doesn't make system unhealthy, but degraded
+        if overall_status == "healthy":
+            overall_status = "degraded"
+
     return {
         "status": overall_status,
         "version": "1.0.0",
@@ -411,6 +443,7 @@ async def health_check(request: Request):  # Added request
         "integrations": integration_status,
         "rag_services": rag_services_status,
         "huggingface_service": huggingface_status,
+        "redis_service": redis_status,
     }
 
 
