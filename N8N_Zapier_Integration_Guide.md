@@ -1,6 +1,6 @@
-# The HigherSelf Network Server - N8N & Zapier Integration Guide
+# The HigherSelf Network Server - Comprehensive Zapier Ecosystem Guide
 
-This guide provides comprehensive instructions for integrating The HigherSelf Network Server with N8N and Zapier to build automation agents that complement your existing agent architecture while maintaining Notion as the central hub.
+This guide provides comprehensive instructions for implementing a complete Zapier ecosystem for The HigherSelf Network Server, including Tables, Interfaces, Chatbots, Canvases, and Agents across three core areas: Connection Practice Components, Seven Space Integration, and Network Core Functions.
 
 ## Table of Contents
 
