@@ -26,7 +26,7 @@ from agents.agent_personalities import Sage  # CommunityEngagementAgent
 from agents.agent_personalities import Solari  # BookingAgent
 from agents.agent_personalities import Zevi  # AudienceSegmentationAgent
 from agents.agent_personalities import (
-    GraceOrchestrator,
+    GraceFields,
     create_agent_collective,
     create_grace_orchestrator,
 )
@@ -62,7 +62,7 @@ __all__ = [
     "Zevi",  # AudienceSegmentationAgent
     "Atlas",  # RAGAgent
     # Orchestration
-    "GraceOrchestrator",
+    "GraceFields",
     "create_agent_collective",
     "create_grace_orchestrator",
 ]

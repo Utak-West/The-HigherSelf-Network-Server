@@ -108,6 +108,17 @@ class RedisService:
 
     def _initialize(self):
         """Initialize Redis connections with connection pooling."""
+        # Check if we're in testing mode
+        testing_mode = os.environ.get("TESTING_MODE", "false").lower() == "true"
+        if testing_mode:
+            logger.info("Redis service running in testing mode - connections disabled")
+            self._health_status = {
+                "status": "testing",
+                "last_check": time.time(),
+                "errors": [],
+            }
+            return
+
         try:
             redis_uri = os.environ.get("REDIS_URI", "redis://localhost:6379/0")
             redis_password = os.environ.get("REDIS_PASSWORD", "")

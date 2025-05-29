@@ -8,21 +8,6 @@ used throughout the system, aligned with the 16-database Notion structure.
 # Audience segmentation models
 from models.audience_models import *
 
-# Barter system models
-from models.barter_models import (
-    BarterListing,
-    BarterMatch,
-    BarterProfile,
-    BarterRequest,
-    BarterStatus,
-    BarterTransaction,
-    CulturalAdaptation,
-    CulturalRegion,
-    Location,
-    ServiceCategory,
-    SkillLevel,
-)
-
 # Base models and enums
 from models.base import (
     AgentCapability,
@@ -45,6 +30,9 @@ from models.capcut_models import *
 
 # Content models
 from models.content_models import *
+
+# Customer service models
+from models.customer_service_models import *
 
 # Core Notion database models
 from models.notion_db_models import (
@@ -76,6 +64,22 @@ from models.video_models import *
 # Video transaction models
 from models.video_transaction_models import *
 
+# Barter system models (commented out - module not yet implemented)
+# from models.barter_models import (
+#     BarterListing,
+#     BarterMatch,
+#     BarterProfile,
+#     BarterRequest,
+#     BarterStatus,
+#     BarterTransaction,
+#     CulturalAdaptation,
+#     CulturalRegion,
+#     Location,
+#     ServiceCategory,
+#     SkillLevel,
+# )
+
+
 __all__ = [
     "EntityType",
     "ApiPlatform",
@@ -101,16 +105,16 @@ __all__ = [
     "AgentCommunication",
     "Task",
     "AIContentReview",
-    # Barter system models
-    "ServiceCategory",
-    "SkillLevel",
-    "BarterStatus",
-    "CulturalRegion",
-    "Location",
-    "CulturalAdaptation",
-    "BarterListing",
-    "BarterRequest",
-    "BarterMatch",
-    "BarterTransaction",
-    "BarterProfile",
+    # Barter system models (commented out - module not yet implemented)
+    # "ServiceCategory",
+    # "SkillLevel",
+    # "BarterStatus",
+    # "CulturalRegion",
+    # "Location",
+    # "CulturalAdaptation",
+    # "BarterListing",
+    # "BarterRequest",
+    # "BarterMatch",
+    # "BarterTransaction",
+    # "BarterProfile",
 ]
