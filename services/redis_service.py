@@ -603,6 +603,122 @@ class RedisService:
             raise e
 
     @with_async_retry(max_retries=3)
+    async def async_exists(self, key: str) -> bool:
+        """Check if a key exists (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.exists(key)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return bool(result)
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
+    async def async_keys(self, pattern: str) -> list:
+        """Get keys matching a pattern (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.keys(pattern)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return [key.decode() if isinstance(key, bytes) else key for key in result]
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
+    async def async_ttl(self, key: str) -> int:
+        """Get the time to live for a key (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.ttl(key)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    # Set operations
+    @with_async_retry(max_retries=3)
+    async def async_sadd(self, key: str, *values) -> int:
+        """Add members to a set (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.sadd(key, *values)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
+    async def async_srem(self, key: str, *values) -> int:
+        """Remove members from a set (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.srem(key, *values)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
+    async def async_scard(self, key: str) -> int:
+        """Get the number of members in a set (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.scard(key)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return result
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
+    async def async_smembers(self, key: str) -> set:
+        """Get all members of a set (async)."""
+        start_time = time.time()
+        try:
+            client = await self.get_async_client()
+            result = await client.smembers(key)
+            self._metrics["operations"] += 1
+            latency = time.time() - start_time
+            self._metrics["latency_sum"] += latency
+            self._metrics["latency_count"] += 1
+            return {
+                member.decode() if isinstance(member, bytes) else member
+                for member in result
+            }
+        except Exception as e:
+            self._metrics["errors"] += 1
+            raise e
+
+    @with_async_retry(max_retries=3)
     async def subscribe(self, channel: str) -> aioredis.client.PubSub:
         """Subscribe to a channel and return a pubsub instance."""
         start_time = time.time()
@@ -696,4 +812,13 @@ class RedisService:
 
 
 # For easy import and use throughout the application
-redis_service = RedisService()
+# Use lazy initialization to avoid connection errors during import
+redis_service = None
+
+
+def get_redis_service() -> RedisService:
+    """Get the global Redis service instance with lazy initialization."""
+    global redis_service
+    if redis_service is None:
+        redis_service = RedisService()
+    return redis_service

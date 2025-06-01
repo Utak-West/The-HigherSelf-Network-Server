@@ -40,6 +40,7 @@ from api.server import start as start_api
 # Import configuration and utilities
 from config.settings import settings
 from services.ai_router import AIRouter
+from services.graphiti_service import graphiti_service
 from services.integration_manager import get_integration_manager  # Changed
 from services.notion_service import NotionService
 from services.redis_service import redis_service
@@ -305,6 +306,25 @@ async def async_initialization(message_bus=None):
     except Exception as e:
         logger.error(f"Failed to initialize Redis service: {e}")
         logger.warning("Continuing without Redis - some features may be unavailable")
+
+    # Initialize Graphiti service
+    try:
+        if os.environ.get("GRAPHITI_ENABLED", "true").lower() == "true":
+            success = await graphiti_service.initialize()
+            if success:
+                logger.info(
+                    "Graphiti temporal knowledge graph initialized successfully"
+                )
+                logger.info("Enhanced agent memory capabilities enabled")
+            else:
+                logger.warning(
+                    "Graphiti initialization failed - continuing without temporal knowledge graph"
+                )
+        else:
+            logger.info("Graphiti service disabled via configuration")
+    except Exception as e:
+        logger.error(f"Failed to initialize Graphiti service: {e}")
+        logger.warning("Continuing without Graphiti - agent memory will be limited")
 
     # First initialize integrations to ensure Notion connection is established
     try:

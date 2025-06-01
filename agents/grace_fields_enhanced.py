@@ -21,8 +21,18 @@ from pydantic import BaseModel, Field
 
 from agents.agent_personalities import GraceFields
 from agents.base_agent import BaseAgent
+from models.graphiti_models import (
+    GraphitiAgentName,
+    GraphitiBusinessContext,
+    GraphitiEpisodeType,
+)
 from services.escalation_service import EscalationService
+from services.graphiti_service import graphiti_service
 from services.notion_service import NotionService
+from utils.graphiti_utils import (
+    create_episode_from_agent_interaction,
+    create_structured_episode,
+)
 from utils.message_bus import MessageBus
 
 
@@ -134,6 +144,9 @@ class EnhancedGraceFields(GraceFields):
         }
 
         logger.info("Enhanced Grace Fields customer service orchestrator initialized")
+
+        # Initialize Graphiti integration
+        self.graphiti_enabled = self._check_graphiti_availability()
 
     def _initialize_coordination_patterns(self) -> Dict[str, CoordinationPattern]:
         """Initialize multi-agent coordination patterns."""
@@ -1154,3 +1167,177 @@ class EnhancedGraceFields(GraceFields):
         except Exception as e:
             logger.error(f"Error retrieving customer history for {customer_email}: {e}")
             return []
+
+    def _check_graphiti_availability(self) -> bool:
+        """Check if Graphiti service is available and enabled."""
+        try:
+            import os
+
+            return (
+                os.environ.get("GRAPHITI_ENABLED", "true").lower() == "true"
+                and graphiti_service is not None
+            )
+        except Exception as e:
+            logger.warning(f"Graphiti availability check failed: {e}")
+            return False
+
+    async def _add_interaction_to_graphiti(
+        self,
+        request: CustomerServiceRequest,
+        interaction_type: str = "customer_service_request",
+        additional_context: Optional[Dict[str, Any]] = None,
+    ) -> Optional[str]:
+        """Add customer interaction to Graphiti knowledge graph."""
+        if not self.graphiti_enabled:
+            return None
+
+        try:
+            # Convert business entity to Graphiti business context
+            business_context_map = {
+                CustomerServiceBusinessEntity.ART_GALLERY: "art_gallery",
+                CustomerServiceBusinessEntity.WELLNESS_CENTER: "wellness_center",
+                CustomerServiceBusinessEntity.CONSULTANCY: "consultancy",
+                CustomerServiceBusinessEntity.INTERIOR_DESIGN: "interior_design",
+                CustomerServiceBusinessEntity.LUXURY_RENOVATIONS: "luxury_renovations",
+                CustomerServiceBusinessEntity.EXECUTIVE_WELLNESS: "executive_wellness",
+                CustomerServiceBusinessEntity.CORPORATE_WELLNESS: "corporate_wellness",
+            }
+
+            business_context = business_context_map.get(
+                request.business_entity, "consultancy"
+            )
+
+            # Create episode content
+            episode_content = f"""
+Customer Service Interaction:
+- Customer: {request.customer_email}
+- Customer Name: {request.customer_name or 'Not provided'}
+- Business Entity: {request.business_entity.value}
+- Issue Category: {request.issue_category.value}
+- Severity Level: {request.severity_level.value}
+- Priority: {request.priority}
+- Description: {request.description}
+- Customer Sentiment: {request.customer_sentiment}
+- Assigned Agents: {', '.join(request.assigned_agents)}
+- Escalated: {request.escalated}
+- Resolved: {request.resolved}
+- Workflow ID: {request.workflow_id or 'None'}
+"""
+
+            if additional_context:
+                episode_content += f"\nAdditional Context:\n{additional_context}"
+
+            # Add episode to Graphiti
+            episode_uuid = await graphiti_service.add_episode(
+                name=f"Grace_CustomerService_{request.request_id}",
+                episode_body=episode_content,
+                source="text",
+                source_description=f"Grace Fields {interaction_type}",
+                agent_name="Grace",
+                business_context=business_context,
+            )
+
+            if episode_uuid:
+                logger.info(f"Added customer interaction to Graphiti: {episode_uuid}")
+                return episode_uuid
+            else:
+                logger.warning("Failed to add interaction to Graphiti")
+                return None
+
+        except Exception as e:
+            logger.error(f"Error adding interaction to Graphiti: {e}")
+            return None
+
+    async def _get_customer_context_from_graphiti(
+        self, customer_email: str, business_context: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Retrieve customer context from Graphiti knowledge graph."""
+        if not self.graphiti_enabled:
+            return {}
+
+        try:
+            # Search for customer-related information
+            search_query = f"customer {customer_email}"
+            if business_context:
+                search_query += f" {business_context}"
+
+            search_results = await graphiti_service.search(
+                query=search_query,
+                agent_name="Grace",
+                business_context=business_context,
+                limit=10,
+            )
+
+            # Get Grace's agent context
+            agent_context = await graphiti_service.get_agent_context(
+                agent_name="Grace", business_context=business_context, limit=15
+            )
+
+            return {
+                "search_results": [result.model_dump() for result in search_results],
+                "agent_context": agent_context,
+                "customer_email": customer_email,
+                "business_context": business_context,
+                "retrieved_at": datetime.now().isoformat(),
+            }
+
+        except Exception as e:
+            logger.error(f"Error retrieving customer context from Graphiti: {e}")
+            return {}
+
+    async def _enhance_request_with_graphiti_context(
+        self, request: CustomerServiceRequest
+    ) -> CustomerServiceRequest:
+        """Enhance customer service request with Graphiti context."""
+        if not self.graphiti_enabled:
+            return request
+
+        try:
+            # Get business context for Graphiti
+            business_context_map = {
+                CustomerServiceBusinessEntity.ART_GALLERY: "art_gallery",
+                CustomerServiceBusinessEntity.WELLNESS_CENTER: "wellness_center",
+                CustomerServiceBusinessEntity.CONSULTANCY: "consultancy",
+                CustomerServiceBusinessEntity.INTERIOR_DESIGN: "interior_design",
+                CustomerServiceBusinessEntity.LUXURY_RENOVATIONS: "luxury_renovations",
+                CustomerServiceBusinessEntity.EXECUTIVE_WELLNESS: "executive_wellness",
+                CustomerServiceBusinessEntity.CORPORATE_WELLNESS: "corporate_wellness",
+            }
+
+            business_context = business_context_map.get(
+                request.business_entity, "consultancy"
+            )
+
+            # Retrieve customer context
+            context = await self._get_customer_context_from_graphiti(
+                request.customer_email, business_context
+            )
+
+            if context and context.get("search_results"):
+                # Add context to interaction history
+                context_summary = {
+                    "type": "graphiti_context",
+                    "timestamp": datetime.now().isoformat(),
+                    "results_count": len(context["search_results"]),
+                    "key_facts": [
+                        (
+                            result["fact"][:100] + "..."
+                            if len(result["fact"]) > 100
+                            else result["fact"]
+                        )
+                        for result in context["search_results"][:3]
+                    ],
+                }
+
+                request.interaction_history.append(context_summary)
+
+                logger.info(
+                    f"Enhanced request {request.request_id} with "
+                    f"{len(context['search_results'])} Graphiti facts"
+                )
+
+            return request
+
+        except Exception as e:
+            logger.error(f"Error enhancing request with Graphiti context: {e}")
+            return request
