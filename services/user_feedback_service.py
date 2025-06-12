@@ -3,12 +3,14 @@ UserFeedback service integration for The HigherSelf Network Server.
 This service handles user feedback collection and processing while maintaining Notion as the central hub.
 """
 
-import os
 import json
-from typing import Dict, List, Any, Optional, Union
+import os
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
+
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
+
 # Import base service
 from services.base_service import BaseService, ServiceCredentials
 
@@ -347,8 +349,8 @@ class UserFeedbackService(BaseService):
         Returns:
             True if signature is valid, False otherwise
         """
-        import hmac
         import hashlib
+        import hmac
 
         # Convert payload to JSON string
         payload_str = json.dumps(payload, separators=(',', ':'))
@@ -374,8 +376,8 @@ class UserFeedbackService(BaseService):
             Notion page ID if successful, None otherwise
         """
         try:
-            from services.notion_service import NotionService
             from models.notion_db_models import FeedbackSurvey
+            from services.notion_service import NotionService
 
             # Create Notion service
             notion_service = NotionService.from_env()
@@ -416,8 +418,8 @@ class UserFeedbackService(BaseService):
             True if successful, False otherwise
         """
         try:
-            from services.notion_service import NotionService
             from models.notion_db_models import FeedbackSurvey
+            from services.notion_service import NotionService
 
             if not feedback.notion_page_id:
                 logger.warning("Cannot update Notion record: No notion_page_id provided")

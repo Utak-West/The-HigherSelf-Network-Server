@@ -25,13 +25,9 @@ def test_customer_service_models():
     try:
         # Test importing the customer service models
         from models.customer_service_models import (
-            CustomerSentiment,
-            CustomerServiceBusinessEntity,
-            CustomerServiceRequest,
-            IssueCategory,
-            SeverityLevel,
-            WorkflowStatus,
-        )
+            CustomerSentiment, CustomerServiceBusinessEntity,
+            CustomerServiceRequest, IssueCategory, SeverityLevel,
+            WorkflowStatus)
 
         logger.info("✅ Successfully imported customer service models")
 
@@ -69,12 +65,14 @@ def test_grace_fields_classes():
 
     try:
         # Test importing the enhanced Grace Fields classes
-        from agents.grace_fields_enhanced import (
-            CustomerServiceBusinessEntity as GraceBusinessEntity,
-        )
-        from agents.grace_fields_enhanced import CustomerServiceRequest as GraceRequest
-        from agents.grace_fields_enhanced import IssueCategory as GraceIssueCategory
-        from agents.grace_fields_enhanced import SeverityLevel as GraceSeverityLevel
+        from agents.grace_fields_enhanced import \
+            CustomerServiceBusinessEntity as GraceBusinessEntity
+        from agents.grace_fields_enhanced import \
+            CustomerServiceRequest as GraceRequest
+        from agents.grace_fields_enhanced import \
+            IssueCategory as GraceIssueCategory
+        from agents.grace_fields_enhanced import \
+            SeverityLevel as GraceSeverityLevel
 
         logger.info("✅ Successfully imported Grace Fields enhanced classes")
 
@@ -107,12 +105,8 @@ def test_enum_values():
 
     try:
         from models.customer_service_models import (
-            CustomerSentiment,
-            CustomerServiceBusinessEntity,
-            IssueCategory,
-            SeverityLevel,
-            WorkflowStatus,
-        )
+            CustomerSentiment, CustomerServiceBusinessEntity, IssueCategory,
+            SeverityLevel, WorkflowStatus)
 
         # Test business entities
         business_entities = list(CustomerServiceBusinessEntity)

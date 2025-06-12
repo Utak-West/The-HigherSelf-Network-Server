@@ -13,16 +13,10 @@ from langchain.tools import BaseTool
 from agents.langchain_agent import LangChainAgent
 from config.langchain_config import langchain_config
 from tools.analysis_tools import ContentAnalysisTool, LeadQualificationTool
-from tools.communication_tools import (
-    AgentCommunicationTool,
-    TaskCreationTool,
-    WorkflowTriggerTool,
-)
-from tools.notion_tools import (
-    NotionCreatePageTool,
-    NotionQueryTool,
-    NotionUpdatePageTool,
-)
+from tools.communication_tools import (AgentCommunicationTool,
+                                       TaskCreationTool, WorkflowTriggerTool)
+from tools.notion_tools import (NotionCreatePageTool, NotionQueryTool,
+                                NotionUpdatePageTool)
 
 
 class NyraEnhanced(LangChainAgent):

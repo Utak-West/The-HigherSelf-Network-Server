@@ -15,28 +15,12 @@ from loguru import logger
 
 # Import named agent personalities
 from agents import (  # Legacy agent imports (for backwards compatibility); Named agent personalities; Orchestration
-    Atlas,
-    AudienceSegmentationAgent,
-    BookingAgent,
-    CommunityEngagementAgent,
-    ContentLifecycleAgent,
-    Elan,
-    GraceOrchestrator,
-    LeadCaptureAgent,
-    Liora,
-    MarketingCampaignAgent,
-    Nyra,
-    RAGAgent,
-    Ruvo,
-    Sage,
-    Solari,
-    TaskManagementAgent,
-    Zevi,
-    create_agent_collective,
-    create_grace_orchestrator,
-)
+    Atlas, AudienceSegmentationAgent, BookingAgent, CommunityEngagementAgent,
+    ContentLifecycleAgent, Elan, GraceOrchestrator, LeadCaptureAgent, Liora,
+    MarketingCampaignAgent, Nyra, RAGAgent, Ruvo, Sage, Solari,
+    TaskManagementAgent, Zevi, create_agent_collective,
+    create_grace_orchestrator)
 from api.server import start as start_api
-
 # Import configuration and utilities
 from config.settings import settings
 from services.ai_router import AIRouter

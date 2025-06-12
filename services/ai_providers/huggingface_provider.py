@@ -3,18 +3,22 @@ Hugging Face provider implementation for The HigherSelf Network Server.
 This provider integrates with Hugging Face's API while maintaining Notion as the central data hub.
 """
 
-import os
 import json
+import os
+from typing import Any, Dict, List, Optional
+
 import requests
-from typing import Dict, Any, List, Optional
 from loguru import logger
 
-from .base_provider import AIProvider, AIProviderConfig, AICompletionRequest, AICompletionResponse
 from models.huggingface_model_registry import model_registry
+
+from .base_provider import (AICompletionRequest, AICompletionResponse,
+                            AIProvider, AIProviderConfig)
 
 
 class HuggingFaceConfig(AIProviderConfig):
     """Configuration for Hugging Face API integration."""
+
     provider_name: str = "huggingface"
     api_key: str
     default_model: str = "gpt2"
@@ -66,18 +70,21 @@ class HuggingFaceProvider(AIProvider):
             # Make a simple API call to validate credentials
             headers = {"Authorization": f"Bearer {self.api_key}"}
             response = requests.get(
-                f"{self.api_url}{self.default_model}",
-                headers=headers
+                f"{self.api_url}{self.default_model}", headers=headers
             )
 
             if response.status_code == 200:
                 return True
             elif response.status_code == 401 or response.status_code == 403:
-                logger.error(f"Hugging Face API authentication failed: {response.status_code}")
+                logger.error(
+                    f"Hugging Face API authentication failed: {response.status_code}"
+                )
                 return False
             else:
                 # Other errors might not be related to authentication
-                logger.warning(f"Hugging Face API returned status code: {response.status_code}")
+                logger.warning(
+                    f"Hugging Face API returned status code: {response.status_code}"
+                )
                 return True
 
         except Exception as e:
@@ -116,7 +123,9 @@ class HuggingFaceProvider(AIProvider):
         """
         return model_registry.get_all_model_ids()
 
-    async def get_completion(self, request: AICompletionRequest) -> AICompletionResponse:
+    async def get_completion(
+        self, request: AICompletionRequest
+    ) -> AICompletionResponse:
         """
         Get a completion from the Hugging Face provider.
 
@@ -133,7 +142,7 @@ class HuggingFaceProvider(AIProvider):
                     text="Error: Hugging Face provider initialization failed.",
                     provider=self.get_provider_name(),
                     model=request.model or self.default_model,
-                    metadata={"error": "Initialization failed"}
+                    metadata={"error": "Initialization failed"},
                 )
 
         model = request.model or self.default_model
@@ -142,7 +151,7 @@ class HuggingFaceProvider(AIProvider):
         params = {
             "temperature": request.temperature,
             "top_p": request.top_p,
-            "max_length": request.max_tokens
+            "max_length": request.max_tokens,
         }
 
         # Remove None values
@@ -151,15 +160,10 @@ class HuggingFaceProvider(AIProvider):
         try:
             # Make API request
             headers = {"Authorization": f"Bearer {self.api_key}"}
-            payload = {
-                "inputs": request.prompt,
-                **params
-            }
+            payload = {"inputs": request.prompt, **params}
 
             response = requests.post(
-                f"{self.api_url}{model}",
-                headers=headers,
-                json=payload
+                f"{self.api_url}{model}", headers=headers, json=payload
             )
 
             response.raise_for_status()
@@ -173,10 +177,7 @@ class HuggingFaceProvider(AIProvider):
                 text=generated_text,
                 provider=self.get_provider_name(),
                 model=model,
-                metadata={
-                    "raw_response": result,
-                    "parameters": params
-                }
+                metadata={"raw_response": result, "parameters": params},
             )
 
         except Exception as e:
@@ -187,7 +188,7 @@ class HuggingFaceProvider(AIProvider):
                 text=f"Error: {error_message}",
                 provider=self.get_provider_name(),
                 model=model,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def _format_response(self, response: Any, model: str) -> str:

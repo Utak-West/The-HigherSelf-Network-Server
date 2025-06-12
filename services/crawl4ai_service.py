@@ -5,29 +5,32 @@ This service provides web crawling and content extraction capabilities
 using the Crawl4AI library, with integration to the vector store for RAG.
 """
 
-import os
 import asyncio
-import json
-from typing import List, Dict, Any, Optional, Union, Tuple
-from datetime import datetime
-from uuid import UUID, uuid4
 import hashlib
+import json
+import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+from uuid import UUID, uuid4
+
+# Crawl4AI imports
+from crawl4ai import (AsyncWebCrawler, BrowserConfig, CacheMode,
+                      CrawlerRunConfig)
+from crawl4ai.content_filter_strategy import (BM25ContentFilter,
+                                              PruningContentFilter)
+from crawl4ai.markdown_generation_strategy import DefaultMarkdownGenerator
 from loguru import logger
 from pydantic import BaseModel, Field
 
-# Crawl4AI imports
-from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
-from crawl4ai.content_filter_strategy import PruningContentFilter, BM25ContentFilter
-from crawl4ai.markdown_generation_strategy import DefaultMarkdownGenerator
-
+from knowledge.models import EmbeddingMeta
+from knowledge.semantic_search import get_semantic_search
 # Local imports
 from knowledge.vector_store import get_vector_store
-from knowledge.semantic_search import get_semantic_search
-from knowledge.models import EmbeddingMeta
 
 
 class CrawlConfig(BaseModel):
     """Configuration for web crawling."""
+
     url: str
     cache_mode: str = "enabled"
     headless: bool = True
@@ -47,10 +50,7 @@ class Crawl4AIService:
         self.vector_store = None
         self.semantic_search = None
         self._initialized = False
-        self.browser_config = BrowserConfig(
-            headless=True,
-            verbose=True
-        )
+        self.browser_config = BrowserConfig(headless=True, verbose=True)
         self.crawler = None
 
     async def initialize(self):
@@ -97,40 +97,44 @@ class Crawl4AIService:
             # Configure content filter based on user query
             if config.user_query:
                 content_filter = BM25ContentFilter(
-                    user_query=config.user_query,
-                    bm25_threshold=1.0
+                    user_query=config.user_query, bm25_threshold=1.0
                 )
             else:
                 content_filter = PruningContentFilter(
                     threshold=config.content_filter_threshold,
                     threshold_type="fixed",
-                    min_word_threshold=0
+                    min_word_threshold=0,
                 )
 
             # Configure crawler
             run_config = CrawlerRunConfig(
-                cache_mode=CacheMode.ENABLED if config.cache_mode == "enabled" else CacheMode.BYPASS,
+                cache_mode=(
+                    CacheMode.ENABLED
+                    if config.cache_mode == "enabled"
+                    else CacheMode.BYPASS
+                ),
                 markdown_generator=DefaultMarkdownGenerator(
                     content_filter=content_filter
-                )
+                ),
             )
 
             # Execute crawl
-            result = await self.crawler.arun(
-                url=config.url,
-                config=run_config
-            )
+            result = await self.crawler.arun(url=config.url, config=run_config)
 
             if not result.success:
                 logger.error(f"Failed to crawl {config.url}")
                 return {
                     "success": False,
                     "error": "Failed to crawl the URL",
-                    "url": config.url
+                    "url": config.url,
                 }
 
             # Extract content
-            content = result.markdown.fit_markdown if hasattr(result.markdown, "fit_markdown") else result.markdown
+            content = (
+                result.markdown.fit_markdown
+                if hasattr(result.markdown, "fit_markdown")
+                else result.markdown
+            )
 
             # Extract title from result or use URL as fallback
             title = getattr(result, "title", None)
@@ -146,15 +150,13 @@ class Crawl4AIService:
                     "url": config.url,
                     "title": title,
                     "crawl_time": datetime.now().isoformat(),
-                    **config.metadata
-                }
+                    **config.metadata,
+                },
             )
 
             # Store and embed the content
             embedding_id = await self.semantic_search.store_and_embed_text(
-                text=content,
-                content_type="web_page",
-                metadata=metadata
+                text=content, content_type="web_page", metadata=metadata
             )
 
             if not embedding_id:
@@ -162,7 +164,7 @@ class Crawl4AIService:
                 return {
                     "success": False,
                     "error": "Failed to store embedding",
-                    "url": config.url
+                    "url": config.url,
                 }
 
             logger.info(f"Successfully crawled and stored {config.url}: {embedding_id}")
@@ -172,16 +174,12 @@ class Crawl4AIService:
                 "url": config.url,
                 "title": result.title,
                 "embedding_id": str(embedding_id),
-                "content_length": len(content)
+                "content_length": len(content),
             }
 
         except Exception as e:
             logger.error(f"Error during crawl and store for {config.url}: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "url": config.url
-            }
+            return {"success": False, "error": str(e), "url": config.url}
 
     async def deep_crawl_and_store(self, config: CrawlConfig) -> Dict[str, Any]:
         """
@@ -200,39 +198,39 @@ class Crawl4AIService:
             # Configure content filter
             if config.user_query:
                 content_filter = BM25ContentFilter(
-                    user_query=config.user_query,
-                    bm25_threshold=1.0
+                    user_query=config.user_query, bm25_threshold=1.0
                 )
             else:
                 content_filter = PruningContentFilter(
                     threshold=config.content_filter_threshold,
                     threshold_type="fixed",
-                    min_word_threshold=0
+                    min_word_threshold=0,
                 )
 
             # Configure crawler for deep crawl
             run_config = CrawlerRunConfig(
-                cache_mode=CacheMode.ENABLED if config.cache_mode == "enabled" else CacheMode.BYPASS,
+                cache_mode=(
+                    CacheMode.ENABLED
+                    if config.cache_mode == "enabled"
+                    else CacheMode.BYPASS
+                ),
                 markdown_generator=DefaultMarkdownGenerator(
                     content_filter=content_filter
-                )
+                ),
             )
 
             # Note: deep_crawl parameter is not supported in the current version
             # We'll implement our own breadth-first crawling
 
             # Execute deep crawl
-            results = await self.crawler.arun_many(
-                urls=[config.url],
-                config=run_config
-            )
+            results = await self.crawler.arun_many(urls=[config.url], config=run_config)
 
             if not results:
                 logger.error(f"Failed to deep crawl {config.url}")
                 return {
                     "success": False,
                     "error": "Failed to crawl the URL",
-                    "url": config.url
+                    "url": config.url,
                 }
 
             # Store each page
@@ -242,7 +240,11 @@ class Crawl4AIService:
                     continue
 
                 # Extract content
-                content = result.markdown.fit_markdown if hasattr(result.markdown, "fit_markdown") else result.markdown
+                content = (
+                    result.markdown.fit_markdown
+                    if hasattr(result.markdown, "fit_markdown")
+                    else result.markdown
+                )
 
                 # Create metadata
                 metadata = EmbeddingMeta(
@@ -254,41 +256,38 @@ class Crawl4AIService:
                         "title": result.title,
                         "crawl_time": datetime.now().isoformat(),
                         "parent_url": config.url,
-                        **config.metadata
-                    }
+                        **config.metadata,
+                    },
                 )
 
                 # Store and embed the content
                 embedding_id = await self.semantic_search.store_and_embed_text(
-                    text=content,
-                    content_type="web_page",
-                    metadata=metadata
+                    text=content, content_type="web_page", metadata=metadata
                 )
 
                 if embedding_id:
                     embedding_ids.append(str(embedding_id))
 
-            logger.info(f"Successfully deep crawled {config.url}: {len(embedding_ids)} pages stored")
+            logger.info(
+                f"Successfully deep crawled {config.url}: {len(embedding_ids)} pages stored"
+            )
 
             return {
                 "success": True,
                 "url": config.url,
                 "pages_crawled": len(results),
                 "pages_stored": len(embedding_ids),
-                "embedding_ids": embedding_ids
+                "embedding_ids": embedding_ids,
             }
 
         except Exception as e:
             logger.error(f"Error during deep crawl and store for {config.url}: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "url": config.url
-            }
+            return {"success": False, "error": str(e), "url": config.url}
 
 
 # Singleton instance
 _crawl4ai_service = None
+
 
 async def get_crawl4ai_service() -> Crawl4AIService:
     """Get or create the Crawl4AI service singleton."""

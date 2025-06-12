@@ -21,18 +21,13 @@ from pydantic import BaseModel, Field
 
 from agents.agent_personalities import GraceFields
 from agents.base_agent import BaseAgent
-from models.graphiti_models import (
-    GraphitiAgentName,
-    GraphitiBusinessContext,
-    GraphitiEpisodeType,
-)
+from models.graphiti_models import (GraphitiAgentName, GraphitiBusinessContext,
+                                    GraphitiEpisodeType)
 from services.escalation_service import EscalationService
 from services.graphiti_service import graphiti_service
 from services.notion_service import NotionService
-from utils.graphiti_utils import (
-    create_episode_from_agent_interaction,
-    create_structured_episode,
-)
+from utils.graphiti_utils import (create_episode_from_agent_interaction,
+                                  create_structured_episode)
 from utils.message_bus import MessageBus
 
 

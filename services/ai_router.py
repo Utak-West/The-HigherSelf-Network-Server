@@ -4,18 +4,14 @@ This service routes AI requests to the appropriate provider while maintaining No
 """
 
 import os
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
 from loguru import logger
 from pydantic import BaseModel
 
-from services.ai_providers import (
-    AIProvider,
-    AICompletionRequest,
-    AICompletionResponse,
-    OpenAIProvider,
-    AnthropicProvider,
-    HuggingFaceProvider
-)
+from services.ai_providers import (AICompletionRequest, AICompletionResponse,
+                                   AIProvider, AnthropicProvider,
+                                   HuggingFaceProvider, OpenAIProvider)
 
 # Import mock provider for testing
 try:
@@ -27,6 +23,7 @@ except ImportError:
 
 class AIRouterConfig(BaseModel):
     """Configuration for the AI Router."""
+
     default_provider: str = "openai"
     default_model: Optional[str] = None
     openai_api_key: Optional[str] = None
@@ -85,7 +82,9 @@ class AIRouter:
 
             # Check if at least one provider is available
             if not self.providers:
-                logger.warning("No AI providers could be initialized. Using mock provider for testing.")
+                logger.warning(
+                    "No AI providers could be initialized. Using mock provider for testing."
+                )
 
                 # Use mock provider as fallback
                 if MockAIProvider:
@@ -98,24 +97,30 @@ class AIRouter:
                         logger.error("Failed to initialize mock provider")
                         return False
                 else:
-                    logger.error("No AI providers could be initialized and mock provider is not available.")
+                    logger.error(
+                        "No AI providers could be initialized and mock provider is not available."
+                    )
                     return False
 
             # Ensure default provider is available
             if self.default_provider not in self.providers:
                 self.default_provider = next(iter(self.providers.keys()))
-                logger.warning(f"Default provider not available. Using {self.default_provider} instead.")
+                logger.warning(
+                    f"Default provider not available. Using {self.default_provider} instead."
+                )
 
             self.initialized = True
-            logger.info(f"AI Router initialized with providers: {', '.join(self.providers.keys())}")
+            logger.info(
+                f"AI Router initialized with providers: {', '.join(self.providers.keys())}"
+            )
             return True
         except Exception as e:
             logger.error(f"Error initializing AI Router: {e}")
             return False
 
-    async def get_completion(self,
-                           request: AICompletionRequest,
-                           provider_name: Optional[str] = None) -> AICompletionResponse:
+    async def get_completion(
+        self, request: AICompletionRequest, provider_name: Optional[str] = None
+    ) -> AICompletionResponse:
         """
         Get a completion from the appropriate AI provider.
 
@@ -133,7 +138,7 @@ class AIRouter:
                     text="Error: AI Router initialization failed. Check your API keys and configuration.",
                     provider="none",
                     model="none",
-                    metadata={"error": "Initialization failed"}
+                    metadata={"error": "Initialization failed"},
                 )
 
         # Determine which provider to use
@@ -146,17 +151,21 @@ class AIRouter:
                 text="Error: No AI providers available. Check your API keys and configuration.",
                 provider="none",
                 model="none",
-                metadata={"error": "No providers available"}
+                metadata={"error": "No providers available"},
             )
 
         if provider_name not in self.providers:
-            logger.warning(f"Requested provider {provider_name} not available. Using {self.default_provider}.")
+            logger.warning(
+                f"Requested provider {provider_name} not available. Using {self.default_provider}."
+            )
             provider_name = self.default_provider
 
             # If default provider is also not available, use the first available provider
             if provider_name not in self.providers:
                 provider_name = next(iter(self.providers.keys()))
-                logger.warning(f"Default provider not available. Using {provider_name} instead.")
+                logger.warning(
+                    f"Default provider not available. Using {provider_name} instead."
+                )
 
         provider = self.providers[provider_name]
 
@@ -169,11 +178,21 @@ class AIRouter:
             # Check for task-specific keywords
             task_keywords = {
                 "summarize": ["summarize", "summary", "condense", "shorten"],
-                "translate": ["translate", "translation", "convert to", "in french", "in spanish"],
+                "translate": [
+                    "translate",
+                    "translation",
+                    "convert to",
+                    "in french",
+                    "in spanish",
+                ],
                 "sentiment": ["sentiment", "feeling", "emotion", "attitude", "opinion"],
-                "question": ["answer this question", "find in the text", "extract from passage"],
+                "question": [
+                    "answer this question",
+                    "find in the text",
+                    "extract from passage",
+                ],
                 "classify": ["classify", "categorize", "label", "tag", "identify type"],
-                "analyze": ["analyze", "analysis", "examine", "investigate"]
+                "analyze": ["analyze", "analysis", "examine", "investigate"],
             }
 
             for task, keywords in task_keywords.items():
@@ -188,7 +207,7 @@ class AIRouter:
             selected_model = self.select_model_for_task(
                 provider_name=provider_name,
                 task_type=task_type,
-                content_length=content_length
+                content_length=content_length,
             )
 
             if selected_model:
@@ -198,7 +217,9 @@ class AIRouter:
 
         # Get completion from the selected provider
         try:
-            logger.info(f"Routing completion request to {provider_name} provider with model {request.model or 'default'}")
+            logger.info(
+                f"Routing completion request to {provider_name} provider with model {request.model or 'default'}"
+            )
             response = await provider.get_completion(request)
             return response
         except Exception as e:
@@ -211,14 +232,16 @@ class AIRouter:
                     logger.info(f"Falling back to {self.default_provider} provider")
                     return await fallback_provider.get_completion(request)
                 except Exception as fallback_error:
-                    logger.error(f"Fallback to {self.default_provider} also failed: {fallback_error}")
+                    logger.error(
+                        f"Fallback to {self.default_provider} also failed: {fallback_error}"
+                    )
 
             # Return error response
             return AICompletionResponse(
                 text=f"Error: {str(e)}",
                 provider=provider_name,
                 model=request.model or "unknown",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def get_available_providers(self) -> List[str]:
@@ -269,8 +292,13 @@ class AIRouter:
             if request.model:
                 # If model is a Hugging Face model and provider is available, use it
                 try:
-                    from models.huggingface_model_registry import model_registry
-                    if request.model in model_registry.get_all_model_ids() and "huggingface" in self.providers:
+                    from models.huggingface_model_registry import \
+                        model_registry
+
+                    if (
+                        request.model in model_registry.get_all_model_ids()
+                        and "huggingface" in self.providers
+                    ):
                         return "huggingface"
                 except ImportError:
                     # Model registry not available, fall back to other selection methods
@@ -287,8 +315,18 @@ class AIRouter:
             prompt_lower = request.prompt.lower()
 
             # For complex reasoning, creative, or analytical tasks, prefer Claude or GPT
-            complex_keywords = ["analyze", "explain", "compare", "evaluate", "synthesize",
-                               "reason", "critique", "assess", "review", "examine"]
+            complex_keywords = [
+                "analyze",
+                "explain",
+                "compare",
+                "evaluate",
+                "synthesize",
+                "reason",
+                "critique",
+                "assess",
+                "review",
+                "examine",
+            ]
             if any(keyword in prompt_lower for keyword in complex_keywords):
                 if "anthropic" in self.providers:
                     return "anthropic"  # Claude excels at complex reasoning
@@ -298,19 +336,39 @@ class AIRouter:
             # For specific NLP tasks, prefer Hugging Face specialized models
             nlp_tasks = {
                 "summarize": ["summarize", "summary", "condense", "shorten"],
-                "translate": ["translate", "translation", "convert to", "in french", "in spanish"],
+                "translate": [
+                    "translate",
+                    "translation",
+                    "convert to",
+                    "in french",
+                    "in spanish",
+                ],
                 "sentiment": ["sentiment", "feeling", "emotion", "attitude", "opinion"],
-                "question": ["answer this question", "find in the text", "extract from passage"],
-                "classify": ["classify", "categorize", "label", "tag", "identify type"]
+                "question": [
+                    "answer this question",
+                    "find in the text",
+                    "extract from passage",
+                ],
+                "classify": ["classify", "categorize", "label", "tag", "identify type"],
             }
 
             # Check if prompt contains any NLP task keywords
             for task, keywords in nlp_tasks.items():
-                if any(keyword in prompt_lower for keyword in keywords) and "huggingface" in self.providers:
+                if (
+                    any(keyword in prompt_lower for keyword in keywords)
+                    and "huggingface" in self.providers
+                ):
                     return "huggingface"  # Hugging Face has specialized models for these tasks
 
             # For creative content generation
-            creative_keywords = ["creative", "story", "poem", "write", "generate", "imagine"]
+            creative_keywords = [
+                "creative",
+                "story",
+                "poem",
+                "write",
+                "generate",
+                "imagine",
+            ]
             if any(keyword in prompt_lower for keyword in creative_keywords):
                 if "openai" in self.providers:
                     return "openai"  # GPT is good at creative content
@@ -323,9 +381,13 @@ class AIRouter:
             logger.error(f"Error in provider selection: {e}")
             return self.default_provider
 
-    def select_model_for_task(self, provider_name: str, task_type: str,
-                             content_length: Optional[int] = None,
-                             performance_priority: str = "balanced") -> Optional[str]:
+    def select_model_for_task(
+        self,
+        provider_name: str,
+        task_type: str,
+        content_length: Optional[int] = None,
+        performance_priority: str = "balanced",
+    ) -> Optional[str]:
         """
         Select the best model for a specific task and provider.
 
@@ -350,7 +412,7 @@ class AIRouter:
                     "sentiment": "sentiment-analysis",
                     "question": "question-answering",
                     "generate": "text-generation",
-                    "classify": "text-classification"
+                    "classify": "text-classification",
                 }
 
                 hf_task = task_mapping.get(task_type, "text-generation")
@@ -359,20 +421,20 @@ class AIRouter:
                 size_mapping = {
                     "speed": "small",
                     "balanced": "medium",
-                    "quality": "large"
+                    "quality": "large",
                 }
 
                 speed_mapping = {
                     "speed": "fast",
                     "balanced": "medium",
-                    "quality": "slow"
+                    "quality": "slow",
                 }
 
                 # Select model from registry
                 model_metadata = model_registry.select_model_for_task(
                     task=hf_task,
                     size_preference=size_mapping.get(performance_priority, "medium"),
-                    speed_preference=speed_mapping.get(performance_priority, "medium")
+                    speed_preference=speed_mapping.get(performance_priority, "medium"),
                 )
 
                 if model_metadata:
@@ -392,7 +454,10 @@ class AIRouter:
 
         # For Anthropic, select based on task complexity
         elif provider_name == "anthropic":
-            if task_type in ["question", "generate", "analyze"] and performance_priority == "quality":
+            if (
+                task_type in ["question", "generate", "analyze"]
+                and performance_priority == "quality"
+            ):
                 return "claude-2"  # Best quality for complex tasks
             else:
                 return "claude-instant-1"  # Faster for most tasks

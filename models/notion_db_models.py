@@ -13,19 +13,10 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field, validator
 
-from models.base import (
-    AgentCapability,
-    AgentStatus,
-    ApiPlatform,
-    ContentReviewStatus,
-    EntityType,
-    InstanceStatus,
-    IntegrationStatus,
-    NotificationChannel,
-    RuntimeEnvironment,
-    TaskStatus,
-    WorkflowStatus,
-)
+from models.base import (AgentCapability, AgentStatus, ApiPlatform,
+                         ContentReviewStatus, EntityType, InstanceStatus,
+                         IntegrationStatus, NotificationChannel,
+                         RuntimeEnvironment, TaskStatus, WorkflowStatus)
 
 
 class NotionSetupConfig(BaseModel):

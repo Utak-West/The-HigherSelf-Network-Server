@@ -6,7 +6,8 @@ to prevent unintended interactions with third-party services.
 """
 
 import os
-from typing import Dict, Optional, List, Set
+from typing import Dict, List, Optional, Set
+
 
 class TestingMode:
     """
@@ -37,10 +38,21 @@ class TestingMode:
 
         # Default APIs to disable if not specified
         default_apis = [
-            "notion", "openai", "anthropic", "perplexity",
-            "beehiiv", "typeform", "woocommerce", "amelia",
-            "google_calendar", "hubspot", "airtable", "tutorlm",
-            "plaud", "snov", "supabase"
+            "notion",
+            "openai",
+            "anthropic",
+            "perplexity",
+            "beehiiv",
+            "typeform",
+            "woocommerce",
+            "amelia",
+            "google_calendar",
+            "hubspot",
+            "airtable",
+            "tutorlm",
+            "plaud",
+            "snov",
+            "supabase",
         ]
 
         if disabled_apis is None:
@@ -51,7 +63,9 @@ class TestingMode:
         # Set environment flag
         os.environ["TESTING_MODE"] = "1"
 
-        print(f"✅ Testing mode enabled. Disabled APIs: {', '.join(sorted(cls._disabled_apis))}")
+        print(
+            f"✅ Testing mode enabled. Disabled APIs: {', '.join(sorted(cls._disabled_apis))}"
+        )
 
     @classmethod
     def disable_testing_mode(cls):
@@ -95,7 +109,9 @@ class TestingMode:
         cls._disabled_apis.add(api_name.lower())
 
     @classmethod
-    def log_attempted_api_call(cls, api_name: str, endpoint: str, method: str, params: Dict = None):
+    def log_attempted_api_call(
+        cls, api_name: str, endpoint: str, method: str, params: Dict = None
+    ):
         """
         Log attempted API calls during testing mode.
 
@@ -111,7 +127,7 @@ class TestingMode:
                 "endpoint": endpoint,
                 "method": method,
                 "params": params or {},
-                "blocked": api_name.lower() in cls._disabled_apis
+                "blocked": api_name.lower() in cls._disabled_apis,
             }
             cls._api_call_log.append(log_entry)
 
@@ -131,13 +147,16 @@ def enable_testing_mode(disabled_apis: Optional[List[str]] = None):
     """Enable testing mode with specified disabled APIs."""
     TestingMode.enable_testing_mode(disabled_apis)
 
+
 def disable_testing_mode():
     """Disable testing mode."""
     TestingMode.disable_testing_mode()
 
+
 def is_api_disabled(api_name: str) -> bool:
     """Check if an API is disabled."""
     return TestingMode.is_api_disabled(api_name)
+
 
 def is_testing_mode() -> bool:
     """Check if testing mode is enabled."""

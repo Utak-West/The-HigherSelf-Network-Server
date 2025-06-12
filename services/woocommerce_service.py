@@ -3,17 +3,18 @@ WooCommerce integration service for The HigherSelf Network Server.
 This service handles integration with WooCommerce while maintaining Notion as the central hub.
 """
 
-import os
 import asyncio
-from typing import Dict, List, Any, Optional, Union, cast
+import os
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union, cast
+
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
-# Import base service class
-from services.base_service import BaseService, ServiceCredentials
-
 # Import WooCommerce API but wrapped for async usage
 from woocommerce import API as SyncAPI
+
+# Import base service class
+from services.base_service import BaseService, ServiceCredentials
 
 
 class WooCommerceCredentials(ServiceCredentials):

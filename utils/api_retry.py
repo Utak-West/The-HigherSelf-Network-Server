@@ -9,18 +9,8 @@ for both synchronous and asynchronous API calls.
 import asyncio
 import functools
 from datetime import datetime, timedelta
-from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import (Any, Awaitable, Callable, Dict, List, Optional, Type,
+                    TypeVar, Union, cast)
 
 # Setup logger with fallback to standard logging if loguru is not available
 try:

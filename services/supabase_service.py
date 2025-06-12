@@ -4,25 +4,25 @@ Handles all interactions with the Supabase database, following the standardized
 data structures and patterns defined in the Pydantic models.
 """
 
-import os
 import json
-# import logging # Replaced by loguru
-from loguru import logger # Added for direct loguru usage
-from typing import Dict, Any, List, Optional, Type, Union, TypeVar
+import os
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
 import httpx
+# import logging # Replaced by loguru
+from loguru import logger  # Added for direct loguru usage
 from pydantic import BaseModel, ValidationError
 
+from config.testing_mode import TestingMode, is_api_disabled
 from models.base import NotionIntegrationConfig
-from config.testing_mode import is_api_disabled, TestingMode
 
-
-T = TypeVar('T', bound=BaseModel)
+T = TypeVar("T", bound=BaseModel)
 
 
 class SupabaseConfig(BaseModel):
     """Configuration for Supabase integration."""
+
     url: str
     api_key: str
     project_id: str
@@ -43,18 +43,22 @@ class SupabaseService:
         self.api_key = config.api_key
         self.project_id = config.project_id
         # self.logger removed, use global loguru logger
-        logger.info(f"Supabase service initialized with URL: {self.url} for {self.__class__.__name__}")
+        logger.info(
+            f"Supabase service initialized with URL: {self.url} for {self.__class__.__name__}"
+        )
 
         # Check if we're in testing mode
         if is_api_disabled("supabase"):
-            logger.warning(f"TESTING MODE ACTIVE for {self.__class__.__name__}: Supabase API calls will be simulated")
+            logger.warning(
+                f"TESTING MODE ACTIVE for {self.__class__.__name__}: Supabase API calls will be simulated"
+            )
 
     async def _make_request(
         self,
         method: str,
         path: str,
         data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None
+        params: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Make a request to the Supabase API.
@@ -71,7 +75,7 @@ class SupabaseService:
         headers = {
             "apikey": self.api_key,
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         url = f"{self.url}{path}"
@@ -80,13 +84,14 @@ class SupabaseService:
         if is_api_disabled("supabase"):
             # Force disable the API in testing mode
             from config.testing_mode import TestingMode
+
             TestingMode.add_disabled_api("supabase")
 
             TestingMode.log_attempted_api_call(
                 api_name="supabase",
                 endpoint=path,
                 method=method,
-                params={"data": data, "params": params}
+                params={"data": data, "params": params},
             )
             logger.info(f"[TESTING MODE] Simulated {method} request to {path}")
             return {"data": [], "status": 200, "statusText": "OK"}
@@ -130,7 +135,7 @@ class SupabaseService:
                 method="POST",
                 path=f"/rest/v1/{table_name}",
                 data=data,
-                params={"select": "id"}
+                params={"select": "id"},
             )
 
             # Extract ID from response
@@ -142,7 +147,9 @@ class SupabaseService:
             logger.error(f"Error creating record in Supabase: {e}")
             return None
 
-    async def update_record(self, table_name: str, record_id: str, model: BaseModel) -> bool:
+    async def update_record(
+        self, table_name: str, record_id: str, model: BaseModel
+    ) -> bool:
         """
         Update a record in a Supabase table.
 
@@ -163,7 +170,7 @@ class SupabaseService:
                 method="PUT",
                 path=f"/rest/v1/{table_name}",
                 data=data,
-                params={"id": f"eq.{record_id}"}
+                params={"id": f"eq.{record_id}"},
             )
 
             return True
@@ -171,7 +178,9 @@ class SupabaseService:
             logger.error(f"Error updating record in Supabase: {e}")
             return False
 
-    async def get_record(self, table_name: str, record_id: str, model_class: Type[T]) -> Optional[T]:
+    async def get_record(
+        self, table_name: str, record_id: str, model_class: Type[T]
+    ) -> Optional[T]:
         """
         Get a record from a Supabase table.
 
@@ -188,7 +197,7 @@ class SupabaseService:
             response = await self._make_request(
                 method="GET",
                 path=f"/rest/v1/{table_name}",
-                params={"id": f"eq.{record_id}", "select": "*"}
+                params={"id": f"eq.{record_id}", "select": "*"},
             )
 
             # Extract data from response
@@ -205,7 +214,7 @@ class SupabaseService:
         table_name: str,
         model_class: Type[T],
         filters: Optional[Dict[str, Any]] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[T]:
         """
         Query records from a Supabase table.
@@ -230,9 +239,7 @@ class SupabaseService:
 
             # Make request to Supabase
             response = await self._make_request(
-                method="GET",
-                path=f"/rest/v1/{table_name}",
-                params=params
+                method="GET", path=f"/rest/v1/{table_name}", params=params
             )
 
             # Extract data from response
@@ -243,7 +250,9 @@ class SupabaseService:
                         model = model_class(**item)
                         results.append(model)
                     except ValidationError as e:
-                        logger.warning(f"Error converting Supabase record to model: {e}")
+                        logger.warning(
+                            f"Error converting Supabase record to model: {e}"
+                        )
 
             return results
         except Exception as e:
@@ -266,7 +275,7 @@ class SupabaseService:
             await self._make_request(
                 method="DELETE",
                 path=f"/rest/v1/{table_name}",
-                params={"id": f"eq.{record_id}"}
+                params={"id": f"eq.{record_id}"},
             )
 
             return True
@@ -274,7 +283,9 @@ class SupabaseService:
             logger.error(f"Error deleting record from Supabase: {e}")
             return False
 
-    async def execute_sql(self, sql: str, params: List[Any] = None) -> List[Dict[str, Any]]:
+    async def execute_sql(
+        self, sql: str, params: List[Any] = None
+    ) -> List[Dict[str, Any]]:
         """
         Execute a SQL query on Supabase.
 
@@ -291,7 +302,7 @@ class SupabaseService:
                 api_name="supabase",
                 endpoint="/rest/v1/rpc/execute_sql",
                 method="POST",
-                params={"sql": sql, "params": params}
+                params={"sql": sql, "params": params},
             )
             logger.info(f"[TESTING MODE] Simulated SQL query: {sql}")
             return []
@@ -306,7 +317,7 @@ class SupabaseService:
             raise
 
     @classmethod
-    async def create_from_env(cls) -> 'SupabaseService':
+    async def create_from_env(cls) -> "SupabaseService":
         """
         Create a SupabaseService instance from environment variables.
 
@@ -318,13 +329,16 @@ class SupabaseService:
         project_id = os.environ.get("SUPABASE_PROJECT_ID", "default")
 
         if not url or not api_key:
-            logger.warning("Missing Supabase configuration, using mock configuration for testing")
+            logger.warning(
+                "Missing Supabase configuration, using mock configuration for testing"
+            )
             url = "https://mock-supabase-url.com"
             api_key = "mock-api-key"
             project_id = "mock-project-id"
 
             # Force testing mode
             from config.testing_mode import TestingMode
+
             TestingMode.add_disabled_api("supabase")
 
         config = SupabaseConfig(url=url, api_key=api_key, project_id=project_id)
@@ -333,6 +347,7 @@ class SupabaseService:
 
 # Singleton instance
 _supabase_service_instance = None
+
 
 async def get_supabase_service() -> SupabaseService:
     """

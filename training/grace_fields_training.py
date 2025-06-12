@@ -19,16 +19,8 @@ from typing import Any, Dict, List, Optional
 # import logging # Replaced by loguru
 from loguru import logger  # Added for direct loguru usage
 
-from agents import (
-    Elan,
-    Liora,
-    Nyra,
-    Ruvo,
-    Sage,
-    Solari,
-    Zevi,
-    create_grace_orchestrator,
-)
+from agents import (Elan, Liora, Nyra, Ruvo, Sage, Solari, Zevi,
+                    create_grace_orchestrator)
 from models.base import AgentCapability
 from models.dataset_models import DatasetTrainingConfig, DatasetTrainingResult
 from services.ai_router import AIRouter

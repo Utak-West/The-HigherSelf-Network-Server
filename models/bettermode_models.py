@@ -5,7 +5,7 @@ These models represent the data structures used for BetterMode integration.
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
 from pydantic import BaseModel, Field, validator
@@ -13,19 +13,24 @@ from pydantic import BaseModel, Field, validator
 
 class BetterModeIntegrationConfig(BaseModel):
     """Configuration for BetterMode integration."""
-    
+
     api_token: str = Field(..., description="BetterMode API token")
     network_id: str = Field(..., description="BetterMode network ID")
-    webhook_secret: Optional[str] = Field(None, description="Webhook secret for signature verification")
-    api_url: str = Field("https://app.bettermode.com/api/graphql", description="BetterMode GraphQL API URL")
-    
+    webhook_secret: Optional[str] = Field(
+        None, description="Webhook secret for signature verification"
+    )
+    api_url: str = Field(
+        "https://app.bettermode.com/api/graphql",
+        description="BetterMode GraphQL API URL",
+    )
+
     class Config:
         env_prefix = "BETTERMODE_"
 
 
 class BetterModeSpaceType(str, Enum):
     """Types of spaces in BetterMode."""
-    
+
     DISCUSSION = "discussion"
     ARTICLE = "article"
     QUESTION = "question"
@@ -38,7 +43,7 @@ class BetterModeSpaceType(str, Enum):
 
 class BetterModeMemberRole(str, Enum):
     """Member roles in BetterMode."""
-    
+
     ADMIN = "admin"
     MODERATOR = "moderator"
     MEMBER = "member"
@@ -47,7 +52,7 @@ class BetterModeMemberRole(str, Enum):
 
 class BetterModeWebhookType(str, Enum):
     """Types of webhooks from BetterMode."""
-    
+
     MEMBER_CREATED = "member.created"
     MEMBER_UPDATED = "member.updated"
     POST_CREATED = "post.created"
@@ -62,26 +67,30 @@ class BetterModeWebhookType(str, Enum):
 
 class BetterModeMember(BaseModel):
     """Represents a member in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode member ID")
     name: str = Field(..., description="Member's name")
     email: str = Field(..., description="Member's email")
-    role: BetterModeMemberRole = Field(BetterModeMemberRole.MEMBER, description="Member's role")
+    role: BetterModeMemberRole = Field(
+        BetterModeMemberRole.MEMBER, description="Member's role"
+    )
     joined_at: datetime = Field(..., description="When the member joined")
     profile_picture: Optional[str] = Field(None, description="Profile picture URL")
-    custom_fields: Dict[str, Any] = Field(default_factory=dict, description="Custom profile fields")
-    
+    custom_fields: Dict[str, Any] = Field(
+        default_factory=dict, description="Custom profile fields"
+    )
+
     # Fields for integration with HigherSelf Network
     member_id: str = Field(
         default_factory=lambda: f"MEMBER-{uuid4().hex[:8]}",
-        description="HigherSelf Network member ID"
+        description="HigherSelf Network member ID",
     )
     notion_page_id: Optional[str] = Field(None, description="Notion page ID")
-    
+
     def to_community_member(self):
         """Convert to CommunityMember model for backward compatibility."""
         from models.notion_db_models_extended import CommunityMember
-        
+
         return CommunityMember(
             member_id=self.member_id,
             member_name=self.name,
@@ -93,13 +102,13 @@ class BetterModeMember(BaseModel):
             profile_link=f"https://app.bettermode.com/members/{self.id}",
             bettermode_member_id=self.id,
             custom_fields=self.custom_fields,
-            notion_page_id=self.notion_page_id
+            notion_page_id=self.notion_page_id,
         )
 
 
 class BetterModeSpace(BaseModel):
     """Represents a space in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode space ID")
     name: str = Field(..., description="Space name")
     slug: str = Field(..., description="Space slug")
@@ -107,12 +116,14 @@ class BetterModeSpace(BaseModel):
     type: BetterModeSpaceType = Field(..., description="Space type")
     created_at: datetime = Field(..., description="When the space was created")
     updated_at: datetime = Field(..., description="When the space was last updated")
-    custom_fields: Dict[str, Any] = Field(default_factory=dict, description="Custom space fields")
+    custom_fields: Dict[str, Any] = Field(
+        default_factory=dict, description="Custom space fields"
+    )
 
 
 class BetterModePost(BaseModel):
     """Represents a post in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode post ID")
     title: Optional[str] = Field(None, description="Post title")
     content: str = Field(..., description="Post content")
@@ -121,12 +132,14 @@ class BetterModePost(BaseModel):
     created_at: datetime = Field(..., description="When the post was created")
     updated_at: datetime = Field(..., description="When the post was last updated")
     published: bool = Field(True, description="Whether the post is published")
-    custom_fields: Dict[str, Any] = Field(default_factory=dict, description="Custom post fields")
+    custom_fields: Dict[str, Any] = Field(
+        default_factory=dict, description="Custom post fields"
+    )
 
 
 class BetterModeComment(BaseModel):
     """Represents a comment in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode comment ID")
     content: str = Field(..., description="Comment content")
     author_id: str = Field(..., description="Author's BetterMode member ID")
@@ -137,7 +150,7 @@ class BetterModeComment(BaseModel):
 
 class BetterModeReaction(BaseModel):
     """Represents a reaction in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode reaction ID")
     type: str = Field(..., description="Reaction type (e.g., 'like', 'heart')")
     author_id: str = Field(..., description="Author's BetterMode member ID")
@@ -148,7 +161,7 @@ class BetterModeReaction(BaseModel):
 
 class BetterModeEvent(BaseModel):
     """Represents an event in BetterMode."""
-    
+
     id: str = Field(..., description="BetterMode event ID")
     title: str = Field(..., description="Event title")
     description: Optional[str] = Field(None, description="Event description")
@@ -160,17 +173,19 @@ class BetterModeEvent(BaseModel):
     space_id: str = Field(..., description="BetterMode space ID")
     created_at: datetime = Field(..., description="When the event was created")
     updated_at: datetime = Field(..., description="When the event was last updated")
-    custom_fields: Dict[str, Any] = Field(default_factory=dict, description="Custom event fields")
+    custom_fields: Dict[str, Any] = Field(
+        default_factory=dict, description="Custom event fields"
+    )
 
 
 class BetterModeWebhookPayload(BaseModel):
     """Represents a webhook payload from BetterMode."""
-    
+
     event_type: BetterModeWebhookType = Field(..., description="Webhook event type")
     network_id: str = Field(..., description="BetterMode network ID")
     timestamp: datetime = Field(..., description="Webhook timestamp")
     data: Dict[str, Any] = Field(..., description="Webhook data")
-    
+
     @validator("timestamp", pre=True)
     def parse_timestamp(cls, value):
         """Parse timestamp from string or int."""

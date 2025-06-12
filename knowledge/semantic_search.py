@@ -5,25 +5,27 @@ This module provides high-level functions for semantic search using vector embed
 It handles the text chunking, embedding generation, and search capabilities.
 """
 
-from typing import List, Dict, Any, Optional, Union, Tuple
-from uuid import UUID
 import asyncio
-from loguru import logger
-import re
-import nltk
-from nltk.tokenize import sent_tokenize
 import hashlib
+import re
+from typing import Any, Dict, List, Optional, Tuple, Union
+from uuid import UUID
 
-from .models import SearchResult, SearchQuery, EmbeddingMeta
+import nltk
+from loguru import logger
+from nltk.tokenize import sent_tokenize
+
+from .models import EmbeddingMeta, SearchQuery, SearchResult
 from .providers import provider_registry
 from .vector_store import get_vector_store
 
-
 # Try to download nltk data, but don't fail if it's not available
 try:
-    nltk.download('punkt', quiet=True)
+    nltk.download("punkt", quiet=True)
 except:
-    logger.warning("Failed to download NLTK data. Sentence splitting may be less accurate.")
+    logger.warning(
+        "Failed to download NLTK data. Sentence splitting may be less accurate."
+    )
 
 
 class SemanticSearch:
@@ -41,6 +43,7 @@ class SemanticSearch:
 
         # Initialize vector store
         from .vector_store import get_vector_store
+
         self.vector_store = await get_vector_store()
 
         # Initialize provider registry
@@ -49,10 +52,7 @@ class SemanticSearch:
         self._initialized = True
 
     def _chunk_text(
-        self,
-        text: str,
-        chunk_size: int = 1000,
-        chunk_overlap: int = 200
+        self, text: str, chunk_size: int = 1000, chunk_overlap: int = 200
     ) -> List[str]:
         """
         Split text into chunks for embedding.
@@ -69,7 +69,7 @@ class SemanticSearch:
             return []
 
         # First, try to split by newlines to preserve paragraph structure
-        paragraphs = [p for p in text.split('\n') if p.strip()]
+        paragraphs = [p for p in text.split("\n") if p.strip()]
 
         chunks = []
         current_chunk = []
@@ -86,7 +86,7 @@ class SemanticSearch:
                     else:
                         # Current chunk is full, save it
                         if current_chunk:
-                            chunks.append(' '.join(current_chunk))
+                            chunks.append(" ".join(current_chunk))
                         # Start a new chunk with overlap
                         if len(current_chunk) > 0:
                             # Calculate how many items to keep for overlap
@@ -123,13 +123,13 @@ class SemanticSearch:
                                 else:
                                     # Add the current sentence part to the chunk
                                     if current_sentence:
-                                        sentence_part = ' '.join(current_sentence)
+                                        sentence_part = " ".join(current_sentence)
                                         current_chunk.append(sentence_part)
                                         current_size += len(sentence_part)
 
                                     # Check if the chunk is full
                                     if current_size > chunk_size:
-                                        chunks.append(' '.join(current_chunk))
+                                        chunks.append(" ".join(current_chunk))
                                         current_chunk = []
                                         current_size = 0
 
@@ -139,7 +139,7 @@ class SemanticSearch:
 
                             # Add any remaining sentence part
                             if current_sentence:
-                                sentence_part = ' '.join(current_sentence)
+                                sentence_part = " ".join(current_sentence)
                                 current_chunk.append(sentence_part)
                                 current_size += len(sentence_part)
             else:
@@ -150,7 +150,7 @@ class SemanticSearch:
                 else:
                     # Current chunk is full, save it
                     if current_chunk:
-                        chunks.append(' '.join(current_chunk))
+                        chunks.append(" ".join(current_chunk))
 
                     # Start a new chunk with overlap
                     if len(current_chunk) > 0:
@@ -176,7 +176,7 @@ class SemanticSearch:
 
         # Add the last chunk if it exists
         if current_chunk:
-            chunks.append(' '.join(current_chunk))
+            chunks.append(" ".join(current_chunk))
 
         return chunks
 
@@ -188,7 +188,7 @@ class SemanticSearch:
         notion_page_id: Optional[str] = None,
         notion_database_id: Optional[str] = None,
         chunk_size: int = 1000,
-        chunk_overlap: int = 200
+        chunk_overlap: int = 200,
     ) -> Optional[UUID]:
         """
         Store and embed text in the vector store.
@@ -224,7 +224,7 @@ class SemanticSearch:
                 metadata=metadata,
                 provider_name=result["provider"],
                 notion_page_id=notion_page_id,
-                notion_database_id=notion_database_id
+                notion_database_id=notion_database_id,
             )
 
             if not embedding_id:
@@ -245,10 +245,12 @@ class SemanticSearch:
                             embedding_id=embedding_id,
                             chunks=chunks,
                             chunk_embeddings=chunks_result["embeddings"],
-                            metadata=metadata.dict()
+                            metadata=metadata.dict(),
                         )
 
-                        logger.info(f"Stored {len(chunk_ids)} chunks for embedding {embedding_id}")
+                        logger.info(
+                            f"Stored {len(chunk_ids)} chunks for embedding {embedding_id}"
+                        )
 
             return embedding_id
 
@@ -263,7 +265,7 @@ class SemanticSearch:
         notion_database_id: Optional[str] = None,
         limit: int = 10,
         threshold: float = 0.7,
-        search_chunks: bool = True
+        search_chunks: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         Perform a semantic search.
@@ -298,16 +300,14 @@ class SemanticSearch:
                 content_types=content_types,
                 notion_database_id=notion_database_id,
                 limit=limit,
-                threshold=threshold
+                threshold=threshold,
             )
 
             # Also search in chunks if requested
             chunk_results = []
             if search_chunks:
                 chunk_results = await self.vector_store.search_chunks(
-                    query_embedding=query_embedding,
-                    limit=limit,
-                    threshold=threshold
+                    query_embedding=query_embedding, limit=limit, threshold=threshold
                 )
 
             # Combine and format results
@@ -326,7 +326,7 @@ class SemanticSearch:
                     "score": result.score,
                     "distance": result.distance,
                     "source": record.metadata.source,
-                    "tags": record.metadata.tags
+                    "tags": record.metadata.tags,
                 }
                 formatted_results.append(formatted)
 
@@ -346,12 +346,14 @@ class SemanticSearch:
                     "chunk_index": chunk.chunk_index,
                     "chunk_text": chunk.chunk_text,
                     "notion_page_id": embedding.notion_page_id if embedding else None,
-                    "notion_database_id": embedding.notion_database_id if embedding else None,
+                    "notion_database_id": (
+                        embedding.notion_database_id if embedding else None
+                    ),
                     "metadata": chunk.metadata,
                     "score": result.score,
                     "distance": result.distance,
                     "source": embedding.metadata.source if embedding else None,
-                    "tags": embedding.metadata.tags if embedding else []
+                    "tags": embedding.metadata.tags if embedding else [],
                 }
                 formatted_results.append(formatted)
 
@@ -368,6 +370,7 @@ class SemanticSearch:
 
 # Singleton instance
 _semantic_search_instance = None
+
 
 async def get_semantic_search() -> SemanticSearch:
     """Get or create the semantic search singleton."""

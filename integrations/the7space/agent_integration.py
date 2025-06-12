@@ -27,14 +27,11 @@ from agents.base_agent import BaseAgent
 from agents.booking_agent import BookingAgent
 from agents.content_lifecycle_agent import ContentLifecycleAgent
 from agents.lead_capture_agent import LeadCaptureAgent
-from integrations.the7space.the7space_service import (
-    AmeliaAppointment,
-    SoftrPortal,
-    SoftrRecord,
-    SoftrUser,
-    The7SpaceService,
-    WordPressPost,
-)
+from integrations.the7space.the7space_service import (AmeliaAppointment,
+                                                      SoftrPortal, SoftrRecord,
+                                                      SoftrUser,
+                                                      The7SpaceService,
+                                                      WordPressPost)
 from models.notion_db_models import WorkflowInstance
 
 

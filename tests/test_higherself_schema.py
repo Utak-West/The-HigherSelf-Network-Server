@@ -1,8 +1,9 @@
-import pytest
 import os
 import sys
+from datetime import datetime  # Import datetime
 from pathlib import Path
-from datetime import datetime # Import datetime
+
+import pytest
 
 # Add the root directory to sys.path to allow importing higherself_schema
 # This assumes the test will be run from the root directory or the worker handles paths.
@@ -11,26 +12,17 @@ from datetime import datetime # Import datetime
 # sys.path.append(str(ROOT_DIR))
 
 try:
-    from higherself_schema import (
-        HigherSelfNetworkServer,
-        AgentPersonality,
-        AgentRole,
-        AgentCapability,
-        IntegrationType,
-        WorkflowState,
-        NotionDatabaseType,
-        ServerComponent, # Ensure all relevant sub-models are imported for isinstance checks
-        APIEndpoint,
-        Integration,
-        Agent,
-        NotionDatabase,
-        Workflow,
-        RAGComponent,
-        DeploymentConfiguration,
-        LearningModule
-    )
     # Import the example script to test its execution
-    import schema_usage_example 
+    import schema_usage_example
+    from higherself_schema import \
+        ServerComponent  # Ensure all relevant sub-models are imported for isinstance checks
+    from higherself_schema import (Agent, AgentCapability, AgentPersonality,
+                                   AgentRole, APIEndpoint,
+                                   DeploymentConfiguration,
+                                   HigherSelfNetworkServer, Integration,
+                                   IntegrationType, LearningModule,
+                                   NotionDatabase, NotionDatabaseType,
+                                   RAGComponent, Workflow, WorkflowState) 
 except ModuleNotFoundError as e:
     # Fallback for environments where sys.path manipulation might not work as expected in the test runner
     # This indicates a potential issue with how tests are discovered/run if higherself_schema isn't found.
@@ -41,18 +33,15 @@ except ModuleNotFoundError as e:
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     
-    from higherself_schema import (
-        HigherSelfNetworkServer,
-        AgentPersonality,
-        AgentRole,
-        AgentCapability,
-        IntegrationType,
-        WorkflowState,
-        NotionDatabaseType,
-        ServerComponent, APIEndpoint, Integration, Agent, NotionDatabase, Workflow,
-        RAGComponent, DeploymentConfiguration, LearningModule
-    )
     import schema_usage_example
+    from higherself_schema import (Agent, AgentCapability, AgentPersonality,
+                                   AgentRole, APIEndpoint,
+                                   DeploymentConfiguration,
+                                   HigherSelfNetworkServer, Integration,
+                                   IntegrationType, LearningModule,
+                                   NotionDatabase, NotionDatabaseType,
+                                   RAGComponent, ServerComponent, Workflow,
+                                   WorkflowState)
 
 
 JSON_FILE_PATH = Path(__file__).parent.parent / "server_documentation.json"

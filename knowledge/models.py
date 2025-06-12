@@ -4,14 +4,16 @@ Data models for the Knowledge Hub.
 These models define the core data structures used throughout the Knowledge Hub.
 """
 
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 
 class EmbeddingMeta(BaseModel):
     """Metadata for an embedding."""
+
     content_type: str
     source: str
     notion_reference: Optional[str] = None
@@ -21,6 +23,7 @@ class EmbeddingMeta(BaseModel):
 
 class VectorRecord(BaseModel):
     """A record in the vector store."""
+
     id: UUID
     notion_page_id: Optional[str] = None
     notion_database_id: Optional[str] = None
@@ -35,6 +38,7 @@ class VectorRecord(BaseModel):
 
 class ChunkRecord(BaseModel):
     """A text chunk with its embedding."""
+
     id: UUID
     embedding_id: UUID
     chunk_index: int
@@ -46,6 +50,7 @@ class ChunkRecord(BaseModel):
 
 class SearchResult(BaseModel):
     """A search result from the vector store."""
+
     record: Union[VectorRecord, ChunkRecord]
     score: float
     distance: float
@@ -53,6 +58,7 @@ class SearchResult(BaseModel):
 
 class SearchQuery(BaseModel):
     """A search query for the vector store."""
+
     query_text: str
     limit: int = 10
     content_types: Optional[List[str]] = None
@@ -63,6 +69,7 @@ class SearchQuery(BaseModel):
 
 class EmbeddingRequest(BaseModel):
     """A request to generate an embedding."""
+
     content: str
     content_type: str
     metadata: EmbeddingMeta

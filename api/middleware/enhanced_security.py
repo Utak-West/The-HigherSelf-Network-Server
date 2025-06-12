@@ -36,26 +36,19 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 import redis
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
-from fastapi.security import (
-    APIKeyHeader,
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm,
-)
+from fastapi.security import (APIKeyHeader, OAuth2PasswordBearer,
+                              OAuth2PasswordRequestForm)
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.status import HTTP_429_TOO_MANY_REQUESTS
 
-from utils.circuit_breaker import CircuitBreaker, CircuitOpenException, registry
-from utils.error_handling import (
-    AuthenticationException,
-    AuthorizationException,
-    ErrorCategory,
-    ErrorHandler,
-    ErrorResponse,
-    ErrorSeverity,
-)
+from utils.circuit_breaker import (CircuitBreaker, CircuitOpenException,
+                                   registry)
+from utils.error_handling import (AuthenticationException,
+                                  AuthorizationException, ErrorCategory,
+                                  ErrorHandler, ErrorResponse, ErrorSeverity)
 
 # JWT Configuration
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))

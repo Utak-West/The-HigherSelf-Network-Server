@@ -3,12 +3,14 @@ AI Provider service for The HigherSelf Network Server.
 This service manages routing to different AI providers while maintaining Notion as the central hub.
 """
 
-import os
 import json
-from typing import Dict, List, Any, Optional, Union, Literal
+import os
 from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional, Union
+
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
+
 # Import base service
 from services.base_service import BaseService, ServiceCredentials
 

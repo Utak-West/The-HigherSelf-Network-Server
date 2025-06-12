@@ -3,16 +3,18 @@ MCP Tools Registry for Higher Self Network Server.
 Provides registration, discovery, and management of MCP tools.
 """
 
-import os
-import json
 import asyncio
-from typing import Dict, List, Any, Optional, Set, Callable, TypeVar, Generic
+import json
+import os
 from enum import Enum
-from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, TypeVar
 
-from services.consul_service import consul_service
-from services.cache_service import multi_level_cache, CacheType, CacheLevel
+from pydantic import BaseModel, Field
+from loguru import logger
+
 from services.analytics_service import agent_analytics
+from services.cache_service import CacheLevel, CacheType, multi_level_cache
+from services.consul_service import consul_service
 
 # Type for tool handlers
 T = TypeVar('T')

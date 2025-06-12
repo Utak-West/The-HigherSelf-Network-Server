@@ -5,14 +5,16 @@ These models support the ContentLifecycleAgent and maintain
 Notion as the central hub for all content data.
 """
 
-from enum import Enum
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class ContentType(str, Enum):
     """Types of content handled by the ContentLifecycleAgent."""
+
     BLOG_POST = "blog_post"
     SOCIAL_MEDIA = "social_media"
     EMAIL_NEWSLETTER = "email_newsletter"
@@ -25,6 +27,7 @@ class ContentType(str, Enum):
 
 class ContentStage(str, Enum):
     """Stages in the content lifecycle workflow."""
+
     IDEA = "idea"
     RESEARCH = "research"
     DRAFT = "draft"
@@ -39,6 +42,7 @@ class ContentStage(str, Enum):
 
 class ContentPlatform(str, Enum):
     """Distribution platforms for content."""
+
     WORDPRESS = "wordpress"
     BEEHIIV = "beehiiv"
     INSTAGRAM = "instagram"
@@ -50,6 +54,7 @@ class ContentPlatform(str, Enum):
 
 class ContentRequest(BaseModel):
     """Model for a content creation request."""
+
     title: str
     content_type: ContentType
     brief: str
@@ -64,6 +69,7 @@ class ContentRequest(BaseModel):
 
 class ResearchData(BaseModel):
     """Model for content research data."""
+
     summary: str
     key_points: List[str] = Field(default_factory=list)
     sources: List[Dict[str, str]] = Field(default_factory=list)
@@ -72,6 +78,7 @@ class ResearchData(BaseModel):
 
 class DistributionResult(BaseModel):
     """Model for content distribution results."""
+
     platform: ContentPlatform
     status: str
     url: Optional[str] = None
@@ -81,6 +88,7 @@ class DistributionResult(BaseModel):
 
 class ContentPlanFrequency(BaseModel):
     """Model for content plan frequency settings."""
+
     blog_posts: int = 0
     social_media: int = 0
     email_newsletters: int = 0

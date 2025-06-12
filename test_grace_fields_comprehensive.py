@@ -79,7 +79,8 @@ async def test_enhanced_grace_fields_instantiation():
 
     try:
         from agents.grace_fields_enhanced import EnhancedGraceFields
-        from models.customer_service_models import CustomerServiceBusinessEntity
+        from models.customer_service_models import \
+            CustomerServiceBusinessEntity
 
         logger.info("🔧 Testing Enhanced Grace Fields instantiation...")
 
@@ -128,9 +129,7 @@ async def test_multi_level_severity_processing():
 
     try:
         from agents.grace_fields_enhanced import (
-            CustomerServiceBusinessEntity,
-            EnhancedGraceFields,
-        )
+            CustomerServiceBusinessEntity, EnhancedGraceFields)
 
         logger.info("🔧 Testing multi-level severity processing...")
 
@@ -220,9 +219,7 @@ async def test_business_entity_routing():
 
     try:
         from agents.grace_fields_enhanced import (
-            CustomerServiceBusinessEntity,
-            EnhancedGraceFields,
-        )
+            CustomerServiceBusinessEntity, EnhancedGraceFields)
 
         logger.info("🔧 Testing business entity routing...")
 
@@ -287,9 +284,7 @@ async def test_workflow_harmony_monitoring():
 
     try:
         from agents.grace_fields_enhanced import (
-            CustomerServiceBusinessEntity,
-            EnhancedGraceFields,
-        )
+            CustomerServiceBusinessEntity, EnhancedGraceFields)
 
         logger.info("🔧 Testing workflow harmony monitoring...")
 

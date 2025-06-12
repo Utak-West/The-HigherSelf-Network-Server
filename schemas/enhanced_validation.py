@@ -27,29 +27,12 @@ import json
 import re
 from datetime import date, datetime
 from enum import Enum
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Pattern,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import (Any, Callable, Dict, List, Optional, Pattern, Set, Tuple,
+                    Type, TypeVar, Union)
 from uuid import UUID
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    EmailStr,
-    Field,
-    field_validator,
-    model_validator,
-)
+from pydantic import (BaseModel, ConfigDict, EmailStr, Field, field_validator,
+                      model_validator)
 
 from utils.error_handling import ValidationException
 

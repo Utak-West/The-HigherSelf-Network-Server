@@ -12,21 +12,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from loguru import logger
 from pydantic import BaseModel
 
-from models.barter_models import (
-    BarterListing,
-    BarterMatch,
-    BarterProfile,
-    BarterRequest,
-    BarterTransaction,
-    BarterTranslation,
-    BarterUserProfile,
-    CulturalRegion,
-    LanguageCode,
-    Location,
-    ServiceCategory,
-    TranslationEntity,
-    VerificationStatus,
-)
+from models.barter_models import (BarterListing, BarterMatch, BarterProfile,
+                                  BarterRequest, BarterTransaction,
+                                  BarterTranslation, BarterUserProfile,
+                                  CulturalRegion, LanguageCode, Location,
+                                  ServiceCategory, TranslationEntity,
+                                  VerificationStatus)
 from services.barter_service import BarterService
 from services.barter_translation_service import get_translation_service
 from services.barter_user_service import get_barter_user_service

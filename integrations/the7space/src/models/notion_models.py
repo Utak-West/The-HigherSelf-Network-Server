@@ -2,9 +2,10 @@
 Pydantic models for Notion integration.
 Following The HigherSelf Network standardized data structure guidelines.
 """
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from typing import Any, Dict, List, Optional, Union
+
+from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
 
 
 class NotionPropertyType(str, Enum):

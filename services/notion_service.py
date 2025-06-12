@@ -15,21 +15,14 @@ from pydantic import BaseModel, ValidationError
 
 from config.testing_mode import TestingMode, is_api_disabled
 from models.notion import NotionIntegrationConfig, NotionPage
-from models.notion_db_models import (
-    Agent,
-    AgentCommunication,
-    AIContentReview,
-    ApiIntegration,
-    BusinessEntity,
-    DataTransformation,
-    NotificationTemplate,
-    Task,
-    UseCase,
-    Workflow,
-    WorkflowInstance,
-)
+from models.notion_db_models import (Agent, AgentCommunication,
+                                     AIContentReview, ApiIntegration,
+                                     BusinessEntity, DataTransformation,
+                                     NotificationTemplate, Task, UseCase,
+                                     Workflow, WorkflowInstance)
 from models.video_models import VideoContent
-from models.video_transaction_models import VideoTransaction, VideoTransactionStatus
+from models.video_transaction_models import (VideoTransaction,
+                                             VideoTransactionStatus)
 
 # Add AgentBestPractices, WorkflowPatterns, and AgentTrainingResults to database mappings
 # These will be used by the Grace Fields training system

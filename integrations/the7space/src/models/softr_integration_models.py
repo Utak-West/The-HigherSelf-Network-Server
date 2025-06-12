@@ -2,10 +2,11 @@
 Pydantic models for Softr to Higher Self Network server integration.
 These models define the API contract between Softr interfaces and backend services.
 """
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
 
 
 class SoftrIntegrationConfig(BaseModel):

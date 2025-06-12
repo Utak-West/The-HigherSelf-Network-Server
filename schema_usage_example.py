@@ -1,14 +1,14 @@
-from higherself_schema import (
-    HigherSelfNetworkServer,
-    Agent, # This is higherself_schema.Agent
-    AgentPersonality, # This should be available via higherself_schema
-    AgentRole,      # This should be available via higherself_schema
-    AgentCapability, # This should be available via higherself_schema
-    APIEndpoint,
-    IntegrationType,
-    WorkflowState,
-    NotionDatabaseType
-)
+from higherself_schema import Agent  # This is higherself_schema.Agent
+from higherself_schema import \
+    AgentCapability  # This should be available via higherself_schema
+from higherself_schema import \
+    AgentPersonality  # This should be available via higherself_schema
+from higherself_schema import \
+    AgentRole  # This should be available via higherself_schema
+from higherself_schema import (APIEndpoint, HigherSelfNetworkServer,
+                               IntegrationType, NotionDatabaseType,
+                               WorkflowState)
+
 # Note: AgentPersonality, AgentRole, AgentCapability are defined in higherself_schema.py,
 # attempting to import from models.base within that file.
 

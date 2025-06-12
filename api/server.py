@@ -5,7 +5,6 @@ Provides webhook endpoints and API routes for interacting with agents.
 
 import asyncio
 import json
-
 # Standard library imports
 import os
 from datetime import datetime
@@ -13,7 +12,8 @@ from typing import Any, Dict, List, Optional, Union
 
 # Third-party imports
 import uvicorn
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request
+from fastapi import (BackgroundTasks, Depends, FastAPI, Header, HTTPException,
+                     Request)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
@@ -281,7 +281,8 @@ async def startup_event():
             logger.info("✅ RAG pipeline initialized successfully")
 
             # Initialize Hugging Face service and router
-            from api.huggingface_router import init_router as init_huggingface_router
+            from api.huggingface_router import \
+                init_router as init_huggingface_router
             from services.huggingface_service import HuggingFaceService
 
             try:

@@ -17,13 +17,11 @@ from services.acuity_service import AcuityService
 from services.ai_provider_service import AIProviderService
 from services.airtable_service import AirtableService
 from services.amelia_service import AmeliaServiceClient as AmeliaService
-
 # Import base service
 from services.base_service import BaseService
 from services.bettermode_service import BetterModeService
 from services.capcut_service import CapCutService
 from services.huggingface_service import HuggingFaceService
-
 # Import service classes
 from services.notion_service import NotionService
 from services.pipit_service import PipitService
@@ -34,9 +32,8 @@ from services.tutor_lm_service import TutorLMService
 from services.tutorlm_service import TutorLMService as LegacyTutorLMService
 from services.typeform_service import TypeFormService
 from services.user_feedback_service import UserFeedbackService
-from services.userfeedback_service import (
-    UserFeedbackService as LegacyUserFeedbackService,
-)
+from services.userfeedback_service import \
+    UserFeedbackService as LegacyUserFeedbackService
 from services.woocommerce_service import WooCommerceService
 
 # Singleton instance of the IntegrationManager

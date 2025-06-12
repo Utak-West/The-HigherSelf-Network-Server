@@ -55,7 +55,8 @@ async def test_basic_functionality():
 
         # Import the enhanced Grace Fields
         from agents.grace_fields_enhanced import EnhancedGraceFields
-        from models.customer_service_models import CustomerServiceBusinessEntity
+        from models.customer_service_models import \
+            CustomerServiceBusinessEntity
 
         logger.info("✅ Successfully imported EnhancedGraceFields")
 

@@ -7,20 +7,23 @@ in Notion databases, maintaining it as the central hub for all workflow data.
 """
 
 import asyncio
+import functools
+import random
+import time
 import uuid
 from datetime import datetime
-import asyncio
-import functools
-import time
-import random
 from enum import Enum
-from typing import Dict, List, Any, Optional, Callable, Union, Set, Tuple, TypeVar, Generic
-from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
+from typing import (Any, Callable, Dict, Generic, List, Optional, Set, Tuple,
+                    TypeVar, Union)
 
+from pydantic import (BaseModel, Field, field_validatorfrom, import, logger,
+                      loguru)
+
+from knowledge import SemanticSearch, get_semantic_search
 from models.notion_db_models import WorkflowInstance
 from services.notion_service import NotionService
-from workflow.transitions import TransitionCondition, ConditionGroup, TransitionTrigger
-from knowledge import get_semantic_search, SemanticSearch
+from workflow.transitions import (ConditionGroup, TransitionCondition,
+                                  TransitionTrigger)
 
 # Type variable for state data
 T = TypeVar('T')

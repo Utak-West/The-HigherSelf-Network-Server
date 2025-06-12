@@ -2,9 +2,11 @@
 Pydantic models for Hugging Face Pro integration with Notion.
 These models enforce data validation and structure for all Hugging Face API interactions.
 """
-from pydantic import BaseModel, Field, HttpUrl, field_validatorfrom typing import List, Optional, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
+
+from pydantic import (Any, BaseModel, Dict, Field, HttpUrl, List, Optional,
+                      Union, field_validatorfrom, import, typing)
 
 
 class ModelType(str, Enum):

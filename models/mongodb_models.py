@@ -12,19 +12,10 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, field_validator
 
-from models.base import (
-    AgentCapability,
-    AgentStatus,
-    ApiPlatform,
-    ContentReviewStatus,
-    EntityType,
-    InstanceStatus,
-    IntegrationStatus,
-    NotificationChannel,
-    RuntimeEnvironment,
-    TaskStatus,
-    WorkflowStatus,
-)
+from models.base import (AgentCapability, AgentStatus, ApiPlatform,
+                         ContentReviewStatus, EntityType, InstanceStatus,
+                         IntegrationStatus, NotificationChannel,
+                         RuntimeEnvironment, TaskStatus, WorkflowStatus)
 
 
 class MongoBaseModel(BaseModel):

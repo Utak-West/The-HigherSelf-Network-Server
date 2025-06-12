@@ -3,14 +3,16 @@ Acuity Scheduling integration service for The HigherSelf Network Server.
 This service handles integration with Acuity Scheduling while maintaining Notion as the central hub.
 """
 
-import os
-import json
 import base64
-import aiohttp
-from typing import Dict, List, Any, Optional, Union
+import json
+import os
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Union
+
+import aiohttp
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
+
 from services.base_service import BaseService, ServiceCredentials
 
 

@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 from services.redis_service import redis_service
 from utils.error_handling import ErrorHandler

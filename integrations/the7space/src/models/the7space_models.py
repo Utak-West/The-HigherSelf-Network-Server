@@ -3,10 +3,11 @@ Pydantic models for The 7 Space Art Gallery & Wellness Center.
 These models define the data structures needed for client portals, 
 sales dashboards, and other visualizations.
 """
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
+
+from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
 
 
 class ArtworkStatus(str, Enum):
