@@ -98,6 +98,8 @@ class RedisService:
     _async_connection_pool = None
     _health_status = {"status": "unknown", "last_check": 0, "errors": []}
     _metrics = {"operations": 0, "errors": 0, "latency_sum": 0.0, "latency_count": 0}
+    
+    _env_cache = None
 
     def __new__(cls):
         """Singleton pattern to ensure only one instance of the service exists."""
@@ -108,9 +110,18 @@ class RedisService:
 
     def _initialize(self):
         """Initialize Redis connections with connection pooling."""
+        if self._env_cache is None:
+            self._env_cache = {
+                "testing_mode": os.environ.get("TESTING_MODE", "false").lower() == "true",
+                "redis_uri": os.environ.get("REDIS_URI", "redis://localhost:6379/0"),
+                "redis_password": os.environ.get("REDIS_PASSWORD", ""),
+                "redis_timeout": int(os.environ.get("REDIS_TIMEOUT", "5")),
+                "redis_max_connections": int(os.environ.get("REDIS_MAX_CONNECTIONS", "10")),
+                "redis_ssl": os.environ.get("REDIS_SSL", "false").lower() == "true",
+            }
+        
         # Check if we're in testing mode
-        testing_mode = os.environ.get("TESTING_MODE", "false").lower() == "true"
-        if testing_mode:
+        if self._env_cache["testing_mode"]:
             logger.info("Redis service running in testing mode - connections disabled")
             self._health_status = {
                 "status": "testing",
@@ -120,11 +131,11 @@ class RedisService:
             return
 
         try:
-            redis_uri = os.environ.get("REDIS_URI", "redis://localhost:6379/0")
-            redis_password = os.environ.get("REDIS_PASSWORD", "")
-            redis_timeout = int(os.environ.get("REDIS_TIMEOUT", "5"))
-            redis_max_connections = int(os.environ.get("REDIS_MAX_CONNECTIONS", "10"))
-            redis_ssl = os.environ.get("REDIS_SSL", "false").lower() == "true"
+            redis_uri = self._env_cache["redis_uri"]
+            redis_password = self._env_cache["redis_password"]
+            redis_timeout = self._env_cache["redis_timeout"]
+            redis_max_connections = self._env_cache["redis_max_connections"]
+            redis_ssl = self._env_cache["redis_ssl"]
 
             # Connection options
             connection_kwargs = {
@@ -192,11 +203,22 @@ class RedisService:
     async def get_async_client(self) -> aioredis.Redis:
         """Get or create async Redis client with connection pooling."""
         if self._async_client is None:
-            redis_uri = os.environ.get("REDIS_URI", "redis://localhost:6379/0")
-            redis_password = os.environ.get("REDIS_PASSWORD", "")
-            redis_timeout = int(os.environ.get("REDIS_TIMEOUT", "5"))
-            redis_max_connections = int(os.environ.get("REDIS_MAX_CONNECTIONS", "10"))
-            redis_ssl = os.environ.get("REDIS_SSL", "false").lower() == "true"
+            # Use cached environment variables
+            if self._env_cache is None:
+                self._env_cache = {
+                    "testing_mode": os.environ.get("TESTING_MODE", "false").lower() == "true",
+                    "redis_uri": os.environ.get("REDIS_URI", "redis://localhost:6379/0"),
+                    "redis_password": os.environ.get("REDIS_PASSWORD", ""),
+                    "redis_timeout": int(os.environ.get("REDIS_TIMEOUT", "5")),
+                    "redis_max_connections": int(os.environ.get("REDIS_MAX_CONNECTIONS", "10")),
+                    "redis_ssl": os.environ.get("REDIS_SSL", "false").lower() == "true",
+                }
+            
+            redis_uri = self._env_cache["redis_uri"]
+            redis_password = self._env_cache["redis_password"]
+            redis_timeout = self._env_cache["redis_timeout"]
+            redis_max_connections = self._env_cache["redis_max_connections"]
+            redis_ssl = self._env_cache["redis_ssl"]
 
             # Connection options
             connection_kwargs = {
@@ -809,6 +831,12 @@ class RedisService:
             metrics["redis_info"] = {"error": str(e)}
 
         return metrics
+    
+    @classmethod
+    def refresh_env_cache(cls):
+        """Refresh the environment variable cache. Useful for testing or config changes."""
+        if cls._instance:
+            cls._instance._env_cache = None
 
 
 # For easy import and use throughout the application
