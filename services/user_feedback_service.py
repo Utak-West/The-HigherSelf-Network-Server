@@ -23,7 +23,8 @@ class UserFeedbackCredentials(ServiceCredentials):
     class Config:
         env_prefix = "USER_FEEDBACK_"
 
-@field_validator('api_key', mode='before')    def validate_required_fields(cls, v):
+@field_validator('api_key', mode='before')
+    def validate_required_fields(cls, v):
         if not v:
             raise ValueError("API key is required")
         return v
@@ -43,18 +44,21 @@ class UserFeedbackItem(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
 
-@field_validator('feedback_type', mode='before')    def validate_feedback_type(cls, v):
+@field_validator('feedback_type', mode='before')
+    def validate_feedback_type(cls, v):
         valid_types = ["suggestion", "bug", "comment", "rating"]
         if v not in valid_types:
             raise ValueError(f"Feedback type must be one of: {', '.join(valid_types)}")
         return v
 
-@field_validator('rating', mode='before')    def validate_rating(cls, v, values):
+@field_validator('rating', mode='before')
+    def validate_rating(cls, v, values):
         if values.get('feedback_type') == "rating" and (v is None or not 1 <= v <= 5):
             raise ValueError("Rating must be between 1 and 5 for rating feedback type")
         return v
 
-@field_validator('content', mode='before')    def validate_content(cls, v):
+@field_validator('content', mode='before')
+    def validate_content(cls, v):
         if not v:
             raise ValueError("Feedback content is required")
         if len(v) < 3:

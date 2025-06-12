@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
+from pydantic import BaseModel, Enum, Field, enum, field_validator
 
 
 class SoftrIntegrationConfig(BaseModel):

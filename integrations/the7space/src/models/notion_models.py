@@ -5,7 +5,7 @@ Following The HigherSelf Network standardized data structure guidelines.
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
+from pydantic import BaseModel, Enum, Field, enum, field_validator
 
 
 class NotionPropertyType(str, Enum):

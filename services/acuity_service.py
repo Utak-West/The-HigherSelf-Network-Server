@@ -25,7 +25,8 @@ class AcuityCredentials(ServiceCredentials):
     class Config:
         env_prefix = "ACUITY_"
 
-@field_validator('user_id', 'api_key', mode='before')    def validate_required_fields(cls, v):
+@field_validator('user_id', 'api_key', mode='before')
+    def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
         return v
@@ -61,12 +62,14 @@ class AcuityAppointment(BaseModel):
     confirmation_email: Optional[str] = None
     notion_page_id: Optional[str] = None
 
-@field_validator('email', mode='before')    def validate_email(cls, v):
+@field_validator('email', mode='before')
+    def validate_email(cls, v):
         if not v or '@' not in v:
             raise ValueError("Valid email is required")
         return v
 
-@field_validator('first_name', 'last_name', mode='before')    def validate_names(cls, v):
+@field_validator('first_name', 'last_name', mode='before')
+    def validate_names(cls, v):
         if not v:
             raise ValueError("Name fields cannot be empty")
         return v

@@ -143,9 +143,9 @@ jobs:
             if [ ! -f tests/conftest.py ]; then
               mkdir -p tests
               cat > tests/conftest.py << EOF
-import os
-import pytest
-from unittest.mock import patch, MagicMock
+      # import os
+      # import pytest
+      # from unittest.mock import patch, MagicMock
 
 @pytest.fixture(scope="session", autouse=True)
 def set_test_env():

@@ -181,4 +181,3 @@ def configure_art_gallery_automation(server_doc: HigherSelfNetworkServer) -> dic
 
 if __name__ == "__main__":
     main()
-```

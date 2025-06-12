@@ -29,7 +29,8 @@ class WooCommerceCredentials(ServiceCredentials):
     class Config:
         env_prefix = "WOOCOMMERCE_"
 
-@field_validator('url', 'consumer_key', 'consumer_secret', mode='before')    def validate_required_fields(cls, v):
+@field_validator('url', 'consumer_key', 'consumer_secret', mode='before')
+    def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
         return v
@@ -49,12 +50,14 @@ class WooProduct(BaseModel):
     meta_data: List[Dict[str, Any]] = Field(default_factory=list)
     notion_page_id: Optional[str] = None
 
-@field_validator('name', mode='before')    def validate_name(cls, v):
+@field_validator('name', mode='before')
+    def validate_name(cls, v):
         if not v or len(v) < 3:
             raise ValueError("Product name must be at least 3 characters")
         return v
 
-@field_validator('regular_price', mode='before')    def validate_price(cls, v):
+@field_validator('regular_price', mode='before')
+    def validate_price(cls, v):
         if not v:
             raise ValueError("Price is required")
         try:

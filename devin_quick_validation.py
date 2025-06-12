@@ -7,10 +7,10 @@ This script provides rapid validation of the development environment
 for Devin's automated testing system.
 """
 
+import importlib.util
 import os
 import sys
 from pathlib import Path
-import importlib.util
 
 
 def check_python_version():
@@ -20,7 +20,9 @@ def check_python_version():
         print(f"✅ Python {version.major}.{version.minor}.{version.micro} - Compatible")
         return True
     else:
-        print(f"❌ Python {version.major}.{version.minor}.{version.micro} - Requires Python 3.8+")
+        print(
+            f"❌ Python {version.major}.{version.minor}.{version.micro} - Requires Python 3.8+"
+        )
         return False
 
 
@@ -64,15 +66,15 @@ def check_environment_variables():
     critical_vars = [
         ("PYTHONPATH", "Python Path"),
     ]
-    
+
     optional_vars = [
         ("TEST_MODE", "Test Mode"),
         ("DISABLE_WEBHOOKS", "Webhook Disable"),
         ("NOTION_API_TOKEN", "Notion API Token"),
     ]
-    
+
     results = []
-    
+
     print("\n🔍 Environment Variables Check:")
     for var, desc in critical_vars:
         if os.environ.get(var):
@@ -81,13 +83,13 @@ def check_environment_variables():
         else:
             print(f"⚠️  {desc} ({var}) - Not set (will be configured)")
             results.append(True)  # Not critical for basic validation
-    
+
     for var, desc in optional_vars:
         if os.environ.get(var):
             print(f"✅ {desc} ({var}) - Set")
         else:
             print(f"ℹ️  {desc} ({var}) - Not set (optional)")
-    
+
     return all(results)
 
 
@@ -95,24 +97,24 @@ def main():
     """Main validation function."""
     print("🚀 Devin Quick Validation - The HigherSelf Network Server")
     print("=" * 60)
-    
+
     # Set PYTHONPATH to current directory
     current_dir = Path(__file__).parent
     os.environ["PYTHONPATH"] = str(current_dir)
-    
+
     checks = []
-    
+
     # Python version check
     print("\n🐍 Python Environment:")
     checks.append(check_python_version())
-    
+
     # Core files check
     print("\n📁 Core Files:")
     checks.append(check_file_exists("main.py", "Main Application File"))
     checks.append(check_file_exists("requirements.txt", "Requirements File"))
     checks.append(check_file_exists("pyproject.toml", "Project Configuration"))
     checks.append(check_file_exists("run_tests.py", "Test Runner"))
-    
+
     # Directory structure check
     print("\n📂 Directory Structure:")
     checks.append(check_directory_exists("agents", "Agents Directory"))
@@ -120,46 +122,49 @@ def main():
     checks.append(check_directory_exists("services", "Services Directory"))
     checks.append(check_directory_exists("models", "Models Directory"))
     checks.append(check_directory_exists("tests", "Tests Directory"))
-    
+
     # Core imports check
     print("\n📦 Core Imports:")
     checks.append(check_import("pathlib", "Pathlib"))
     checks.append(check_import("json", "JSON"))
     checks.append(check_import("os", "OS"))
     checks.append(check_import("sys", "Sys"))
-    
+
     # Project-specific imports (basic)
     print("\n🏗️  Project Imports (Basic):")
     try:
         # Test basic model imports
         from models.base import BaseModel
+
         print("✅ Base Models - Available")
         checks.append(True)
     except Exception as e:
         print(f"❌ Base Models - Error: {e}")
         checks.append(False)
-    
+
     try:
         # Test settings import
         from config.settings import settings
+
         print("✅ Settings Configuration - Available")
         checks.append(True)
     except Exception as e:
         print(f"❌ Settings Configuration - Error: {e}")
         checks.append(False)
-    
+
     # Environment variables check
     checks.append(check_environment_variables())
-    
+
     # Test execution capability
     print("\n🧪 Test Execution Check:")
     try:
         import subprocess
+
         result = subprocess.run(
             ["python3", "-c", "print('Test execution works')"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
         if result.returncode == 0:
             print("✅ Test Execution - Working")
@@ -170,21 +175,21 @@ def main():
     except Exception as e:
         print(f"❌ Test Execution - Error: {e}")
         checks.append(False)
-    
+
     # Summary
     print("\n" + "=" * 60)
     print("📊 VALIDATION SUMMARY")
     print("=" * 60)
-    
+
     passed = sum(checks)
     total = len(checks)
     success_rate = (passed / total) * 100
-    
+
     print(f"Total Checks: {total}")
     print(f"Passed: {passed}")
     print(f"Failed: {total - passed}")
     print(f"Success Rate: {success_rate:.1f}%")
-    
+
     if success_rate >= 90:
         print("\n🎉 VALIDATION PASSED!")
         print("✅ Environment is ready for Devin integration")

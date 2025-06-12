@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
+from pydantic import BaseModel, Enum, Field, enum, field_validator
 
 
 class ArtworkStatus(str, Enum):

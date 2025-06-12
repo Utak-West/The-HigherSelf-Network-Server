@@ -51,7 +51,7 @@ try:
     )
     CACHE_HEALTH = Gauge(
         'enhanced_cache_health',
-        default_ttl: int = 300,  # 5 minutes default
+        default_ttl: int = 300  # 5 minutes default
         logger: Optional[logging.Logger] = None,
     ):
         """

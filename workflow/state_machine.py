@@ -26,7 +26,7 @@ from typing import (
     Union,
 )
 
-from pydantic import BaseModel, Field, field_validatorfrom, import, logger, loguru
+from pydantic import BaseModel, Field, field_validator, logger, loguru
 
 from knowledge import SemanticSearch, get_semantic_search
 from models.notion_db_models import WorkflowInstance
