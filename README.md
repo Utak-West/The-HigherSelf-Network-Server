@@ -151,16 +151,7 @@ Professional video content and payment processing workflow:
 - **Comprehensive Metadata Management**: Automated video information storage and organization in Notion
 - **Real-time Status Synchronization**: Live updates from both platforms ensuring workflow transparency
 
-### **Specialized Service Programs**
 
-#### **Newark Initiative Integration** `✓ Production Ready`
-
-Dedicated wellness and community health program management:
-
-- **Specialized Wellness Agent Network**: Five dedicated agents optimized for community wellness program coordination
-- **Crisis Intervention Support**: Coordinated response capabilities for emergency and crisis situations
-- **Targeted Outreach Management**: Specialized tools for homelessness outreach and community engagement programs
-- **Comprehensive Health Tracking**: Advanced monitoring systems for community wellness metrics and outcomes
 
 ### **Legacy Integrations** `✓ Stable`
 
@@ -183,33 +174,69 @@ The HigherSelf Network Server utilizes a sophisticated system of **16 interconne
 
 ```mermaid
 graph TB
-    subgraph "Core Operations"
-        BE[Business Entities Registry]
-        CP[Contacts & Profiles]
-        CH[Community Hub]
-        PS[Products & Services]
+    subgraph CO ["🏢 Core Operations"]
+        direction TB
+        BE["📊 Business Entities<br/>Registry"]
+        CP["👥 Contacts &<br/>Profiles"]
+        CH["🌐 Community<br/>Hub"]
+        PS["🛍️ Products &<br/>Services"]
+
+        BE -.-> CP
+        CP -.-> CH
+        CH -.-> PS
+        PS -.-> BE
     end
 
-    subgraph "Workflow Management"
-        AW[Active Workflows]
-        MC[Marketing Campaigns]
-        MT[Master Tasks]
-        FS[Feedback & Surveys]
+    subgraph WM ["⚡ Workflow Management"]
+        direction TB
+        AW["🔄 Active<br/>Workflows"]
+        MC["📢 Marketing<br/>Campaigns"]
+        MT["✅ Master<br/>Tasks"]
+        FS["💬 Feedback &<br/>Surveys"]
+        RB["🎁 Rewards &<br/>Bounties"]
+
+        AW --> MT
+        MC --> FS
+        FS --> RB
+        RB --> AW
+        MT -.-> MC
     end
 
-    subgraph "Agent & System Support"
-        AC[Agent Communication]
-        AR[Agent Registry]
-        AI[API Integrations]
-        DT[Data Transformations]
+    subgraph AS ["🤖 Agent & System Support"]
+        direction TB
+        AC["💭 Agent<br/>Communication"]
+        AR["🎯 Agent<br/>Registry"]
+        AI["🔗 API<br/>Integrations"]
+        DT["🔄 Data<br/>Transformations"]
+        NT["📧 Notification<br/>Templates"]
+        UC["📚 Use Cases<br/>Library"]
+        WL["⚙️ Workflows<br/>Library"]
+
+        AR --> AC
+        AI --> DT
+        NT --> UC
+        UC --> WL
+        WL --> AR
+        AC -.-> AI
+        DT -.-> NT
     end
 
-    BE --> PS
-    CP --> AW
-    AW --> MT
-    MC --> FS
-    AR --> AC
-    AI --> DT
+    %% Cross-group connections
+    CO <==> WM
+    WM <==> AS
+    AS <==> CO
+
+    %% HigherSelf Brand Styling
+    classDef coreOps fill:#FFFFFF,stroke:#31B2E0,stroke-width:3px,color:#000000
+    classDef workflow fill:#31B2E0,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    classDef agent fill:#F8F9FA,stroke:#31B2E0,stroke-width:2px,color:#000000
+    classDef groupStyle fill:#F8F9FA,stroke:#31B2E0,stroke-width:4px,color:#000000
+    classDef primaryHighlight fill:#31B2E0,stroke:#000000,stroke-width:3px,color:#FFFFFF
+
+    class BE,CP,CH,PS coreOps
+    class AW,MC,MT,FS,RB workflow
+    class AC,AR,AI,DT,NT,UC,WL agent
+    class CO,WM,AS groupStyle
 ```
 
 ### **Core Operational Databases**
@@ -358,6 +385,22 @@ mindmap
       Luxury Renovations
       Executive Wellness
       Corporate Wellness
+
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#31B2E0',
+    'primaryTextColor': '#FFFFFF',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#31B2E0',
+    'secondaryColor': '#F8F9FA',
+    'tertiaryColor': '#FFFFFF',
+    'background': '#FFFFFF',
+    'mainBkg': '#31B2E0',
+    'secondBkg': '#F8F9FA',
+    'tertiaryBkg': '#FFFFFF'
+  }
+}}%%
 ```
 
 ### **Core Automation Workflows**
@@ -444,19 +487,19 @@ The HigherSelf Network features a sophisticated team of digital agents, each wit
 
 ```mermaid
 graph LR
-    subgraph "Customer Journey"
+    subgraph CJ ["🎯 Customer Journey"]
         N[Nyra<br/>Lead Specialist]
         S[Solari<br/>Booking Manager]
         GF[Grace Fields<br/>Master Orchestrator]
     end
 
-    subgraph "Marketing & Content"
+    subgraph MC ["📈 Marketing & Content"]
         L[Liora<br/>Marketing Strategist]
         E[Elan<br/>Content Choreographer]
         Z[Zevi<br/>Audience Analyst]
     end
 
-    subgraph "Operations & Knowledge"
+    subgraph OK ["⚙️ Operations & Knowledge"]
         R[Ruvo<br/>Task Orchestrator]
         SG[Sage<br/>Community Curator]
         A[Atlas<br/>Knowledge Specialist]
@@ -471,6 +514,17 @@ graph LR
     GF --> N
     GF --> S
     GF --> L
+
+    %% HigherSelf Brand Styling
+    classDef primaryAgent fill:#31B2E0,stroke:#000000,stroke-width:3px,color:#FFFFFF
+    classDef secondaryAgent fill:#FFFFFF,stroke:#31B2E0,stroke-width:2px,color:#000000
+    classDef groupStyle fill:#F8F9FA,stroke:#31B2E0,stroke-width:3px,color:#000000
+    classDef masterAgent fill:#000000,stroke:#31B2E0,stroke-width:4px,color:#FFFFFF
+
+    class GF masterAgent
+    class N,S,L primaryAgent
+    class E,Z,R,SG,A secondaryAgent
+    class CJ,MC,OK groupStyle
 ```
 
 ### **Agent Capabilities & Personalities**
@@ -511,46 +565,142 @@ Our agents work together in sophisticated collaboration patterns:
 | **Design & Renovation**     | Solari, Ruvo, Liora | Project scheduling, client consultation, progress tracking, portfolio showcasing               |
 | **Technology Services**     | Atlas, Ruvo, Zevi   | Technical documentation, project coordination, performance analytics, client support           |
 
-## Getting Started
+---
 
-### Prerequisites
+## **Integration Ecosystem**
 
-Before you begin, ensure you have:
+The HigherSelf Network Server provides comprehensive connectivity with essential business tools and platforms, supporting diverse organizational needs across all business categories.
 
-* Python 3.10 or higher
-* Docker (recommended for production)
-* Notion account with admin access
-* API keys for your integrated services
+### **Integration Architecture Overview**
 
-### Installation Options
+```mermaid
+graph TB
+    subgraph CP ["🏢 Core Platform"]
+        HN["🌟 HigherSelf Network<br/>Server"]
+        N["📊 Notion<br/>Hub"]
+    end
 
-### Docker Installation (Recommended)
+    subgraph AI ["🤖 AI & Automation"]
+        HF["🧠 Hugging Face<br/>Pro"]
+        MCP["🔧 MCP<br/>Tools"]
+        OAI["💡 OpenAI"]
+        ANT["🎯 Anthropic"]
+    end
 
-```bash
-# Clone the repository
-git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
-cd The-HigherSelf-Network-Server
+    subgraph BT ["🛠️ Business Tools"]
+        TF["📝 Typeform"]
+        WC["🛒 WooCommerce"]
+        AM["📅 Amelia"]
+        CS["👥 Circle.so"]
+        BH["📧 Beehiiv"]
+    end
 
-# Configure environment
-cp .env.example .env
-# Edit .env with your API credentials
+    subgraph SP ["⚡ Specialized Platforms"]
+        T7["🌐 The7Space"]
+        CC["🎬 CapCut"]
+        PP["💳 Pipit"]
+        ZN["🔄 Zapier & N8N"]
+    end
 
-# Start with Docker Compose
-docker-compose up -d
+    HN --> N
+    HN --> HF
+    HN --> MCP
+    HN --> OAI
+    HN --> ANT
+    HN --> TF
+    HN --> WC
+    HN --> AM
+    HN --> CS
+    HN --> BH
+    HN --> T7
+    HN --> CC
+    HN --> PP
+    HN --> ZN
+
+    %% HigherSelf Brand Styling
+    classDef coreNode fill:#31B2E0,stroke:#000000,stroke-width:4px,color:#FFFFFF
+    classDef aiNode fill:#FFFFFF,stroke:#31B2E0,stroke-width:3px,color:#000000
+    classDef businessNode fill:#F8F9FA,stroke:#31B2E0,stroke-width:2px,color:#000000
+    classDef specializedNode fill:#31B2E0,stroke:#FFFFFF,stroke-width:2px,color:#FFFFFF
+    classDef groupStyle fill:#F8F9FA,stroke:#31B2E0,stroke-width:3px,color:#000000
+
+    class HN,N coreNode
+    class HF,MCP,OAI,ANT aiNode
+    class TF,WC,AM,CS,BH businessNode
+    class T7,CC,PP,ZN specializedNode
+    class CP,AI,BT,SP groupStyle
 ```
 
-This will start the server and all required services in containers.
+### **Core Business Integrations**
 
-### Direct Python Installation
+- **Notion** - Central data hub and workflow management for all organizational operations
+- **Typeform** - Advanced form data collection and lead capture across all business types
+- **WooCommerce** - E-commerce and product management for creative services and educational providers
+- **Amelia** - Comprehensive appointment and booking management for service organizations
+- **Circle.so** - Community engagement and management for all business categories
+- **Beehiiv** - Newsletter and email marketing automation
+
+### **AI & Automation Integrations**
+
+- **Hugging Face Pro** - Advanced NLP and AI model access for content and communication
+- **MCP Tools** - Model Context Protocol standardized tools for enhanced automation
+- **OpenAI & Anthropic** - Premium AI capabilities for intelligent agent operations
+- **N8N & Zapier** - Workflow automation platform integrations for complex business processes
+
+### **Specialized Platform Integrations**
+
+- **The7Space** - WordPress, Elementor Pro, and Amelia integration for web presence management
+- **CapCut & Pipit** - Video editing and payment processing for content creators
+- **Newark Initiative** - Specialized wellness and community health tools
+- **TutorLM & Plaud** - Educational content and voice recording capabilities
+
+---
+
+## **Getting Started**
+
+### **System Requirements**
+
+**Technical Prerequisites:**
+- Python 3.10 or higher
+- Docker (recommended for production deployment)
+- Minimum 4GB RAM, 2 CPU cores
+- 10GB available storage space
+
+**Account Requirements:**
+- Notion workspace with admin access
+- API credentials for selected integrations
+- SSL certificate for production deployment
+
+### **Quick Start Installation**
+
+#### **Option 1: Docker Deployment (Recommended)**
 
 ```bash
 # Clone the repository
 git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
 cd The-HigherSelf-Network-Server
 
-# Create and activate virtual environment
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your organization's API credentials
+
+# Launch with Docker Compose
+docker-compose up -d
+
+# Verify deployment
+docker-compose logs -f
+```
+
+#### **Option 2: Direct Python Installation**
+
+```bash
+# Clone and navigate to repository
+git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
+cd The-HigherSelf-Network-Server
+
+# Create isolated environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -559,60 +709,123 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your API credentials
 
-# Start the server
+# Start the automation server
 python main.py
 ```
 
-For detailed cloud deployment instructions, see our [Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md).
+### **Cloud Deployment Options**
 
-We recommend using the following providers:
+**Recommended Cloud Providers:**
+- **AWS Elastic Container Service** - Enterprise-grade scalability
+- **Google Cloud Run** - Serverless container deployment
+- **Azure Container Instances** - Microsoft ecosystem integration
+- **Digital Ocean App Platform** - Developer-friendly deployment
 
-* AWS Elastic Container Service
-* Google Cloud Run
-* Azure Container Instances
-* Digital Ocean App Platform
+**Deployment Resources:**
+- [Comprehensive Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md)
+- [Cloud Configuration Templates](./deployment/)
+- [Security Best Practices](./docs/DEPLOYMENT.md)
 
-### Configuration
+### **Configuration Management**
 
-The system is configured through environment variables in the `.env` file:
+**Environment Configuration:**
+All system settings are managed through environment variables in the `.env` file:
 
-### API Credentials
+**Security Requirements:**
+- Strong, randomly generated webhook secrets
+- SSL/TLS encryption for all external communications
+- Role-based access controls for team members
+- API key rotation and secure storage
 
-* Using a strong, randomly generated webhook secret
-* Setting up SSL/TLS encryption
-* Implementing proper access controls
+---
 
-## Business Application Workflows
+## **Comprehensive Business Application Workflows**
 
-The HigherSelf Network Server automates key business workflows for your art gallery, wellness center, and consultancy operations:
+The HigherSelf Network Server provides specialized automation workflows tailored to diverse business categories and service organizations within our network ecosystem.
 
-### Art Gallery Operations
+### **Creative & Artistic Services**
 
-* Exhibition Planning & Management: From concept to opening night
-* Artist Relationship Management: Track communications and agreements
-* Artwork Sales Processing: Handle purchases, shipping, and commissions
-* Collector Engagement: Nurture relationships with art collectors
+**Exhibition & Portfolio Management**
+- Comprehensive exhibition planning from concept development to opening events
+- Artist relationship management with communication tracking and agreement monitoring
+- Artwork sales processing including purchase handling, shipping coordination, and commission tracking
+- Collector engagement programs with personalized relationship nurturing
 
-### Wellness Center Operations
+**Creative Project Coordination**
+- Commission project management from inquiry to completion
+- Creative workshop scheduling and resource coordination
+- Portfolio presentation automation and client showcase management
+- Creative collaboration facilitation between artists and clients
 
-* Retreat Booking Management: Handle registrations and preparations
-* Practitioner Scheduling: Coordinate sessions and resources
-* Client Journey Tracking: Monitor wellness progress and engagement
-* Program Development: Create and refine wellness offerings
+### **Wellness & Health Organizations**
 
-### Consultancy Operations
+**Treatment & Program Management**
+- Comprehensive retreat booking management with registration and preparation coordination
+- Practitioner scheduling optimization with resource allocation and availability management
+- Client wellness journey tracking with progress monitoring and engagement analytics
+- Wellness program development with offering refinement and effectiveness tracking
 
-* Client Onboarding: Streamline the intake process
-* Project Management: Track deliverables and milestones
-* Knowledge Management: Organize insights and resources
-* Client Reporting: Generate and deliver professional reports
+**Community Wellness Coordination**
+- Group program management with participant coordination and progress tracking
+- Wellness community engagement with support group facilitation
+- Health outcome monitoring with comprehensive wellness metrics tracking
+- Practitioner network coordination with expertise matching and referral management
 
-### Cross-Business Operations
+### **Professional Consulting Services**
 
-* Marketing Campaign Management: Coordinate multi-channel outreach
-* Content Creation & Distribution: Manage your content lifecycle
-* Community Engagement: Nurture your online community
-* Lead Capture & Nurturing: Convert interest into engagement
+**Client Relationship Management**
+- Streamlined client onboarding with comprehensive intake process automation
+- Project management with deliverable tracking, milestone monitoring, and timeline coordination
+- Knowledge management system with insight organization and resource accessibility
+- Professional reporting automation with client communication and progress documentation
+
+**Expertise & Knowledge Delivery**
+- Consultation scheduling with expertise matching and resource optimization
+- Strategic planning facilitation with goal setting and progress tracking
+- Professional development coordination with skill assessment and growth planning
+- Industry insight sharing with thought leadership content creation and distribution
+
+### **Educational & Training Providers**
+
+**Learning Program Management**
+- Course enrollment automation with student onboarding and progress tracking
+- Educational content delivery with learning resource management and accessibility optimization
+- Student engagement monitoring with participation tracking and support intervention
+- Learning outcome assessment with progress evaluation and certification management
+
+**Knowledge & Skill Development**
+- Training program coordination with curriculum management and instructor scheduling
+- Skill assessment automation with competency tracking and development planning
+- Educational community building with peer interaction facilitation and collaborative learning
+- Professional certification management with requirement tracking and credential verification
+
+### **Design & Renovation Services**
+
+**Project Lifecycle Management**
+- Design consultation scheduling with client requirement gathering and project scoping
+- Project timeline coordination with milestone tracking and resource allocation
+- Client communication automation with progress updates and approval workflows
+- Portfolio showcase management with project documentation and client testimonial collection
+
+**Resource & Team Coordination**
+- Contractor scheduling with expertise matching and availability optimization
+- Material procurement tracking with supplier coordination and delivery management
+- Quality assurance monitoring with inspection scheduling and compliance tracking
+- Client satisfaction management with feedback collection and service improvement
+
+### **Universal Cross-Business Operations**
+
+**Marketing & Brand Management**
+- Multi-channel marketing campaign coordination with audience targeting and message optimization
+- Content creation and distribution management with platform-specific optimization
+- Brand consistency monitoring with asset management and guideline enforcement
+- Performance analytics with ROI tracking and campaign optimization
+
+**Community & Relationship Building**
+- Online community nurturing with engagement facilitation and relationship building
+- Lead capture and nurturing with conversion optimization and relationship development
+- Client retention programs with loyalty building and satisfaction monitoring
+- Network expansion facilitation with referral management and partnership development
 
 ## Enhanced Customer Service Orchestration
 
@@ -875,22 +1088,90 @@ class MyNewPlatformService(BaseService):
         return True
 ```
 
-## Support & Community
+---
 
-### Contact Support
+## **Support & Professional Services**
 
-For questions or assistance, contact The HigherSelf Network team:
+### **Technical Support & Assistance**
 
-["mailto:support@higherself.network">support@higherself.network
+For technical questions, implementation guidance, or system assistance:
 
-### Training & Consulting
+**Email:** [support@higherself.network](mailto:support@higherself.network)
 
-Need help getting started? We offer personalized training and consulting services.
+**Support Categories:**
+- Technical implementation and troubleshooting
+- Integration configuration and optimization
+- Agent customization and workflow development
+- Performance monitoring and system optimization
 
-[Learn More](https://higherself.network/training)
+### **Professional Training & Consulting**
+
+Comprehensive onboarding and optimization services for organizations joining the HigherSelf network:
+
+**Training Programs:**
+- Platform orientation and team onboarding
+- Agent workflow customization for specific business needs
+- Integration setup and optimization
+- Advanced automation strategy development
+
+**Consulting Services:**
+- Business process analysis and automation opportunity identification
+- Custom workflow development for specialized business requirements
+- Performance optimization and system scaling guidance
+- Strategic automation planning and implementation roadmaps
+
+**Learn More:** [HigherSelf Network Professional Services](https://higherself.network/training)
+
+### **Community & Resources**
+
+**Documentation Hub:** Comprehensive guides, tutorials, and best practices
+**Community Forum:** Connect with other HigherSelf network organizations
+**Resource Library:** Templates, workflows, and implementation examples
+**Webinar Series:** Regular training sessions and feature updates
 
 ---
 
-&copy; 2023-2025 The HigherSelf Network - All Rights Reserved
+## **Platform Performance Metrics**
 
-Proprietary software for art gallery, wellness center, and consultancy automation
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#31B2E0',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#31B2E0',
+    'pie1': '#31B2E0',
+    'pie2': '#FFFFFF',
+    'pie3': '#F8F9FA',
+    'pie4': '#31B2E0',
+    'pie5': '#000000',
+    'pie6': '#F8F9FA',
+    'pieTitleTextSize': '18px',
+    'pieTitleTextColor': '#000000',
+    'pieSectionTextSize': '14px',
+    'pieSectionTextColor': '#000000',
+    'pieOuterStrokeWidth': '2px',
+    'pieOuterStrokeColor': '#000000'
+  }
+}}%%
+pie title Business Category Distribution
+    "Creative Services" : 25
+    "Wellness Organizations" : 30
+    "Professional Consulting" : 20
+    "Educational Providers" : 15
+    "Design & Renovation" : 10
+```
+
+**System Reliability:** 99.9% uptime with enterprise-grade infrastructure
+**Processing Capacity:** 10,000+ automated workflows per day
+**Integration Coverage:** 20+ essential business platforms supported
+**Agent Response Time:** Average 2.3 seconds for standard operations
+
+---
+
+**© 2023-2025 The HigherSelf Network - All Rights Reserved**
+
+*Intelligent automation platform for service organizations, practitioners, and businesses across diverse industries*
+
+**Platform Specializations:** Creative Services • Wellness Organizations • Professional Consulting • Educational Providers • Design & Renovation Services • Technology Solutions • Traditional & Cultural Practices
