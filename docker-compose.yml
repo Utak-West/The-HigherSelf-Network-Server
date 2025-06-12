@@ -30,7 +30,6 @@ services:
       - mongodb
       - redis
       - consul
-      - neo4j
     labels:
       - "prometheus.scrape=true"
       - "prometheus.port=8000"
@@ -198,39 +197,6 @@ services:
       - prometheus
     restart: unless-stopped
 
-  neo4j:
-    image: neo4j:5.23-community
-    container_name: higherselfnetwork-neo4j
-    ports:
-      - "${NEO4J_HTTP_PORT:-7474}:7474"
-      - "${NEO4J_BOLT_PORT:-7687}:7687"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/var/lib/neo4j/import
-      - neo4j_plugins:/plugins
-    environment:
-      - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-graphiti_password}
-      - NEO4J_PLUGINS=["apoc"]
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
-      - NEO4J_dbms_security_procedures_allowlist=apoc.*
-      - NEO4J_dbms_memory_heap_initial__size=512m
-      - NEO4J_dbms_memory_heap_max__size=2G
-      - NEO4J_dbms_memory_pagecache_size=1G
-    healthcheck:
-      test: ["CMD", "cypher-shell", "-u", "${NEO4J_USER:-neo4j}", "-p", "${NEO4J_PASSWORD:-graphiti_password}", "RETURN 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    restart: unless-stopped
-    networks:
-      - higherselfnetwork
-    labels:
-      - "prometheus.scrape=true"
-      - "prometheus.port=7474"
-      - "traefik.enable=false"
-
 volumes:
   logs:
   data:
@@ -239,10 +205,6 @@ volumes:
   consul_data:
   prometheus_data:
   grafana_data:
-  neo4j_data:
-  neo4j_logs:
-  neo4j_import:
-  neo4j_plugins:
 
 networks:
   higherselfnetwork:

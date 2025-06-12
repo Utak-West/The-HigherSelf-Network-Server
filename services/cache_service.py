@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 from loguru import logger
 from prometheus_client import Counter, Gauge, Histogram
 
-from services.redis_service import get_redis_service
+from services.redis_service import redis_service
 
 # Metrics for monitoring cache performance
 CACHE_HITS = Counter(
@@ -149,7 +149,6 @@ class MultiLevelCache:
 
         try:
             # Try to get from cache
-            redis_service = get_redis_service()
             cached_value = await redis_service.async_get(cache_key, as_json=as_json)
 
             # Record metrics
@@ -210,9 +209,6 @@ class MultiLevelCache:
             # Handle max size
             max_size = self.max_size_map.get(cache_type, 1000)
 
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Maintain the cache index
             await redis_service.async_sadd(index_key, cache_key)
 
@@ -259,9 +255,6 @@ class MultiLevelCache:
         cache_key = self._get_key(key, cache_type)
 
         try:
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Delete from Redis
             success = await redis_service.async_delete(cache_key) > 0
 
@@ -297,9 +290,6 @@ class MultiLevelCache:
         cache_key = self._get_key(key, cache_type)
 
         try:
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Check if key exists in Redis
             result = await redis_service.async_exists(cache_key)
 
@@ -327,9 +317,6 @@ class MultiLevelCache:
         start_time = time.time()
 
         try:
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Get keys pattern
             pattern = f"cache:{cache_type.value}:*"
 
@@ -376,9 +363,6 @@ class MultiLevelCache:
             Number of entries evicted
         """
         try:
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Get all keys in the index
             all_keys = await redis_service.async_smembers(index_key)
 
@@ -413,9 +397,6 @@ class MultiLevelCache:
         stats = {"levels": {}, "types": {}}
 
         try:
-            # Get Redis service
-            redis_service = get_redis_service()
-
             # Gather stats by level
             for level in CacheLevel:
                 level_stats = {"ttl": self.ttl_map.get(level, 0), "types": {}}
