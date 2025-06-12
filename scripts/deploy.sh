@@ -88,15 +88,27 @@ fi
 case $ENV in
     dev)
         echo "Starting development deployment..."
-        docker-compose up -d
+        if command -v "docker compose" &> /dev/null; then
+            docker compose up -d
+        else
+            docker-compose up -d
+        fi
         ;;
     staging)
         echo "Starting staging deployment..."
-        docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+        if command -v "docker compose" &> /dev/null; then
+            docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+        else
+            docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+        fi
         ;;
     prod)
         echo "Starting production deployment..."
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+        if command -v "docker compose" &> /dev/null; then
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+        else
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+        fi
         ;;
 esac
 

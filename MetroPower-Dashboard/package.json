@@ -1,0 +1,45 @@
+{
+  "name": "metropower-dashboard",
+  "version": "1.0.0",
+  "description": "MetroPower Dashboard - Full-stack employee tracking and project management system for Tucker Branch",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix backend",
+    "start": "npm start --prefix backend",
+    "build": "node scripts/vercel-build.js",
+    "test": "npm test --prefix backend",
+    "migrate": "npm run migrate --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "test-db": "node scripts/test-db-connection.js",
+    "vercel-build": "node scripts/vercel-build.js",
+    "postinstall": "npm install --prefix backend",
+    "lint": "npm run lint --prefix backend",
+    "lint:fix": "npm run lint:fix --prefix backend",
+    "format": "npm run format --prefix backend",
+    "validate": "npm run validate --prefix backend"
+  },
+  "keywords": [
+    "workforce-management",
+    "employee-tracking",
+    "project-management",
+    "dashboard",
+    "construction",
+    "metropower",
+    "tucker-branch",
+    "higherself-network"
+  ],
+  "author": "The HigherSelf Network",
+  "license": "PROPRIETARY",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Utak-West/The-HigherSelf-Network-Server"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

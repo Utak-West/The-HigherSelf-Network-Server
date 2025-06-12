@@ -1,8 +1,8 @@
 # Devin AI Integration Guide
 ## The HigherSelf Network Server - AI Agent Communication Protocol
 
-> **Version**: 1.0.0  
-> **Last Updated**: 2025-06-12  
+> **Version**: 1.0.0
+> **Last Updated**: 2025-06-12
 > **Target Agent**: Devin AI (Autonomous Software Engineer)
 
 ---
@@ -48,7 +48,7 @@ python3 scripts/devin_simple_validation.py
 python3 scripts/devin_test_server.py
 
 # 5. Full deployment (if validation passes)
-docker-compose up -d
+docker compose up -d
 
 # 6. Verify health
 curl http://localhost:8000/health
@@ -151,7 +151,7 @@ type(scope): description
 
 Examples:
 - fix(api): resolve import error in crawl_router.py
-- feat(agents): add Devin training protocol  
+- feat(agents): add Devin training protocol
 - docs(readme): update deployment instructions
 - refactor(services): optimize notion service performance
 ```
@@ -190,7 +190,7 @@ python3 scripts/devin_deployment_assistant.py validate
 python3 scripts/devin_test_server.py
 
 # Full deployment validation
-docker-compose up -d && curl http://localhost:8000/health
+docker compose up -d && curl http://localhost:8000/health
 ```
 
 ## 🚨 Error Resolution Patterns
@@ -239,13 +239,13 @@ python3 scripts/devin_deployment_assistant.py reset
 #### Deployment Issues
 ```bash
 # Check container status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Restart services
-docker-compose down && docker-compose up -d
+docker compose down && docker compose up -d
 
 # Health check
 curl -v http://localhost:8000/health

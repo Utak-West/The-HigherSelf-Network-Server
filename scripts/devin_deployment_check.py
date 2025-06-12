@@ -38,14 +38,18 @@ def check_docker_status() -> bool:
     """Check if Docker services are running."""
     log("Checking Docker services...")
 
-    # Check if docker-compose is available
-    success, _, _ = run_command("docker-compose --version")
+    # Check if docker compose is available (try modern first, then legacy)
+    success, _, _ = run_command("docker compose version")
     if not success:
-        log("Docker Compose not available", "ERROR")
-        return False
+        success, _, _ = run_command("docker-compose --version")
+        if not success:
+            log("Docker Compose not available", "ERROR")
+            return False
 
-    # Check container status
-    success, stdout, stderr = run_command("docker-compose ps --format json")
+    # Check container status (try modern first, then legacy)
+    success, stdout, stderr = run_command("docker compose ps --format json")
+    if not success:
+        success, stdout, stderr = run_command("docker-compose ps --format json")
     if not success:
         log("Failed to get container status", "ERROR")
         return False

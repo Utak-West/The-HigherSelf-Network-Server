@@ -93,13 +93,24 @@ class DevinDeployment:
         if not self.run_command("docker --version", "Docker Version Check"):
             return False
 
-        # Check if docker-compose is available
-        if not self.run_command("docker-compose --version", "Docker Compose Check"):
+        # Check if docker compose is available (try modern first, then legacy)
+        if not (
+            self.run_command("docker compose version", "Docker Compose Check")
+            or self.run_command(
+                "docker-compose --version", "Docker Compose Check (Legacy)"
+            )
+        ):
             return False
 
-        # Validate docker-compose.yml
-        if not self.run_command(
-            "docker-compose config", "Docker Compose Configuration Validation"
+        # Validate docker-compose.yml (try modern first, then legacy)
+        if not (
+            self.run_command(
+                "docker compose config", "Docker Compose Configuration Validation"
+            )
+            or self.run_command(
+                "docker-compose config",
+                "Docker Compose Configuration Validation (Legacy)",
+            )
         ):
             return False
 
@@ -109,17 +120,28 @@ class DevinDeployment:
         """Build Docker images for deployment."""
         self.log("Building Docker images")
 
-        return self.run_command("docker-compose build --no-cache", "Docker Image Build")
+        # Try modern command first, then legacy
+        return self.run_command(
+            "docker compose build --no-cache", "Docker Image Build"
+        ) or self.run_command(
+            "docker-compose build --no-cache", "Docker Image Build (Legacy)"
+        )
 
     def deploy_services(self) -> bool:
         """Deploy services using Docker Compose."""
         self.log("Deploying services")
 
-        # Stop any existing services
-        self.run_command("docker-compose down", "Stop Existing Services")
+        # Stop any existing services (try modern first, then legacy)
+        stop_success = self.run_command(
+            "docker compose down", "Stop Existing Services"
+        ) or self.run_command("docker-compose down", "Stop Existing Services (Legacy)")
+        if not stop_success:
+            self.log("Warning: Could not stop existing services", "WARNING")
 
-        # Start services in development mode
-        return self.run_command("docker-compose up -d", "Start Services")
+        # Start services in development mode (try modern first, then legacy)
+        return self.run_command(
+            "docker compose up -d", "Start Services"
+        ) or self.run_command("docker-compose up -d", "Start Services (Legacy)")
 
     def validate_deployment(self) -> bool:
         """Validate that deployment is working."""
