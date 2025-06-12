@@ -133,7 +133,7 @@ _devin_commands() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts="validate test server health status fix docs setup commit-ready start-dev quick-test"
-    
+
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }

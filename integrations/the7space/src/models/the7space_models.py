@@ -12,6 +12,7 @@ from pydantic import BaseModel, Enum, Field, enum, field_validator
 
 class ArtworkStatus(str, Enum):
     """Status of artwork in the gallery"""
+
     AVAILABLE = "available"
     SOLD = "sold"
     ON_HOLD = "on_hold"
@@ -21,6 +22,7 @@ class ArtworkStatus(str, Enum):
 
 class EventType(str, Enum):
     """Types of events at The 7 Space"""
+
     EXHIBITION = "exhibition"
     WORKSHOP = "workshop"
     CLASS = "class"
@@ -32,6 +34,7 @@ class EventType(str, Enum):
 
 class ServiceType(str, Enum):
     """Types of wellness services offered"""
+
     YOGA = "yoga"
     MEDITATION = "meditation"
     SOUND_HEALING = "sound_healing"
@@ -43,6 +46,7 @@ class ServiceType(str, Enum):
 
 class Artist(BaseModel):
     """Artist model for The 7 Space gallery"""
+
     id: UUID
     name: str
     bio: str
@@ -65,13 +69,14 @@ class Artist(BaseModel):
                 "social_media": {"instagram": "@janedoeart", "twitter": "@janedoe"},
                 "commission_rate": 0.4,
                 "represented_since": "2023-01-15T00:00:00Z",
-                "notion_page_id": "7a774b0e-9abc-4def-8123-456789012345"
+                "notion_page_id": "7a774b0e-9abc-4def-8123-456789012345",
             }
         }
 
 
 class Artwork(BaseModel):
     """Artwork model for gallery inventory"""
+
     id: UUID
     title: str
     artist_id: UUID
@@ -103,13 +108,14 @@ class Artwork(BaseModel):
                 "location": "Main Gallery - North Wall",
                 "image_urls": ["https://example.com/artwork1.jpg"],
                 "tags": ["abstract", "landscape", "warm colors"],
-                "notion_page_id": "8b774b0e-9abc-4def-8123-456789012346"
+                "notion_page_id": "8b774b0e-9abc-4def-8123-456789012346",
             }
         }
 
 
 class Client(BaseModel):
     """Client model for patrons and collectors"""
+
     id: UUID
     name: str
     email: str
@@ -136,22 +142,23 @@ class Client(BaseModel):
                     "street": "123 Art Lover Lane",
                     "city": "Creativeville",
                     "state": "CA",
-                    "zip": "94123"
+                    "zip": "94123",
                 },
                 "preferences": ["abstract", "sculpture", "photography"],
                 "acquisition_history": ["123e4567-e89b-12d3-a456-426614174001"],
                 "marketing_preferences": {
                     "email": True,
                     "sms": False,
-                    "physical_mail": True
+                    "physical_mail": True,
                 },
-                "notion_page_id": "9c774b0e-9abc-4def-8123-456789012347"
+                "notion_page_id": "9c774b0e-9abc-4def-8123-456789012347",
             }
         }
 
 
 class Sale(BaseModel):
     """Sales record model"""
+
     id: UUID
     artwork_id: UUID
     client_id: UUID
@@ -179,13 +186,14 @@ class Sale(BaseModel):
                 "taxes": 206.25,
                 "shipping_cost": 150.00,
                 "invoice_number": "INV-2023-0042",
-                "notion_page_id": "1d774b0e-9abc-4def-8123-456789012348"
+                "notion_page_id": "1d774b0e-9abc-4def-8123-456789012348",
             }
         }
 
 
 class Event(BaseModel):
     """Event model for exhibitions, workshops, classes, etc."""
+
     id: UUID
     title: str
     description: str
@@ -218,13 +226,14 @@ class Event(BaseModel):
                 "materials_provided": ["watercolor paper", "paint samples", "brushes"],
                 "materials_to_bring": ["water container", "pencil", "eraser"],
                 "image_url": "https://example.com/workshop.jpg",
-                "notion_page_id": "2e774b0e-9abc-4def-8123-456789012349"
+                "notion_page_id": "2e774b0e-9abc-4def-8123-456789012349",
             }
         }
 
 
 class WellnessService(BaseModel):
     """Model for wellness services offered"""
+
     id: UUID
     name: str
     description: str
@@ -232,7 +241,9 @@ class WellnessService(BaseModel):
     duration_minutes: int
     price: float
     practitioner: str
-    availability: Dict[str, List[str]]  # e.g., {"Monday": ["10:00-12:00", "14:00-16:00"]}
+    availability: Dict[
+        str, List[str]
+    ]  # e.g., {"Monday": ["10:00-12:00", "14:00-16:00"]}
     location: str = "The 7 Space Wellness Room"
     image_url: Optional[str] = None
     notion_page_id: Optional[str] = None
@@ -250,16 +261,17 @@ class WellnessService(BaseModel):
                 "availability": {
                     "Monday": ["10:00-11:15", "17:30-18:45"],
                     "Wednesday": ["10:00-11:15", "17:30-18:45"],
-                    "Friday": ["10:00-11:15"]
+                    "Friday": ["10:00-11:15"],
                 },
                 "image_url": "https://example.com/restorative-yoga.jpg",
-                "notion_page_id": "3f774b0e-9abc-4def-8123-456789012350"
+                "notion_page_id": "3f774b0e-9abc-4def-8123-456789012350",
             }
         }
 
 
 class Booking(BaseModel):
     """Model for service bookings"""
+
     id: UUID
     service_id: UUID
     client_id: UUID
@@ -282,13 +294,14 @@ class Booking(BaseModel):
                 "payment_status": "paid",
                 "payment_amount": 25.00,
                 "payment_method": "credit_card",
-                "notion_page_id": "4g774b0e-9abc-4def-8123-456789012351"
+                "notion_page_id": "4g774b0e-9abc-4def-8123-456789012351",
             }
         }
 
 
 class Expense(BaseModel):
     """Model for tracking gallery and wellness center expenses"""
+
     id: UUID
     date: datetime
     amount: float
@@ -310,13 +323,14 @@ class Expense(BaseModel):
                 "vendor": "Artist Supply Co.",
                 "payment_method": "business_credit_card",
                 "receipt_url": "https://example.com/receipt.pdf",
-                "notion_page_id": "5h774b0e-9abc-4def-8123-456789012352"
+                "notion_page_id": "5h774b0e-9abc-4def-8123-456789012352",
             }
         }
 
 
 class DashboardConfig(BaseModel):
     """Configuration for dashboard visualizations"""
+
     id: UUID
     name: str
     type: str  # "sales", "client", "inventory", "events", "wellness", "financial"
@@ -337,30 +351,31 @@ class DashboardConfig(BaseModel):
                         "type": "chart",
                         "chart_type": "bar",
                         "title": "Monthly Sales",
-                        "data_source": "sales_by_month"
+                        "data_source": "sales_by_month",
                     },
                     {
                         "type": "metric",
                         "title": "Total Revenue YTD",
-                        "data_source": "revenue_ytd"
-                    }
+                        "data_source": "revenue_ytd",
+                    },
                 ],
                 "filters": {
                     "date_range": {"start": "2023-01-01", "end": "2023-12-31"},
-                    "categories": ["painting", "sculpture", "photography"]
+                    "categories": ["painting", "sculpture", "photography"],
                 },
                 "refresh_interval_minutes": 120,
                 "access_roles": ["admin", "manager"],
                 "notion_database_ids": {
                     "sales": "8b774b0e-9abc-4def-8123-456789012353",
-                    "artworks": "8b774b0e-9abc-4def-8123-456789012354"
-                }
+                    "artworks": "8b774b0e-9abc-4def-8123-456789012354",
+                },
             }
         }
 
 
 class The7SpacePortalConfig(BaseModel):
     """Configuration for The 7 Space web portal"""
+
     site_name: str = "The 7 Space | Art Gallery & Wellness Center"
     logo_url: str
     primary_color: str = "#4A6274"
@@ -385,24 +400,25 @@ class The7SpacePortalConfig(BaseModel):
                 "notion_integration_config": {
                     "artworks_database_id": "8b774b0e-9abc-4def-8123-456789012354",
                     "events_database_id": "8b774b0e-9abc-4def-8123-456789012355",
-                    "services_database_id": "8b774b0e-9abc-4def-8123-456789012356"
+                    "services_database_id": "8b774b0e-9abc-4def-8123-456789012356",
                 },
                 "social_media": {
                     "instagram": "https://instagram.com/the7space",
-                    "facebook": "https://facebook.com/the7space"
+                    "facebook": "https://facebook.com/the7space",
                 },
                 "contact_info": {
                     "email": "info@the7space.com",
                     "phone": "555-123-7777",
-                    "address": "123 Creativity Lane, Artville, CA 94123"
+                    "address": "123 Creativity Lane, Artville, CA 94123",
                 },
-                "about_text": "The 7 Space is a unique art gallery and wellness center..."
+                "about_text": "The 7 Space is a unique art gallery and wellness center...",
             }
         }
 
 
 class ClientPortalUser(BaseModel):
     """User model for client portal access"""
+
     id: UUID
     client_id: UUID
     email: str
@@ -428,13 +444,13 @@ class ClientPortalUser(BaseModel):
                 "account_created": "2023-06-15T10:00:00Z",
                 "preferences": {
                     "theme": "light",
-                    "interests": ["abstract", "sculpture"]
+                    "interests": ["abstract", "sculpture"],
                 },
                 "notification_settings": {
                     "email_new_artwork": True,
                     "email_events": True,
-                    "sms_reminders": False
+                    "sms_reminders": False,
                 },
-                "notion_page_id": "6i774b0e-9abc-4def-8123-456789012357"
+                "notion_page_id": "6i774b0e-9abc-4def-8123-456789012357",
             }
         }

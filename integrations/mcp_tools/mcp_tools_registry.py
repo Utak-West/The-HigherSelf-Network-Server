@@ -16,13 +16,14 @@ from services.cache_service import CacheLevel, CacheType, multi_level_cache
 from services.consul_service import consul_service
 
 # Type for tool handlers
-T = TypeVar('T')
+T = TypeVar("T")
 ToolHandler = Callable[[Dict[str, Any], str], Any]
 AsyncToolHandler = Callable[[Dict[str, Any], str], Any]
 
 
 class ToolCapability(str, Enum):
     """Capabilities that MCP tools can provide."""
+
     RETRIEVAL = "retrieval"
     GENERATION = "generation"
     SEARCH = "search"
@@ -38,40 +39,31 @@ class ToolCapability(str, Enum):
 
 class ToolMetadata(BaseModel):
     """Metadata for MCP tools."""
+
     name: str = Field(..., description="Tool name")
     description: str = Field(..., description="Tool description")
     version: str = Field(..., description="Tool version")
     capabilities: List[ToolCapability] = Field(
-        default_factory=list,
-        description="Tool capabilities"
+        default_factory=list, description="Tool capabilities"
     )
     parameters_schema: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="JSON schema for tool parameters"
+        default_factory=dict, description="JSON schema for tool parameters"
     )
     response_schema: Optional[Dict[str, Any]] = Field(
-        None,
-        description="JSON schema for tool response"
+        None, description="JSON schema for tool response"
     )
     requires_api_key: bool = Field(
-        False,
-        description="Whether the tool requires an API key"
+        False, description="Whether the tool requires an API key"
     )
     rate_limit: Optional[int] = Field(
-        None,
-        description="Rate limit in requests per minute"
+        None, description="Rate limit in requests per minute"
     )
-    pricing_tier: Optional[str] = Field(
-        None,
-        description="Pricing tier for the tool"
-    )
+    pricing_tier: Optional[str] = Field(None, description="Pricing tier for the tool")
     tags: List[str] = Field(
-        default_factory=list,
-        description="Tags for categorizing the tool"
+        default_factory=list, description="Tags for categorizing the tool"
     )
     examples: List[Dict[str, Any]] = Field(
-        default_factory=list,
-        description="Example usages of the tool"
+        default_factory=list, description="Example usages of the tool"
     )
 
 
@@ -85,7 +77,7 @@ class MCPTool(Generic[T]):
         metadata: ToolMetadata,
         handler: T,
         is_async: bool = True,
-        env_var_name: Optional[str] = None
+        env_var_name: Optional[str] = None,
     ):
         """
         Initialize an MCP tool.
@@ -105,7 +97,9 @@ class MCPTool(Generic[T]):
         # Check if API key is required and available
         if metadata.requires_api_key and env_var_name:
             if not os.environ.get(env_var_name):
-                logger.warning(f"API key for {metadata.name} not found in environment variable {env_var_name}")
+                logger.warning(
+                    f"API key for {metadata.name} not found in environment variable {env_var_name}"
+                )
                 self.available = False
 
     @property
@@ -154,7 +148,9 @@ class MCPToolsRegistry:
             # Register with Consul if tool is available
             if tool.available:
                 consul_service.register_mcp_tool_service(tool.name)
-                logger.info(f"Registered tool {tool.name} with capabilities: {tool.metadata.capabilities}")
+                logger.info(
+                    f"Registered tool {tool.name} with capabilities: {tool.metadata.capabilities}"
+                )
             else:
                 logger.warning(f"Tool {tool.name} is registered but not available")
 
@@ -239,8 +235,7 @@ class MCPToolsRegistry:
         return list(self._tools.keys())
 
     def list_tools_with_metadata(
-        self,
-        available_only: bool = True
+        self, available_only: bool = True
     ) -> List[Dict[str, Any]]:
         """
         List all registered MCP tools with their metadata.
@@ -257,11 +252,13 @@ class MCPToolsRegistry:
             if available_only and not tool.available:
                 continue
 
-            result.append({
-                "name": tool.name,
-                "metadata": tool.metadata.dict(),
-                "available": tool.available
-            })
+            result.append(
+                {
+                    "name": tool.name,
+                    "metadata": tool.metadata.dict(),
+                    "available": tool.available,
+                }
+            )
 
         return result
 
@@ -276,7 +273,8 @@ class MCPToolsRegistry:
 
         for capability, tool_names in self._tool_map_by_capability.items():
             available_tools = [
-                name for name in tool_names
+                name
+                for name in tool_names
                 if name in self._tools and self._tools[name].available
             ]
 
@@ -291,7 +289,7 @@ class MCPToolsRegistry:
         parameters: Dict[str, Any],
         agent_id: str,
         use_cache: bool = True,
-        cache_ttl: Optional[int] = None
+        cache_ttl: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Execute an MCP tool.
@@ -313,25 +311,17 @@ class MCPToolsRegistry:
             # Check if tool exists and is available
             tool = self.get_tool(tool_name)
             if not tool:
-                return {
-                    "error": f"Tool {tool_name} not found",
-                    "success": False
-                }
+                return {"error": f"Tool {tool_name} not found", "success": False}
 
             if not tool.available:
-                return {
-                    "error": f"Tool {tool_name} is not available",
-                    "success": False
-                }
+                return {"error": f"Tool {tool_name} is not available", "success": False}
 
             # Generate cache key
             cache_key = self._generate_cache_key(tool_name, parameters)
 
             # Check cache if enabled
             if use_cache:
-                cached_result = await multi_level_cache.get(
-                    cache_key, CacheType.MCP
-                )
+                cached_result = await multi_level_cache.get(cache_key, CacheType.MCP)
 
                 if cached_result is not None:
                     cache_hit = True
@@ -345,13 +335,10 @@ class MCPToolsRegistry:
                         parameters=parameters,
                         duration_ms=duration_ms,
                         outcome="success_cached",
-                        result_summary="Retrieved from cache"
+                        result_summary="Retrieved from cache",
                     )
 
-                    return {
-                        **cached_result,
-                        "from_cache": True
-                    }
+                    return {**cached_result, "from_cache": True}
 
             # Execute tool
             if tool.is_async:
@@ -367,16 +354,13 @@ class MCPToolsRegistry:
                 "result": result,
                 "success": True,
                 "tool_name": tool_name,
-                "from_cache": False
+                "from_cache": False,
             }
 
             # Cache result if enabled
             if use_cache:
                 await multi_level_cache.set(
-                    cache_key,
-                    formatted_result,
-                    CacheType.MCP,
-                    ttl_override=cache_ttl
+                    cache_key, formatted_result, CacheType.MCP, ttl_override=cache_ttl
                 )
 
             # Record duration and analytics
@@ -389,7 +373,7 @@ class MCPToolsRegistry:
                 parameters=parameters,
                 duration_ms=duration_ms,
                 outcome="success",
-                result_summary=str(result)[:100]  # Truncate for summary
+                result_summary=str(result)[:100],  # Truncate for summary
             )
 
             return formatted_result
@@ -404,7 +388,7 @@ class MCPToolsRegistry:
                 parameters=parameters,
                 duration_ms=duration_ms,
                 outcome="error",
-                result_summary=str(e)
+                result_summary=str(e),
             )
 
             logger.error(f"Error executing tool {tool_name}: {e}")
@@ -412,7 +396,7 @@ class MCPToolsRegistry:
                 "error": str(e),
                 "success": False,
                 "tool_name": tool_name,
-                "from_cache": False
+                "from_cache": False,
             }
 
     async def bulk_execute_tools(
@@ -420,7 +404,7 @@ class MCPToolsRegistry:
         executions: List[Dict[str, Any]],
         agent_id: str,
         use_cache: bool = True,
-        parallel: bool = True
+        parallel: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         Execute multiple MCP tools in parallel or sequentially.
@@ -443,7 +427,7 @@ class MCPToolsRegistry:
                         execution["parameters"],
                         agent_id,
                         use_cache,
-                        execution.get("cache_ttl")
+                        execution.get("cache_ttl"),
                     )
                     for execution in executions
                 ]
@@ -458,7 +442,7 @@ class MCPToolsRegistry:
                         execution["parameters"],
                         agent_id,
                         use_cache,
-                        execution.get("cache_ttl")
+                        execution.get("cache_ttl"),
                     )
                     results.append(result)
 
@@ -466,11 +450,7 @@ class MCPToolsRegistry:
         except Exception as e:
             logger.error(f"Error in bulk execute tools: {e}")
             return [
-                {
-                    "error": str(e),
-                    "success": False,
-                    "from_cache": False
-                }
+                {"error": str(e), "success": False, "from_cache": False}
                 for _ in executions
             ]
 

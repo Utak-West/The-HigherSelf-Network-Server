@@ -19,6 +19,7 @@ from higherself_schema import (
 # Note: AgentPersonality, AgentRole, AgentCapability are defined in higherself_schema.py,
 # attempting to import from models.base within that file.
 
+
 def main():
     # Load the complete server documentation
     try:
@@ -33,19 +34,29 @@ def main():
 
     # Access specific components
     try:
-        grace_fields_agent = next(agent for agent in server_doc.agents
-                                 if agent.personality == AgentPersonality.GRACE_FIELDS)
+        grace_fields_agent = next(
+            agent
+            for agent in server_doc.agents
+            if agent.personality == AgentPersonality.GRACE_FIELDS
+        )
         print(f"Found Grace Fields agent: {grace_fields_agent.role}")
     except StopIteration:
-        print("Grace Fields agent not found in server_documentation.json (this is expected if not added).")
+        print(
+            "Grace Fields agent not found in server_documentation.json (this is expected if not added)."
+        )
     except Exception as e:
         print(f"Error accessing Grace Fields agent: {e}")
 
     # Example: Access Nyra agent (added in our JSON)
     try:
-        nyra_agent = next(agent for agent in server_doc.agents
-                         if agent.personality == AgentPersonality.NYRA)
-        print(f"Found Nyra agent: Role - {nyra_agent.role}, Capabilities - {[cap.value for cap in nyra_agent.primary_capabilities]}")
+        nyra_agent = next(
+            agent
+            for agent in server_doc.agents
+            if agent.personality == AgentPersonality.NYRA
+        )
+        print(
+            f"Found Nyra agent: Role - {nyra_agent.role}, Capabilities - {[cap.value for cap in nyra_agent.primary_capabilities]}"
+        )
     except StopIteration:
         print("Nyra agent not found.")
     except Exception as e:
@@ -56,7 +67,7 @@ def main():
         print("Agents Nyra collaborates with:")
         for agent_personality in nyra_agent.collaborates_with:
             print(f"- {agent_personality.value}")
-    except NameError: # If nyra_agent wasn't found
+    except NameError:  # If nyra_agent wasn't found
         print("Cannot show Nyra's collaborations as Nyra was not found.")
     except Exception as e:
         print(f"Error understanding Nyra's agent relationships: {e}")
@@ -67,7 +78,8 @@ def main():
     # Identify relevant integrations (adapted from API endpoints example)
     try:
         notion_integrations = [
-            integration for integration in server_doc.integrations
+            integration
+            for integration in server_doc.integrations
             if integration.type == IntegrationType.NOTION
         ]
         if notion_integrations:
@@ -81,21 +93,29 @@ def main():
 
     # Understand workflow transitions
     try:
-        lead_capture_workflow_name = "Standard Lead Processing Workflow" # From our server_documentation.json
-        lead_capture_workflow = next(workflow for workflow in server_doc.workflows
-                                    if workflow.name.lower() == lead_capture_workflow_name.lower())
+        lead_capture_workflow_name = (
+            "Standard Lead Processing Workflow"  # From our server_documentation.json
+        )
+        lead_capture_workflow = next(
+            workflow
+            for workflow in server_doc.workflows
+            if workflow.name.lower() == lead_capture_workflow_name.lower()
+        )
         print(f"Found workflow: {lead_capture_workflow.name}")
 
         # Example: Print transitions from 'initiated' state
         current_state_example = WorkflowState.INITIATED
         possible_transitions = [
-            transition for transition in lead_capture_workflow.transitions
+            transition
+            for transition in lead_capture_workflow.transitions
             if transition.from_state == current_state_example
         ]
         if possible_transitions:
             print(f"Possible transitions from state '{current_state_example.value}':")
             for t in possible_transitions:
-                print(f"- To '{t.to_state.value}', Trigger: '{t.trigger}', Responsible: {t.responsible_agent.value if t.responsible_agent else 'N/A'}")
+                print(
+                    f"- To '{t.to_state.value}', Trigger: '{t.trigger}', Responsible: {t.responsible_agent.value if t.responsible_agent else 'N/A'}"
+                )
         else:
             print(f"No transitions found from state '{current_state_example.value}'.")
 
@@ -118,17 +138,25 @@ def main():
         if gallery_config:
             print("Art Gallery Automation Configuration:")
             if gallery_config["agents"]:
-                 print(f"- Relevant Agents: {[agent.role for agent in gallery_config['agents']]}")
+                print(
+                    f"- Relevant Agents: {[agent.role for agent in gallery_config['agents']]}"
+                )
             else:
                 print("- No relevant agents found for Exhibition Management.")
             if gallery_config["databases"]:
-                print(f"- Art Databases: {[db.type.value for db in gallery_config['databases']]}")
+                print(
+                    f"- Art Databases: {[db.type.value for db in gallery_config['databases']]}"
+                )
             else:
                 print("- No relevant art databases found.")
             if gallery_config["workflows"]:
-                print(f"- Exhibition Workflows: {[wf.name for wf in gallery_config['workflows']]}")
+                print(
+                    f"- Exhibition Workflows: {[wf.name for wf in gallery_config['workflows']]}"
+                )
             else:
-                print("- No exhibition workflows found (this is expected if not in JSON).")
+                print(
+                    "- No exhibition workflows found (this is expected if not in JSON)."
+                )
 
     except Exception as e:
         print(f"Error in domain-specific application example: {e}")
@@ -150,17 +178,22 @@ def configure_art_gallery_automation(server_doc: HigherSelfNetworkServer) -> dic
 
     relevant_agents = []
     try:
-        relevant_agents = [agent for agent in server_doc.agents
-                           if AgentCapability.CONTENT_CREATION in agent.primary_capabilities] # Example
-                           # if any(capability.value == "Exhibition Management" # capability.value is how to get string from enum
-                           #       for capability in agent.primary_capabilities)]
+        relevant_agents = [
+            agent
+            for agent in server_doc.agents
+            if AgentCapability.CONTENT_CREATION in agent.primary_capabilities
+        ]  # Example
+        # if any(capability.value == "Exhibition Management" # capability.value is how to get string from enum
+        #       for capability in agent.primary_capabilities)]
     except Exception as e:
         print(f"Note: Could not find agents with specific capability due to: {e}")
 
-
-    art_databases = [db for db in server_doc.notion_databases
-                    if db.type in [NotionDatabaseType.PRODUCTS_SERVICES,
-                                  NotionDatabaseType.BUSINESS_ENTITIES]]
+    art_databases = [
+        db
+        for db in server_doc.notion_databases
+        if db.type
+        in [NotionDatabaseType.PRODUCTS_SERVICES, NotionDatabaseType.BUSINESS_ENTITIES]
+    ]
 
     # This workflow name is hypothetical for the example.
     # Our server_documentation.json has "Standard Lead Processing".
@@ -168,16 +201,20 @@ def configure_art_gallery_automation(server_doc: HigherSelfNetworkServer) -> dic
     exhibition_workflow = []
     try:
         exhibition_workflow_name = "Art Exhibition Workflow"
-        exhibition_workflow = [workflow for workflow in server_doc.workflows
-                               if exhibition_workflow_name.lower() in workflow.name.lower()]
+        exhibition_workflow = [
+            workflow
+            for workflow in server_doc.workflows
+            if exhibition_workflow_name.lower() in workflow.name.lower()
+        ]
     except Exception as e:
         print(f"Note: Could not find '{exhibition_workflow_name}' due to: {e}")
 
     return {
         "agents": relevant_agents,
         "databases": art_databases,
-        "workflows": exhibition_workflow
+        "workflows": exhibition_workflow,
     }
+
 
 if __name__ == "__main__":
     main()
