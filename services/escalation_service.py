@@ -173,9 +173,9 @@ class EscalationService:
             msg = MIMEMultipart()
             msg["From"] = self.smtp_username
             msg["To"] = self.notification_email
-            msg[
-                "Subject"
-            ] = f"[URGENT - Grace Fields] Human intervention required - Ticket #{ticket.ticket_id}"
+            msg["Subject"] = (
+                f"[URGENT - Grace Fields] Human intervention required - Ticket #{ticket.ticket_id}"
+            )
 
             # Create email body
             email_body = self._create_escalation_email_body(ticket)

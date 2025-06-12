@@ -191,9 +191,7 @@ class DatasetProcessor:
             logger.error(f"Error processing dataset {dataset_id}: {e}")
             return None
 
-    async def prepare_training_data(
-        self, config: DatasetTrainingConfig
-    ) -> Tuple[
+    async def prepare_training_data(self, config: DatasetTrainingConfig) -> Tuple[
         Optional[pd.DataFrame],
         Optional[pd.DataFrame],
         Optional[pd.DataFrame],

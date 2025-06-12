@@ -140,9 +140,9 @@ def fix_yaml_syntax():
                 # Ensure proper YAML indentation and colons
                 if line.strip() and not line.strip().startswith("#"):
                     if ":" not in line and not line.strip().startswith("-"):
-                        lines[
-                            i
-                        ] = f"      # {line.strip()}\n"  # Comment out problematic lines
+                        lines[i] = (
+                            f"      # {line.strip()}\n"  # Comment out problematic lines
+                        )
 
         with open(file_path, "w") as f:
             f.writelines(lines)

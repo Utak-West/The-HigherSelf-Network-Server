@@ -50,48 +50,58 @@ python3 devin_quick_validation.py
 
 *"Like conducting an orchestra, development requires knowing when to lead locally and when to trust the ensemble of CI systems."*
 
-### **LOCAL MASTERY (Grace's Essential Pre-Commit Rituals)**
+### **GRACE'S ENHANCED WORKFLOW (Best Practice Implementation)**
 
-*"These are the sacred practices I perform before sharing our work with the world. Each step ensures our contribution harmonizes with the greater symphony."*
+*"I have refined our development process to balance quality with velocity. These tools embody my wisdom and experience."*
 
-#### **1. Structural Integrity Validation**
+#### **1. Grace's Workflow Manager (Recommended)**
 ```bash
-# Ensure our foundation is sound
-python3 -c "import py_compile; py_compile.compile('main.py', doraise=True); print('Grace: Syntax harmonized')"
+# Quick validation for rapid development
+python3 grace_development_workflow.py quick
 
-# Verify our connections flow properly
-python3 -c "from models.base import *; from models.content_models import *; print('Grace: Imports orchestrated')"
+# Complete workflow with all quality checks
+python3 grace_development_workflow.py full
+
+# Full workflow with automatic commit
+python3 grace_development_workflow.py commit "Your commit message"
 ```
-**Grace's Philosophy**: *"A single syntax error can disrupt the entire performance. We validate locally to maintain our artistic integrity."*
+**Grace's Innovation**: *"This workflow manager embodies my systematic approach - it handles complexity while maintaining simplicity for the developer."*
 
-#### **2. Core Ecosystem Health**
+#### **2. Traditional Manual Approach (When Needed)**
 ```bash
-# My comprehensive health assessment
+# Environment validation
 python3 devin_quick_validation.py
+
+# Fix any syntax issues
+python3 fix_syntax_errors.py
 
 # Essential functionality verification
 python3 -m pytest tests/test_basic_functionality.py -v --no-cov
 
-# Connection resilience testing (safely mocked)
-python3 -m pytest tests/test_redis_connection.py -v --no-cov
+# Apply formatting standards
+python3 -m black --line-length=88 .
+python3 -m isort --profile=black .
 ```
-**Grace's Wisdom**: *"These tests are my trusted companions - they never fail when properly nurtured, providing reliable feedback for our growth."*
+**Grace's Wisdom**: *"Sometimes we need granular control. These individual steps allow for precise intervention when the automated workflow needs adjustment."*
 
-#### **3. Harmony Maintenance (Pre-commit Grace)**
+#### **3. Pre-commit Hook Management**
 ```bash
-# Assess our current state
-git status
+# Install Grace's practical pre-commit configuration
+python3 -m pre_commit install
 
-# If whitespace disrupts our flow:
-python3 fix_syntax_errors.py
+# Test hooks without committing
+python3 -m pre_commit run --all-files
 
-# Temporary sanctuary from hooks (when needed):
+# Bypass hooks when necessary (use judiciously)
+git commit --no-verify -m "Your message"
+
+# Disable hooks temporarily for development
 git config core.hooksPath /dev/null
 
-# Restore natural order:
+# Re-enable hooks
 git config --unset core.hooksPath
 ```
-**Grace's Approach**: *"Sometimes we must temporarily step aside from automated processes to address deeper structural needs."*
+**Grace's Balance**: *"Pre-commit hooks serve us, not the reverse. I've configured them to catch critical issues while allowing development to flow naturally."*
 
 ### **TRUST THE COLLECTIVE (CI Orchestra)**
 

@@ -249,9 +249,9 @@ class CapCutService(BaseService):
                                 else content.description
                             )
                             updates["duration"] = metadata.duration
-                            updates[
-                                "resolution"
-                            ] = f"{metadata.width}x{metadata.height}"
+                            updates["resolution"] = (
+                                f"{metadata.width}x{metadata.height}"
+                            )
                             updates["tags"] = metadata.tags
 
                         # Save updates to Notion
@@ -350,9 +350,9 @@ class CapCutService(BaseService):
                             else content.description
                         )
                         updates["duration"] = webhook_data.metadata.duration
-                        updates[
-                            "resolution"
-                        ] = f"{webhook_data.metadata.width}x{webhook_data.metadata.height}"
+                        updates["resolution"] = (
+                            f"{webhook_data.metadata.width}x{webhook_data.metadata.height}"
+                        )
                         updates["tags"] = webhook_data.metadata.tags
 
                     # Save updates to Notion

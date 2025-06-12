@@ -106,7 +106,9 @@ def main():
     # Check if initialization would work in production
     logger.info("\n==== Production Readiness Check ====")
     if all(os.environ.get(db) for db in databases.keys()):
-        logger.info("✅ All database IDs are set - system would work in production mode")
+        logger.info(
+            "✅ All database IDs are set - system would work in production mode"
+        )
     else:
         logger.info("❌ Missing database IDs - system would fail in production mode")
         logger.info(f"Missing: {len(missing_dbs)}/{len(databases)} database IDs")

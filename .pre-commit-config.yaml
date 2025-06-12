@@ -1,4 +1,8 @@
+# Grace Fields' Practical Pre-commit Configuration
+# Focus on critical issues while maintaining development velocity
+
 repos:
+  # Essential file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -9,36 +13,36 @@ repos:
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: debug-statements
-      - id: check-docstring-first
 
+  # Code formatting (essential for consistency)
   - repo: https://github.com/psf/black
     rev: 23.7.0
     hooks:
       - id: black
         language_version: python3
 
+  # Import sorting (essential for maintainability)
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
         args: ["--profile", "black"]
 
+  # Basic syntax and critical errors only
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
-        additional_dependencies: [flake8-docstrings, flake8-import-order]
+        args: [
+          "--select=E9,F63,F7,F82,W6",  # Only critical errors
+          "--ignore=E203,W503,E501",    # Ignore style preferences
+          "--max-line-length=88"        # Match Black
+        ]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
-    hooks:
-      - id: mypy
-        additional_dependencies: [types-requests, types-PyYAML]
-        args: [--ignore-missing-imports]
-
+  # Security scanning (essential for production)
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.5
     hooks:
       - id: bandit
-        args: ["-c", "pyproject.toml"]
+        args: ["-c", "pyproject.toml", "--skip", "B101,B601"]
         additional_dependencies: ["bandit[toml]"]

@@ -3,6 +3,7 @@ Pydantic models for The 7 Space Art Gallery & Wellness Center.
 These models define the data structures needed for client portals,
 sales dashboards, and other visualizations.
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID

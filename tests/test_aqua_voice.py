@@ -128,7 +128,9 @@ async def main():
 
     # Print summary
     print("\n=== Test Summary ===\n")
-    print(f"Voice Transcription: {'✅ PASSED' if transcription_success else '❌ FAILED'}")
+    print(
+        f"Voice Transcription: {'✅ PASSED' if transcription_success else '❌ FAILED'}"
+    )
     print(f"Command Processing: {'✅ PASSED' if command_success else '❌ FAILED'}")
 
     overall_success = transcription_success and command_success
