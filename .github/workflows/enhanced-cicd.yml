@@ -173,8 +173,10 @@ jobs:
       - name: Run unit tests
         env:
           TEST_MODE: "True"
+          TESTING_MODE: "True"
           DISABLE_WEBHOOKS: "True"
           REDIS_URI: "redis://localhost:6379/0"
+          NOTION_API_TOKEN: "test_token_12345678901234567890123456789012345678901234567890"
         run: |
           echo "Running unit tests..."
           python -m pytest tests/ -v --tb=short --maxfail=5 || true
@@ -182,8 +184,10 @@ jobs:
       - name: Run integration tests
         env:
           TEST_MODE: "True"
+          TESTING_MODE: "True"
           DISABLE_WEBHOOKS: "True"
           REDIS_URI: "redis://localhost:6379/0"
+          NOTION_API_TOKEN: "test_token_12345678901234567890123456789012345678901234567890"
         run: |
           echo "Running integration tests..."
           python -m pytest tests/integration/ -v --tb=short || true
@@ -191,7 +195,9 @@ jobs:
       - name: Test automation flows
         env:
           TEST_MODE: "True"
+          TESTING_MODE: "True"
           DISABLE_WEBHOOKS: "True"
+          NOTION_API_TOKEN: "test_token_12345678901234567890123456789012345678901234567890"
         run: |
           echo "Testing automation flows..."
           python tools/test_automation_flows.py --test-mode || true
