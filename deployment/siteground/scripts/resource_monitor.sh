@@ -35,7 +35,7 @@ alert() {
     local level="$1"
     local message="$2"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - [$level] $message" | tee -a "$ALERT_LOG"
-    
+
     # Send to monitoring system if available
     if command -v curl >/dev/null 2>&1; then
         curl -X POST "http://localhost:9090/api/v1/alerts" \
@@ -75,7 +75,7 @@ get_disk_usage() {
 get_network_usage() {
     local interface
     interface=$(ip route | grep default | awk '{print $5}' | head -1)
-    
+
     if [ -n "$interface" ]; then
         local rx_bytes tx_bytes
         rx_bytes=$(cat "/sys/class/net/$interface/statistics/rx_bytes")
@@ -89,7 +89,7 @@ get_network_usage() {
 # Check application health
 check_application_health() {
     local response_time error_rate
-    
+
     # Check response time
     if command -v curl >/dev/null 2>&1; then
         response_time=$(curl -o /dev/null -s -w '%{time_total}' http://localhost:8000/health || echo "0")
@@ -97,10 +97,10 @@ check_application_health() {
     else
         response_time_ms=0
     fi
-    
+
     # Check error rate (simplified - would need proper log analysis)
     error_rate=0
-    
+
     echo "$response_time_ms $error_rate"
 }
 
@@ -131,7 +131,7 @@ check_mongodb_health() {
 generate_metrics() {
     local cpu_usage memory_usage disk_usage
     local network_stats app_health redis_health mongo_health
-    
+
     cpu_usage=$(get_cpu_usage)
     memory_usage=$(get_memory_usage)
     disk_usage=$(get_disk_usage)
@@ -139,19 +139,19 @@ generate_metrics() {
     app_health=$(check_application_health)
     redis_health=$(check_redis_health)
     mongo_health=$(check_mongodb_health)
-    
+
     # Parse network stats
     local rx_bytes tx_bytes
     read -r rx_bytes tx_bytes <<< "$network_stats"
-    
+
     # Parse app health
     local response_time error_rate
     read -r response_time error_rate <<< "$app_health"
-    
+
     # Parse Redis health
     local redis_memory redis_connections
     read -r redis_memory redis_connections <<< "$redis_health"
-    
+
     # Generate JSON
     cat > "$METRICS_FILE" << EOF
 {
@@ -204,37 +204,37 @@ EOF
 check_thresholds() {
     local cpu_usage memory_usage disk_usage
     local app_health
-    
+
     cpu_usage=$(get_cpu_usage)
     memory_usage=$(get_memory_usage)
     disk_usage=$(get_disk_usage)
     app_health=$(check_application_health)
-    
+
     # Parse app health
     local response_time error_rate
     read -r response_time error_rate <<< "$app_health"
-    
+
     # CPU alerts
     if (( $(echo "$cpu_usage >= $CPU_CRITICAL" | bc -l) )); then
         alert "CRITICAL" "CPU usage is ${cpu_usage}% (threshold: ${CPU_CRITICAL}%)"
     elif (( $(echo "$cpu_usage >= $CPU_WARNING" | bc -l) )); then
         alert "WARNING" "CPU usage is ${cpu_usage}% (threshold: ${CPU_WARNING}%)"
     fi
-    
+
     # Memory alerts
     if (( $(echo "$memory_usage >= $MEMORY_CRITICAL" | bc -l) )); then
         alert "CRITICAL" "Memory usage is ${memory_usage}% (threshold: ${MEMORY_CRITICAL}%)"
     elif (( $(echo "$memory_usage >= $MEMORY_WARNING" | bc -l) )); then
         alert "WARNING" "Memory usage is ${memory_usage}% (threshold: ${MEMORY_WARNING}%)"
     fi
-    
+
     # Disk alerts
     if [ "$disk_usage" -ge "$DISK_CRITICAL" ]; then
         alert "CRITICAL" "Disk usage is ${disk_usage}% (threshold: ${DISK_CRITICAL}%)"
     elif [ "$disk_usage" -ge "$DISK_WARNING" ]; then
         alert "WARNING" "Disk usage is ${disk_usage}% (threshold: ${DISK_WARNING}%)"
     fi
-    
+
     # Response time alerts
     if [ "$response_time" -gt "$RESPONSE_TIME_WARNING" ]; then
         alert "WARNING" "Response time is ${response_time}ms (threshold: ${RESPONSE_TIME_WARNING}ms)"
@@ -244,24 +244,24 @@ check_thresholds() {
 # Main monitoring function
 main() {
     log "Resource monitoring started"
-    
+
     # Create log directories
     mkdir -p "$(dirname "$LOG_FILE")"
     mkdir -p "$(dirname "$ALERT_LOG")"
     mkdir -p "$(dirname "$METRICS_FILE")"
-    
+
     # Generate metrics
     generate_metrics
-    
+
     # Check thresholds
     check_thresholds
-    
+
     # Log current status
     local cpu_usage memory_usage disk_usage
     cpu_usage=$(get_cpu_usage)
     memory_usage=$(get_memory_usage)
     disk_usage=$(get_disk_usage)
-    
+
     log "Current usage - CPU: ${cpu_usage}%, Memory: ${memory_usage}%, Disk: ${disk_usage}%"
 }
 

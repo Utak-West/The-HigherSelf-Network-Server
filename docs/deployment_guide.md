@@ -93,7 +93,7 @@ Our system uses MongoDB for agent state and analytics, and Redis for caching:
   ```bash
   # Using Docker
   docker-compose run --rm windsurf-agent python -m tools.mongo_db_setup
-  
+
   # Directly
   python -m tools.mongo_db_setup
   ```
@@ -271,12 +271,12 @@ YOUR_COUNTER.labels(label1="value1", label2="value2").inc()
    docker-compose up -d
    # OR
    ./deploy.sh --env dev --build
-   
+
    # For staging
    docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
    # OR
    ./deploy.sh --env staging --build
-   
+
    # For production
    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    # OR

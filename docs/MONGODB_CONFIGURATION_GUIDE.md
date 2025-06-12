@@ -185,7 +185,7 @@ For production:
    ```bash
    # Check if MongoDB is running
    docker-compose ps mongodb
-   
+
    # Check logs for errors
    docker-compose logs mongodb
    ```
@@ -200,7 +200,7 @@ For production:
    ```bash
    # Check index usage
    db.collection.explain("executionStats").find(query)
-   
+
    # Monitor slow queries
    db.setProfilingLevel(2, { slowms: 100 })
    ```

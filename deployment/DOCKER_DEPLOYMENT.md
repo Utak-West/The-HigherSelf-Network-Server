@@ -70,12 +70,12 @@ Add SSL configuration:
 server {
     listen 443 ssl;
     server_name agent-api.thehigherselfnetwork.com;
-    
+
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/privkey.pem;
-    
+
     # Other SSL configuration...
-    
+
     location / {
         proxy_pass http://windsurf-agent:8000;
         # Other proxy settings...

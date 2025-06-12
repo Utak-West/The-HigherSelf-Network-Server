@@ -231,7 +231,7 @@ sequenceDiagram
     participant MCP as MCP Integration
     participant HS as Higher Self
     participant SP as Softr Portals
-    
+
     HS->>HS: Exhibition planning in Notion
     HS->>MCP: Exhibition details prepared
     MCP->>WP: Create exhibition page
@@ -253,7 +253,7 @@ sequenceDiagram
     participant MCP as MCP Integration
     participant HS as Higher Self
     participant SP as Softr Portals
-    
+
     HS->>HS: Program development in Notion
     HS->>MCP: Program details prepared
     MCP->>WP: Create program page
@@ -384,7 +384,7 @@ sequenceDiagram
     participant WP as WordPress Site
     participant HS as Higher Self Network
     participant SP as Softr Portal
-    
+
     C->>WP: Browses gallery website
     C->>WP: Creates account/logs in
     WP->>HS: Syncs collector info
@@ -407,7 +407,7 @@ sequenceDiagram
     participant WP as WordPress Site
     participant HS as Higher Self Network
     participant SP as Softr Portal
-    
+
     CL->>WP: Visits wellness center site
     CL->>WP: Books initial consultation
     WP->>HS: Syncs booking information

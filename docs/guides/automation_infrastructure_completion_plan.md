@@ -53,31 +53,31 @@ graph TD
     A --> D[Error Handling]
     A --> E[Other Python Improvements]
     A --> F[Logging Utility]
-    
+
     %% TypeScript Enhancements (highlighted)
     subgraph "Key Focus Area"
     B --> B1[Interface Definitions]
     B --> B2[Strong Typing]
     B --> B3[Error Handling]
     B --> B4[ENV Validation]
-    
+
     %% Google-style Docstrings (highlighted)
     C --> C1[Module Documentation]
     C --> C2[Class Documentation]
     C --> C3[Method Documentation]
     C --> C4[Type Annotations]
     end
-    
+
     D --> D1[API Decorators]
     D --> D2[Retry Mechanism]
     D --> D3[Consistent Logging]
     D --> D4[Testing Support]
-    
+
     E --> E1[Class Organization]
     E --> E2[Pydantic Models]
     E --> E3[Consistent Naming]
     E --> E4[Exception Handling]
-    
+
     F --> F1[Loguru Integration]
     F --> F2[Standard Logging Fallback]
     F --> F3[Context Binding]
@@ -93,12 +93,12 @@ flowchart LR
     B -->|No| D[Review Against Checklist]
     D --> E[Apply Standards]
     E --> B
-    
+
     C --> F{Automated Tests Pass?}
     F -->|Yes| G[Merge]
     F -->|No| H[Fix Issues]
     H --> F
-    
+
     subgraph "Standards Checklist"
     I[Error Handling]
     J[Documentation]

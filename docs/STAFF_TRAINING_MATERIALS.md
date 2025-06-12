@@ -142,15 +142,15 @@ Process 20 sample leads using proper qualification and tagging.
 **Module 3.1: Pipeline Overview (2 hours)**
 ```
 Art Gallery Pipeline:
-Initial Inquiry → Gallery Visit → Artwork Interest → 
+Initial Inquiry → Gallery Visit → Artwork Interest →
 Price Discussion → Purchase Decision → Sale Completed → Cross-Sell
 
 Executive Wellness Pipeline:
-Executive Assessment → Wellness Audit → Program Proposal → 
+Executive Assessment → Wellness Audit → Program Proposal →
 Enrollment → Coaching Active → Completion → Corporate Upsell
 
 Luxury Renovations Pipeline:
-Project Inquiry → Site Assessment → Design Consultation → 
+Project Inquiry → Site Assessment → Design Consultation →
 Quote → Contract → Kickoff → Construction → Completion
 ```
 

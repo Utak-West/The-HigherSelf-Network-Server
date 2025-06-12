@@ -133,20 +133,20 @@ If you encounter any issues or have questions:
 
 ## FAQ
 
-**Q: How long does it take for an agent to complete a task?**  
+**Q: How long does it take for an agent to complete a task?**
 A: Most tasks are completed within 1-5 minutes, depending on complexity.
 
-**Q: Can I edit a task after submitting it?**  
+**Q: Can I edit a task after submitting it?**
 A: You cannot edit the original request, but you can provide feedback and request revisions.
 
-**Q: Are there limits to how many tasks I can submit?**  
+**Q: Are there limits to how many tasks I can submit?**
 A: There are no strict limits, but please be mindful of system resources during peak times.
 
-**Q: How do I know which agent to choose for my task?**  
+**Q: How do I know which agent to choose for my task?**
 A: Each agent has specific capabilities listed in their description. If you're unsure, the Content Creator is a good general-purpose agent for most content needs.
 
-**Q: Can I share agent outputs directly with clients?**  
+**Q: Can I share agent outputs directly with clients?**
 A: Yes, but always review and potentially edit the content first to ensure it meets client expectations and brand standards.
 
-**Q: How do I provide feedback on the agent system itself?**  
+**Q: How do I provide feedback on the agent system itself?**
 A: Use the feedback form in the portal or contact the development team directly with suggestions.

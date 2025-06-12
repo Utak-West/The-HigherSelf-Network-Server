@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to The HigherSelf Network Server training manual. This document provides comprehensive guidance for both technical staff and other stakeholders who will interact with our integration platform. 
+Welcome to The HigherSelf Network Server training manual. This document provides comprehensive guidance for both technical staff and other stakeholders who will interact with our integration platform.
 
 **Core Principle**: Notion serves as the central data and workflow management hub (utilizing a 16-database structure) for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space. All integrations and automations are designed around this principle.
 
@@ -59,13 +59,13 @@ All service integrations inherit from the `BaseService` class, which provides:
 ```python
 class BaseService:
     """Base class for all service integrations."""
-    
+
     async def validate_connection(self) -> bool:
         """Verify connection to the service API."""
-        
+
     async def async_get/post/put/patch/delete():
         """Standardized HTTP methods with error handling."""
-        
+
     def validate_model(self, model: BaseModel) -> None:
         """Validate Pydantic models."""
 ```
@@ -95,7 +95,7 @@ To integrate a new third-party service:
 class NewServiceCredentials(ServiceCredentials):
     """Credentials for the new service."""
     api_key: str
-    
+
     class Config:
         env_prefix = "NEW_SERVICE_"
 
@@ -112,7 +112,7 @@ class NewServiceData(BaseModel):
 ```python
 class NewService(BaseService):
     """Integration with the new service."""
-    
+
     def __init__(self, api_key: str = None):
         """Initialize with environment variables if not provided."""
         api_key = api_key or os.environ.get("NEW_SERVICE_API_KEY")
@@ -121,15 +121,15 @@ class NewService(BaseService):
             api_key=api_key
         )
         super().__init__(service_name="new_service", credentials=credentials)
-    
+
     async def validate_connection(self) -> bool:
         """Validate connection to the service API."""
         # Implementation...
-    
+
     async def create_item(self, item: NewServiceData) -> Optional[str]:
         """Create a new item in the service."""
         # Implementation...
-        
+
         # Always update with Notion reference if available
         if item.notion_page_id:
             # Add metadata about Notion management

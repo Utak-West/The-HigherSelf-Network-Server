@@ -71,12 +71,12 @@ jobs:
         run: |
           echo "Validating Docker configuration..."
           docker-compose config -q
-          
+
           echo "Validating environment template..."
           if [ ! -f .env.example ]; then
             echo "Warning: .env.example not found"
           fi
-          
+
           echo "Checking required files..."
           required_files=("Dockerfile" "requirements.txt" "main.py")
           for file in "${required_files[@]}"; do

@@ -225,7 +225,7 @@ If using Docker, add the synchronization service to your `docker-compose.yml`:
 ```yaml
 services:
   # ... other services ...
-  
+
   sync-service:
     build: .
     command: python -m tools.sync_databases

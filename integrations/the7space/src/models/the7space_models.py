@@ -1,12 +1,13 @@
 """
 Pydantic models for The 7 Space Art Gallery & Wellness Center.
-These models define the data structures needed for client portals, 
+These models define the data structures needed for client portals,
 sales dashboards, and other visualizations.
 """
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
+
+from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
 
 
 class ArtworkStatus(str, Enum):
@@ -52,7 +53,7 @@ class Artist(BaseModel):
     represented_since: datetime
     artworks: List[UUID] = Field(default_factory=list)
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -85,7 +86,7 @@ class Artwork(BaseModel):
     image_urls: List[str]
     tags: List[str] = Field(default_factory=list)
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -123,7 +124,7 @@ class Client(BaseModel):
     membership_end: Optional[datetime] = None
     marketing_preferences: Dict[str, bool] = Field(default_factory=dict)
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -164,7 +165,7 @@ class Sale(BaseModel):
     notes: Optional[str] = None
     invoice_number: str
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -200,7 +201,7 @@ class Event(BaseModel):
     materials_to_bring: Optional[List[str]] = None
     image_url: Optional[str] = None
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -235,7 +236,7 @@ class WellnessService(BaseModel):
     location: str = "The 7 Space Wellness Room"
     image_url: Optional[str] = None
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -269,7 +270,7 @@ class Booking(BaseModel):
     payment_method: Optional[str] = None
     notes: Optional[str] = None
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -297,7 +298,7 @@ class Expense(BaseModel):
     payment_method: str
     receipt_url: Optional[str] = None
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -324,7 +325,7 @@ class DashboardConfig(BaseModel):
     refresh_interval_minutes: int = 60
     access_roles: List[str] = ["admin"]
     notion_database_ids: Dict[str, str]
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -374,7 +375,7 @@ class The7SpacePortalConfig(BaseModel):
     social_media: Dict[str, str]
     contact_info: Dict[str, str]
     about_text: str
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -413,7 +414,7 @@ class ClientPortalUser(BaseModel):
     preferences: Dict[str, Any] = Field(default_factory=dict)
     notification_settings: Dict[str, bool] = Field(default_factory=dict)
     notion_page_id: Optional[str] = None
-    
+
     class Config:
         schema_extra = {
             "example": {

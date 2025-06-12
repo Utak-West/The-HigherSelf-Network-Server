@@ -48,12 +48,12 @@ class MyCustomAgent(BaseAgent):
             AgentCapability.WORKFLOW_MANAGEMENT,
             AgentCapability.TASK_CREATION
         ]
-        
+
         apis_utilized = [
             ApiPlatform.NOTION,
             ApiPlatform.HUBSPOT
         ]
-        
+
         super().__init__(
             agent_id=agent_id,
             name=name,
@@ -63,11 +63,11 @@ class MyCustomAgent(BaseAgent):
             apis_utilized=apis_utilized,
             business_entities=business_entities
         )
-    
+
     async def process_event(self, event_type: str, event_data: Dict[str, Any]) -> Dict[str, Any]:
         # Implementation here
         pass
-    
+
     async def check_health(self) -> Dict[str, Any]:
         # Implementation here
         pass

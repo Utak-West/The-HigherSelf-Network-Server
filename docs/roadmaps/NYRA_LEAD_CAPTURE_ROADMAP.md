@@ -105,43 +105,43 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Lead Qualification Flow
     IncomingLead[Incoming Lead] :::entryPoint
     IncomingLead --> BasicValidation[Basic Data Validation] :::eventProcess
     BasicValidation --> ValidationCheck{Valid Lead Data?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidLead[Handle Invalid Lead] :::eventProcess
     ValidationCheck -->|Yes| EnrichmentProcess[Enrich Lead Data] :::eventProcess
-    
+
     EnrichmentProcess --> DuplicateCheck{Duplicate Check} :::decisionNode
     DuplicateCheck -->|Is Duplicate| DuplicateProcess[Handle Duplicate Lead] :::eventProcess
     DuplicateCheck -->|Is New| FitAnalysis[Analyze ICP Fit] :::eventProcess
-    
+
     FitAnalysis --> FitScore{ICP Fit Score} :::decisionNode
     FitScore -->|Poor Fit| UnqualifiedProcess[Process as Unqualified] :::eventProcess
     FitScore -->|Good Fit| BudgetAnalysis[Analyze Budget Signals] :::eventProcess
-    
+
     BudgetAnalysis --> BudgetScore{Budget Score} :::decisionNode
     BudgetScore -->|Below Threshold| NurtureCandidate[Mark as Nurture Candidate] :::eventProcess
     BudgetScore -->|Above Threshold| TimelineAnalysis[Analyze Timeline Signals] :::eventProcess
-    
+
     TimelineAnalysis --> UrgencyScore{Urgency Score} :::decisionNode
     UrgencyScore -->|Low Urgency| NurtureCandidate
     UrgencyScore -->|High Urgency| AuthorityAnalysis[Analyze Authority Level] :::eventProcess
-    
+
     AuthorityAnalysis --> AuthorityScore{Authority Score} :::decisionNode
     AuthorityScore -->|Low Authority| InfluencerProcess[Process as Influencer] :::eventProcess
     AuthorityScore -->|High Authority| NeedsAnalysis[Analyze Needs Alignment] :::eventProcess
-    
+
     NeedsAnalysis --> NeedsScore{Needs Alignment} :::decisionNode
     NeedsScore -->|Low Alignment| SpecialCaseProcess[Process as Special Case] :::eventProcess
     NeedsScore -->|High Alignment| EngagementAnalysis[Analyze Engagement Signals] :::eventProcess
-    
+
     EngagementAnalysis --> EngagementScore{Engagement Score} :::decisionNode
     EngagementScore -->|Low Engagement| MQLProcess[Process as MQL] :::eventProcess
     EngagementScore -->|High Engagement| SQLProcess[Process as SQL] :::eventProcess
-    
+
     InvalidLead --> SendCourtesyResponse[Send Courtesy Response] :::eventProcess
     DuplicateProcess --> UpdateExistingRecord[Update Existing Record] :::eventProcess
     UnqualifiedProcess --> RecordUnqualifiedLead[Record Unqualified Lead] :::eventProcess
@@ -164,45 +164,45 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Lead Routing Flow
     QualifiedLead[Qualified Lead] :::entryPoint
     QualifiedLead --> LeadType{Lead Category} :::decisionNode
-    
+
     LeadType -->|SQL| SalesReadyProcess[Process Sales Ready Lead] :::eventProcess
     LeadType -->|MQL| MarketingQualifiedProcess[Process Marketing Qualified Lead] :::eventProcess
     LeadType -->|Information Request| InfoRequestProcess[Process Information Request] :::eventProcess
     LeadType -->|Partner Opportunity| PartnerProcess[Process Partner Lead] :::eventProcess
     LeadType -->|Special Case| SpecialCaseProcess[Process Special Case] :::eventProcess
-    
+
     SalesReadyProcess --> UrgencyCheck{Urgency Level} :::decisionNode
     UrgencyCheck -->|High| ImmediateContact[Create Immediate Contact Task] :::eventProcess
     UrgencyCheck -->|Medium| StandardFollow[Create Standard Follow-up Task] :::eventProcess
     UrgencyCheck -->|Low| DelayedFollow[Create Delayed Follow-up Task] :::eventProcess
-    
+
     MarketingQualifiedProcess --> InterestAnalysis{Primary Interest} :::decisionNode
     InterestAnalysis -->|Product A| ProductASequence[Initiate Product A Nurture] :::eventProcess
     InterestAnalysis -->|Service B| ServiceBSequence[Initiate Service B Nurture] :::eventProcess
     InterestAnalysis -->|General| GeneralSequence[Initiate General Nurture] :::eventProcess
-    
+
     InfoRequestProcess --> ContentTypeMatch{Content Type} :::decisionNode
     ContentTypeMatch -->|Case Studies| CaseStudyDelivery[Deliver Case Studies] :::eventProcess
     ContentTypeMatch -->|Pricing| PricingDelivery[Deliver Pricing Info] :::eventProcess
     ContentTypeMatch -->|Technical| TechnicalDelivery[Deliver Technical Info] :::eventProcess
-    
+
     PartnerProcess --> PartnerTypeAnalysis{Partner Type} :::decisionNode
     PartnerTypeAnalysis -->|Referral| ReferralProcess[Process Referral Partner] :::eventProcess
     PartnerTypeAnalysis -->|Integration| IntegrationProcess[Process Integration Partner] :::eventProcess
     PartnerTypeAnalysis -->|Channel| ChannelProcess[Process Channel Partner] :::eventProcess
-    
+
     ImmediateContact --> CreateSalesTask[Create Ruvo Sales Task] :::eventProcess
     StandardFollow --> CreateSalesTask
     DelayedFollow --> CreateSalesTask
-    
+
     ProductASequence --> InitiateNurture[Initiate Liora Nurture Sequence] :::eventProcess
     ServiceBSequence --> InitiateNurture
     GeneralSequence --> InitiateNurture
-    
+
     CaseStudyDelivery --> CreateContentTask[Create Elan Content Task] :::eventProcess
     PricingDelivery --> CreateSalesTask
     TechnicalDelivery --> CreateContentTask
@@ -231,40 +231,40 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Task Creation Flow
     QualifiedLead[Qualified Lead] :::entryPoint
     QualifiedLead --> DetermineActions[Determine Required Actions] :::eventProcess
     DetermineActions --> SingleActionCheck{Multiple Actions?} :::decisionNode
-    
+
     SingleActionCheck -->|No| TaskTypeSelection[Select Task Type] :::eventProcess
     SingleActionCheck -->|Yes| TaskSequenceCreation[Create Task Sequence] :::eventProcess
-    
+
     TaskTypeSelection --> FindTemplate[Find Matching Task Template] :::eventProcess
     TaskSequenceCreation --> SequenceTemplate[Find Sequence Template] :::eventProcess
-    
+
     FindTemplate --> TemplateAvailable{Template Found?} :::decisionNode
     TemplateAvailable -->|Yes| ApplyTemplate[Apply Task Template] :::eventProcess
     TemplateAvailable -->|No| CreateCustomTask[Create Custom Task] :::eventProcess
-    
+
     SequenceTemplate --> ApplyTaskSequence[Apply Task Sequence Template] :::eventProcess
-    
+
     ApplyTemplate --> AssigneeSelection[Select Appropriate Assignee] :::eventProcess
     CreateCustomTask --> AssigneeSelection
     ApplyTaskSequence --> MultipleAssignees[Determine Task Assignees] :::eventProcess
-    
+
     AssigneeSelection --> SetPriority[Set Task Priority] :::eventProcess
     MultipleAssignees --> BatchPriorities[Set Task Priorities] :::eventProcess
-    
+
     SetPriority --> SetDeadline[Set Task Deadline] :::eventProcess
     BatchPriorities --> BatchDeadlines[Set Task Deadlines] :::eventProcess
-    
+
     SetDeadline --> EnrichTaskContext[Enrich with Lead Context] :::eventProcess
     BatchDeadlines --> EnrichBatchContext[Enrich Tasks with Context] :::eventProcess
-    
+
     EnrichTaskContext --> SendToRuvo[Send Task Request to Ruvo] :::eventProcess
     EnrichBatchContext --> SendBatchToRuvo[Send Task Batch to Ruvo] :::eventProcess
-    
+
     SendToRuvo --> Ruvo{Ruvo Task Orchestrator} :::agentNode
     SendBatchToRuvo --> Ruvo
 ```
@@ -303,45 +303,45 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Nurture Initiation Flow
     NurtureCandidate[Nurture Candidate Lead] :::entryPoint
     NurtureCandidate --> AnalyzeInterests[Analyze Lead Interests] :::eventProcess
     AnalyzeInterests --> InterestType{Primary Interest Area} :::decisionNode
-    
+
     InterestType -->|Product Focused| ProductNurture[Select Product Nurture] :::eventProcess
     InterestType -->|Service Focused| ServiceNurture[Select Service Nurture] :::eventProcess
     InterestType -->|Content Focused| ContentNurture[Select Content Nurture] :::eventProcess
     InterestType -->|Educational| EducationalNurture[Select Educational Nurture] :::eventProcess
-    
+
     ProductNurture --> AnalyzeTimeline[Analyze Lead Timeline] :::eventProcess
     ServiceNurture --> AnalyzeTimeline
     ContentNurture --> AnalyzeTimeline
     EducationalNurture --> AnalyzeTimeline
-    
+
     AnalyzeTimeline --> TimelineType{Buying Timeline} :::decisionNode
     TimelineType -->|Short Term| UrgentPacing[Set Urgent Pacing] :::eventProcess
     TimelineType -->|Medium Term| StandardPacing[Set Standard Pacing] :::eventProcess
     TimelineType -->|Long Term| GradualPacing[Set Gradual Pacing] :::eventProcess
     TimelineType -->|Unknown| DefaultPacing[Set Default Pacing] :::eventProcess
-    
+
     UrgentPacing --> ChannelPreference[Determine Channel Preferences] :::eventProcess
     StandardPacing --> ChannelPreference
     GradualPacing --> ChannelPreference
     DefaultPacing --> ChannelPreference
-    
+
     ChannelPreference --> ChannelMix{Preferred Channels} :::decisionNode
     ChannelMix -->|Email Primary| EmailFocused[Configure Email-focused Nurture] :::eventProcess
     ChannelMix -->|Social Primary| SocialFocused[Configure Social-focused Nurture] :::eventProcess
     ChannelMix -->|Multi-channel| MultiChannel[Configure Multi-channel Nurture] :::eventProcess
-    
+
     EmailFocused --> CompilePersonalization[Compile Personalization Data] :::eventProcess
     SocialFocused --> CompilePersonalization
     MultiChannel --> CompilePersonalization
-    
+
     CompilePersonalization --> CreateNurtureRequest[Create Nurture Sequence Request] :::eventProcess
     CreateNurtureRequest --> SendToLiora[Send Request to Liora] :::eventProcess
-    
+
     SendToLiora --> Liora{Liora Marketing Strategist} :::agentNode
 ```
 
@@ -421,72 +421,72 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     WebForm[Website Forms] :::entryPoint
     SocialMedia[Social Media] :::entryPoint
     Email[Email Inquiries] :::entryPoint
     PartnerReferral[Partner Referrals] :::entryPoint
     ManualEntry[Manual Entry] :::entryPoint
-    
+
     %% Nyra Processing Steps
     WebForm --> LeadReceived[Lead Received] :::eventProcess
     SocialMedia --> LeadReceived
     Email --> LeadReceived
     PartnerReferral --> LeadReceived
     ManualEntry --> LeadReceived
-    
+
     LeadReceived --> BasicValidation[Basic Validation] :::eventProcess
     BasicValidation --> ValidationCheck{Valid Lead?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidHandling[Handle Invalid Lead] :::errorNode
     ValidationCheck -->|Yes| DuplicateCheck[Check for Duplicates] :::eventProcess
-    
+
     DuplicateCheck --> DuplicateResult{Duplicate?} :::decisionNode
     DuplicateResult -->|Yes| MergeOrUpdate[Merge or Update Record] :::eventProcess
     DuplicateResult -->|No| EnrichLead[Enrich Lead Data] :::eventProcess
-    
+
     EnrichLead --> ExternalEnrichment[External Data Services] :::integrationNode
     ExternalEnrichment --> EnrichedLead[Enriched Lead] :::eventProcess
-    
+
     MergeOrUpdate --> LeadQualification[Lead Qualification] :::eventProcess
     EnrichedLead --> LeadQualification
-    
+
     LeadQualification --> QualificationResult{Qualification Result} :::decisionNode
-    
+
     QualificationResult -->|Unqualified| UnqualifiedProcess[Process Unqualified Lead] :::eventProcess
     QualificationResult -->|Information Request| InfoRequestProcess[Process Information Request] :::eventProcess
     QualificationResult -->|MQL| MQLProcess[Process Marketing Qualified Lead] :::eventProcess
     QualificationResult -->|SQL| SQLProcess[Process Sales Qualified Lead] :::eventProcess
     QualificationResult -->|Partner| PartnerProcess[Process Partner Lead] :::eventProcess
-    
+
     UnqualifiedProcess --> CourtesyResponse[Send Courtesy Response] :::eventProcess
     InfoRequestProcess --> ContentSelection[Select Appropriate Content] :::eventProcess
     ContentSelection --> ContentDelivery[Content Delivery Task] :::eventProcess
-    
+
     MQLProcess --> NurtureTypeSelection[Select Nurture Type] :::eventProcess
     NurtureTypeSelection --> CreateNurtureRequest[Create Nurture Request] :::eventProcess
     CreateNurtureRequest --> Liora[Liora - Marketing Strategist] :::agentNode
-    
+
     SQLProcess --> SalesTaskCreation[Create Sales Task] :::eventProcess
     SalesTaskCreation --> Ruvo[Ruvo - Task Orchestrator] :::agentNode
-    
+
     PartnerProcess --> PartnerTaskCreation[Create Partner Follow-up Task] :::eventProcess
     PartnerTaskCreation --> Ruvo
-    
+
     CourtesyResponse --> LeadRecordCreation[Create Lead Records] :::eventProcess
     ContentDelivery --> LeadRecordCreation
     Liora --> LeadRecordCreation
     Ruvo --> LeadRecordCreation
-    
+
     LeadRecordCreation --> CRM[(CRM System)] :::storageNode
     LeadRecordCreation --> NotionDB[(Notion Database)] :::storageNode
     LeadRecordCreation --> MarketingPlatform[(Marketing Platform)] :::storageNode
-    
+
     CRM --> Analytics[Update Analytics] :::eventProcess
     NotionDB --> Analytics
     MarketingPlatform --> Analytics
-    
+
     Analytics --> LeadMetrics[Lead Processing Metrics] :::storageNode
     Analytics --> ConversionTracking[Conversion Tracking] :::storageNode
 ```

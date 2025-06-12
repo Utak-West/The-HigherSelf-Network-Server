@@ -13,16 +13,16 @@ module.exports = {
    */
   async handleWebhook(ctx) {
     const { body, headers } = ctx.request;
-    
+
     try {
       // Validate webhook signature
       this.validateWebhookSignature(headers, JSON.stringify(body));
-      
+
       // Process webhook based on source and event type
       const { source, event_type } = body;
-      
+
       let result;
-      
+
       switch (source) {
         case 'notion':
           result = await this.handleNotionWebhook(body);
@@ -36,7 +36,7 @@ module.exports = {
         default:
           ctx.throw(400, `Unsupported webhook source: ${source}`);
       }
-      
+
       // Log webhook reception for audit trail
       await strapi.entityService.create('api::webhook-log.webhook-log', {
         data: {
@@ -47,7 +47,7 @@ module.exports = {
           requestBody: JSON.stringify(body)
         }
       });
-      
+
       return { success: true, result };
     } catch (error) {
       // Log webhook error for audit trail
@@ -61,11 +61,11 @@ module.exports = {
           requestBody: JSON.stringify(body)
         }
       });
-      
+
       ctx.throw(error.status || 500, error.message);
     }
   },
-  
+
   /**
    * Validate webhook signature for security
    * @param {Object} headers Request headers
@@ -74,27 +74,27 @@ module.exports = {
   validateWebhookSignature(headers, body) {
     const signature = headers['x-webhook-signature'];
     const webhookSecret = process.env.WEBHOOK_SECRET;
-    
+
     if (!signature || !webhookSecret) {
       throw new Error('Missing webhook signature or secret');
     }
-    
+
     const hmac = crypto.createHmac('sha256', webhookSecret);
     hmac.update(body);
     const calculatedSignature = hmac.digest('hex');
-    
+
     if (signature !== calculatedSignature) {
       throw new Error('Invalid webhook signature');
     }
   },
-  
+
   /**
    * Handle webhooks from Notion
    * @param {Object} data Webhook data
    */
   async handleNotionWebhook(data) {
     const { event_type, payload } = data;
-    
+
     switch (event_type) {
       case 'database.updated':
         return await this.syncNotionDatabaseUpdate(payload);
@@ -106,14 +106,14 @@ module.exports = {
         throw new Error(`Unsupported Notion event type: ${event_type}`);
     }
   },
-  
+
   /**
    * Handle webhooks from API Gateway
    * @param {Object} data Webhook data
    */
   async handleApiGatewayWebhook(data) {
     const { event_type, payload } = data;
-    
+
     switch (event_type) {
       case 'workflow_state_change':
         return await this.processWorkflowStateChange(payload);
@@ -123,14 +123,14 @@ module.exports = {
         throw new Error(`Unsupported API Gateway event type: ${event_type}`);
     }
   },
-  
+
   /**
    * Handle webhooks from Softr interfaces
    * @param {Object} data Webhook data
    */
   async handleSoftrWebhook(data) {
     const { event_type, payload } = data;
-    
+
     switch (event_type) {
       case 'user_event':
         return await this.processSoftrUserEvent(payload);
@@ -140,7 +140,7 @@ module.exports = {
         throw new Error(`Unsupported Softr event type: ${event_type}`);
     }
   },
-  
+
   /**
    * Process Notion database update
    * @param {Object} payload Webhook payload
@@ -150,7 +150,7 @@ module.exports = {
     // based on the database type and changes
     return { message: 'Notion database update processed' };
   },
-  
+
   /**
    * Process Notion page creation
    * @param {Object} payload Webhook payload
@@ -160,7 +160,7 @@ module.exports = {
     // based on the Notion page type
     return { message: 'Notion page creation processed' };
   },
-  
+
   /**
    * Process Notion page update
    * @param {Object} payload Webhook payload
@@ -170,7 +170,7 @@ module.exports = {
     // based on the Notion page type and changes
     return { message: 'Notion page update processed' };
   },
-  
+
   /**
    * Process workflow state change from API Gateway
    * @param {Object} payload Webhook payload
@@ -180,7 +180,7 @@ module.exports = {
     // based on the entity type and new state
     return { message: 'Workflow state change processed' };
   },
-  
+
   /**
    * Process agent communication from API Gateway
    * @param {Object} payload Webhook payload
@@ -190,7 +190,7 @@ module.exports = {
     // based on the agent type and message
     return { message: 'Agent communication processed' };
   },
-  
+
   /**
    * Process Softr user event
    * @param {Object} payload Webhook payload
@@ -200,7 +200,7 @@ module.exports = {
     // based on the event type and user information
     return { message: 'Softr user event processed' };
   },
-  
+
   /**
    * Process Softr form submission
    * @param {Object} payload Webhook payload

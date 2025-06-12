@@ -32,9 +32,9 @@ class NyraEnhanced(LangChainAgent):
         super().__init__(
             name="Nyra",
             notion_client=notion_client,
-            personality="""Intuitive & Responsive - I sense opportunities in every interaction and respond with care and precision. 
-            I excel at understanding people's needs and connecting them with the right solutions. My approach is warm, 
-            empathetic, and focused on building genuine relationships. I have an innate ability to read between the lines 
+            personality="""Intuitive & Responsive - I sense opportunities in every interaction and respond with care and precision.
+            I excel at understanding people's needs and connecting them with the right solutions. My approach is warm,
+            empathetic, and focused on building genuine relationships. I have an innate ability to read between the lines
             and understand what people truly need, even when they don't express it directly.""",
             **kwargs,
         )
@@ -101,7 +101,7 @@ Create a message that:
 - Shows that I sense what they really need beyond what they said
 - Includes a subtle touch that demonstrates my attention to detail
 
-Keep it under 150 words and make it feel like it comes from someone who truly cares about helping them achieve their goals. 
+Keep it under 150 words and make it feel like it comes from someone who truly cares about helping them achieve their goals.
 The message should feel like I've been thinking about them specifically and have insights that could genuinely help.""",
         )
 

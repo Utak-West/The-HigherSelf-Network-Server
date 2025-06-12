@@ -110,41 +110,41 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Member Approval Flow
     NewMemberApplication[New Member Application] :::entryPoint
     NewMemberApplication --> BasicValidation[Basic Data Validation] :::eventProcess
     BasicValidation --> ValidationCheck{Valid Application?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidApplication[Handle Invalid Application] :::eventProcess
     ValidationCheck -->|Yes| DuplicateCheck[Check for Existing Member] :::eventProcess
-    
+
     DuplicateCheck --> MemberExists{Existing Member?} :::decisionNode
     MemberExists -->|Yes| ExistingMemberProcess[Update Existing Member] :::eventProcess
     MemberExists -->|No| CommunityFitEvaluation[Evaluate Community Fit] :::eventProcess
-    
+
     CommunityFitEvaluation --> FitScore{Community Fit Score} :::decisionNode
     FitScore -->|Low Fit| RejectionProcess[Process Rejection] :::eventProcess
     FitScore -->|Medium Fit| ReviewProcess[Flag for Human Review] :::eventProcess
     FitScore -->|High Fit| InterestAnalysis[Analyze Member Interests] :::eventProcess
-    
+
     InterestAnalysis --> MembershipType{Membership Type} :::decisionNode
     MembershipType -->|Basic| BasicApproval[Approve Basic Membership] :::eventProcess
     MembershipType -->|Premium| PremiumValidation[Validate Premium Status] :::eventProcess
     MembershipType -->|Partner| PartnerValidation[Validate Partner Status] :::eventProcess
-    
+
     PremiumValidation --> PaymentVerified{Payment Verified?} :::decisionNode
     PremiumValidation -->|Yes| PremiumApproval[Approve Premium Membership] :::eventProcess
     PremiumValidation -->|No| PaymentRequest[Request Payment Verification] :::eventProcess
-    
+
     PartnerValidation --> PartnerVerified{Partner Verified?} :::decisionNode
     PartnerVerified -->|Yes| PartnerApproval[Approve Partner Membership] :::eventProcess
     PartnerVerified -->|No| PartnerVerificationRequest[Request Partner Verification] :::eventProcess
-    
+
     BasicApproval --> MemberOnboarding[Initiate Member Onboarding] :::eventProcess
     PremiumApproval --> MemberOnboarding
     PartnerApproval --> MemberOnboarding
-    
+
     MemberOnboarding --> InterestGroups[Assign to Interest Groups] :::eventProcess
     InterestGroups --> WelcomeMessage[Send Welcome Message] :::eventProcess
     WelcomeMessage --> OrientationMaterials[Provide Orientation Materials] :::eventProcess
@@ -163,39 +163,39 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Moderation Flow
     ContentFlag[Flagged Content] :::entryPoint
     ContentFlag --> InitialScreening[Initial Content Screening] :::eventProcess
     InitialScreening --> ViolationCheck{Guideline Violation?} :::decisionNode
-    
+
     ViolationCheck -->|No Violation| ApproveContent[Approve Content] :::eventProcess
     ViolationCheck -->|Potential Violation| SeverityAssessment[Assess Violation Severity] :::eventProcess
-    
+
     SeverityAssessment --> SeverityLevel{Violation Severity} :::decisionNode
     SeverityLevel -->|Minor| MinorViolationProcess[Process Minor Violation] :::eventProcess
     SeverityLevel -->|Moderate| ModerateViolationProcess[Process Moderate Violation] :::eventProcess
     SeverityLevel -->|Severe| SevereViolationProcess[Process Severe Violation] :::eventProcess
     SeverityLevel -->|Uncertain| HumanReviewRequest[Request Human Review] :::eventProcess
-    
+
     MinorViolationProcess --> FirstOffenseCheck{First Offense?} :::decisionNode
     FirstOffenseCheck -->|Yes| EducationalResponse[Send Educational Message] :::eventProcess
     FirstOffenseCheck -->|No| WarningIssue[Issue Formal Warning] :::eventProcess
-    
+
     ModerateViolationProcess --> ContentRemoval[Remove Content] :::eventProcess
     ContentRemoval --> MemberWarning[Warn Member] :::eventProcess
-    
+
     SevereViolationProcess --> ImmediateRemoval[Remove Content Immediately] :::eventProcess
     ImmediateRemoval --> AccountRestriction{Restriction Level} :::decisionNode
     AccountRestriction -->|Temporary| TemporarySuspension[Temporary Suspension] :::eventProcess
     AccountRestriction -->|Permanent| PermanentBan[Permanent Ban] :::eventProcess
-    
+
     EducationalResponse --> RecordIncident[Record Incident] :::eventProcess
     WarningIssue --> RecordIncident
     MemberWarning --> RecordIncident
     TemporarySuspension --> RecordIncident
     PermanentBan --> RecordIncident
-    
+
     RecordIncident --> MemberHistory[Update Member History] :::dataNode
     ApproveContent --> ContentUnflagged[Mark Content as Reviewed] :::eventProcess
     HumanReviewRequest --> HumanModerator[Assign to Human Moderator] :::eventProcess
@@ -213,36 +213,36 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Engagement Intervention Flow
     EngagementAnalysis[Engagement Analysis] :::entryPoint
     EngagementAnalysis --> EngagementLevel{Engagement Level} :::decisionNode
-    
+
     EngagementLevel -->|Disengaged| DisengagedProcess[Process Disengaged Member] :::eventProcess
     EngagementLevel -->|Declining| DecliningProcess[Process Declining Engagement] :::eventProcess
     EngagementLevel -->|Stable| StableProcess[Maintain Engagement] :::eventProcess
     EngagementLevel -->|Highly Engaged| ChampionProcess[Process Potential Champion] :::eventProcess
-    
+
     DisengagedProcess --> InactivityDuration{Inactive Duration} :::decisionNode
     InactivityDuration -->|Short Term| ReengagementMessage[Send Reengagement Message] :::eventProcess
     InactivityDuration -->|Medium Term| PersonalizedOutreach[Personalized Outreach] :::eventProcess
     InactivityDuration -->|Long Term| ExitSurvey[Send Exit Survey] :::eventProcess
-    
+
     DecliningProcess --> EngagementHistory[Review Engagement History] :::eventProcess
     EngagementHistory --> InterestRealignment[Realign with Interests] :::eventProcess
     InterestRealignment --> ReleventContentShare[Share Relevant Content] :::eventProcess
-    
+
     StableProcess --> EngagementMaintenance[Regular Engagement Touches] :::eventProcess
     EngagementMaintenance --> ValueReminder[Value Reinforcement] :::eventProcess
-    
+
     ChampionProcess --> ContributionOpportunities[Offer Contribution Opportunities] :::eventProcess
     ContributionOpportunities --> RecognitionProgram[Include in Recognition Program] :::eventProcess
     RecognitionProgram --> LeadershipPath[Develop Leadership Path] :::eventProcess
-    
+
     ReengagementMessage --> EngagementTracking[Track Response] :::eventProcess
     PersonalizedOutreach --> EngagementTracking
     ExitSurvey --> MembershipEvaluation[Evaluate Continued Membership] :::eventProcess
-    
+
     ReleventContentShare --> EngagementTracking
     ValueReminder --> ContinuedMonitoring[Continue Monitoring] :::eventProcess
     LeadershipPath --> ChampionDevelopment[Champion Development Program] :::eventProcess
@@ -275,45 +275,45 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Event Planning Flow
     CommunityEventNeed[Community Event Need] :::entryPoint
     CommunityEventNeed --> EventConcept[Develop Event Concept] :::eventProcess
     EventConcept --> EventType{Event Type} :::decisionNode
-    
+
     EventType -->|Webinar| WebinarPlan[Plan Webinar] :::eventProcess
     EventType -->|Workshop| WorkshopPlan[Plan Workshop] :::eventProcess
     EventType -->|Networking| NetworkingPlan[Plan Networking Event] :::eventProcess
     EventType -->|Q&A Session| QandAPlan[Plan Q&A Session] :::eventProcess
-    
+
     WebinarPlan --> CapacityNeeds[Determine Capacity Needs] :::eventProcess
     WorkshopPlan --> CapacityNeeds
     NetworkingPlan --> CapacityNeeds
     QandAPlan --> CapacityNeeds
-    
+
     CapacityNeeds --> ResourceRequirements[Identify Resource Requirements] :::eventProcess
     ResourceRequirements --> EventBookingRequest[Create Event Booking Request] :::eventProcess
     EventBookingRequest --> Solari{Solari Booking Manager} :::agentNode
-    
+
     Solari --> EventConfirmation[Event Confirmation Received] :::dataNode
     EventConfirmation --> PromotionPlanning[Plan Event Promotion] :::eventProcess
     PromotionPlanning --> MemberNotifications[Send Member Notifications] :::eventProcess
-    
+
     MemberNotifications --> RegistrationMonitoring[Monitor Registrations] :::eventProcess
     RegistrationMonitoring --> CapacityCheck{Capacity Status} :::decisionNode
-    
+
     CapacityCheck -->|Space Available| ContinuePromotion[Continue Promotion] :::eventProcess
     CapacityCheck -->|Near Capacity| FinalCallMessage[Send Final Call Message] :::eventProcess
     CapacityCheck -->|At Capacity| WaitlistSetup[Set Up Waitlist] :::eventProcess
-    
+
     ContinuePromotion --> PreEventPreparation[Prepare Pre-Event Materials] :::eventProcess
     FinalCallMessage --> PreEventPreparation
     WaitlistSetup --> PreEventPreparation
-    
+
     PreEventPreparation --> ReminderScheduling[Schedule Event Reminders] :::eventProcess
     ReminderScheduling --> EventExecution[Execute Event] :::eventProcess
     EventExecution --> PostEventProcess[Post-Event Processing] :::eventProcess
-    
+
     PostEventProcess --> FeedbackCollection[Collect Member Feedback] :::eventProcess
     FeedbackCollection --> ResourceArchiving[Archive Event Resources] :::eventProcess
     ResourceArchiving --> EventReporting[Generate Event Report] :::eventProcess
@@ -344,44 +344,44 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Task Workflow
     CommunityNeed[Community Management Need] :::entryPoint
     CommunityNeed --> TaskIdentification[Identify Required Tasks] :::eventProcess
     TaskIdentification --> TaskType{Task Type} :::decisionNode
-    
+
     TaskType -->|Moderation| ModerationTask[Create Moderation Task] :::eventProcess
     TaskType -->|Outreach| OutreachTask[Create Member Outreach Task] :::eventProcess
     TaskType -->|Content| ContentTask[Create Content Management Task] :::eventProcess
     TaskType -->|Event Support| EventTask[Create Event Support Task] :::eventProcess
-    
+
     ModerationTask --> TaskPriority[Determine Task Priority] :::eventProcess
     OutreachTask --> TaskPriority
     ContentTask --> TaskPriority
     EventTask --> TaskPriority
-    
+
     TaskPriority --> DeadlineEstablishment[Establish Deadline] :::eventProcess
     DeadlineEstablishment --> AssigneeIdentification[Identify Appropriate Assignee] :::eventProcess
     AssigneeIdentification --> TaskContextPreparation[Prepare Task Context] :::eventProcess
-    
+
     TaskContextPreparation --> CreateTaskRequest[Create Task Request] :::eventProcess
     CreateTaskRequest --> Ruvo{Ruvo Task Orchestrator} :::agentNode
-    
+
     Ruvo --> TaskConfirmation[Task Creation Confirmed] :::dataNode
     TaskConfirmation --> StatusMonitoring[Monitor Task Status] :::eventProcess
-    
+
     StatusMonitoring --> TaskUpdate{Task Status} :::decisionNode
     TaskUpdate -->|In Progress| ContinueMonitoring[Continue Monitoring] :::eventProcess
     TaskUpdate -->|Blocked| BlockageResolution[Resolve Task Blockage] :::eventProcess
     TaskUpdate -->|Completed| VerifyCompletion[Verify Task Completion] :::eventProcess
-    
+
     BlockageResolution --> UpdateTaskRequest[Update Task Request] :::eventProcess
     UpdateTaskRequest --> Ruvo
-    
+
     VerifyCompletion --> QualityCheck{Quality Check} :::decisionNode
     QualityCheck -->|Meets Standards| CloseTask[Close Task] :::eventProcess
     QualityCheck -->|Needs Revisions| RequestRevisions[Request Revisions] :::eventProcess
-    
+
     RequestRevisions --> Ruvo
     CloseTask --> TaskOutcomeRecording[Record Task Outcome] :::eventProcess
 ```
@@ -411,43 +411,43 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Request Flow
     CommunityContentNeed[Community Content Need] :::entryPoint
     CommunityContentNeed --> ContentPurpose{Content Purpose} :::decisionNode
-    
+
     ContentPurpose -->|Onboarding| OnboardingContent[Plan Onboarding Content] :::eventProcess
     ContentPurpose -->|Education| EducationalContent[Plan Educational Content] :::eventProcess
     ContentPurpose -->|Engagement| EngagementContent[Plan Engagement Content] :::eventProcess
     ContentPurpose -->|Announcement| AnnouncementContent[Plan Announcement Content] :::eventProcess
-    
+
     OnboardingContent --> AudienceIdentification[Identify Target Audience] :::eventProcess
     EducationalContent --> AudienceIdentification
     EngagementContent --> AudienceIdentification
     AnnouncementContent --> AudienceIdentification
-    
+
     AudienceIdentification --> ContentFormat{Content Format} :::decisionNode
     ContentFormat -->|Written| WrittenContentSpecs[Specify Written Content] :::eventProcess
     ContentFormat -->|Video| VideoContentSpecs[Specify Video Content] :::eventProcess
     ContentFormat -->|Interactive| InteractiveContentSpecs[Specify Interactive Content] :::eventProcess
     ContentFormat -->|Audio| AudioContentSpecs[Specify Audio Content] :::eventProcess
-    
+
     WrittenContentSpecs --> ContentBrief[Prepare Content Brief] :::eventProcess
     VideoContentSpecs --> ContentBrief
     InteractiveContentSpecs --> ContentBrief
     AudioContentSpecs --> ContentBrief
-    
+
     ContentBrief --> DistributionPlanning[Plan Content Distribution] :::eventProcess
     DistributionPlanning --> ContentRequest[Create Content Request] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> ContentDelivery[Content Delivered] :::dataNode
     ContentDelivery --> ContentReview[Review Content] :::eventProcess
-    
+
     ContentReview --> ApprovalCheck{Approved?} :::decisionNode
     ApprovalCheck -->|Yes| ContentDistribution[Distribute Content] :::eventProcess
     ApprovalCheck -->|No| RevisionRequest[Request Revisions] :::eventProcess
-    
+
     RevisionRequest --> Elan
     ContentDistribution --> EngagementTracking[Track Content Engagement] :::eventProcess
     EngagementTracking --> EffectivenessAnalysis[Analyze Content Effectiveness] :::eventProcess
@@ -516,112 +516,112 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     NewMember[New Member Registration] :::entryPoint
     CommunityEvent[Community Event Planning] :::entryPoint
     ContentNeed[Content Need Identified] :::entryPoint
     MemberEngagement[Member Engagement Monitoring] :::entryPoint
     ModContent[Content Moderation] :::entryPoint
-    
+
     %% Sage Processing Steps
     NewMember --> MemberValidation[Member Validation] :::eventProcess
     MemberValidation --> ValidationCheck{Valid Member?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidMember[Handle Invalid Registration] :::errorNode
     ValidationCheck -->|Yes| DuplicateCheck[Check for Existing Member] :::eventProcess
-    
+
     DuplicateCheck --> ExistingMember{Existing Member?} :::decisionNode
     ExistingMember -->|Yes| UpdateMember[Update Member Profile] :::eventProcess
     ExistingMember -->|No| CommunityFit[Assess Community Fit] :::eventProcess
-    
+
     CommunityFit --> FitScore{Fit Assessment} :::decisionNode
     FitScore -->|Reject| RejectionProcess[Process Rejection] :::errorNode
     FitScore -->|Review| HumanReview[Flag for Human Review] :::eventProcess
     FitScore -->|Approve| MembershipSetup[Set Up Membership] :::eventProcess
-    
+
     MembershipSetup --> Onboarding[Onboarding Process] :::eventProcess
     Onboarding --> PlatformAccess[Grant Platform Access] :::eventProcess
     PlatformAccess --> InterestGroups[Assign to Interest Groups] :::eventProcess
     InterestGroups --> WelcomeMessage[Send Welcome Message] :::eventProcess
-    
+
     %% Event Management Flow
     CommunityEvent --> EventPlanning[Plan Community Event] :::eventProcess
     EventPlanning --> ResourceNeeds[Determine Resource Needs] :::eventProcess
     ResourceNeeds --> EventRequest[Create Event Request] :::eventProcess
     EventRequest --> Solari[Solari - Booking Manager] :::agentNode
-    
+
     Solari --> EventConfirmed[Event Confirmed] :::dataNode
     EventConfirmed --> PromotionPlan[Plan Event Promotion] :::eventProcess
     PromotionPlan --> RegistrationManagement[Manage Registrations] :::eventProcess
     RegistrationManagement --> EventExecution[Execute Event] :::eventProcess
     EventExecution --> EventFollowup[Post-Event Process] :::eventProcess
-    
+
     %% Content Management Flow
     ContentNeed --> ContentRequirements[Define Content Requirements] :::eventProcess
     ContentRequirements --> AudienceSegmentation[Segment Target Audience] :::eventProcess
     AudienceSegmentation --> ContentRequest[Create Content Request] :::eventProcess
     ContentRequest --> Elan[Elan - Content Choreographer] :::agentNode
-    
+
     Elan --> ContentReceived[Content Received] :::dataNode
     ContentReceived --> ContentReview[Review Content] :::eventProcess
     ContentReview --> ContentApproval{Content Approved?} :::decisionNode
-    
+
     ContentApproval -->|Yes| ContentDistribution[Distribute Content] :::eventProcess
     ContentApproval -->|No| RevisionRequest[Request Content Revision] :::eventProcess
     RevisionRequest --> Elan
-    
+
     ContentDistribution --> EngagementTracking[Track Content Engagement] :::eventProcess
-    
+
     %% Engagement Management Flow
     MemberEngagement --> EngagementAnalysis[Analyze Engagement Patterns] :::eventProcess
     EngagementAnalysis --> EngagementLevel{Engagement Level} :::decisionNode
-    
+
     EngagementLevel -->|Disengaged| ReengagementProcess[Process Reengagement] :::eventProcess
     EngagementLevel -->|Declining| InterventionProcess[Process Intervention] :::eventProcess
     EngagementLevel -->|Stable| MaintenanceProcess[Maintain Engagement] :::eventProcess
     EngagementLevel -->|High| ChampionDevelopment[Develop as Champion] :::eventProcess
-    
+
     %% Moderation Flow
     ModContent --> ContentEvaluation[Evaluate Content] :::eventProcess
     ContentEvaluation --> ViolationCheck{Guideline Violation?} :::decisionNode
-    
+
     ViolationCheck -->|No| ApproveContent[Approve Content] :::eventProcess
     ViolationCheck -->|Yes| ViolationSeverity{Violation Severity} :::decisionNode
-    
+
     ViolationSeverity -->|Minor| EducationalResponse[Educational Response] :::eventProcess
     ViolationSeverity -->|Moderate| ContentRemoval[Remove Content] :::eventProcess
     ViolationSeverity -->|Severe| MembershipAction[Take Membership Action] :::eventProcess
-    
+
     %% Task Management
     ReengagementProcess --> TaskCreation[Create Community Task] :::eventProcess
     InterventionProcess --> TaskCreation
     ChampionDevelopment --> TaskCreation
     ContentRemoval --> TaskCreation
     MembershipAction --> TaskCreation
-    
+
     TaskCreation --> Ruvo[Ruvo - Task Orchestrator] :::agentNode
-    
+
     %% External Integrations
     PlatformAccess --> CircleSo[(Circle.so)] :::integrationNode
     PlatformAccess --> Discourse[(Discourse)] :::integrationNode
     PlatformAccess --> Slack[(Slack)] :::integrationNode
-    
+
     ContentDistribution --> CircleSo
     ContentDistribution --> Discourse
     ContentDistribution --> Slack
-    
+
     PromotionPlan --> CircleSo
     PromotionPlan --> Discourse
     PromotionPlan --> Slack
-    
+
     %% Analytics and Reporting
     CircleSo --> AnalyticsCollection[Collect Analytics] :::eventProcess
     Discourse --> AnalyticsCollection
     Slack --> AnalyticsCollection
     EngagementTracking --> AnalyticsCollection
     EventFollowup --> AnalyticsCollection
-    
+
     AnalyticsCollection --> CommunityHealthReport[Generate Community Health Report] :::eventProcess
     CommunityHealthReport --> ReportingDashboard[(Reporting Dashboard)] :::storageNode
 ```

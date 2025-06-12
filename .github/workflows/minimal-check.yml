@@ -21,35 +21,35 @@ jobs:
         run: |
           echo "Verifying The HigherSelf Network Server structure..."
           echo "✅ Notion is configured as the central hub for all data and workflows"
-          
+
           # Create necessary directories to ensure checks pass
           mkdir -p tests/notion_integration
           mkdir -p architecture
-          
+
           # Check if key files exist
           if [ -f "requirements.txt" ]; then
             echo "✅ Requirements file exists"
           else
             echo "❌ Requirements file missing"
           fi
-          
+
           if [ -f "architecture/index.html" ]; then
             echo "✅ Architecture visualization exists"
           else
             echo "❌ Architecture visualization missing"
           fi
-          
+
           if [ -f "documentation/TRAINING_MANUAL.md" ]; then
             echo "✅ Training manual exists"
           else
             echo "❌ Training manual missing"
           fi
-          
+
           if [ -d "tests/notion_integration" ]; then
             echo "✅ Notion integration tests directory exists"
             ls -la tests/notion_integration
           else
             echo "❌ Notion integration tests missing"
           fi
-          
+
           echo "Repository validation successful - Notion central hub architecture confirmed!"

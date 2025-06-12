@@ -42,28 +42,28 @@ log_error() {
 
 check_requirements() {
     log_info "Checking system requirements..."
-    
+
     # Check if Docker is installed
     if ! command -v docker &> /dev/null; then
         log_error "Docker is not installed. Please install Docker first."
         exit 1
     fi
-    
+
     # Check if Docker Compose is installed
     if ! command -v docker-compose &> /dev/null; then
         log_error "Docker Compose is not installed. Please install Docker Compose first."
         exit 1
     fi
-    
+
     log_success "System requirements check passed"
 }
 
 create_redis_config() {
     log_info "Creating Redis configuration..."
-    
+
     local config_dir="$PROJECT_ROOT/config/redis"
     mkdir -p "$config_dir"
-    
+
     # Create Redis configuration file
     cat > "$config_dir/redis.conf" << EOF
 # Redis Configuration for HigherSelf Network Server
@@ -182,7 +182,7 @@ EOF
 
 create_docker_compose() {
     log_info "Creating Docker Compose configuration..."
-    
+
     cat > "$PROJECT_ROOT/docker-compose.redis.yml" << EOF
 version: '3.8'
 
@@ -231,35 +231,35 @@ EOF
 
 deploy_redis() {
     log_info "Deploying Redis for $ENVIRONMENT environment..."
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # Stop existing Redis container if running
     if docker-compose -f docker-compose.redis.yml ps | grep -q "higherself-redis-$ENVIRONMENT"; then
         log_info "Stopping existing Redis container..."
         docker-compose -f docker-compose.redis.yml down
     fi
-    
+
     # Start Redis
     log_info "Starting Redis container..."
     docker-compose -f docker-compose.redis.yml up -d
-    
+
     # Wait for Redis to be ready
     log_info "Waiting for Redis to be ready..."
     local max_attempts=30
     local attempt=1
-    
+
     while [ $attempt -le $max_attempts ]; do
         if docker exec "higherself-redis-$ENVIRONMENT" redis-cli ping > /dev/null 2>&1; then
             log_success "Redis is ready!"
             break
         fi
-        
+
         if [ $attempt -eq $max_attempts ]; then
             log_error "Redis failed to start after $max_attempts attempts"
             exit 1
         fi
-        
+
         log_info "Attempt $attempt/$max_attempts - waiting for Redis..."
         sleep 2
         ((attempt++))
@@ -268,7 +268,7 @@ deploy_redis() {
 
 test_redis_connection() {
     log_info "Testing Redis connection..."
-    
+
     # Test basic connectivity
     if docker exec "higherself-redis-$ENVIRONMENT" redis-cli ping > /dev/null 2>&1; then
         log_success "✅ Redis ping test passed"
@@ -276,11 +276,11 @@ test_redis_connection() {
         log_error "❌ Redis ping test failed"
         return 1
     fi
-    
+
     # Test set/get operations
     local test_key="higherself:test:$(date +%s)"
     local test_value="test_value_$(date +%s)"
-    
+
     if [ -n "$REDIS_PASSWORD" ]; then
         docker exec "higherself-redis-$ENVIRONMENT" redis-cli -a "$REDIS_PASSWORD" set "$test_key" "$test_value" > /dev/null 2>&1
         local retrieved_value=$(docker exec "higherself-redis-$ENVIRONMENT" redis-cli -a "$REDIS_PASSWORD" get "$test_key" 2>/dev/null)
@@ -290,14 +290,14 @@ test_redis_connection() {
         local retrieved_value=$(docker exec "higherself-redis-$ENVIRONMENT" redis-cli get "$test_key" 2>/dev/null)
         docker exec "higherself-redis-$ENVIRONMENT" redis-cli del "$test_key" > /dev/null 2>&1
     fi
-    
+
     if [ "$retrieved_value" = "$test_value" ]; then
         log_success "✅ Redis set/get test passed"
     else
         log_error "❌ Redis set/get test failed"
         return 1
     fi
-    
+
     # Test Redis info
     log_info "Redis server information:"
     if [ -n "$REDIS_PASSWORD" ]; then
@@ -305,7 +305,7 @@ test_redis_connection() {
     else
         docker exec "higherself-redis-$ENVIRONMENT" redis-cli info server | grep -E "(redis_version|os|arch_bits|process_id|uptime_in_seconds)" 2>/dev/null || true
     fi
-    
+
     log_success "Redis connection tests completed successfully"
 }
 
@@ -339,16 +339,16 @@ show_connection_info() {
 
 cleanup() {
     log_info "Cleaning up Redis deployment..."
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # Stop and remove containers
     docker-compose -f docker-compose.redis.yml down -v
-    
+
     # Remove configuration files
     rm -f docker-compose.redis.yml
     rm -rf config/redis
-    
+
     log_success "Redis deployment cleaned up"
 }
 
@@ -378,7 +378,7 @@ show_help() {
 # Main execution
 main() {
     local command="${1:-deploy}"
-    
+
     case $command in
         "deploy")
             log_info "Starting Redis deployment for HigherSelf Network Server"

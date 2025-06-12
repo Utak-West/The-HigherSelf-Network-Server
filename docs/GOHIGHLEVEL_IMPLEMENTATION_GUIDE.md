@@ -20,7 +20,7 @@
 HigherSelf Network (Master Agency Account)
 ├── Core Business Hub (Sub-Account 1)
 │   ├── Art Gallery
-│   ├── Wellness Center  
+│   ├── Wellness Center
 │   └── Consultancy
 ├── Home Services Hub (Sub-Account 2)
 │   ├── Interior Design
@@ -144,7 +144,7 @@ hnw_customer_workflow = {
             "business_cross_sell": "interior_design"
         },
         {
-            "delay": "1 week", 
+            "delay": "1 week",
             "condition": "email_opened",
             "action": "create_task",
             "assigned_to": "interior_design_consultant",
@@ -183,7 +183,7 @@ corporate_executive_workflow = {
             "business_cross_sell": "executive_wellness"
         },
         {
-            "delay": "1 month", 
+            "delay": "1 month",
             "condition": "executive_wellness_enrolled",
             "action": "offer_corporate_wellness_program",
             "business_cross_sell": "corporate_wellness"
@@ -200,22 +200,22 @@ corporate_executive_workflow = {
 ```python
 class EnhancedNyra(Nyra):
     """Enhanced Nyra for 7-business lead capture and routing."""
-    
+
     async def process_multi_business_lead(self, lead_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process leads with cross-business intelligence."""
-        
+
         # Determine primary business interest
         primary_business = await self.classify_business_interest(lead_data)
-        
+
         # Create contact in appropriate GoHighLevel sub-account
         sub_account = self.get_sub_account_for_business(primary_business)
         ghl_contact = await self.gohighlevel_service.create_contact(
             lead_data, sub_account=sub_account
         )
-        
+
         # Analyze cross-sell potential
         cross_sell_opportunities = await self.analyze_cross_sell_potential(lead_data)
-        
+
         # Create opportunities in relevant pipelines
         for opportunity in cross_sell_opportunities:
             await self.gohighlevel_service.create_opportunity({
@@ -224,12 +224,12 @@ class EnhancedNyra(Nyra):
                 "name": f"{opportunity['business_type']} - {lead_data['name']}",
                 "value": opportunity["estimated_value"]
             })
-        
+
         # Sync to Notion with cross-business tags
         await self.sync_to_notion_with_cross_business_data(
             lead_data, ghl_contact.id, cross_sell_opportunities
         )
-        
+
         return {
             "status": "success",
             "primary_business": primary_business,
@@ -242,10 +242,10 @@ class EnhancedNyra(Nyra):
 ```python
 class EnhancedSolari(Solari):
     """Enhanced Solari for multi-business project and appointment management."""
-    
+
     async def coordinate_cross_business_projects(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
         """Coordinate projects that span multiple businesses."""
-        
+
         # Example: Luxury renovation with wellness space and art display
         if project_data["type"] == "luxury_renovation_with_wellness":
             # Schedule renovation consultation
@@ -254,19 +254,19 @@ class EnhancedSolari(Solari):
                 "calendar_id": self.get_calendar_id("luxury_renovations"),
                 "appointment_type": "renovation_consultation"
             })
-            
+
             # Schedule wellness space design consultation
             wellness_appointment = await self.gohighlevel_service.create_appointment({
-                "contact_id": project_data["contact_id"], 
+                "contact_id": project_data["contact_id"],
                 "calendar_id": self.get_calendar_id("wellness_home_design"),
                 "appointment_type": "wellness_space_consultation"
             })
-            
+
             # Create coordinated project timeline
             await self.create_multi_business_project_timeline([
                 renovation_appointment, wellness_appointment
             ])
-            
+
         return {"status": "coordinated", "appointments_created": 2}
 ```
 
@@ -278,34 +278,34 @@ class EnhancedSolari(Solari):
 ```python
 class GoHighLevelOAuthManager:
     """Manages OAuth 2.0 tokens for multiple sub-accounts."""
-    
+
     def __init__(self, redis_client, mongodb_client):
         self.redis = redis_client
         self.mongodb = mongodb_client
         self.token_refresh_threshold = 300  # 5 minutes before expiry
-    
+
     async def get_valid_token(self, sub_account: str) -> str:
         """Get valid access token for sub-account, refreshing if necessary."""
-        
+
         # Check Redis cache first
         cached_token = await self.redis.get(f"ghl:token:{sub_account}")
         if cached_token and not await self.is_token_expired(cached_token):
             return cached_token
-        
+
         # Refresh token if expired or missing
         refresh_token = await self.get_refresh_token(sub_account)
         new_tokens = await self.refresh_access_token(refresh_token)
-        
+
         # Cache new token
         await self.redis.setex(
             f"ghl:token:{sub_account}",
             new_tokens["expires_in"] - self.token_refresh_threshold,
             new_tokens["access_token"]
         )
-        
+
         # Store refresh token securely
         await self.store_refresh_token(sub_account, new_tokens["refresh_token"])
-        
+
         return new_tokens["access_token"]
 ```
 
@@ -322,7 +322,7 @@ webhook_routing_map = {
         "cross_business_analysis": True
     },
     "opportunity.stage_changed": {
-        "handler": "process_opportunity_update", 
+        "handler": "process_opportunity_update",
         "agents": ["Liora", "Ruvo"],
         "trigger_cross_sell": True
     },

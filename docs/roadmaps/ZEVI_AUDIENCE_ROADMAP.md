@@ -129,47 +129,47 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Segmentation Flow
     AudienceData[Audience Data Collection] :::entryPoint
     AudienceData --> InitialAnalysis[Initial Data Analysis] :::eventProcess
     InitialAnalysis --> BehavioralCheck{Distinct Behavioral Patterns?} :::decisionNode
-    
+
     BehavioralCheck -->|Yes| BehavioralSegments[Create Behavioral Segments] :::eventProcess
     BehavioralCheck -->|No| DemographicCheck{Clear Demographic Distinctions?} :::decisionNode
-    
+
     DemographicCheck -->|Yes| DemographicSegments[Create Demographic Segments] :::eventProcess
     DemographicCheck -->|No| PsychographicCheck{Psychographic Patterns?} :::decisionNode
-    
+
     PsychographicCheck -->|Yes| PsychographicSegments[Create Psychographic Segments] :::eventProcess
     PsychographicCheck -->|No| NeedsAnalysis[Analyze Needs & Pain Points] :::eventProcess
-    
+
     BehavioralSegments --> SegmentSizeCheck{Segment Size Check} :::decisionNode
     DemographicSegments --> SegmentSizeCheck
     PsychographicSegments --> SegmentSizeCheck
     NeedsAnalysis --> NeedsBasedSegments[Create Needs-Based Segments] :::eventProcess
     NeedsBasedSegments --> SegmentSizeCheck
-    
+
     SegmentSizeCheck -->|Too Small| SegmentMerge[Merge with Similar Segment] :::eventProcess
     SegmentSizeCheck -->|Too Large| SubSegmentation[Create Sub-Segments] :::eventProcess
     SegmentSizeCheck -->|Optimal Size| ActionabilityCheck{Actionable for Marketing?} :::decisionNode
-    
+
     SegmentMerge --> ActionabilityCheck
     SubSegmentation --> ActionabilityCheck
-    
+
     ActionabilityCheck -->|Not Actionable| SegmentRefinement[Refine Segment Criteria] :::eventProcess
     ActionabilityCheck -->|Actionable| ValueCheck{Business Value Assessment} :::decisionNode
-    
+
     SegmentRefinement --> ActionabilityCheck
-    
+
     ValueCheck -->|Low Value| DeprioritizeSegment[Deprioritize Segment] :::eventProcess
     ValueCheck -->|Medium Value| MonitorSegment[Monitor Segment Growth] :::eventProcess
     ValueCheck -->|High Value| PrioritySegment[Mark as Priority Segment] :::eventProcess
-    
+
     PrioritySegment --> EngagementStrategy[Develop Engagement Strategy] :::eventProcess
     MonitorSegment --> QuarterlyReview[Schedule Quarterly Review] :::eventProcess
     DeprioritizeSegment --> ArchiveSegment[Archive Segment Definition] :::eventProcess
-    
+
     EngagementStrategy --> SegmentActivation[Activate Segment Across Channels] :::eventProcess
     SegmentActivation --> PerformanceTracking[Track Segment Performance] :::eventProcess
     PerformanceTracking --> OptimizationLoop[Continuous Optimization Loop] :::eventProcess
@@ -187,44 +187,44 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Insight Prioritization Flow
     InsightDiscovered[New Audience Insight Discovered] :::entryPoint
     InsightDiscovered --> InitialEvaluation[Initial Impact Evaluation] :::eventProcess
     InitialEvaluation --> BusinessImpact{Potential Business Impact} :::decisionNode
-    
+
     BusinessImpact -->|Low Impact| LowPriority[Assign Low Priority] :::eventProcess
     BusinessImpact -->|Medium Impact| AudienceReach[Assess Audience Reach] :::eventProcess
     BusinessImpact -->|High Impact| ImplementationCheck[Check Implementation Feasibility] :::eventProcess
-    
+
     AudienceReach --> ReachLevel{Audience Reach Level} :::decisionNode
     ReachLevel -->|Small Segment| LowPriority
     ReachLevel -->|Medium Segment| ImplementationCheck
     ReachLevel -->|Large Segment| ImplementationCheck
-    
+
     ImplementationCheck --> Implementation{Implementation Complexity} :::decisionNode
     Implementation -->|Complex| MediumPriority[Assign Medium Priority] :::eventProcess
     Implementation -->|Moderate| UrgencyCheck[Assess Urgency] :::eventProcess
     Implementation -->|Simple| UrgencyCheck
-    
+
     UrgencyCheck --> UrgencyLevel{Urgency Level} :::decisionNode
     UrgencyLevel -->|Low Urgency| MediumPriority
     UrgencyLevel -->|Medium Urgency| AlignmentCheck[Check Strategic Alignment] :::eventProcess
     UrgencyLevel -->|High Urgency| HighPriority[Assign High Priority] :::eventProcess
-    
+
     AlignmentCheck --> AlignmentLevel{Strategic Alignment} :::decisionNode
     AlignmentLevel -->|Low Alignment| MediumPriority
     AlignmentLevel -->|Medium Alignment| HighPriority
     AlignmentLevel -->|High Alignment| HighPriority
-    
+
     LowPriority --> BacklogInsight[Add to Insight Backlog] :::eventProcess
     MediumPriority --> ScheduledDistribution[Schedule for Distribution] :::eventProcess
     HighPriority --> ImmediateAction[Distribute for Immediate Action] :::eventProcess
-    
+
     BacklogInsight --> QuarterlyReview[Review in Quarterly Planning] :::eventProcess
     ScheduledDistribution --> AgentRouting[Route to Appropriate Agents] :::eventProcess
     ImmediateAction --> UrgentAgentAlert[Send Urgent Alert to Agents] :::eventProcess
-    
+
     AgentRouting --> ImplementationTracking[Track Implementation] :::eventProcess
     UrgentAgentAlert --> ImplementationTracking
     ImplementationTracking --> ImpactMeasurement[Measure Implementation Impact] :::eventProcess
@@ -242,43 +242,43 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Targeting Criteria Selection Flow
     TargetingRequest[Targeting Criteria Request] :::entryPoint
     TargetingRequest --> ObjectiveAnalysis[Analyze Campaign Objective] :::eventProcess
     ObjectiveAnalysis --> ObjectiveType{Campaign Objective} :::decisionNode
-    
+
     ObjectiveType -->|Awareness| BroadTargeting[Develop Broad Targeting] :::eventProcess
     ObjectiveType -->|Engagement| BehavioralFocus[Focus on Behavioral Signals] :::eventProcess
     ObjectiveType -->|Conversion| IntentSignals[Prioritize Intent Signals] :::eventProcess
     ObjectiveType -->|Retention| LoyaltyIndicators[Identify Loyalty Indicators] :::eventProcess
-    
+
     BroadTargeting --> DemographicEvaluation[Evaluate Demographic Options] :::eventProcess
     BehavioralFocus --> EngagementPatterns[Analyze Engagement Patterns] :::eventProcess
     IntentSignals --> ConversionPaths[Map Conversion Paths] :::eventProcess
     LoyaltyIndicators --> RetentionFactors[Identify Retention Factors] :::eventProcess
-    
+
     DemographicEvaluation --> AudienceSize{Expected Audience Size} :::decisionNode
     EngagementPatterns --> BehaviorConsistency{Behavior Consistency} :::decisionNode
     ConversionPaths --> ConversionPredictors{Conversion Predictors} :::decisionNode
     RetentionFactors --> RetentionPredictors{Retention Predictors} :::decisionNode
-    
+
     AudienceSize -->|Too Broad| RefineWithInterests[Refine with Interest Targeting] :::eventProcess
     AudienceSize -->|Too Narrow| ExpandReach[Expand with Similar Audiences] :::eventProcess
     AudienceSize -->|Optimal| CriteriaReview[Review Targeting Criteria] :::eventProcess
-    
+
     BehaviorConsistency -->|Inconsistent| MultipleSignalModel[Use Multiple Signal Model] :::eventProcess
     BehaviorConsistency -->|Somewhat Consistent| WeightedSignalModel[Use Weighted Signal Model] :::eventProcess
     BehaviorConsistency -->|Highly Consistent| PrimarySignalModel[Use Primary Signal Model] :::eventProcess
-    
+
     ConversionPredictors -->|Weak Predictors| ProxySignals[Use Proxy Conversion Signals] :::eventProcess
     ConversionPredictors -->|Moderate Predictors| SignalCombination[Combine Multiple Signals] :::eventProcess
     ConversionPredictors -->|Strong Predictors| DirectSignals[Use Direct Conversion Signals] :::eventProcess
-    
+
     RetentionPredictors -->|Unclear Predictors| TestingModel[Implement Testing Model] :::eventProcess
     RetentionPredictors -->|Moderate Predictors| SegmentedApproach[Use Segmented Approach] :::eventProcess
     RetentionPredictors -->|Strong Predictors| PersonalizedRetention[Use Personalized Retention Model] :::eventProcess
-    
+
     RefineWithInterests --> CriteriaReview
     ExpandReach --> CriteriaReview
     MultipleSignalModel --> CriteriaReview
@@ -290,12 +290,12 @@ flowchart TD
     TestingModel --> CriteriaReview
     SegmentedApproach --> CriteriaReview
     PersonalizedRetention --> CriteriaReview
-    
+
     CriteriaReview --> ChannelCompatibility{Channel Compatibility} :::decisionNode
     ChannelCompatibility -->|Incompatible| CriteriaAdjustment[Adjust for Channel Compatibility] :::eventProcess
     ChannelCompatibility -->|Partial Compatibility| ChannelOptimization[Optimize for Channel] :::eventProcess
     ChannelCompatibility -->|Full Compatibility| FinalCriteria[Finalize Targeting Criteria] :::eventProcess
-    
+
     CriteriaAdjustment --> ChannelCompatibility
     ChannelOptimization --> FinalCriteria
     FinalCriteria --> TargetingImplementation[Implement Targeting Criteria] :::eventProcess
@@ -329,29 +329,29 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Lead Intelligence Flow
     LeadCaptured[Lead Captured by Nyra] :::entryPoint
     LeadCaptured --> LeadDataTransfer[Transfer Lead Data to Zevi] :::eventProcess
     LeadDataTransfer --> Zevi{Zevi Audience Analyst} :::agentNode
-    
+
     Zevi --> InitialAnalysis[Perform Initial Lead Analysis] :::eventProcess
     InitialAnalysis --> AudienceMatching[Match with Audience Segments] :::eventProcess
     AudienceMatching --> SegmentMatch{Segment Match Found?} :::decisionNode
-    
+
     SegmentMatch -->|Yes| BehaviorPrediction[Predict Behavior Patterns] :::eventProcess
     SegmentMatch -->|No| NewSegmentCreation[Create New Micro-Segment] :::eventProcess
     NewSegmentCreation --> BehaviorPrediction
-    
+
     BehaviorPrediction --> EngagementScoring[Calculate Engagement Potential] :::eventProcess
     EngagementScoring --> LeadIntelligence[Generate Lead Intelligence Package] :::eventProcess
     LeadIntelligence --> Nyra{Nyra Lead Capture Specialist} :::agentNode
-    
+
     Nyra --> LeadWorkflow[Update Lead Workflow] :::eventProcess
     LeadWorkflow --> LeadNurturing[Adjust Lead Nurturing Strategy] :::eventProcess
     LeadNurturing --> EngagementTracking[Track Lead Engagement] :::eventProcess
     EngagementTracking --> EngagementData[Send Engagement Data] :::dataNode
-    
+
     EngagementData --> Zevi
     Zevi --> ModelRefinement[Refine Prediction Models] :::eventProcess
     ModelRefinement --> PerformanceReport[Generate Performance Report] :::eventProcess
@@ -383,37 +383,37 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Campaign Intelligence Flow
     CampaignPlanning[Campaign Planning by Liora] :::entryPoint
     CampaignPlanning --> AudienceRequest[Request Audience Intelligence] :::eventProcess
     AudienceRequest --> Zevi{Zevi Audience Analyst} :::agentNode
-    
+
     Zevi --> CampaignObjectiveAnalysis[Analyze Campaign Objectives] :::eventProcess
     CampaignObjectiveAnalysis --> AudienceSegmentSelection[Select Relevant Audience Segments] :::eventProcess
     AudienceSegmentSelection --> SegmentPrioritization[Prioritize Segments by Value] :::eventProcess
-    
+
     SegmentPrioritization --> SegmentInsights[Generate Segment Insights] :::eventProcess
     SegmentInsights --> ChannelRecommendations[Develop Channel Recommendations] :::eventProcess
     ChannelRecommendations --> MessagingInsights[Create Messaging Insights] :::eventProcess
-    
+
     MessagingInsights --> TargetingParameters[Define Targeting Parameters] :::eventProcess
     TargetingParameters --> AudienceIntelligencePackage[Create Audience Intelligence Package] :::eventProcess
     AudienceIntelligencePackage --> Liora{Liora Marketing Strategist} :::agentNode
-    
+
     Liora --> CampaignStrategy[Refine Campaign Strategy] :::eventProcess
     CampaignStrategy --> CampaignExecution[Execute Campaign] :::eventProcess
     CampaignExecution --> PerformanceData[Collect Performance Data] :::dataNode
-    
+
     PerformanceData --> Zevi
     Zevi --> AudienceResponse[Analyze Audience Response] :::eventProcess
     AudienceResponse --> SegmentPerformance[Assess Segment Performance] :::eventProcess
     SegmentPerformance --> OptimizationInsights[Generate Optimization Insights] :::eventProcess
-    
+
     OptimizationInsights --> Liora
     Liora --> CampaignOptimization[Implement Campaign Optimizations] :::eventProcess
     CampaignOptimization --> UpdatedPerformance[Track Updated Performance] :::eventProcess
-    
+
     UpdatedPerformance --> CampaignLearnings[Document Campaign Learnings] :::eventProcess
     CampaignLearnings --> AudienceKnowledgeBase[Update Audience Knowledge Base] :::dataNode
     AudienceKnowledgeBase --> Zevi
@@ -444,36 +444,36 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Intelligence Flow
     ContentPlanning[Content Planning by Elan] :::entryPoint
     ContentPlanning --> AudienceRequest[Request Audience Intelligence] :::eventProcess
     AudienceRequest --> Zevi{Zevi Audience Analyst} :::agentNode
-    
+
     Zevi --> ContentStrategyAnalysis[Analyze Content Strategy] :::eventProcess
     ContentStrategyAnalysis --> AudienceInterestAnalysis[Analyze Audience Interests] :::eventProcess
     AudienceInterestAnalysis --> ContentGapIdentification[Identify Content Gaps] :::eventProcess
-    
+
     ContentGapIdentification --> TopicPrioritization[Prioritize Topics by Audience Value] :::eventProcess
     TopicPrioritization --> FormatRecommendations[Recommend Content Formats] :::eventProcess
     FormatRecommendations --> PersonalizationOpportunities[Identify Personalization Opportunities] :::eventProcess
-    
+
     PersonalizationOpportunities --> AudienceContentStrategy[Develop Audience-Focused Content Strategy] :::eventProcess
     AudienceContentStrategy --> PersonalizationRules[Create Content Personalization Rules] :::eventProcess
     PersonalizationRules --> ContentIntelligencePackage[Create Content Intelligence Package] :::eventProcess
-    
+
     ContentIntelligencePackage --> Elan{Elan Content Choreographer} :::agentNode
     Elan --> ContentCreation[Create Personalized Content] :::eventProcess
     ContentCreation --> ContentDistribution[Distribute Content] :::eventProcess
-    
+
     ContentDistribution --> EngagementData[Collect Engagement Data] :::dataNode
     EngagementData --> Zevi
     Zevi --> ContentPerformanceAnalysis[Analyze Content Performance by Segment] :::eventProcess
-    
+
     ContentPerformanceAnalysis --> ContentInsights[Generate Content Insights] :::eventProcess
     ContentInsights --> OptimizationRecommendations[Develop Optimization Recommendations] :::eventProcess
     OptimizationRecommendations --> Elan
-    
+
     Elan --> ContentOptimization[Implement Content Optimizations] :::eventProcess
     ContentOptimization --> UpdatedPerformance[Track Updated Performance] :::eventProcess
     UpdatedPerformance --> ContentLearnings[Document Content Learnings] :::dataNode
@@ -525,7 +525,7 @@ flowchart TD
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef systemNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Core Nodes
     Zevi{Zevi Audience Analyst} :::agentNode
     DataSources[External Data Sources] :::systemNode
@@ -535,39 +535,39 @@ flowchart TD
     Liora{Liora Marketing Strategist} :::agentNode
     Elan{Elan Content Choreographer} :::agentNode
     Grace{GraceOrchestrator} :::agentNode
-    
+
     %% Data Collection Flow
     DataSources -->|Raw Audience Data| Zevi
     AnalyticsPlatforms -->|Behavioral Analytics| Zevi
     CRMSystems -->|Customer Records| Zevi
-    
+
     %% Data Processing
     Zevi -->|Data Processing| DataCleaning[Data Cleaning & Integration] :::eventProcess
     DataCleaning --> AudienceProfile[Audience Profile Creation] :::eventProcess
     AudienceProfile --> Segmentation[Audience Segmentation] :::eventProcess
-    
+
     %% Analysis Branches
     Segmentation --> DemographicAnalysis[Demographic Analysis] :::eventProcess
     Segmentation --> PsychographicAnalysis[Psychographic Analysis] :::eventProcess
     Segmentation --> BehavioralAnalysis[Behavioral Analysis] :::eventProcess
-    
+
     DemographicAnalysis --> InsightGeneration[Insight Generation] :::eventProcess
     PsychographicAnalysis --> InsightGeneration
     BehavioralAnalysis --> InsightGeneration
-    
+
     %% Insight Distribution & Agent Integration
     InsightGeneration --> AudienceIntelligence[Audience Intelligence Repository] :::dataNode
     AudienceIntelligence --> TrendIdentification[Trend Identification] :::eventProcess
     TrendIdentification --> PredictiveModeling[Predictive Modeling] :::eventProcess
-    
+
     %% Integration with Nyra
     Zevi <-->|Lead Intelligence| Nyra
     Nyra -->|Lead Data| Zevi
-    
+
     %% Integration with Liora
     Zevi <-->|Campaign Audience Insights| Liora
     Liora -->|Campaign Performance Data| Zevi
-    
+
     %% Integration with Elan
 ## JSON Message Examples
 
@@ -1477,12 +1477,12 @@ By following the workflows, integration patterns, and decision frameworks outlin
     %% Orchestration with Grace
     Grace -->|Intelligence Requests| Zevi
     Zevi -->|Audience Insights| Grace
-    
+
     %% Reporting and Optimization
     PredictiveModeling --> PerformanceReporting[Performance Reporting] :::eventProcess
     PerformanceReporting --> StrategyOptimization[Strategy Optimization] :::eventProcess
     StrategyOptimization --> Zevi
-    
+
     %% Outputs to External Systems
     Zevi -->|Audience Segments| TargetingPlatforms[Targeting Platforms] :::systemNode
     Zevi -->|Visualization Data| ReportingDashboards[Reporting Dashboards] :::systemNode

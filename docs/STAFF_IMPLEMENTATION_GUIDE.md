@@ -111,30 +111,30 @@ You'll notice a few enhancements to your Notion experience:
 
 ### General Questions
 
-**Q: Do I need to learn how to use Supabase?**  
+**Q: Do I need to learn how to use Supabase?**
 A: No! You can continue working in Notion as usual. Supabase works behind the scenes.
 
-**Q: Will I lose any data during synchronization?**  
+**Q: Will I lose any data during synchronization?**
 A: No. The system is designed to preserve all data and has multiple safeguards in place.
 
-**Q: How often does synchronization happen?**  
+**Q: How often does synchronization happen?**
 A: Synchronization happens automatically every few minutes. Most changes sync within 5 minutes.
 
-**Q: What happens if I make a mistake in Notion?**  
+**Q: What happens if I make a mistake in Notion?**
 A: Just correct it in Notion as you normally would. The correction will be synchronized to Supabase.
 
 ### Technical Questions
 
-**Q: What if the internet connection is lost during synchronization?**  
+**Q: What if the internet connection is lost during synchronization?**
 A: The system will automatically retry when the connection is restored. No data will be lost.
 
-**Q: Can I access Supabase directly?**  
+**Q: Can I access Supabase directly?**
 A: Only the technical team has direct access to Supabase. All staff should work through Notion.
 
-**Q: What happens if I delete a record in Notion?**  
+**Q: What happens if I delete a record in Notion?**
 A: The record will be marked as deleted in Supabase but will be preserved for historical purposes.
 
-**Q: Will this affect my Notion notifications?**  
+**Q: Will this affect my Notion notifications?**
 A: No, all Notion notifications will continue to work as before.
 
 ## Getting Help

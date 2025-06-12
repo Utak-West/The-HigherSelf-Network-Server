@@ -4,6 +4,7 @@ Test script for NotionService
 """
 
 import os
+
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -11,7 +12,7 @@ from loguru import logger
 load_dotenv()
 
 # Enable test mode
-os.environ['TEST_MODE'] = 'true'
+os.environ["TEST_MODE"] = "true"
 
 # Make sure TEST_MODE is set
 print(f"TEST_MODE: {os.environ.get('TEST_MODE')}")
@@ -27,4 +28,5 @@ try:
 except Exception as e:
     print(f"ERROR: {e}")
     import traceback
+
     traceback.print_exc()

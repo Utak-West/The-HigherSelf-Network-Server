@@ -311,11 +311,11 @@ async def test_bettermode_isolated():
         network_id=os.environ.get("BETTERMODE_NETWORK_ID")
     )
     service = BetterModeService(config)
-    
+
     # Test connection
     is_valid = await service.validate_connection()
     print(f"Connection valid: {is_valid}")
-    
+
     # Add more tests as needed
 
 asyncio.run(test_bettermode_isolated())

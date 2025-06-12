@@ -83,7 +83,6 @@ class NotionSettings(BaseSettings):
     workflows_library_db: Optional[str] = Field(None, env="NOTION_WORKFLOWS_LIBRARY_DB")
 
     if PYDANTIC_V2:
-
         # This code will not be used since PYDANTIC_V2 is False
         @field_validator("api_token")
         def validate_api_token(cls, v):

@@ -278,7 +278,7 @@ async function processLead() {
       }
     })
   });
-  
+
   const result = await response.json();
   displayResult(result);
 }

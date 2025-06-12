@@ -3,12 +3,13 @@ Dashboard configuration templates for The 7 Space Softr interfaces.
 These configurations define visualization components that can be
 implemented in Softr and connect to the Higher Self Network server.
 """
-from typing import Dict, List, Optional, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class ChartType(str, Enum):
     """Chart types supported in Softr dashboards"""
+
     BAR = "bar"
     LINE = "line"
     PIE = "pie"
@@ -23,6 +24,7 @@ class ChartType(str, Enum):
 
 class DashboardElement(dict):
     """Base class for dashboard visualization elements"""
+
     def __init__(
         self,
         element_id: str,
@@ -40,12 +42,13 @@ class DashboardElement(dict):
             width=width,
             height=height,
             position=position or {"row": 0, "col": 0},
-            refresh_interval=refresh_interval
+            refresh_interval=refresh_interval,
         )
 
 
 class ChartElement(DashboardElement):
     """Configuration for chart visualization elements"""
+
     def __init__(
         self,
         element_id: str,
@@ -58,24 +61,28 @@ class ChartElement(DashboardElement):
         filters: Optional[Dict[str, Any]] = None,
         colors: Optional[List[str]] = None,
         show_legend: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(element_id, title, **kwargs)
-        self.update({
-            "type": "chart",
-            "chart_type": chart_type,
-            "data_source": data_source,
-            "x_axis": x_axis,
-            "y_axis": y_axis,
-            "series": series or [],
-            "filters": filters or {},
-            "colors": colors or ["#4A6274", "#F9A26C", "#9BBEC8", "#DAAD86", "#A2836E"],
-            "show_legend": show_legend
-        })
+        self.update(
+            {
+                "type": "chart",
+                "chart_type": chart_type,
+                "data_source": data_source,
+                "x_axis": x_axis,
+                "y_axis": y_axis,
+                "series": series or [],
+                "filters": filters or {},
+                "colors": colors
+                or ["#4A6274", "#F9A26C", "#9BBEC8", "#DAAD86", "#A2836E"],
+                "show_legend": show_legend,
+            }
+        )
 
 
 class MetricElement(DashboardElement):
     """Configuration for metric/KPI visualization elements"""
+
     def __init__(
         self,
         element_id: str,
@@ -86,22 +93,25 @@ class MetricElement(DashboardElement):
         comparison_field: Optional[str] = None,
         trend_period: Optional[str] = None,
         icon: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(element_id, title, width=3, height=150, **kwargs)
-        self.update({
-            "type": "metric",
-            "data_source": data_source,
-            "metric_field": metric_field,
-            "format": format,
-            "comparison_field": comparison_field,
-            "trend_period": trend_period,
-            "icon": icon
-        })
+        self.update(
+            {
+                "type": "metric",
+                "data_source": data_source,
+                "metric_field": metric_field,
+                "format": format,
+                "comparison_field": comparison_field,
+                "trend_period": trend_period,
+                "icon": icon,
+            }
+        )
 
 
 class TableElement(DashboardElement):
     """Configuration for table visualization elements"""
+
     def __init__(
         self,
         element_id: str,
@@ -113,23 +123,26 @@ class TableElement(DashboardElement):
         sortable: bool = True,
         filterable: bool = True,
         actions: Optional[List[Dict[str, Any]]] = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(element_id, title, **kwargs)
-        self.update({
-            "type": "table",
-            "data_source": data_source,
-            "columns": columns,
-            "pagination": pagination,
-            "items_per_page": items_per_page,
-            "sortable": sortable,
-            "filterable": filterable,
-            "actions": actions or []
-        })
+        self.update(
+            {
+                "type": "table",
+                "data_source": data_source,
+                "columns": columns,
+                "pagination": pagination,
+                "items_per_page": items_per_page,
+                "sortable": sortable,
+                "filterable": filterable,
+                "actions": actions or [],
+            }
+        )
 
 
 class GalleryElement(DashboardElement):
     """Configuration for gallery visualization elements (for artwork)"""
+
     def __init__(
         self,
         element_id: str,
@@ -142,24 +155,27 @@ class GalleryElement(DashboardElement):
         price_field: Optional[str] = None,
         tags_field: Optional[str] = None,
         cards_per_row: int = 3,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(element_id, title, **kwargs)
-        self.update({
-            "type": "gallery",
-            "data_source": data_source,
-            "image_field": image_field,
-            "title_field": title_field,
-            "subtitle_field": subtitle_field,
-            "description_field": description_field,
-            "price_field": price_field,
-            "tags_field": tags_field,
-            "cards_per_row": cards_per_row
-        })
+        self.update(
+            {
+                "type": "gallery",
+                "data_source": data_source,
+                "image_field": image_field,
+                "title_field": title_field,
+                "subtitle_field": subtitle_field,
+                "description_field": description_field,
+                "price_field": price_field,
+                "tags_field": tags_field,
+                "cards_per_row": cards_per_row,
+            }
+        )
 
 
 class CalendarElement(DashboardElement):
     """Configuration for calendar visualization elements"""
+
     def __init__(
         self,
         element_id: str,
@@ -173,24 +189,27 @@ class CalendarElement(DashboardElement):
         color_field: Optional[str] = None,
         view_modes: Optional[List[str]] = None,
         default_view: str = "month",
-        **kwargs
+        **kwargs,
     ):
         super().__init__(element_id, title, **kwargs)
-        self.update({
-            "type": "calendar",
-            "data_source": data_source,
-            "event_title_field": event_title_field,
-            "start_date_field": start_date_field,
-            "end_date_field": end_date_field,
-            "location_field": location_field,
-            "description_field": description_field,
-            "color_field": color_field,
-            "view_modes": view_modes or ["month", "week", "day", "list"],
-            "default_view": default_view
-        })
+        self.update(
+            {
+                "type": "calendar",
+                "data_source": data_source,
+                "event_title_field": event_title_field,
+                "start_date_field": start_date_field,
+                "end_date_field": end_date_field,
+                "location_field": location_field,
+                "description_field": description_field,
+                "color_field": color_field,
+                "view_modes": view_modes or ["month", "week", "day", "list"],
+                "default_view": default_view,
+            }
+        )
 
 
 # Dashboard Configurations
+
 
 def create_sales_dashboard():
     """Create configuration for sales dashboard"""
@@ -208,7 +227,7 @@ def create_sales_dashboard():
                 format="currency",
                 comparison_field="revenue_previous_mtd",
                 trend_period="month",
-                position={"row": 0, "col": 0}
+                position={"row": 0, "col": 0},
             ),
             MetricElement(
                 element_id="total_sales_mtd",
@@ -217,7 +236,7 @@ def create_sales_dashboard():
                 metric_field="sales_count_mtd",
                 comparison_field="sales_count_previous_mtd",
                 trend_period="month",
-                position={"row": 0, "col": 3}
+                position={"row": 0, "col": 3},
             ),
             MetricElement(
                 element_id="avg_sale_price",
@@ -225,7 +244,7 @@ def create_sales_dashboard():
                 data_source="sales_summary",
                 metric_field="average_sale_price",
                 format="currency",
-                position={"row": 0, "col": 6}
+                position={"row": 0, "col": 6},
             ),
             MetricElement(
                 element_id="commission_paid",
@@ -233,7 +252,7 @@ def create_sales_dashboard():
                 data_source="sales_summary",
                 metric_field="commission_paid_mtd",
                 format="currency",
-                position={"row": 0, "col": 9}
+                position={"row": 0, "col": 9},
             ),
             ChartElement(
                 element_id="sales_by_month",
@@ -244,7 +263,7 @@ def create_sales_dashboard():
                 y_axis="revenue",
                 height=350,
                 position={"row": 1, "col": 0},
-                width=8
+                width=8,
             ),
             ChartElement(
                 element_id="sales_by_category",
@@ -253,7 +272,7 @@ def create_sales_dashboard():
                 data_source="sales_by_category",
                 height=350,
                 position={"row": 1, "col": 8},
-                width=4
+                width=4,
             ),
             TableElement(
                 element_id="recent_sales",
@@ -265,12 +284,12 @@ def create_sales_dashboard():
                     {"field": "artist", "title": "Artist"},
                     {"field": "price", "title": "Price", "format": "currency"},
                     {"field": "client_name", "title": "Client"},
-                    {"field": "status", "title": "Status"}
+                    {"field": "status", "title": "Status"},
                 ],
                 height=400,
-                position={"row": 2, "col": 0}
-            )
-        ]
+                position={"row": 2, "col": 0},
+            ),
+        ],
     }
 
 
@@ -287,21 +306,21 @@ def create_inventory_dashboard():
                 title="Total Artworks",
                 data_source="inventory_summary",
                 metric_field="total_artworks",
-                position={"row": 0, "col": 0}
+                position={"row": 0, "col": 0},
             ),
             MetricElement(
                 element_id="available_artworks",
                 title="Available",
                 data_source="inventory_summary",
                 metric_field="available_artworks",
-                position={"row": 0, "col": 3}
+                position={"row": 0, "col": 3},
             ),
             MetricElement(
                 element_id="on_display",
                 title="On Display",
                 data_source="inventory_summary",
                 metric_field="on_display",
-                position={"row": 0, "col": 6}
+                position={"row": 0, "col": 6},
             ),
             MetricElement(
                 element_id="total_value",
@@ -309,7 +328,7 @@ def create_inventory_dashboard():
                 data_source="inventory_summary",
                 metric_field="total_value",
                 format="currency",
-                position={"row": 0, "col": 9}
+                position={"row": 0, "col": 9},
             ),
             ChartElement(
                 element_id="inventory_by_medium",
@@ -318,7 +337,7 @@ def create_inventory_dashboard():
                 data_source="inventory_by_medium",
                 height=350,
                 position={"row": 1, "col": 0},
-                width=4
+                width=4,
             ),
             ChartElement(
                 element_id="inventory_by_status",
@@ -327,7 +346,7 @@ def create_inventory_dashboard():
                 data_source="inventory_by_status",
                 height=350,
                 position={"row": 1, "col": 4},
-                width=4
+                width=4,
             ),
             ChartElement(
                 element_id="inventory_by_price",
@@ -338,7 +357,7 @@ def create_inventory_dashboard():
                 y_axis="count",
                 height=350,
                 position={"row": 1, "col": 8},
-                width=4
+                width=4,
             ),
             GalleryElement(
                 element_id="recent_acquisitions",
@@ -351,9 +370,9 @@ def create_inventory_dashboard():
                 price_field="price",
                 tags_field="tags",
                 height=600,
-                position={"row": 2, "col": 0}
-            )
-        ]
+                position={"row": 2, "col": 0},
+            ),
+        ],
     }
 
 
@@ -370,21 +389,21 @@ def create_events_dashboard():
                 title="Upcoming Events",
                 data_source="events_summary",
                 metric_field="upcoming_events_count",
-                position={"row": 0, "col": 0}
+                position={"row": 0, "col": 0},
             ),
             MetricElement(
                 element_id="this_month_events",
                 title="Events This Month",
                 data_source="events_summary",
                 metric_field="this_month_events",
-                position={"row": 0, "col": 3}
+                position={"row": 0, "col": 3},
             ),
             MetricElement(
                 element_id="registrations",
                 title="Total Registrations",
                 data_source="events_summary",
                 metric_field="total_registrations",
-                position={"row": 0, "col": 6}
+                position={"row": 0, "col": 6},
             ),
             MetricElement(
                 element_id="event_revenue",
@@ -392,7 +411,7 @@ def create_events_dashboard():
                 data_source="events_summary",
                 metric_field="revenue_ytd",
                 format="currency",
-                position={"row": 0, "col": 9}
+                position={"row": 0, "col": 9},
             ),
             CalendarElement(
                 element_id="events_calendar",
@@ -405,7 +424,7 @@ def create_events_dashboard():
                 description_field="description",
                 color_field="event_type",
                 height=600,
-                position={"row": 1, "col": 0}
+                position={"row": 1, "col": 0},
             ),
             ChartElement(
                 element_id="events_by_type",
@@ -416,7 +435,7 @@ def create_events_dashboard():
                 y_axis="count",
                 height=350,
                 position={"row": 2, "col": 0},
-                width=6
+                width=6,
             ),
             ChartElement(
                 element_id="attendance_trend",
@@ -427,9 +446,9 @@ def create_events_dashboard():
                 y_axis="attendance",
                 height=350,
                 position={"row": 2, "col": 6},
-                width=6
-            )
-        ]
+                width=6,
+            ),
+        ],
     }
 
 
@@ -446,14 +465,14 @@ def create_wellness_dashboard():
                 title="Today's Bookings",
                 data_source="wellness_summary",
                 metric_field="today_bookings",
-                position={"row": 0, "col": 0}
+                position={"row": 0, "col": 0},
             ),
             MetricElement(
                 element_id="this_week_bookings",
                 title="This Week's Bookings",
                 data_source="wellness_summary",
                 metric_field="this_week_bookings",
-                position={"row": 0, "col": 3}
+                position={"row": 0, "col": 3},
             ),
             MetricElement(
                 element_id="booking_revenue",
@@ -461,7 +480,7 @@ def create_wellness_dashboard():
                 data_source="wellness_summary",
                 metric_field="revenue_mtd",
                 format="currency",
-                position={"row": 0, "col": 6}
+                position={"row": 0, "col": 6},
             ),
             MetricElement(
                 element_id="top_service",
@@ -469,7 +488,7 @@ def create_wellness_dashboard():
                 data_source="wellness_summary",
                 metric_field="top_service",
                 format="text",
-                position={"row": 0, "col": 9}
+                position={"row": 0, "col": 9},
             ),
             CalendarElement(
                 element_id="booking_calendar",
@@ -482,7 +501,7 @@ def create_wellness_dashboard():
                 description_field="client_name",
                 color_field="service_type",
                 height=600,
-                position={"row": 1, "col": 0}
+                position={"row": 1, "col": 0},
             ),
             ChartElement(
                 element_id="services_by_popularity",
@@ -493,7 +512,7 @@ def create_wellness_dashboard():
                 y_axis="bookings_count",
                 height=350,
                 position={"row": 2, "col": 0},
-                width=6
+                width=6,
             ),
             ChartElement(
                 element_id="bookings_by_hour",
@@ -504,9 +523,9 @@ def create_wellness_dashboard():
                 y_axis="count",
                 height=350,
                 position={"row": 2, "col": 6},
-                width=6
-            )
-        ]
+                width=6,
+            ),
+        ],
     }
 
 
@@ -523,14 +542,14 @@ def create_client_dashboard():
                 title="Total Clients",
                 data_source="client_summary",
                 metric_field="total_clients",
-                position={"row": 0, "col": 0}
+                position={"row": 0, "col": 0},
             ),
             MetricElement(
                 element_id="new_clients",
                 title="New Clients (30d)",
                 data_source="client_summary",
                 metric_field="new_clients_30d",
-                position={"row": 0, "col": 3}
+                position={"row": 0, "col": 3},
             ),
             MetricElement(
                 element_id="repeat_clients",
@@ -538,7 +557,7 @@ def create_client_dashboard():
                 data_source="client_summary",
                 metric_field="repeat_clients_percent",
                 format="percent",
-                position={"row": 0, "col": 6}
+                position={"row": 0, "col": 6},
             ),
             MetricElement(
                 element_id="avg_client_value",
@@ -546,7 +565,7 @@ def create_client_dashboard():
                 data_source="client_summary",
                 metric_field="average_client_value",
                 format="currency",
-                position={"row": 0, "col": 9}
+                position={"row": 0, "col": 9},
             ),
             ChartElement(
                 element_id="client_acquisition",
@@ -557,7 +576,7 @@ def create_client_dashboard():
                 y_axis="new_clients",
                 height=350,
                 position={"row": 1, "col": 0},
-                width=6
+                width=6,
             ),
             ChartElement(
                 element_id="client_interests",
@@ -566,7 +585,7 @@ def create_client_dashboard():
                 data_source="client_interests",
                 height=350,
                 position={"row": 1, "col": 6},
-                width=6
+                width=6,
             ),
             TableElement(
                 element_id="top_clients",
@@ -575,15 +594,23 @@ def create_client_dashboard():
                 columns=[
                     {"field": "name", "title": "Name"},
                     {"field": "email", "title": "Email"},
-                    {"field": "total_spent", "title": "Total Spent", "format": "currency"},
-                    {"field": "last_purchase", "title": "Last Purchase", "format": "date"},
+                    {
+                        "field": "total_spent",
+                        "title": "Total Spent",
+                        "format": "currency",
+                    },
+                    {
+                        "field": "last_purchase",
+                        "title": "Last Purchase",
+                        "format": "date",
+                    },
                     {"field": "interests", "title": "Interests"},
-                    {"field": "actions", "title": "Actions"}
+                    {"field": "actions", "title": "Actions"},
                 ],
                 height=400,
-                position={"row": 2, "col": 0}
-            )
-        ]
+                position={"row": 2, "col": 0},
+            ),
+        ],
     }
 
 
@@ -594,5 +621,5 @@ DASHBOARD_CONFIGS = {
     "inventory": create_inventory_dashboard(),
     "events": create_events_dashboard(),
     "wellness": create_wellness_dashboard(),
-    "clients": create_client_dashboard()
+    "clients": create_client_dashboard(),
 }

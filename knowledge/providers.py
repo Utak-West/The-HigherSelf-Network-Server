@@ -5,14 +5,14 @@ This module provides a registry of embedding providers and implementations
 for different embedding models.
 """
 
-import os
-import json
-import random
-from typing import List, Dict, Any, Optional, Union
 import asyncio
-from loguru import logger
+import json
+import os
+import random
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
+from loguru import logger
 
 
 class EmbeddingProvider:
@@ -132,10 +132,7 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
             client = openai.OpenAI(api_key=self.api_key)
 
             # Generate embedding
-            response = client.embeddings.create(
-                input=text,
-                model=self.model
-            )
+            response = client.embeddings.create(input=text, model=self.model)
 
             # Extract embedding
             embedding = response.data[0].embedding
@@ -167,6 +164,7 @@ class ProviderRegistry:
         # Try to initialize primary embedding provider (Anthropic)
         try:
             from knowledge.providers.local_provider import LocalEmbeddingProvider
+
             local_provider = LocalEmbeddingProvider()
             await self.register_provider(local_provider)
         except Exception as e:
@@ -208,7 +206,9 @@ class ProviderRegistry:
         """
         return self.providers.get(name)
 
-    async def get_embedding(self, text: str, provider_name: str = "openai") -> Dict[str, Any]:
+    async def get_embedding(
+        self, text: str, provider_name: str = "openai"
+    ) -> Dict[str, Any]:
         """
         Generate an embedding for text.
 
@@ -234,19 +234,14 @@ class ProviderRegistry:
         try:
             embedding = await provider.generate_embedding(text)
 
-            return {
-                "success": True,
-                "embedding": embedding,
-                "provider": provider.name
-            }
+            return {"success": True, "embedding": embedding, "provider": provider.name}
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
-    async def get_embeddings(self, texts: List[str], provider_name: str = "openai") -> Dict[str, Any]:
+    async def get_embeddings(
+        self, texts: List[str], provider_name: str = "openai"
+    ) -> Dict[str, Any]:
         """
         Generate embeddings for multiple texts.
 
@@ -270,21 +265,18 @@ class ProviderRegistry:
                 return {
                     "success": True,
                     "embeddings": [result["embedding"] for result in results],
-                    "provider": results[0]["provider"]
+                    "provider": results[0]["provider"],
                 }
             else:
                 # Find the first error
-                error = next((result["error"] for result in results if not result["success"]), "Unknown error")
-                return {
-                    "success": False,
-                    "error": error
-                }
+                error = next(
+                    (result["error"] for result in results if not result["success"]),
+                    "Unknown error",
+                )
+                return {"success": False, "error": error}
         except Exception as e:
             logger.error(f"Error generating embeddings: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
 
 # Singleton instance

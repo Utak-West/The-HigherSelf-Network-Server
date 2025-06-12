@@ -2,9 +2,22 @@
 Pydantic models for Hugging Face Pro integration with Notion.
 These models enforce data validation and structure for all Hugging Face API interactions.
 """
-from pydantic import BaseModel, Field, HttpUrl, field_validatorfrom typing import List, Optional, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
+
+from pydantic import (
+    Any,
+    BaseModel,
+    Dict,
+    Field,
+    HttpUrl,
+    List,
+    Optional,
+    Union,
+    field_validatorfrom,
+    import,
+    typing,
+)
 
 
 class ModelType(str, Enum):
@@ -46,7 +59,7 @@ class NotionHuggingFaceModel(BaseModel):
     tags: List[str] = Field(default_factory=list)
     status: str = "active"
     history_log: List[Dict[str, Any]] = Field(default_factory=list)
-    
+
     def add_to_history(self, action: str, details: Optional[Dict[str, Any]] = None):
         """Add an entry to the history log."""
         log_entry = {
@@ -68,7 +81,7 @@ class HuggingFaceModelReference(NotionHuggingFaceModel):
     quantized: bool = False
     fine_tuned: bool = False
     parameters: Dict[str, Any] = Field(default_factory=dict)
-    
+
 @field_validator('hub_url', mode='before')    def validate_hub_url(cls, v, values):
         """Validate that the hub URL contains the model ID."""
         if 'model_id' in values and values['model_id'] not in v:
@@ -84,7 +97,7 @@ class HuggingFaceSpace(NotionHuggingFaceModel):
     hardware: str = "cpu-basic"
     environment_variables: Dict[str, str] = Field(default_factory=dict)
     persistent: bool = True
-    
+
 
 class HuggingFaceDataset(NotionHuggingFaceModel):
     """Hugging Face Dataset reference for Notion integration."""

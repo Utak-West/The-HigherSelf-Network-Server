@@ -35,17 +35,17 @@ from config.settings import settings
 
 class GoHighLevelCredentials(ServiceCredentials):
     """Credentials for GoHighLevel API integration."""
-    
+
     client_id: str = Field(..., description="GoHighLevel OAuth client ID")
     client_secret: str = Field(..., description="GoHighLevel OAuth client secret")
     access_token: Optional[str] = Field(None, description="Current access token")
     refresh_token: Optional[str] = Field(None, description="Refresh token for token renewal")
     location_id: str = Field(..., description="GoHighLevel location/sub-account ID")
     webhook_secret: str = Field(..., description="Webhook signature verification secret")
-    
+
     class Config:
         env_prefix = "GOHIGHLEVEL_"
-    
+
     @validator('client_id', 'client_secret', 'location_id', 'webhook_secret')
     def validate_required_fields(cls, v: str) -> str:
         """Validate that required fields are not empty."""
@@ -63,11 +63,11 @@ class GoHighLevelCredentials(ServiceCredentials):
 class GoHighLevelService(BaseService):
     """
     Service for interacting with GoHighLevel CRM API.
-    
+
     Provides comprehensive CRM functionality including contacts, opportunities,
     campaigns, and appointments management across multiple business sub-accounts.
     """
-    
+
     def __init__(
         self,
         client_id: Optional[str] = None,
@@ -77,7 +77,7 @@ class GoHighLevelService(BaseService):
     ):
         """
         Initialize GoHighLevel service.
-        
+
         Args:
             client_id: OAuth client ID (defaults to environment variable)
             client_secret: OAuth client secret (defaults to environment variable)
@@ -89,7 +89,7 @@ class GoHighLevelService(BaseService):
         client_secret = client_secret or settings.integrations.gohighlevel_client_secret
         location_id = location_id or settings.integrations.gohighlevel_location_id
         webhook_secret = webhook_secret or settings.integrations.gohighlevel_webhook_secret
-        
+
         # Create credentials object
         credentials = None
         if all([client_id, client_secret, location_id, webhook_secret]):
@@ -100,43 +100,43 @@ class GoHighLevelService(BaseService):
                 location_id=location_id,
                 webhook_secret=webhook_secret
             )
-        
+
         # Initialize base service
         super().__init__(service_name="gohighlevel", credentials=credentials)
-        
+
         # GoHighLevel specific configuration
         self.api_base_url = "https://services.leadconnectorhq.com"
         self.api_version = "v1"
         self.rate_limit_requests = 100
         self.rate_limit_window = 10  # seconds
-        
+
         if not credentials:
             logger.warning("GoHighLevel credentials not fully configured")
-    
+
     async def validate_credentials(self) -> bool:
         """
         Validate GoHighLevel API credentials.
-        
+
         Returns:
             True if credentials are valid, False otherwise
         """
         if not self.credentials:
             logger.error("GoHighLevel credentials not configured")
             return False
-        
+
         try:
             # Test API access with location info endpoint
             url = f"{self.api_base_url}/{self.api_version}/locations/{self.credentials.location_id}"
             headers = await self._get_auth_headers()
-            
+
             response = await self.async_get(url, headers=headers)
-            
+
             # Update credentials verification timestamp
             self.credentials.last_verified = datetime.now()
-            
+
             logger.info("GoHighLevel credentials validated successfully")
             return True
-            
+
         except Exception as e:
             logger.error(f"Invalid GoHighLevel credentials: {e}")
             return False
@@ -170,13 +170,13 @@ class GoHighLevelValidationError(GoHighLevelError):
 async def _handle_api_response(self, response: aiohttp.ClientResponse) -> Dict[str, Any]:
     """
     Handle GoHighLevel API response with comprehensive error handling.
-    
+
     Args:
         response: aiohttp response object
-        
+
     Returns:
         Parsed JSON response data
-        
+
     Raises:
         GoHighLevelAuthError: For authentication failures
         GoHighLevelRateLimitError: For rate limit violations
@@ -186,27 +186,27 @@ async def _handle_api_response(self, response: aiohttp.ClientResponse) -> Dict[s
     try:
         if response.status == 200:
             return await response.json()
-        
+
         elif response.status == 401:
             error_data = await response.json()
             logger.error(f"GoHighLevel authentication error: {error_data}")
             raise GoHighLevelAuthError(f"Authentication failed: {error_data.get('message', 'Unknown error')}")
-        
+
         elif response.status == 429:
             retry_after = response.headers.get('Retry-After', '60')
             logger.warning(f"GoHighLevel rate limit exceeded. Retry after {retry_after} seconds")
             raise GoHighLevelRateLimitError(f"Rate limit exceeded. Retry after {retry_after} seconds")
-        
+
         elif response.status == 422:
             error_data = await response.json()
             logger.error(f"GoHighLevel validation error: {error_data}")
             raise GoHighLevelValidationError(f"Validation failed: {error_data.get('message', 'Unknown error')}")
-        
+
         else:
             error_text = await response.text()
             logger.error(f"GoHighLevel API error {response.status}: {error_text}")
             raise GoHighLevelError(f"API error {response.status}: {error_text}")
-            
+
     except aiohttp.ClientError as e:
         logger.error(f"GoHighLevel client error: {e}")
         raise GoHighLevelError(f"Client error: {e}")
@@ -244,39 +244,39 @@ class ContactSource(str, Enum):
 
 class GHLContact(BaseModel):
     """GoHighLevel contact model with cross-business support."""
-    
+
     id: Optional[str] = Field(None, description="GoHighLevel contact ID")
     first_name: str = Field(..., description="Contact first name")
     last_name: str = Field(..., description="Contact last name")
     email: str = Field(..., description="Contact email address")
     phone: Optional[str] = Field(None, description="Contact phone number")
-    
+
     # Business context
     primary_business: BusinessType = Field(..., description="Primary business interest")
     source: ContactSource = Field(ContactSource.WEBSITE, description="Lead source")
-    
+
     # Cross-business tracking
     business_interests: List[BusinessType] = Field(default_factory=list, description="All business interests")
     cross_sell_potential: Dict[BusinessType, float] = Field(default_factory=dict, description="Cross-sell scores")
-    
+
     # Custom fields by business type
     art_gallery_fields: Optional[Dict[str, Any]] = Field(None, description="Art gallery specific fields")
     wellness_fields: Optional[Dict[str, Any]] = Field(None, description="Wellness specific fields")
     consultancy_fields: Optional[Dict[str, Any]] = Field(None, description="Consultancy specific fields")
     home_services_fields: Optional[Dict[str, Any]] = Field(None, description="Home services specific fields")
-    
+
     # Integration tracking
     notion_page_id: Optional[str] = Field(None, description="Notion page ID for sync")
     created_at: Optional[datetime] = Field(None, description="Creation timestamp")
     updated_at: Optional[datetime] = Field(None, description="Last update timestamp")
-    
+
     @validator('email')
     def validate_email(cls, v: str) -> str:
         """Validate email format."""
         if not v or '@' not in v:
             raise ValueError("Valid email address is required")
         return v.lower().strip()
-    
+
     @validator('business_interests')
     def validate_business_interests(cls, v: List[BusinessType], values: Dict[str, Any]) -> List[BusinessType]:
         """Ensure primary business is included in interests."""
@@ -298,11 +298,11 @@ from typing import Dict, List
 
 class RateLimiter:
     """Rate limiter for GoHighLevel API compliance."""
-    
+
     def __init__(self, max_requests: int = 100, window_seconds: int = 10):
         """
         Initialize rate limiter.
-        
+
         Args:
             max_requests: Maximum requests allowed in window
             window_seconds: Time window in seconds
@@ -311,31 +311,31 @@ class RateLimiter:
         self.window_seconds = window_seconds
         self.requests: List[datetime] = []
         self._lock = asyncio.Lock()
-    
+
     async def acquire(self) -> None:
         """
         Acquire permission to make an API request.
-        
+
         Blocks if rate limit would be exceeded.
         """
         async with self._lock:
             now = datetime.now()
-            
+
             # Remove requests outside the current window
             cutoff = now - timedelta(seconds=self.window_seconds)
             self.requests = [req_time for req_time in self.requests if req_time > cutoff]
-            
+
             # Check if we can make another request
             if len(self.requests) >= self.max_requests:
                 # Calculate wait time
                 oldest_request = min(self.requests)
                 wait_time = (oldest_request + timedelta(seconds=self.window_seconds) - now).total_seconds()
-                
+
                 if wait_time > 0:
                     logger.info(f"Rate limit reached. Waiting {wait_time:.2f} seconds")
                     await asyncio.sleep(wait_time)
                     return await self.acquire()  # Recursive call after waiting
-            
+
             # Record this request
             self.requests.append(now)
 
@@ -343,7 +343,7 @@ class RateLimiter:
 async def create_contact(self, contact_data: GHLContact) -> Optional[str]:
     """Create contact with rate limiting."""
     await self.rate_limiter.acquire()
-    
+
     try:
         # API call implementation
         pass
@@ -367,18 +367,18 @@ from models.gohighlevel_models import GHLContact, BusinessType
 
 class TestGoHighLevelService:
     """Test suite for GoHighLevel service."""
-    
+
     @pytest.fixture
     async def ghl_service(self):
         """Create GoHighLevel service instance for testing."""
         service = GoHighLevelService(
             client_id="test_client_id",
-            client_secret="test_client_secret", 
+            client_secret="test_client_secret",
             location_id="test_location_id",
             webhook_secret="test_webhook_secret"
         )
         return service
-    
+
     @pytest.fixture
     def sample_contact(self):
         """Create sample contact for testing."""
@@ -390,29 +390,29 @@ class TestGoHighLevelService:
             primary_business=BusinessType.ART_GALLERY,
             business_interests=[BusinessType.ART_GALLERY, BusinessType.INTERIOR_DESIGN]
         )
-    
+
     @pytest.mark.asyncio
     async def test_create_contact_success(self, ghl_service, sample_contact):
         """Test successful contact creation."""
         with patch.object(ghl_service, 'async_post') as mock_post:
             mock_post.return_value = {"id": "test_contact_id"}
-            
+
             result = await ghl_service.create_contact(sample_contact)
-            
+
             assert result == "test_contact_id"
             mock_post.assert_called_once()
-    
+
     @pytest.mark.asyncio
     async def test_rate_limiting(self, ghl_service):
         """Test rate limiting functionality."""
         # Mock rapid API calls
         with patch.object(ghl_service, 'async_get') as mock_get:
             mock_get.return_value = {"data": "test"}
-            
+
             # Make requests that should trigger rate limiting
             tasks = [ghl_service.get_contact("test_id") for _ in range(150)]
             results = await asyncio.gather(*tasks)
-            
+
             # Verify all requests completed successfully
             assert len(results) == 150
             assert all(result is not None for result in results)

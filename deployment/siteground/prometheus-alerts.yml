@@ -12,7 +12,7 @@ groups:
         annotations:
           summary: "High CPU usage detected on SiteGround server"
           description: "CPU usage is {{ $value }}% which exceeds 80% threshold for 5 minutes"
-          
+
       - alert: CriticalCPUUsage
         expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 90
         for: 2m
@@ -35,7 +35,7 @@ groups:
         annotations:
           summary: "High memory usage on SiteGround server"
           description: "Memory usage is {{ $value }}% of 8GB, exceeding 80% threshold"
-          
+
       - alert: CriticalMemoryUsage
         expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
         for: 2m
@@ -58,7 +58,7 @@ groups:
         annotations:
           summary: "High disk usage on SiteGround server"
           description: "Disk usage is {{ $value }}% of 40GB SSD, exceeding 80% threshold"
-          
+
       - alert: CriticalDiskUsage
         expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 90
         for: 2m

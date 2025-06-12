@@ -453,18 +453,18 @@ class AdvancedRateLimitMiddleware(BaseHTTPMiddleware):
         local rate = tonumber(ARGV[2])
         local burst = tonumber(ARGV[3])
         local cost = tonumber(ARGV[4])
-        
+
         -- Get current tokens and last update time
         local tokens = tonumber(redis.call('get', bucket_key) or burst)
         local last_update = tonumber(redis.call('get', last_update_key) or 0)
-        
+
         -- Calculate token refill based on time elapsed
         local elapsed = math.max(0, now - last_update)
         local new_tokens = math.min(burst, tokens + elapsed * (rate / 60.0))
-        
+
         -- Check if enough tokens for request
         local allowed = new_tokens >= cost
-        
+
         -- Update tokens if request is allowed
         if allowed then
             redis.call('set', bucket_key, new_tokens - cost)

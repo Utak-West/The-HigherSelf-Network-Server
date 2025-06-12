@@ -113,11 +113,11 @@
 </head>
 <body>
     <h1>The HigherSelf Network Server Architecture</h1>
-    
+
     <div class="container">
         <h2>System Overview</h2>
         <p>The HigherSelf Network Server provides a central integration platform that connects various services while maintaining Notion as the central hub for all data and workflows. The system follows a modular architecture built on asynchronous patterns and robust error handling.</p>
-        
+
         <div class="info">
             <strong>Core Principle:</strong> Notion serves as the central data and workflow management hub for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space.
         </div>
@@ -134,7 +134,7 @@ flowchart TB
         WEBHOOK[Webhook Handlers]
         IM[Integration Manager]
         NS[Notion Service]
-        
+
         subgraph "Service Integrations"
             BS[Base Service]
             TYPEFORM[TypeForm Service]
@@ -145,7 +145,7 @@ flowchart TB
             TUTOR_LM[TutorLM Service]
             AI_PROVIDER[AI Provider Service]
         end
-        
+
         BS --> TYPEFORM
         BS --> WOOCOMMERCE
         BS --> ACUITY
@@ -153,7 +153,7 @@ flowchart TB
         BS --> USER_FEEDBACK
         BS --> TUTOR_LM
         BS --> AI_PROVIDER
-        
+
         API --> WEBHOOK
         API --> IM
         IM --> NS
@@ -165,7 +165,7 @@ flowchart TB
         IM --> TUTOR_LM
         IM --> AI_PROVIDER
     end
-    
+
     NOTION[(Notion\nCentral Hub)]
     TYPEFORM_API[TypeForm API]
     WOO_API[WooCommerce API]
@@ -175,9 +175,9 @@ flowchart TB
     TL_API[TutorLM API]
     OPENAI[OpenAI API]
     ANTHROPIC[Anthropic API]
-    
+
     API <--> CLIENTS[Client Applications]
-    
+
     NS <--> NOTION
     TYPEFORM <--> TYPEFORM_API
     WOOCOMMERCE <--> WOO_API
@@ -187,12 +187,12 @@ flowchart TB
     TUTOR_LM <--> TL_API
     AI_PROVIDER <--> OPENAI
     AI_PROVIDER <--> ANTHROPIC
-    
+
     classDef service fill:#ddf,stroke:#33f,stroke-width:2px;
     classDef api fill:#fcc,stroke:#f33,stroke-width:2px;
     classDef mainComponents fill:#cfc,stroke:#3a3,stroke-width:2px;
     classDef datastore fill:#fcf,stroke:#a3a,stroke-width:2px;
-    
+
     class TYPEFORM,WOOCOMMERCE,ACUITY,AMELIA,USER_FEEDBACK,TUTOR_LM,AI_PROVIDER,BS service;
     class TYPEFORM_API,WOO_API,ACUITY_API,AMELIA_API,UF_API,TL_API,OPENAI,ANTHROPIC api;
     class API,WEBHOOK,IM,NS mainComponents;
@@ -212,7 +212,7 @@ sequenceDiagram
     participant NS as Notion Service
     participant N as Notion
     participant S as Third-Party Service
-    
+
     C->>API: Request (API endpoint)
     API->>IM: Process request with service
     IM->>S: Perform service operation
@@ -224,7 +224,7 @@ sequenceDiagram
     IM->>S: Update with Notion reference
     IM-->>API: Operation result
     API-->>C: Response
-    
+
     Note over IM,N: All data ultimately syncs to Notion as the central hub
         </div>
     </div>
@@ -247,24 +247,24 @@ classDiagram
         +validate_model(model)
         +validate_connection()
     }
-    
+
     class ServiceCredentials {
         +String service_name
         +DateTime last_verified
         +validate_required_fields()
     }
-    
+
     BaseService *-- ServiceCredentials
-    
+
     BaseService <|-- NotionService
     BaseService <|-- TypeFormService
     BaseService <|-- WooCommerceService
     BaseService <|-- AcuityService
-    BaseService <|-- AmeliaService 
+    BaseService <|-- AmeliaService
     BaseService <|-- UserFeedbackService
     BaseService <|-- TutorLMService
     BaseService <|-- AIProviderService
-    
+
     ServiceCredentials <|-- TypeFormCredentials
     ServiceCredentials <|-- WooCommerceCredentials
     ServiceCredentials <|-- AcuityCredentials
@@ -292,11 +292,11 @@ flowchart TB
         APP[The HigherSelf Network Server]
         ENV[Environment Variables]
         LOGS[Log Volume]
-        
+
         ENV --> APP
         APP --> LOGS
     end
-    
+
     subgraph "External Services"
         NOTION[(Notion API)]
         TYPEFORM_EXT[TypeForm]
@@ -305,17 +305,17 @@ flowchart TB
         AMELIA_EXT[Amelia]
         AI_EXT[AI Services]
     end
-    
+
     APP <--> NOTION
     APP <--> TYPEFORM_EXT
     APP <--> WOO_EXT
     APP <--> ACUITY_EXT
     APP <--> AMELIA_EXT
     APP <--> AI_EXT
-    
+
     classDef container fill:#e7f7e7,stroke:#28a745,stroke-width:2px;
     classDef external fill:#f7e7e7,stroke:#dc3545,stroke-width:2px;
-    
+
     class APP,ENV,LOGS container;
     class NOTION,TYPEFORM_EXT,WOO_EXT,ACUITY_EXT,AMELIA_EXT,AI_EXT external;
         </div>
@@ -404,24 +404,24 @@ flowchart TB
         function generateServiceCards() {
             const serviceCardsContainer = document.getElementById('serviceCards');
             serviceCardsContainer.innerHTML = '';
-            
+
             serviceDefinitions.forEach(service => {
                 const card = document.createElement('div');
                 card.className = 'service-card';
-                
+
                 let functionsHTML = '';
                 if (service.functions && service.functions.length > 0) {
-                    functionsHTML = '<p>Primary functions:</p><ul>' + 
-                        service.functions.map(func => `<li>${func}</li>`).join('') + 
+                    functionsHTML = '<p>Primary functions:</p><ul>' +
+                        service.functions.map(func => `<li>${func}</li>`).join('') +
                         '</ul>';
                 }
-                
+
                 card.innerHTML = `
                     <h3>${service.name}</h3>
                     <p>${service.description}</p>
                     ${functionsHTML}
                 `;
-                
+
                 serviceCardsContainer.appendChild(card);
             });
         }
@@ -429,7 +429,7 @@ flowchart TB
         // Function to refresh service data
         function refreshServiceData() {
             document.getElementById('loadingStatus').textContent = 'Loading service data...';
-            
+
             // In production, this would make an API call to get the current services
             // For now, we're just using the static data and simulating a refresh
             setTimeout(() => {

@@ -227,13 +227,13 @@ enhanced = EnhancedStateMachine(workflow)
 async def process_customer_request(instance_id, customer_query):
     # Get the workflow instance
     instance = await workflow.get_instance(instance_id)
-    
+
     # Search for relevant content
     search_results = await knowledge_service.semantic_search_notion(
         query=customer_query,
         limit=3
     )
-    
+
     # Add search results to the context data
     transition_data = {
         "search_results": [
@@ -242,7 +242,7 @@ async def process_customer_request(instance_id, customer_query):
         ],
         "customer_query": customer_query
     }
-    
+
     # Execute the transition with the enhanced context
     result = await enhanced.transition_with_retry(
         instance_id=instance_id,
@@ -250,7 +250,7 @@ async def process_customer_request(instance_id, customer_query):
         agent_id="agent-1",
         transition_data=transition_data
     )
-    
+
     return result
 ```
 

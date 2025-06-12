@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configuration
     const API_BASE_URL = 'http://localhost:8000/api/v1';
     const NOTION_DASHBOARD_URL = 'https://www.notion.so/thehigherselfnetwork/agent-tasks';
-    
+
     // DOM Elements
     const agentSelect = document.getElementById('agentSelect');
     const taskTypeSelect = document.getElementById('taskType');
@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const notionLink = document.getElementById('notionLink');
     const stars = document.querySelectorAll('.star');
     const submitFeedbackBtn = document.getElementById('submitFeedback');
-    
+
     // Set Notion Dashboard URL
     notionLink.href = NOTION_DASHBOARD_URL;
-    
+
     // Task type definitions by agent
     const taskTypes = {
         content_creator: [
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { value: 'event_planning', label: 'Event Planning' }
         ]
     };
-    
+
     // Dynamic form fields by task type
     const formFieldTemplates = {
         blog_post: `
@@ -102,12 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
         `,
         // Add more templates for other task types as needed
     };
-    
+
     // Populate task types based on selected agent
     agentSelect.addEventListener('change', function() {
         const selectedAgent = this.value;
         taskTypeSelect.innerHTML = '<option value="" selected disabled>Select task type...</option>';
-        
+
         if (taskTypes[selectedAgent]) {
             taskTypes[selectedAgent].forEach(type => {
                 const option = document.createElement('option');
@@ -116,15 +116,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 taskTypeSelect.appendChild(option);
             });
         }
-        
+
         // Clear dynamic form fields
         dynamicFormFields.innerHTML = '';
     });
-    
+
     // Populate dynamic form fields based on selected task type
     taskTypeSelect.addEventListener('change', function() {
         const selectedTaskType = this.value;
-        
+
         if (formFieldTemplates[selectedTaskType]) {
             dynamicFormFields.innerHTML = formFieldTemplates[selectedTaskType];
         } else {
@@ -141,11 +141,11 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
     });
-    
+
     // Handle form submission
     taskForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         // Collect form data
         const formData = {
             agent_id: agentSelect.value,
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             description: document.getElementById('taskDescription').value,
             parameters: {}
         };
-        
+
         // Collect dynamic form fields
         dynamicFormFields.querySelectorAll('input, select, textarea').forEach(field => {
             if (field.type === 'checkbox') {
@@ -164,26 +164,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.parameters[field.id] = field.value;
             }
         });
-        
+
         // Show loading state
         const submitBtn = taskForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.textContent;
         submitBtn.textContent = 'Processing...';
         submitBtn.disabled = true;
-        
+
         // Submit to API
         submitTaskToAPI(formData)
             .then(response => {
                 // Display result
                 showTaskResult(response);
-                
+
                 // Add to recent tasks
                 addToRecentTasks(response);
-                
+
                 // Reset form
                 taskForm.reset();
                 dynamicFormFields.innerHTML = '';
-                
+
                 // Create Notion task
                 createNotionTask(formData, response.task_id);
             })
@@ -197,38 +197,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = false;
             });
     });
-    
+
     // Handle star rating
     stars.forEach(star => {
         star.addEventListener('click', function() {
             const rating = this.getAttribute('data-rating');
-            
+
             // Reset all stars
             stars.forEach(s => s.classList.remove('selected'));
-            
+
             // Select clicked star and all stars before it
             stars.forEach(s => {
                 if (s.getAttribute('data-rating') <= rating) {
                     s.classList.add('selected');
                 }
             });
-            
+
             // Store rating
             submitFeedbackBtn.setAttribute('data-rating', rating);
         });
     });
-    
+
     // Handle feedback submission
     submitFeedbackBtn.addEventListener('click', function() {
         const rating = this.getAttribute('data-rating');
         const feedback = document.getElementById('feedbackText').value;
         const taskId = resultCard.getAttribute('data-task-id');
-        
+
         if (!rating) {
             alert('Please select a rating before submitting feedback.');
             return;
         }
-        
+
         // Submit feedback to API
         submitFeedbackToAPI(taskId, rating, feedback)
             .then(() => {
@@ -242,15 +242,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('There was an error submitting your feedback. Please try again.');
             });
     });
-    
+
     // Load recent tasks on page load
     loadRecentTasks();
-    
+
     // API Functions
     async function submitTaskToAPI(formData) {
         // In a real implementation, this would call your actual API
         console.log('Submitting task to API:', formData);
-        
+
         // Simulate API call for demo purposes
         return new Promise(resolve => {
             setTimeout(() => {
@@ -263,21 +263,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         });
     }
-    
+
     async function submitFeedbackToAPI(taskId, rating, feedback) {
         // In a real implementation, this would call your actual API
         console.log('Submitting feedback:', { taskId, rating, feedback });
-        
+
         // Simulate API call for demo purposes
         return new Promise(resolve => {
             setTimeout(resolve, 1000);
         });
     }
-    
+
     async function loadRecentTasks() {
         // In a real implementation, this would call your actual API
         console.log('Loading recent tasks');
-        
+
         // Simulate API call for demo purposes
         const mockTasks = [
             {
@@ -297,20 +297,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 title: 'Summer Course Launch Campaign'
             }
         ];
-        
+
         displayRecentTasks(mockTasks);
     }
-    
+
     async function createNotionTask(formData, taskId) {
         // In a real implementation, this would call your API to create a Notion task
         console.log('Creating Notion task:', { formData, taskId });
-        
+
         // Simulate API call for demo purposes
         return new Promise(resolve => {
             setTimeout(resolve, 1000);
         });
     }
-    
+
     // Helper Functions
     function showTaskResult(response) {
         taskResult.innerHTML = response.result;
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultCard.setAttribute('data-task-id', response.task_id);
         resultCard.scrollIntoView({ behavior: 'smooth' });
     }
-    
+
     function addToRecentTasks(task) {
         const taskItem = document.createElement('li');
         taskItem.className = 'list-group-item task-item';
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="task-status-completed">Completed</span>
             </div>
         `;
-        
+
         // Add to the beginning of the list
         if (recentTasksList.firstChild) {
             recentTasksList.insertBefore(taskItem, recentTasksList.firstChild);
@@ -339,18 +339,18 @@ document.addEventListener('DOMContentLoaded', function() {
             recentTasksList.appendChild(taskItem);
         }
     }
-    
+
     function displayRecentTasks(tasks) {
         recentTasksList.innerHTML = '';
-        
+
         tasks.forEach(task => {
             const taskItem = document.createElement('li');
             taskItem.className = 'list-group-item task-item';
-            
+
             let statusClass = 'task-status-pending';
             if (task.status === 'completed') statusClass = 'task-status-completed';
             if (task.status === 'failed') statusClass = 'task-status-failed';
-            
+
             taskItem.innerHTML = `
                 <div class="d-flex justify-content-between">
                     <div>
@@ -360,34 +360,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="${statusClass}">${task.status}</span>
                 </div>
             `;
-            
+
             recentTasksList.appendChild(taskItem);
         });
     }
-    
+
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
-    
+
     function generateMockResult(formData) {
         // Generate mock results based on task type
         if (formData.task_type === 'blog_post') {
             return `<h3>Blog Post: ${formData.parameters.title || 'Untitled'}</h3>
-                <p>This is a sample blog post about ${formData.parameters.title || 'the requested topic'}. 
+                <p>This is a sample blog post about ${formData.parameters.title || 'the requested topic'}.
                 In a real implementation, this would be generated by your AI agent.</p>
-                <p>The post would be approximately ${formData.parameters.wordCount || 1000} words and written in a 
+                <p>The post would be approximately ${formData.parameters.wordCount || 1000} words and written in a
                 ${formData.parameters.tone || 'informative'} tone.</p>
                 <p>Keywords: ${formData.parameters.keywords || 'No keywords specified'}</p>`;
         }
-        
+
         if (formData.task_type === 'social_media') {
             return `<h3>Social Media Post for ${formData.parameters.platform || 'Instagram'}</h3>
-                <p><strong>Post:</strong> Check out our latest insights on ${formData.parameters.topic || 'this topic'}! 
+                <p><strong>Post:</strong> Check out our latest insights on ${formData.parameters.topic || 'this topic'}!
                 ${formData.parameters.callToAction || 'Learn more at our website.'}</p>
                 ${formData.parameters.includeHashtags ? '<p><strong>Hashtags:</strong> #HigherSelfNetwork #PersonalGrowth #Mindfulness</p>' : ''}`;
         }
-        
+
         // Default response for other task types
         return `<h3>Task Completed</h3>
             <p>Your ${formData.task_type.replace('_', ' ')} task has been processed.</p>

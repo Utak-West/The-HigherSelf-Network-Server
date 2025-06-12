@@ -36,17 +36,17 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     API[API Endpoints] :::entryPoint
     Events[Event Triggers] :::entryPoint
     Scheduled[Scheduled Triggers] :::entryPoint
     Webhooks[External Webhooks] :::entryPoint
-    
+
     %% Central Orchestration
     Grace{Grace - System Orchestrator} :::agentNode
     EventQueue[Event Queue] :::eventProcess
-    
+
     %% Main Agents
     Nyra[Nyra - Lead Capture Specialist] :::agentNode
     Solari[Solari - Booking & Order Manager] :::agentNode
@@ -55,21 +55,21 @@ flowchart TB
     Sage[Sage - Community Curator] :::agentNode
     Elan[Elan - Content Choreographer] :::agentNode
     Zevi[Zevi - Audience Analyst] :::agentNode
-    
+
     %% External Integrations
     N8N[N8N Workflows] :::integrationNode
     Zapier[Zapier Integrations] :::integrationNode
     Notion[Notion Database] :::storageNode
-    
+
     %% Event Flow
     API --> Grace
     Events --> Grace
     Scheduled --> Grace
     Webhooks --> Grace
-    
+
     Grace --> EventQueue
     EventQueue --> EventTypeDecision{Event Type?} :::decisionNode
-    
+
     %% Event Routing
     EventTypeDecision -->|Lead Event| Nyra
     EventTypeDecision -->|Booking Event| Solari
@@ -78,34 +78,34 @@ flowchart TB
     EventTypeDecision -->|Community Event| Sage
     EventTypeDecision -->|Content Event| Elan
     EventTypeDecision -->|Audience Event| Zevi
-    
+
     %% Ruvo Task Management Flow
     Ruvo --> TaskRequestReceived{Task Request Type?} :::decisionNode
-    
+
     TaskRequestReceived -->|New Task| CreateTask[Create Task] :::eventProcess
     TaskRequestReceived -->|Workflow Event| ProcessWorkflowEvent[Process Workflow Event] :::eventProcess
     TaskRequestReceived -->|Status Update| UpdateTaskStatus[Update Task Status] :::eventProcess
     TaskRequestReceived -->|Assignment| AssignTask[Assign Task] :::eventProcess
-    
+
     CreateTask --> TaskTemplateExists{Template Exists?} :::decisionNode
     TaskTemplateExists -->|Yes| ApplyTemplate[Apply Task Template] :::eventProcess
     TaskTemplateExists -->|No| CreateCustomTask[Create Custom Task] :::eventProcess
-    
+
     ProcessWorkflowEvent --> FetchTemplates[Fetch Related Templates] :::eventProcess
     FetchTemplates --> CreateTaskBatch[Create Tasks from Templates] :::eventProcess
-    
+
     UpdateTaskStatus --> CompletionCheck{Task Completed?} :::decisionNode
     CompletionCheck -->|Yes| NotifyWorkflow[Notify Workflow System] :::eventProcess
     CompletionCheck -->|No| UpdateRecord[Update Task Record] :::eventProcess
-    
+
     AssignTask --> UpdateAssignee[Update Task Assignee] :::eventProcess
     UpdateAssignee --> NotifyAssignee[Notify Assignee] :::eventProcess
-    
+
     ApplyTemplate --> SaveToNotion1[Save Task to Notion] :::eventProcess
     CreateCustomTask --> SaveToNotion1
     CreateTaskBatch --> SaveToNotion1
     UpdateRecord --> SaveToNotion1
-    
+
     SaveToNotion1 --> Notion
     NotifyWorkflow --> N8N
     NotifyAssignee --> N8N

@@ -6,22 +6,23 @@ This script creates the necessary tables in Supabase to align with the 16-databa
 It reads SQL migration files and executes them against the Supabase database.
 """
 
+import argparse
+import asyncio
 import os
 import sys
-import asyncio
-# import logging # Replaced by loguru
-from loguru import logger # Added for direct loguru usage
-from typing import Dict, List, Any, Tuple
-from dotenv import load_dotenv
+from typing import Any, Dict, List, Tuple
+
 import httpx
-import argparse
-from colorama import init, Fore, Style
+from colorama import Fore, Style, init
+from dotenv import load_dotenv
+
+# import logging # Replaced by loguru
+from loguru import logger  # Added for direct loguru usage
 
 # Add parent directory to path to allow importing from the server codebase
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from services.supabase_service import SupabaseService, SupabaseConfig
-
+from services.supabase_service import SupabaseConfig, SupabaseService
 
 # Initialize colorama for colored terminal output
 init(autoreset=True)
@@ -54,48 +55,50 @@ def print_info(message: str) -> None:
 
 class SupabaseDatabaseSetup:
     """Utility for setting up Supabase database tables."""
-    
+
     def __init__(self, supabase_service: SupabaseService):
         """
         Initialize the Supabase database setup utility.
-        
+
         Args:
             supabase_service: SupabaseService instance
         """
         self.supabase_service = supabase_service
         # self.logger = logging.getLogger(__name__) # Replaced by global loguru logger
-    
+
     async def execute_sql_file(self, file_path: str) -> bool:
         """
         Execute a SQL file against the Supabase database.
-        
+
         Args:
             file_path: Path to the SQL file
-            
+
         Returns:
             True if execution was successful
         """
         try:
             # Read the SQL file
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 sql = f.read()
-            
+
             # Execute the SQL
             await self.supabase_service._make_request(
                 method="POST",
                 path=f"/v1/projects/{self.supabase_service.project_id}/database/query",
-                data={"query": sql}
+                data={"query": sql},
             )
-            
+
             return True
         except Exception as e:
-            logger.error(f"Error executing SQL file {file_path}: {e}") # Changed self.logger to logger
+            logger.error(
+                f"Error executing SQL file {file_path}: {e}"
+            )  # Changed self.logger to logger
             return False
-    
+
     async def verify_tables(self) -> Dict[str, bool]:
         """
         Verify that all required tables exist in the Supabase database.
-        
+
         Returns:
             Dictionary mapping table names to existence status
         """
@@ -104,12 +107,14 @@ class SupabaseDatabaseSetup:
             response = await self.supabase_service._make_request(
                 method="POST",
                 path=f"/v1/projects/{self.supabase_service.project_id}/database/query",
-                data={"query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"}
+                data={
+                    "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
+                },
             )
-            
+
             # Extract table names from response
             tables = [row["table_name"] for row in response.get("data", [])]
-            
+
             # Check if all required tables exist
             required_tables = [
                 "business_entities",
@@ -130,52 +135,62 @@ class SupabaseDatabaseSetup:
                 "workflows",
                 # Vector database tables
                 "embeddings",
-                "vector_chunks"
+                "vector_chunks",
             ]
-            
+
             return {table: table in tables for table in required_tables}
         except Exception as e:
-            logger.error(f"Error verifying tables: {e}") # Changed self.logger to logger
+            logger.error(
+                f"Error verifying tables: {e}"
+            )  # Changed self.logger to logger
             return {table: False for table in required_tables}
-    
+
     async def setup_database(self) -> bool:
         """
         Set up the Supabase database by executing all migration files.
-        
+
         Returns:
             True if setup was successful
         """
         try:
             # Get the migration files
-            migrations_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "db", "migrations")
-            migration_files = sorted([f for f in os.listdir(migrations_dir) if f.endswith(".sql")])
-            
+            migrations_dir = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), "db", "migrations"
+            )
+            migration_files = sorted(
+                [f for f in os.listdir(migrations_dir) if f.endswith(".sql")]
+            )
+
             if not migration_files:
-                logger.error("No migration files found") # Changed self.logger to logger
+                logger.error(
+                    "No migration files found"
+                )  # Changed self.logger to logger
                 return False
-            
+
             # Execute each migration file
             for file_name in migration_files:
                 file_path = os.path.join(migrations_dir, file_name)
                 print_info(f"Executing migration: {file_name}")
                 success = await self.execute_sql_file(file_path)
-                
+
                 if not success:
                     print_error(f"Failed to execute migration: {file_name}")
                     return False
-                
+
                 print_success(f"Successfully executed migration: {file_name}")
-            
+
             # Verify tables
             table_status = await self.verify_tables()
             all_tables_exist = all(table_status.values())
-            
+
             if all_tables_exist:
                 print_success("All required tables exist in the database")
             else:
-                missing_tables = [table for table, exists in table_status.items() if not exists]
+                missing_tables = [
+                    table for table, exists in table_status.items() if not exists
+                ]
                 print_warning(f"Missing tables: {', '.join(missing_tables)}")
-            
+
             return all_tables_exist
         except Exception as e:
             logger.error(f"Error setting up database: {e}")
@@ -189,34 +204,36 @@ async def main():
     parser.add_argument("--key", help="Supabase API key")
     parser.add_argument("--project-id", help="Supabase project ID")
     args = parser.parse_args()
-    
+
     # Load environment variables
     load_dotenv()
-    
+
     # Get Supabase configuration
     url = args.url or os.environ.get("SUPABASE_URL")
     api_key = args.key or os.environ.get("SUPABASE_API_KEY")
     project_id = args.project_id or os.environ.get("SUPABASE_PROJECT_ID")
-    
+
     if not url or not api_key or not project_id:
-        print_error("Missing Supabase configuration. Please provide URL, API key, and project ID.")
+        print_error(
+            "Missing Supabase configuration. Please provide URL, API key, and project ID."
+        )
         sys.exit(1)
-    
+
     print_header("\n=== Supabase Database Setup ===\n")
     print_info(f"Supabase URL: {url}")
     print_info(f"Supabase Project ID: {project_id}")
-    
+
     # Create Supabase service
     config = SupabaseConfig(url=url, api_key=api_key, project_id=project_id)
     supabase_service = SupabaseService(config)
-    
+
     # Create database setup utility
     setup = SupabaseDatabaseSetup(supabase_service)
-    
+
     # Set up database
     print_header("\nSetting up database...")
     success = await setup.setup_database()
-    
+
     if success:
         print_header("\n=== Database Setup Complete ===\n")
         print_success("All tables have been created successfully.")

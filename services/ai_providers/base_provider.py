@@ -4,17 +4,20 @@ All AI providers must implement this interface to ensure consistent interaction.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
 
 
 class AIProviderConfig(BaseModel):
     """Base configuration for AI providers."""
+
     provider_name: str
 
 
 class AICompletionRequest(BaseModel):
     """Base model for AI completion requests."""
+
     prompt: str
     max_tokens: Optional[int] = 1000
     temperature: Optional[float] = 0.7
@@ -27,6 +30,7 @@ class AICompletionRequest(BaseModel):
 
 class AICompletionResponse(BaseModel):
     """Base model for AI completion responses."""
+
     text: str
     provider: str
     model: str
@@ -52,7 +56,9 @@ class AIProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_completion(self, request: AICompletionRequest) -> AICompletionResponse:
+    async def get_completion(
+        self, request: AICompletionRequest
+    ) -> AICompletionResponse:
         """
         Get a completion from the AI provider.
 

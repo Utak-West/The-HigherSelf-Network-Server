@@ -1,26 +1,34 @@
-from __future__ import annotations # To allow forward references for type hints
+from __future__ import annotations  # To allow forward references for type hints
 
 from datetime import datetime
-from typing import List, Dict, Optional, Union, Literal # Ensure all necessary typing imports are present
 from enum import Enum
+from typing import (  # Ensure all necessary typing imports are present
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
 
 from pydantic import BaseModel, Field
 
 # Attempt to import Enums from models.base
 try:
-    from models.base import AgentPersonality, AgentRole, AgentCapability
+    from models.base import AgentCapability, AgentPersonality, AgentRole
 except ImportError:
     # Define placeholders if models.base is not yet updated or available to the worker
     # This is a fallback, ideally the enums from models.base should be used.
     class AgentPersonality(str, Enum):
         NYRA = "nyra"
-        PLACEHOLDER = "placeholder" # Add more if known
+        PLACEHOLDER = "placeholder"  # Add more if known
+
     class AgentRole(str, Enum):
         LEAD_CAPTURE = "lead_capture"
-        PLACEHOLDER = "placeholder" # Add more if known
+        PLACEHOLDER = "placeholder"  # Add more if known
+
     class AgentCapability(str, Enum):
         BOOKING_DETECTION = "Booking Detection"
-        PLACEHOLDER = "placeholder" # Add more if known
+        PLACEHOLDER = "placeholder"  # Add more if known
 
 
 # --- Core Server Components ---
@@ -29,6 +37,7 @@ class ServerComponent(BaseModel):
     description: str
     dependencies: List[str] = Field(default_factory=list)
     configuration_requirements: Dict[str, str] = Field(default_factory=dict)
+
 
 class APIEndpoint(BaseModel):
     path: str
@@ -40,6 +49,7 @@ class APIEndpoint(BaseModel):
     example_request: Optional[str] = None
     example_response: Optional[str] = None
 
+
 class IntegrationType(str, Enum):
     NOTION = "notion"
     AIRTABLE = "airtable"
@@ -48,6 +58,7 @@ class IntegrationType(str, Enum):
     DATABASE = "database"
     HUGGINGFACE = "huggingface"
     VECTOR_DB = "vector_db"
+
 
 class Integration(BaseModel):
     type: IntegrationType
@@ -58,9 +69,11 @@ class Integration(BaseModel):
     limitations: List[str] = Field(default_factory=list)
     best_practices: List[str] = Field(default_factory=list)
 
+
 # --- Agent System ---
 # AgentPersonality and AgentRole Enums are imported from models.base
 # AgentCapability Enum is imported from models.base
+
 
 # This Agent model is defined as per the issue specification for HigherSelfNetworkServer schema
 class Agent(BaseModel):
@@ -70,7 +83,8 @@ class Agent(BaseModel):
     primary_capabilities: List[AgentCapability] = Field(default_factory=list)
     collaborates_with: List[AgentPersonality] = Field(default_factory=list)
     database_access: List[str] = Field(default_factory=list)
-    
+
+
 # --- Notion Database Structure ---
 class NotionDatabaseType(str, Enum):
     BUSINESS_ENTITIES = "business_entities"
@@ -90,13 +104,15 @@ class NotionDatabaseType(str, Enum):
     USE_CASES = "use_cases"
     WORKFLOWS_LIBRARY = "workflows_library"
 
+
 class NotionDatabase(BaseModel):
     type: NotionDatabaseType
     description: str
     key_properties: Dict[str, str] = Field(default_factory=dict)
     relations: Dict[str, NotionDatabaseType] = Field(default_factory=dict)
     example_records: List[Dict[str, str]] = Field(default_factory=list)
-    
+
+
 # --- Workflow System ---
 class WorkflowState(str, Enum):
     INITIATED = "initiated"
@@ -106,6 +122,7 @@ class WorkflowState(str, Enum):
     ERROR = "error"
     CANCELLED = "cancelled"
 
+
 class WorkflowTransition(BaseModel):
     from_state: WorkflowState
     to_state: WorkflowState
@@ -114,16 +131,20 @@ class WorkflowTransition(BaseModel):
     actions: List[str] = Field(default_factory=list)
     responsible_agent: Optional[AgentPersonality] = None
 
+
 # This Workflow model is defined as per the issue specification for HigherSelfNetworkServer schema
 class Workflow(BaseModel):
     name: str
     description: str
     business_application: List[str] = Field(default_factory=list)
-    states: List[WorkflowState] = Field(default_factory=list) # Note: Existing model has Dict, schema asks for List
+    states: List[WorkflowState] = Field(
+        default_factory=list
+    )  # Note: Existing model has Dict, schema asks for List
     transitions: List[WorkflowTransition] = Field(default_factory=list)
     involved_agents: List[AgentPersonality] = Field(default_factory=list)
     involved_databases: List[NotionDatabaseType] = Field(default_factory=list)
     example_execution: str
+
 
 # --- RAG System ---
 class EmbeddingProvider(str, Enum):
@@ -132,6 +153,7 @@ class EmbeddingProvider(str, Enum):
     HUGGINGFACE = "huggingface"
     LOCAL = "local"
     MOCK = "mock"
+
 
 class RAGComponent(BaseModel):
     name: str
@@ -142,6 +164,7 @@ class RAGComponent(BaseModel):
     context_window_size: int
     example_usage: str
 
+
 # --- Deployment Options ---
 class DeploymentOption(str, Enum):
     DOCKER = "docker"
@@ -150,6 +173,7 @@ class DeploymentOption(str, Enum):
     GOOGLE_CLOUD_RUN = "google_cloud_run"
     AZURE_CONTAINER = "azure_container"
     DIGITAL_OCEAN = "digital_ocean"
+
 
 class DeploymentConfiguration(BaseModel):
     option: DeploymentOption
@@ -160,11 +184,13 @@ class DeploymentConfiguration(BaseModel):
     scaling_configuration: Optional[Dict[str, str]] = None
     estimated_resources: Dict[str, str] = Field(default_factory=dict)
 
+
 # --- Learning Modules ---
 class LearningModuleDifficulty(str, Enum):
     BEGINNER = "beginner"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
+
 
 class LearningModule(BaseModel):
     title: str
@@ -176,15 +202,18 @@ class LearningModule(BaseModel):
     evaluation_criteria: List[str] = Field(default_factory=list)
     estimated_completion_time: str
 
+
 # --- Complete Server Documentation ---
 class HigherSelfNetworkServer(BaseModel):
     version: str = "1.0.0"
     components: List[ServerComponent]
     api_endpoints: List[APIEndpoint]
     integrations: List[Integration]
-    agents: List[Agent] # Uses the Agent model defined above (as per issue spec)
+    agents: List[Agent]  # Uses the Agent model defined above (as per issue spec)
     notion_databases: List[NotionDatabase]
-    workflows: List[Workflow] # Uses the Workflow model defined above (as per issue spec)
+    workflows: List[
+        Workflow
+    ]  # Uses the Workflow model defined above (as per issue spec)
     rag_components: List[RAGComponent]
     deployment_options: List[DeploymentConfiguration]
     learning_modules: List[LearningModule]

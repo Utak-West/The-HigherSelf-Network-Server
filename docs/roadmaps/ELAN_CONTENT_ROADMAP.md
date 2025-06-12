@@ -129,42 +129,42 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Prioritization Flow
     ContentIdea[Content Idea Submitted] :::entryPoint
     ContentIdea --> InitialEvaluation[Initial Evaluation] :::eventProcess
     InitialEvaluation --> StrategicAlignment{Strategic Alignment} :::decisionNode
-    
+
     StrategicAlignment -->|Low Alignment| LowPriority[Mark as Low Priority] :::eventProcess
     StrategicAlignment -->|Medium Alignment| ResourceCheck[Check Resource Requirements] :::eventProcess
     StrategicAlignment -->|High Alignment| AudienceNeedCheck[Check Audience Need] :::eventProcess
-    
+
     ResourceCheck --> ResourceAvailability{Resource Availability} :::decisionNode
     ResourceAvailability -->|Limited Resources| WaitingList[Add to Waiting List] :::eventProcess
     ResourceAvailability -->|Resources Available| AudienceNeedCheck
-    
+
     AudienceNeedCheck --> AudienceNeedLevel{Audience Need Level} :::decisionNode
     AudienceNeedLevel -->|Low Need| BacklogContent[Add to Content Backlog] :::eventProcess
     AudienceNeedLevel -->|Medium Need| TimelinessCheck[Check Timeliness] :::eventProcess
     AudienceNeedLevel -->|High Need| GapAnalysis[Perform Gap Analysis] :::eventProcess
-    
+
     TimelinessCheck --> TimelinessLevel{Timeliness Factor} :::decisionNode
     TimelinessLevel -->|Time-Sensitive| GapAnalysis
     TimelinessLevel -->|Not Time-Sensitive| BacklogContent
-    
+
     GapAnalysis --> ContentGapCheck{Content Gap} :::decisionNode
     ContentGapCheck -->|Unique Gap Filled| HighPriority[Mark as High Priority] :::eventProcess
     ContentGapCheck -->|Similar Content Exists| DifferentiationCheck[Check for Differentiation] :::eventProcess
-    
+
     DifferentiationCheck --> DifferentiationLevel{Differentiation Level} :::decisionNode
     DifferentiationLevel -->|High Differentiation| HighPriority
     DifferentiationLevel -->|Medium Differentiation| MediumPriority[Mark as Medium Priority] :::eventProcess
     DifferentiationLevel -->|Low Differentiation| LowPriority
-    
+
     HighPriority --> ContentApproval[Approve for Production] :::eventProcess
     MediumPriority --> ScheduleCheck[Check Content Calendar] :::eventProcess
     BacklogContent --> QuarterlyReview[Review in Quarterly Planning] :::eventProcess
-    
+
     ScheduleCheck --> ScheduleAvailability{Schedule Availability} :::decisionNode
     ScheduleAvailability -->|Space Available| ContentApproval
     ScheduleAvailability -->|Schedule Full| NextCycleQueuing[Queue for Next Cycle] :::eventProcess
@@ -182,54 +182,54 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Format Selection Flow
     ContentTopic[Content Topic Approved] :::entryPoint
     ContentTopic --> ContentObjective[Determine Content Objective] :::eventProcess
     ContentObjective --> ObjectiveType{Primary Objective} :::decisionNode
-    
+
     ObjectiveType -->|Education| ComplexityAssessment[Assess Topic Complexity] :::eventProcess
     ObjectiveType -->|Engagement| AudiencePreferenceCheck[Check Audience Preferences] :::eventProcess
     ObjectiveType -->|Conversion| ConversionPathAnalysis[Analyze Conversion Path] :::eventProcess
     ObjectiveType -->|Brand Awareness| ReachPotentialAnalysis[Analyze Reach Potential] :::eventProcess
-    
+
     ComplexityAssessment --> ComplexityLevel{Complexity Level} :::decisionNode
     ComplexityLevel -->|High Complexity| LongFormOptions[Consider Long-Form Options] :::eventProcess
     ComplexityLevel -->|Medium Complexity| MediumFormOptions[Consider Medium-Form Options] :::eventProcess
     ComplexityLevel -->|Low Complexity| ShortFormOptions[Consider Short-Form Options] :::eventProcess
-    
+
     LongFormOptions --> VisualRequirement{Visual Requirement} :::decisionNode
     LongFormOptions -->|High Visual Need| VideoOption[Select Video Format] :::eventProcess
     LongFormOptions -->|Medium Visual Need| ArticleWithVisuals[Select Article with Visuals] :::eventProcess
     LongFormOptions -->|Low Visual Need| DetailedArticle[Select Detailed Article] :::eventProcess
-    
+
     MediumFormOptions --> InteractivityNeed{Interactivity Need} :::decisionNode
     MediumFormOptions -->|High Interactivity| InteractiveContent[Select Interactive Format] :::eventProcess
     MediumFormOptions -->|Medium Interactivity| InfographicOption[Select Infographic] :::eventProcess
     MediumFormOptions -->|Low Interactivity| StandardArticle[Select Standard Article] :::eventProcess
-    
+
     ShortFormOptions --> UrgencyLevel{Urgency Level} :::decisionNode
     ShortFormOptions -->|High Urgency| SocialPostOption[Select Social Post] :::eventProcess
     ShortFormOptions -->|Medium Urgency| EmailContentOption[Select Email Content] :::eventProcess
     ShortFormOptions -->|Low Urgency| ShortArticleOption[Select Short Article] :::eventProcess
-    
+
     AudiencePreferenceCheck --> PreferredFormat{Audience Preference} :::decisionNode
     PreferredFormat -->|Video Preference| VideoOption
     PreferredFormat -->|Audio Preference| PodcastOption[Select Podcast Format] :::eventProcess
     PreferredFormat -->|Text Preference| ArticleFormatOption[Select Article Format] :::eventProcess
     PreferredFormat -->|Interactive Preference| InteractiveContent
-    
+
     ConversionPathAnalysis --> ConversionStage{Funnel Stage} :::decisionNode
     ConversionPathAnalysis -->|Top Funnel| AwarenessFormat[Select Awareness Format] :::eventProcess
     ConversionPathAnalysis -->|Mid Funnel| ConsiderationFormat[Select Consideration Format] :::eventProcess
     ConversionPathAnalysis -->|Bottom Funnel| DecisionFormat[Select Decision Format] :::eventProcess
-    
+
     ReachPotentialAnalysis --> DistributionChannel{Primary Channel} :::decisionNode
     ReachPotentialAnalysis -->|Social Media| SocialVideoOption[Select Social Video] :::eventProcess
     ReachPotentialAnalysis -->|Search| SEOArticleOption[Select SEO Article] :::eventProcess
     ReachPotentialAnalysis -->|Email| NewsletterOption[Select Newsletter Feature] :::eventProcess
     ReachPotentialAnalysis -->|Website| WebFeatureOption[Select Website Feature] :::eventProcess
-    
+
     %% Format Final Selection Process
     VideoOption --> FormatFinalization[Finalize Format Selection] :::eventProcess
     ArticleWithVisuals --> FormatFinalization
@@ -249,7 +249,7 @@ flowchart TD
     SEOArticleOption --> FormatFinalization
     NewsletterOption --> FormatFinalization
     WebFeatureOption --> FormatFinalization
-    
+
     FormatFinalization --> ResourceAssessment[Assess Resource Requirements] :::eventProcess
     ResourceAssessment --> ProductionApproval[Approve for Production] :::eventProcess
 ```
@@ -266,61 +266,61 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Distribution Channel Selection Flow
     ContentReady[Content Ready for Distribution] :::entryPoint
     ContentReady --> ContentTypeAnalysis[Analyze Content Type] :::eventProcess
     ContentTypeAnalysis --> ContentTypeCheck{Content Type} :::decisionNode
-    
+
     ContentTypeCheck -->|Educational| AudienceEducation[Identify Target Audience] :::eventProcess
     ContentTypeCheck -->|Promotional| CampaignCheck[Check Campaign Requirements] :::eventProcess
     ContentTypeCheck -->|Engagement| CommunityCheck[Check Community Relevance] :::eventProcess
     ContentTypeCheck -->|Thought Leadership| InfluencerCheck[Assess Influencer Potential] :::eventProcess
-    
+
     AudienceEducation --> EducationalChannels{Primary Channel} :::decisionNode
     EducationalChannels -->|Deep Learning| LongFormChannels[Select Long-Form Channels] :::eventProcess
     EducationalChannels -->|Quick Tips| SocialEducation[Select Social Education Channels] :::eventProcess
     EducationalChannels -->|Reference| ResourceLibrary[Select Resource Library] :::eventProcess
-    
+
     CampaignCheck --> CampaignType{Campaign Type} :::decisionNode
     CampaignType -->|Awareness| BroadReachChannels[Select Broad Reach Channels] :::eventProcess
     CampaignType -->|Lead Generation| LeadGenChannels[Select Lead Gen Channels] :::eventProcess
     CampaignType -->|Conversion| ConversionChannels[Select Conversion Channels] :::eventProcess
-    
+
     CommunityCheck --> CommunityRelevance{Community Relevance} :::decisionNode
     CommunityRelevance -->|General| AllCommunityChannels[Select All Community Channels] :::eventProcess
     CommunityRelevance -->|Segment Specific| TargetedCommunity[Select Targeted Community Channels] :::eventProcess
     CommunityRelevance -->|Premium Only| PremiumChannels[Select Premium Channels] :::eventProcess
-    
+
     InfluencerCheck --> InfluencerStrategy{Influencer Strategy} :::decisionNode
     InfluencerStrategy -->|Industry Positioning| IndustryChannels[Select Industry Channels] :::eventProcess
     InfluencerStrategy -->|Thought Leadership| ThoughtChannels[Select Thought Leadership Channels] :::eventProcess
     InfluencerStrategy -->|Media Coverage| PRChannels[Select PR Channels] :::eventProcess
-    
+
     %% Channel Specific Selection
     LongFormChannels --> BlogSelection[Select Blog Platform] :::eventProcess
     LongFormChannels --> WebsiteSelection[Select Website Section] :::eventProcess
     LongFormChannels --> EmailCourseSelection[Select Email Course] :::eventProcess
-    
+
     SocialEducation --> TwitterSelection[Select Twitter] :::eventProcess
     SocialEducation --> LinkedInSelection[Select LinkedIn] :::eventProcess
     SocialEducation --> InstagramSelection[Select Instagram] :::eventProcess
-    
+
     ResourceLibrary --> KnowledgeBaseSelection[Select Knowledge Base] :::eventProcess
     ResourceLibrary --> MemberPortalSelection[Select Member Portal] :::eventProcess
-    
+
     BroadReachChannels --> SocialAdsSelection[Select Social Ads] :::eventProcess
     BroadReachChannels --> PartnerSelection[Select Partner Channels] :::eventProcess
     BroadReachChannels --> PaidMediaSelection[Select Paid Media] :::eventProcess
-    
+
     LeadGenChannels --> WebinarSelection[Select Webinar Platform] :::eventProcess
     LeadGenChannels --> EmailCampaignSelection[Select Email Campaign] :::eventProcess
     LeadGenChannels --> LandingPageSelection[Select Landing Page] :::eventProcess
-    
+
     ConversionChannels --> EmailSequenceSelection[Select Email Sequence] :::eventProcess
     ConversionChannels --> RetargetingSelection[Select Retargeting Ads] :::eventProcess
     ConversionChannels --> SalesChannelSelection[Select Sales Channels] :::eventProcess
-    
+
     %% Final Distribution Plan
     BlogSelection --> DistributionPlan[Create Distribution Plan] :::eventProcess
     WebsiteSelection --> DistributionPlan
@@ -345,7 +345,7 @@ flowchart TD
     IndustryChannels --> DistributionPlan
     ThoughtChannels --> DistributionPlan
     PRChannels --> DistributionPlan
-    
+
     DistributionPlan --> SchedulingProcess[Schedule Distribution Activities] :::eventProcess
     SchedulingProcess --> TrackingSetup[Set Up Performance Tracking] :::eventProcess
 ```
@@ -377,52 +377,52 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Request Flow
     CampaignPlanning[Campaign Planning by Liora] :::entryPoint
     CampaignPlanning --> ContentNeedIdentification[Identify Content Needs] :::eventProcess
     ContentNeedIdentification --> ContentRequest[Create Content Request] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> RequestEvaluation[Evaluate Content Request] :::eventProcess
     RequestEvaluation --> FeasibilityCheck{Feasibility Check} :::decisionNode
-    
+
     FeasibilityCheck -->|Feasible| ContentPrioritization[Prioritize Content Request] :::eventProcess
     FeasibilityCheck -->|Needs Clarification| ClarificationRequest[Request Clarification] :::eventProcess
     FeasibilityCheck -->|Not Feasible| AlternativeProposal[Propose Alternative Approach] :::eventProcess
-    
+
     ClarificationRequest --> Liora{Liora Marketing Strategist} :::agentNode
     AlternativeProposal --> Liora
-    
+
     Liora --> UpdatedRequest[Updated Content Request] :::dataNode
     UpdatedRequest --> RequestEvaluation
-    
+
     ContentPrioritization --> ContentBrief[Create Content Brief] :::eventProcess
     ContentBrief --> BriefApproval[Send Brief for Approval] :::eventProcess
     BriefApproval --> Liora
-    
+
     Liora --> BriefFeedback[Brief Feedback] :::dataNode
     BriefFeedback --> BriefCheck{Brief Approved?} :::decisionNode
-    
+
     BriefCheck -->|No| BriefRevision[Revise Content Brief] :::eventProcess
     BriefCheck -->|Yes| ContentProduction[Begin Content Production] :::eventProcess
-    
+
     BriefRevision --> BriefApproval
-    
+
     ContentProduction --> ContentDraft[Create Content Draft] :::eventProcess
     ContentDraft --> ReviewProcess[Submit for Review] :::eventProcess
     ReviewProcess --> Liora
-    
+
     Liora --> ContentFeedback[Content Feedback] :::dataNode
     ContentFeedback --> FeedbackCheck{Content Approved?} :::decisionNode
-    
+
     FeedbackCheck -->|No| ContentRevision[Revise Content] :::eventProcess
     FeedbackCheck -->|Yes| ContentFinalization[Finalize Content] :::eventProcess
-    
+
     ContentRevision --> ReviewProcess
     ContentFinalization --> DistributionPlanning[Plan Content Distribution] :::eventProcess
     DistributionPlanning --> DistributionExecution[Execute Distribution Plan] :::eventProcess
-    
+
     DistributionExecution --> PerformanceTracking[Track Content Performance] :::eventProcess
     PerformanceTracking --> PerformanceReport[Generate Performance Report] :::eventProcess
     PerformanceReport --> Liora
@@ -454,49 +454,49 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Community Content Flow
     CommunityNeed[Community Content Need] :::entryPoint
     CommunityNeed --> NeedAnalysis[Analyze Content Need] :::eventProcess
     NeedAnalysis --> ContentPurpose{Content Purpose} :::decisionNode
-    
+
     ContentPurpose -->|Education| EducationalContent[Plan Educational Content] :::eventProcess
     ContentPurpose -->|Engagement| EngagementContent[Plan Engagement Content] :::eventProcess
     ContentPurpose -->|Onboarding| OnboardingContent[Plan Onboarding Content] :::eventProcess
     ContentPurpose -->|Announcement| AnnouncementContent[Plan Announcement Content] :::eventProcess
-    
+
     EducationalContent --> AudienceIdentification[Identify Target Audience] :::eventProcess
     EngagementContent --> AudienceIdentification
     OnboardingContent --> AudienceIdentification
     AnnouncementContent --> AudienceIdentification
-    
+
     AudienceIdentification --> FormatSelection[Select Content Format] :::eventProcess
     FormatSelection --> ContentRequest[Create Content Request] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> ContentProduction[Produce Community Content] :::eventProcess
     ContentProduction --> ReviewSubmission[Submit for Review] :::eventProcess
     ReviewSubmission --> Sage{Sage Community Curator} :::agentNode
-    
+
     Sage --> ContentFeedback[Community Content Feedback] :::dataNode
     ContentFeedback --> FeedbackCheck{Content Approved?} :::decisionNode
-    
+
     FeedbackCheck -->|No| ContentRevision[Revise Content] :::eventProcess
     FeedbackCheck -->|Yes| CommunityDistribution[Prepare for Community Distribution] :::eventProcess
-    
+
     ContentRevision --> ReviewSubmission
-    
+
     CommunityDistribution --> DistributionChannels{Distribution Channels} :::decisionNode
     DistributionChannels -->|Circle.so| CirclePrep[Prepare for Circle.so] :::eventProcess
     DistributionChannels -->|Discourse| DiscoursePrep[Prepare for Discourse] :::eventProcess
     DistributionChannels -->|Slack| SlackPrep[Prepare for Slack] :::eventProcess
     DistributionChannels -->|Email| EmailPrep[Prepare for Email] :::eventProcess
-    
+
     CirclePrep --> ContentDelivery[Deliver Content] :::eventProcess
     DiscoursePrep --> ContentDelivery
     SlackPrep --> ContentDelivery
     EmailPrep --> ContentDelivery
-    
+
     ContentDelivery --> EngagementTracking[Track Community Engagement] :::eventProcess
     EngagementTracking --> PerformanceReport[Generate Engagement Report] :::eventProcess
     PerformanceReport --> Sage
@@ -528,29 +528,29 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Audience Analysis Flow
     ContentPlanning[Content Planning Phase] :::entryPoint
     ContentPlanning --> AudienceInsightRequest[Request Audience Insights] :::eventProcess
     AudienceInsightRequest --> Zevi{Zevi Audience Analyst} :::agentNode
-    
+
     Zevi --> AudienceAnalysis[Conduct Audience Analysis] :::eventProcess
     AudienceAnalysis --> SegmentData[Provide Segment Data] :::dataNode
     SegmentData --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> ContentStrategyDevelopment[Develop Content Strategy] :::eventProcess
     ContentStrategyDevelopment --> ContentPersonalization[Plan Content Personalization] :::eventProcess
     ContentPersonalization --> SegmentedContentBriefs[Create Segmented Content Briefs] :::eventProcess
-    
+
     SegmentedContentBriefs --> ContentVariationProduction[Produce Content Variations] :::eventProcess
     ContentVariationProduction --> SegmentedDistributionPlan[Create Segmented Distribution Plan] :::eventProcess
     SegmentedDistributionPlan --> PersonalizedDistribution[Execute Personalized Distribution] :::eventProcess
-    
+
     PersonalizedDistribution --> SegmentedPerformanceTracking[Track Performance by Segment] :::eventProcess
     SegmentedPerformanceTracking --> PerformanceAnalysis[Analyze Segmented Performance] :::eventProcess
     PerformanceAnalysis --> InsightsSharing[Share Performance Insights] :::eventProcess
     InsightsSharing --> Zevi
-    
+
     Zevi --> RefinedSegmentData[Provide Refined Segment Data] :::dataNode
     RefinedSegmentData --> ContentRefinement[Refine Content Strategy] :::eventProcess
     ContentRefinement --> StrategyOptimization[Optimize Content Approach] :::eventProcess
@@ -618,52 +618,52 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     ContentIdea[Content Idea Generation] :::entryPoint
     MarketingRequest[Marketing Request from Liora] :::entryPoint
     CommunityRequest[Community Request from Sage] :::entryPoint
     ContentAudit[Content Audit] :::entryPoint
     ContentPerformance[Content Performance Review] :::entryPoint
-    
+
     %% Elan Processing Steps
     ContentIdea --> StrategicAssessment[Strategic Assessment] :::eventProcess
     StrategicAssessment --> AlignmentCheck{Strategic Alignment} :::decisionNode
-    
+
     AlignmentCheck -->|Low Alignment| LowPriority[Mark as Low Priority] :::eventProcess
     AlignmentCheck -->|Medium/High Alignment| AudienceCheck[Check Audience Needs] :::eventProcess
-    
+
     AudienceCheck --> AudienceRequest[Request Audience Insights] :::eventProcess
     AudienceRequest --> Zevi[Zevi - Audience Analyst] :::agentNode
-    
+
     Zevi --> AudienceData[Audience Insights] :::dataNode
     AudienceData --> ContentPrioritization[Prioritize Content] :::eventProcess
     ContentPrioritization --> ResearchPlanning[Plan Content Research] :::eventProcess
-    
+
     MarketingRequest --> RequestEvaluation[Evaluate Request] :::eventProcess
     RequestEvaluation --> RequestFeasibility{Request Feasible?} :::decisionNode
-    
+
     RequestFeasibility -->|Yes| RequestPrioritization[Prioritize Request] :::eventProcess
     RequestFeasibility -->|Needs Changes| ClarificationRequest[Request Clarification] :::eventProcess
     ClarificationRequest --> Liora[Liora - Marketing Strategist] :::agentNode
-    
+
     Liora --> UpdatedRequest[Updated Request] :::dataNode
     UpdatedRequest --> RequestEvaluation
-    
+
     RequestPrioritization --> ContentBriefCreation[Create Content Brief] :::eventProcess
-    
+
     CommunityRequest --> CommunityEvaluation[Evaluate Community Request] :::eventProcess
     CommunityEvaluation --> CommunityFeasibility{Request Feasible?} :::decisionNode
-    
+
     CommunityFeasibility -->|Yes| CommunityPrioritization[Prioritize Community Request] :::eventProcess
     CommunityFeasibility -->|Needs Changes| CommunityClarification[Request Community Clarification] :::eventProcess
     CommunityClarification --> Sage[Sage - Community Curator] :::agentNode
-    
+
     Sage --> UpdatedCommunityRequest[Updated Community Request] :::dataNode
     UpdatedCommunityRequest --> CommunityEvaluation
-    
+
     CommunityPrioritization --> ContentBriefCreation
-    
+
     %% Content Creation Flow
     ResearchPlanning --> ResearchExecution[Conduct Content Research] :::eventProcess
     ResearchExecution --> ContentBriefCreation
@@ -672,72 +672,72 @@ flowchart TB
     ContentOutline --> ContentCreation[Create Content] :::eventProcess
     ContentCreation --> InitialReview[Perform Initial Review] :::eventProcess
     InitialReview --> QualityCheck{Quality Check} :::decisionNode
-    
+
     QualityCheck -->|Needs Revision| ContentRevision[Revise Content] :::eventProcess
     QualityCheck -->|Meets Standards| ExternalReview[Send for External Review] :::eventProcess
-    
+
     ContentRevision --> InitialReview
-    
+
     ExternalReview --> ReviewRouting{Requester Type} :::decisionNode
     ReviewRouting -->|Marketing| LioraReview[Send to Liora for Review] :::eventProcess
     ReviewRouting -->|Community| SageReview[Send to Sage for Review] :::eventProcess
     ReviewRouting -->|Internal| InternalReview[Internal Review Process] :::eventProcess
-    
+
     LioraReview --> Liora
     SageReview --> Sage
-    
+
     Liora --> MarketingFeedback[Marketing Feedback] :::dataNode
     Sage --> CommunityFeedback[Community Feedback] :::dataNode
     InternalReview --> InternalFeedback[Internal Feedback] :::dataNode
-    
+
     MarketingFeedback --> FeedbackEvaluation[Evaluate Feedback] :::eventProcess
     CommunityFeedback --> FeedbackEvaluation
     InternalFeedback --> FeedbackEvaluation
-    
+
     FeedbackEvaluation --> RevisionNeeded{Revision Needed?} :::decisionNode
     RevisionNeeded -->|Yes| ContentRevision
     RevisionNeeded -->|No| ContentOptimization[Optimize Content] :::eventProcess
-    
+
     %% Content Optimization and Distribution
     ContentOptimization --> SEOImplementation[Implement SEO Best Practices] :::eventProcess
     SEOImplementation --> MetadataSetup[Set Up Metadata] :::eventProcess
     MetadataSetup --> FinalFormatting[Format for Publication] :::eventProcess
     FinalFormatting --> DistributionPlanning[Plan Distribution] :::eventProcess
-    
+
     DistributionPlanning --> ChannelSelection{Distribution Channels} :::decisionNode
     ChannelSelection -->|Website| WebsitePrep[Prepare for Website] :::eventProcess
     ChannelSelection -->|Newsletter| NewsletterPrep[Prepare for Newsletter] :::eventProcess
     ChannelSelection -->|Social| SocialPrep[Prepare for Social Media] :::eventProcess
     ChannelSelection -->|Community| CommunityPrep[Prepare for Community] :::eventProcess
-    
+
     WebsitePrep --> WordPress[(WordPress)] :::integrationNode
     NewsletterPrep --> Beehiiv[(Beehiiv)] :::integrationNode
     SocialPrep --> SocialPlatforms[(Social Platforms)] :::integrationNode
     CommunityPrep --> CommunityPlatforms[(Community Platforms)] :::integrationNode
-    
+
     WordPress --> DistributionExecution[Execute Distribution] :::eventProcess
     Beehiiv --> DistributionExecution
     SocialPlatforms --> DistributionExecution
     CommunityPlatforms --> DistributionExecution
-    
+
     %% Performance Tracking and Repurposing
     DistributionExecution --> PerformanceTracking[Track Performance] :::eventProcess
     ContentAudit --> ContentInventory[Create Content Inventory] :::eventProcess
     ContentInventory --> GapIdentification[Identify Content Gaps] :::eventProcess
     GapIdentification --> ContentPlanning[Plan New Content] :::eventProcess
     ContentPlanning --> ContentIdea
-    
+
     ContentPerformance --> MetricsAnalysis[Analyze Content Metrics] :::eventProcess
     MetricsAnalysis --> PerformanceSegmentation[Segment Performance Data] :::eventProcess
     PerformanceSegmentation --> RepurposingOpportunities[Identify Repurposing Opportunities] :::eventProcess
     RepurposingOpportunities --> RepurposingPlan[Create Repurposing Plan] :::eventProcess
     RepurposingPlan --> ContentReformulation[Reformulate Content] :::eventProcess
     ContentReformulation --> FormatSelection
-    
+
     PerformanceTracking --> MetricsCollection[Collect Performance Metrics] :::eventProcess
     MetricsCollection --> PerformanceReporting[Generate Performance Reports] :::eventProcess
     PerformanceReporting --> InsightsDatabase[(Insights Database)] :::storageNode
-    
+
     %% Feedback Loop
     InsightsDatabase --> StrategyRefinement[Refine Content Strategy] :::eventProcess
     StrategyRefinement --> ContentIdea

@@ -44,26 +44,26 @@ check_root() {
 # Create necessary directories
 create_directories() {
     log "Creating necessary directories..."
-    
+
     mkdir -p /var/log/higherself
     mkdir -p /home/backup/logs
     mkdir -p /etc/prometheus
     mkdir -p /etc/grafana/provisioning/dashboards
-    
+
     # Set proper permissions
     chown -R higherself:higherself /var/log/higherself 2>/dev/null || true
     chown -R higherself:higherself /home/backup 2>/dev/null || true
-    
+
     log "Directories created successfully"
 }
 
 # Install system dependencies
 install_dependencies() {
     log "Installing system dependencies..."
-    
+
     # Update package list
     apt update
-    
+
     # Install required packages
     apt install -y \
         redis-server \
@@ -76,24 +76,24 @@ install_dependencies() {
         jq \
         bc \
         apache2-utils
-    
+
     log "Dependencies installed successfully"
 }
 
 # Configure Redis for SiteGround
 configure_redis() {
     log "Configuring Redis for SiteGround optimization..."
-    
+
     # Backup original config
     cp /etc/redis/redis.conf /etc/redis/redis.conf.backup
-    
+
     # Copy optimized Redis config
     cp "$SCRIPT_DIR/../redis/redis.conf" /etc/redis/redis.conf
-    
+
     # Restart and enable Redis
     systemctl restart redis-server
     systemctl enable redis-server
-    
+
     # Verify Redis is working
     if redis-cli ping | grep -q "PONG"; then
         log "Redis configured and running successfully"
@@ -106,10 +106,10 @@ configure_redis() {
 # Configure MongoDB for SiteGround
 configure_mongodb() {
     log "Configuring MongoDB for SiteGround optimization..."
-    
+
     # Backup original config
     cp /etc/mongod.conf /etc/mongod.conf.backup
-    
+
     # Create optimized MongoDB config
     cat > /etc/mongod.conf << EOF
 # MongoDB configuration for SiteGround 8GB RAM
@@ -143,21 +143,21 @@ operationProfiling:
   slowOpThresholdMs: 100
   mode: slowOp
 EOF
-    
+
     # Restart and enable MongoDB
     systemctl restart mongod
     systemctl enable mongod
-    
+
     log "MongoDB configured successfully"
 }
 
 # Set up monitoring
 setup_monitoring() {
     log "Setting up monitoring for SiteGround..."
-    
+
     # Copy Prometheus alerts
     cp "$SCRIPT_DIR/prometheus-alerts.yml" /etc/prometheus/
-    
+
     # Update Prometheus config to include alerts
     if ! grep -q "prometheus-alerts.yml" /etc/prometheus/prometheus.yml; then
         cat >> /etc/prometheus/prometheus.yml << EOF
@@ -166,38 +166,38 @@ rule_files:
   - "prometheus-alerts.yml"
 EOF
     fi
-    
+
     # Copy Grafana dashboard
     cp "$SCRIPT_DIR/grafana-dashboard.json" /etc/grafana/provisioning/dashboards/
-    
+
     # Restart monitoring services
     systemctl restart prometheus
     systemctl restart grafana-server
     systemctl enable prometheus
     systemctl enable grafana-server
-    
+
     log "Monitoring configured successfully"
 }
 
 # Make scripts executable
 setup_scripts() {
     log "Setting up optimization scripts..."
-    
+
     # Make all scripts executable
     chmod +x "$SCRIPT_DIR/scripts/"*.sh
-    
+
     # Create symlinks in /usr/local/bin for easy access
     ln -sf "$SCRIPT_DIR/scripts/memory_cleanup.sh" /usr/local/bin/higherself-memory-cleanup
     ln -sf "$SCRIPT_DIR/scripts/resource_monitor.sh" /usr/local/bin/higherself-monitor
     ln -sf "$SCRIPT_DIR/scripts/log_rotation.sh" /usr/local/bin/higherself-log-rotate
-    
+
     log "Scripts configured successfully"
 }
 
 # Set up cron jobs
 setup_cron_jobs() {
     log "Setting up automated maintenance cron jobs..."
-    
+
     # Create cron file for HigherSelf maintenance
     cat > /etc/cron.d/higherself-maintenance << EOF
 # HigherSelf Network Maintenance Jobs for SiteGround
@@ -216,38 +216,38 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Weekly system cleanup on Sundays at 3 AM
 0 3 * * 0 root apt autoremove -y && apt autoclean >> /var/log/higherself/system_cleanup.log 2>&1
 EOF
-    
+
     # Set proper permissions
     chmod 644 /etc/cron.d/higherself-maintenance
-    
+
     # Restart cron service
     systemctl restart cron
-    
+
     log "Cron jobs configured successfully"
 }
 
 # Configure environment
 setup_environment() {
     log "Setting up SiteGround-optimized environment..."
-    
+
     # Copy environment file
     if [ -f "$PROJECT_ROOT/.env" ]; then
         cp "$PROJECT_ROOT/.env" "$PROJECT_ROOT/.env.backup"
     fi
-    
+
     cp "$SCRIPT_DIR/.env.siteground" "$PROJECT_ROOT/.env"
-    
+
     # Set proper permissions
     chmod 600 "$PROJECT_ROOT/.env"
     chown higherself:higherself "$PROJECT_ROOT/.env" 2>/dev/null || true
-    
+
     log "Environment configured successfully"
 }
 
 # Configure system limits
 configure_system_limits() {
     log "Configuring system limits for SiteGround..."
-    
+
     # Configure limits.conf
     cat >> /etc/security/limits.conf << EOF
 
@@ -259,7 +259,7 @@ configure_system_limits() {
 higherself soft nofile 65536
 higherself hard nofile 65536
 EOF
-    
+
     # Configure sysctl for network optimization
     cat >> /etc/sysctl.conf << EOF
 
@@ -271,19 +271,19 @@ net.ipv4.tcp_wmem = 4096 65536 16777216
 net.core.netdev_max_backlog = 5000
 net.ipv4.tcp_congestion_control = bbr
 EOF
-    
+
     # Apply sysctl changes
     sysctl -p
-    
+
     log "System limits configured successfully"
 }
 
 # Verify installation
 verify_installation() {
     log "Verifying SiteGround optimization installation..."
-    
+
     local errors=0
-    
+
     # Check services
     for service in redis-server mongod prometheus grafana-server; do
         if systemctl is-active --quiet "$service"; then
@@ -293,7 +293,7 @@ verify_installation() {
             ((errors++))
         fi
     done
-    
+
     # Check scripts
     for script in memory_cleanup.sh resource_monitor.sh log_rotation.sh; do
         if [ -x "$SCRIPT_DIR/scripts/$script" ]; then
@@ -303,7 +303,7 @@ verify_installation() {
             ((errors++))
         fi
     done
-    
+
     # Check cron jobs
     if [ -f /etc/cron.d/higherself-maintenance ]; then
         info "✓ Cron jobs configured"
@@ -311,7 +311,7 @@ verify_installation() {
         error "✗ Cron jobs not configured"
         ((errors++))
     fi
-    
+
     # Check environment file
     if [ -f "$PROJECT_ROOT/.env" ]; then
         info "✓ Environment file configured"
@@ -319,7 +319,7 @@ verify_installation() {
         error "✗ Environment file not found"
         ((errors++))
     fi
-    
+
     if [ $errors -eq 0 ]; then
         log "✓ All verifications passed successfully!"
         return 0
@@ -372,10 +372,10 @@ display_summary() {
 # Main execution
 main() {
     log "Starting SiteGround optimization setup for HigherSelf Network..."
-    
+
     # Create log directory first
     mkdir -p "$(dirname "$LOG_FILE")"
-    
+
     check_root
     create_directories
     install_dependencies
@@ -386,7 +386,7 @@ main() {
     setup_cron_jobs
     setup_environment
     configure_system_limits
-    
+
     if verify_installation; then
         display_summary
         log "SiteGround optimization setup completed successfully!"

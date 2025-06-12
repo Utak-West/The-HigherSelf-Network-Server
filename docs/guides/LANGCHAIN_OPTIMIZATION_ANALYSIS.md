@@ -127,7 +127,7 @@ After reviewing the comprehensive LangChain optimization document, I've identifi
 **Dependencies**: langchain, langchain-openai, langchain-anthropic
 
 ### 2. Tool Framework
-**Files**: 
+**Files**:
 - `tools/notion_tools.py`
 - `tools/communication_tools.py`
 - `tools/workflow_tools.py`

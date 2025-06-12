@@ -160,7 +160,7 @@ This guide provides instructions for securely obtaining and managing API credent
 - For integration with e-commerce: `WOOCOMMERCE_CONSUMER_KEY`, `WOOCOMMERCE_CONSUMER_SECRET`
 
 ### Wellness Service Booking Workflow
-- Required: `NOTION_PRODUCTS_SERVICES_DB`, `NOTION_CONTACTS_PROFILES_DB` 
+- Required: `NOTION_PRODUCTS_SERVICES_DB`, `NOTION_CONTACTS_PROFILES_DB`
 - For appointment integration: `AMELIA_API_KEY`, `AMELIA_ENDPOINT`
 
 ### Content Creation and Distribution Workflow

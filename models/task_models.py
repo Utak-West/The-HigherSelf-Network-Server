@@ -5,14 +5,16 @@ These models support the TaskManagementAgent and maintain
 Notion as the central hub for all task data.
 """
 
+from datetime import date, datetime
 from enum import Enum
-from typing import Dict, Any, List, Optional
-from datetime import datetime, date
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class TaskPriority(str, Enum):
     """Task priority levels."""
+
     HIGH = "High"
     MEDIUM = "Medium"
     LOW = "Low"
@@ -20,6 +22,7 @@ class TaskPriority(str, Enum):
 
 class TaskStatus(str, Enum):
     """Task status states."""
+
     NOT_STARTED = "Not Started"
     IN_PROGRESS = "In Progress"
     WAITING = "Waiting"
@@ -29,6 +32,7 @@ class TaskStatus(str, Enum):
 
 class TaskSource(str, Enum):
     """Sources that can generate tasks."""
+
     LEAD_CAPTURE = "Lead Capture"
     BOOKING = "Booking"
     CONTENT = "Content"
@@ -40,6 +44,7 @@ class TaskSource(str, Enum):
 
 class TaskCategory(str, Enum):
     """Categories of tasks."""
+
     FOLLOW_UP = "Follow Up"
     CONTENT_CREATION = "Content Creation"
     ADMIN = "Admin"
@@ -52,6 +57,7 @@ class TaskCategory(str, Enum):
 
 class TaskTemplate(BaseModel):
     """Model for a task template."""
+
     name: str
     description: str
     category: TaskCategory
@@ -69,6 +75,7 @@ class TaskTemplate(BaseModel):
 
 class TaskReminder(BaseModel):
     """Model for a task reminder."""
+
     task_id: str
     remind_at: datetime
     reminded: bool = False

@@ -29,34 +29,37 @@ Examples:
     python -m tools.sync_databases --since $(date -u -v-1d +"%Y-%m-%dT%H:%M:%S")
 """
 
-import os
-import sys
-import asyncio
 # import logging # Unused
 import argparse
-from typing import Dict, List, Any, Optional
+import asyncio
+import os
+import sys
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+from colorama import Fore, Style, init
 from dotenv import load_dotenv
-from colorama import init, Fore, Style
 
 # Add parent directory to path to allow importing from the server codebase
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from services.notion_service import NotionService
-from services.supabase_service import SupabaseService, SupabaseConfig
-from services.database_sync_service import DatabaseSyncService, SyncResult
 from models.base import NotionIntegrationConfig
+from services.database_sync_service import DatabaseSyncService, SyncResult
+from services.notion_service import NotionService
+from services.supabase_service import SupabaseConfig, SupabaseService
 from utils.logging_setup import setup_logging
+
 try:
     # Try to import from the new settings_v2 module first
-    from config.settings_v2 import settings, reload_settings
+    from config.settings_v2 import reload_settings, settings
+
     print("Using Pydantic v2 settings")
 except ImportError:
     # Fall back to the original settings module
-    from config.settings import settings, reload_settings
+    from config.settings import reload_settings, settings
+
     print("Using Pydantic v1 settings")
 from loguru import logger
-
 
 # Initialize colorama for colored terminal output
 init(autoreset=True)
@@ -70,18 +73,22 @@ def configure_script_logging():
     log_file = settings.server.log_file
 
     setup_logging(
-        log_level=forced_log_level, # Use forced_log_level
+        log_level=forced_log_level,  # Use forced_log_level
         json_output=json_logs,
-        log_file=log_file
+        log_file=log_file,
     )
     # Using loguru's logger directly after setup
-    logger.info(f"Script logging FORCED to level: {forced_log_level} (original from settings: {settings.server.log_level.value})")
+    logger.info(
+        f"Script logging FORCED to level: {forced_log_level} (original from settings: {settings.server.log_level.value})"
+    )
     if json_logs:
         logger.info("JSON structured logging enabled for script.")
     if log_file:
         logger.info(f"Script logging to file: {log_file}")
 
-    logger.debug("This is a DEBUG message directly from configure_script_logging after forcing level to DEBUG.")
+    logger.debug(
+        "This is a DEBUG message directly from configure_script_logging after forcing level to DEBUG."
+    )
 
 
 def print_header(message: str) -> None:
@@ -128,11 +135,17 @@ def format_sync_results(results: Dict[str, List[SyncResult]]) -> None:
             success_rate = (success_count / total_count) * 100
 
             if success_rate == 100:
-                print_success(f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)")
+                print_success(
+                    f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)"
+                )
             elif success_rate >= 80:
-                print_info(f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)")
+                print_info(
+                    f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)"
+                )
             else:
-                print_warning(f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)")
+                print_warning(
+                    f"{model_name}: {success_count}/{total_count} successful ({success_rate:.1f}%)"
+                )
 
         # Print errors
         errors = [r for r in model_results if not r.success]
@@ -157,27 +170,29 @@ async def setup_services() -> tuple:
     # Set up Notion service
     notion_token = os.environ.get("NOTION_API_TOKEN")
     if not notion_token:
-        print_error("Missing Notion API token. Please set NOTION_API_TOKEN environment variable.")
+        print_error(
+            "Missing Notion API token. Please set NOTION_API_TOKEN environment variable."
+        )
         sys.exit(1)
 
     # Create database mappings from environment variables
     db_mappings = {
-        'BusinessEntity': os.environ.get('NOTION_BUSINESS_ENTITIES_DB', ''),
-        'ContactProfile': os.environ.get('NOTION_CONTACTS_PROFILES_DB', ''),
-        'CommunityMember': os.environ.get('NOTION_COMMUNITY_HUB_DB', ''),
-        'ProductService': os.environ.get('NOTION_PRODUCTS_SERVICES_DB', ''),
-        'WorkflowInstance': os.environ.get('NOTION_ACTIVE_WORKFLOW_INSTANCES_DB', ''),
-        'MarketingCampaign': os.environ.get('NOTION_MARKETING_CAMPAIGNS_DB', ''),
-        'FeedbackSurvey': os.environ.get('NOTION_FEEDBACK_SURVEYS_DB', ''),
-        'RewardBounty': os.environ.get('NOTION_REWARDS_BOUNTIES_DB', ''),
-        'Task': os.environ.get('NOTION_TASKS_DB', ''),
-        'AgentCommunication': os.environ.get('NOTION_AGENT_COMMUNICATION_DB', ''),
-        'Agent': os.environ.get('NOTION_AGENT_REGISTRY_DB', ''),
-        'ApiIntegration': os.environ.get('NOTION_API_INTEGRATIONS_DB', ''),
-        'DataTransformation': os.environ.get('NOTION_DATA_TRANSFORMATIONS_DB', ''),
-        'NotificationTemplate': os.environ.get('NOTION_NOTIFICATIONS_TEMPLATES_DB', ''),
-        'UseCase': os.environ.get('NOTION_USE_CASES_DB', ''),
-        'Workflow': os.environ.get('NOTION_WORKFLOWS_LIBRARY_DB', ''),
+        "BusinessEntity": os.environ.get("NOTION_BUSINESS_ENTITIES_DB", ""),
+        "ContactProfile": os.environ.get("NOTION_CONTACTS_PROFILES_DB", ""),
+        "CommunityMember": os.environ.get("NOTION_COMMUNITY_HUB_DB", ""),
+        "ProductService": os.environ.get("NOTION_PRODUCTS_SERVICES_DB", ""),
+        "WorkflowInstance": os.environ.get("NOTION_ACTIVE_WORKFLOW_INSTANCES_DB", ""),
+        "MarketingCampaign": os.environ.get("NOTION_MARKETING_CAMPAIGNS_DB", ""),
+        "FeedbackSurvey": os.environ.get("NOTION_FEEDBACK_SURVEYS_DB", ""),
+        "RewardBounty": os.environ.get("NOTION_REWARDS_BOUNTIES_DB", ""),
+        "Task": os.environ.get("NOTION_TASKS_DB", ""),
+        "AgentCommunication": os.environ.get("NOTION_AGENT_COMMUNICATION_DB", ""),
+        "Agent": os.environ.get("NOTION_AGENT_REGISTRY_DB", ""),
+        "ApiIntegration": os.environ.get("NOTION_API_INTEGRATIONS_DB", ""),
+        "DataTransformation": os.environ.get("NOTION_DATA_TRANSFORMATIONS_DB", ""),
+        "NotificationTemplate": os.environ.get("NOTION_NOTIFICATIONS_TEMPLATES_DB", ""),
+        "UseCase": os.environ.get("NOTION_USE_CASES_DB", ""),
+        "Workflow": os.environ.get("NOTION_WORKFLOWS_LIBRARY_DB", ""),
     }
 
     # Check if all required database IDs are set
@@ -186,7 +201,9 @@ async def setup_services() -> tuple:
         print_warning(f"Missing Notion database IDs for: {', '.join(missing_dbs)}")
         print_warning("Some databases will not be synchronized.")
 
-    notion_config = NotionIntegrationConfig(token=notion_token, database_mappings=db_mappings)
+    notion_config = NotionIntegrationConfig(
+        token=notion_token, database_mappings=db_mappings
+    )
     notion_service = NotionService(notion_config)
 
     # Set up Supabase service
@@ -195,10 +212,14 @@ async def setup_services() -> tuple:
     supabase_project_id = os.environ.get("SUPABASE_PROJECT_ID")
 
     if not supabase_url or not supabase_key or not supabase_project_id:
-        print_error("Missing Supabase configuration. Please set SUPABASE_URL, SUPABASE_API_KEY, and SUPABASE_PROJECT_ID environment variables.")
+        print_error(
+            "Missing Supabase configuration. Please set SUPABASE_URL, SUPABASE_API_KEY, and SUPABASE_PROJECT_ID environment variables."
+        )
         sys.exit(1)
 
-    supabase_config = SupabaseConfig(url=supabase_url, api_key=supabase_key, project_id=supabase_project_id)
+    supabase_config = SupabaseConfig(
+        url=supabase_url, api_key=supabase_key, project_id=supabase_project_id
+    )
     supabase_service = SupabaseService(supabase_config)
 
     # Set up database sync service
@@ -211,13 +232,18 @@ async def main():
     """Main function."""
     # Load .env file and reload settings to ensure LOG_LEVEL is respected
     load_dotenv()
-    reload_settings() # Reload settings after .env is loaded
+    reload_settings()  # Reload settings after .env is loaded
 
     # Configure logging first, now using potentially updated settings
     configure_script_logging()
 
     # Check if we're in test mode and handle accordingly
-    from config.testing_mode import is_testing_mode, is_api_disabled, enable_testing_mode, TestingMode
+    from config.testing_mode import (
+        TestingMode,
+        enable_testing_mode,
+        is_api_disabled,
+        is_testing_mode,
+    )
 
     if is_testing_mode():
         print_info("Running in TEST_MODE. API calls will be simulated.")
@@ -227,7 +253,9 @@ async def main():
             # Force disable both Notion and Supabase APIs
             TestingMode.add_disabled_api("notion")
             TestingMode.add_disabled_api("supabase")
-            logger.debug(f"Disabled APIs in testing mode: {TestingMode.get_disabled_apis()}")
+            logger.debug(
+                f"Disabled APIs in testing mode: {TestingMode.get_disabled_apis()}"
+            )
 
     # Force disable APIs in testing mode if environment variables are set
     if os.environ.get("TEST_MODE", "").lower() == "true":
@@ -238,10 +266,16 @@ async def main():
             TestingMode.add_disabled_api("supabase")
 
     parser = argparse.ArgumentParser(description="Database Synchronization Utility")
-    parser.add_argument("--direction", choices=["notion_to_supabase", "supabase_to_notion", "both"], default="both",
-                        help="Sync direction (default: both)")
+    parser.add_argument(
+        "--direction",
+        choices=["notion_to_supabase", "supabase_to_notion", "both"],
+        default="both",
+        help="Sync direction (default: both)",
+    )
     parser.add_argument("--model", help="Specific model to sync (e.g., BusinessEntity)")
-    parser.add_argument("--since", help="Only sync records updated since this timestamp (ISO format)")
+    parser.add_argument(
+        "--since", help="Only sync records updated since this timestamp (ISO format)"
+    )
     args = parser.parse_args()
 
     # Using loguru's logger for script-level info after setup
@@ -257,7 +291,9 @@ async def main():
             since = datetime.fromisoformat(args.since)
             print_info(f"Syncing records updated since: {since.isoformat()}")
         except ValueError:
-            print_warning(f"Invalid timestamp format: {args.since}. Using default (30 days ago).")
+            print_warning(
+                f"Invalid timestamp format: {args.since}. Using default (30 days ago)."
+            )
             since = datetime.now() - timedelta(days=30)
 
     # Sync specific model or all models
@@ -269,21 +305,38 @@ async def main():
             # Try to import from notion_db_models first
             try:
                 from models.notion_db_models import (
-                    BusinessEntity, Agent, Workflow, WorkflowInstance,
-                    ApiIntegration, DataTransformation, UseCase,
-                    NotificationTemplate, AgentCommunication, Task
+                    Agent,
+                    AgentCommunication,
+                    ApiIntegration,
+                    BusinessEntity,
+                    DataTransformation,
+                    NotificationTemplate,
+                    Task,
+                    UseCase,
+                    Workflow,
+                    WorkflowInstance,
                 )
+
                 model_class = locals()[args.model]
             except (ImportError, KeyError):
                 # If not found, try to import from notion_db_models_extended
                 from models.notion_db_models_extended import (
-                    ContactProfile, CommunityMember, ProductService,
-                    MarketingCampaign, FeedbackSurvey, RewardBounty
+                    CommunityMember,
+                    ContactProfile,
+                    FeedbackSurvey,
+                    MarketingCampaign,
+                    ProductService,
+                    RewardBounty,
                 )
+
                 model_class = locals()[args.model]
 
             # Sync the model
-            results = {args.model: await sync_service.sync_all_records(model_class, args.direction, since)}
+            results = {
+                args.model: await sync_service.sync_all_records(
+                    model_class, args.direction, since
+                )
+            }
             format_sync_results(results)
         except (ImportError, KeyError):
             print_error(f"Model not found: {args.model}")

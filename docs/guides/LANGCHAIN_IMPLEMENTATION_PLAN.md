@@ -36,28 +36,28 @@ from pydantic import BaseSettings, Field
 
 class LangChainConfig(BaseSettings):
     """Configuration for LangChain integration."""
-    
+
     # Model configurations
     default_model: str = Field(default="gpt-3.5-turbo", env="LANGCHAIN_DEFAULT_MODEL")
     fallback_model: str = Field(default="gpt-3.5-turbo", env="LANGCHAIN_FALLBACK_MODEL")
-    
+
     # API keys
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
     anthropic_api_key: Optional[str] = Field(default=None, env="ANTHROPIC_API_KEY")
-    
+
     # Performance settings
     max_retries: int = Field(default=3, env="LANGCHAIN_MAX_RETRIES")
     timeout: int = Field(default=30, env="LANGCHAIN_TIMEOUT")
     max_concurrent_requests: int = Field(default=10, env="LANGCHAIN_MAX_CONCURRENT")
-    
+
     # Caching
     enable_caching: bool = Field(default=True, env="LANGCHAIN_ENABLE_CACHING")
     cache_ttl: int = Field(default=3600, env="LANGCHAIN_CACHE_TTL")
-    
+
     # Vector store
     vector_store_path: str = Field(default="./vector_store", env="LANGCHAIN_VECTOR_STORE_PATH")
     embedding_model: str = Field(default="text-embedding-ada-002", env="LANGCHAIN_EMBEDDING_MODEL")
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = False
@@ -90,7 +90,7 @@ from utils.error_handling import ErrorHandler
 
 class LangChainAgent(BaseAgent, ABC):
     """Base agent class with LangChain capabilities."""
-    
+
     def __init__(self, name: str, notion_client, personality: str, **kwargs):
         super().__init__(name=name, notion_client=notion_client, **kwargs)
         self.personality = personality
@@ -99,7 +99,7 @@ class LangChainAgent(BaseAgent, ABC):
         self.tools = self._initialize_tools()
         self.agent_executor = self._create_agent_executor()
         self.callback_handler = MonitoringCallback(self.name, notion_client)
-    
+
     def _initialize_llm(self):
         """Initialize the LLM with fallback support."""
         try:
@@ -124,7 +124,7 @@ class LangChainAgent(BaseAgent, ABC):
         except Exception as e:
             self.logger.error(f"Failed to initialize LLM: {e}")
             raise
-    
+
     def _initialize_memory(self):
         """Initialize conversation memory."""
         return ConversationBufferMemory(
@@ -132,22 +132,22 @@ class LangChainAgent(BaseAgent, ABC):
             return_messages=True,
             max_token_limit=2000
         )
-    
+
     @abstractmethod
     def _initialize_tools(self) -> List[BaseTool]:
         """Initialize agent-specific tools. Must be implemented by subclasses."""
         pass
-    
+
     def _create_agent_executor(self):
         """Create the agent executor with personality-aware prompts."""
         system_prompt = self._create_system_prompt()
-        
+
         agent = create_structured_chat_agent(
             llm=self.llm,
             tools=self.tools,
             prompt=self._create_prompt_template(system_prompt)
         )
-        
+
         return AgentExecutor(
             agent=agent,
             tools=self.tools,
@@ -157,22 +157,22 @@ class LangChainAgent(BaseAgent, ABC):
             max_iterations=5,
             max_execution_time=60
         )
-    
+
     def _create_system_prompt(self) -> str:
         """Create system prompt with personality."""
         return f"""You are {self.name}, a digital agent with the following personality:
         {self.personality}
-        
+
         You work as part of The Higher Self Network, helping with business automation for:
         - Art Gallery operations
-        - Wellness Center management  
+        - Wellness Center management
         - Consultancy services
-        
+
         Always maintain your personality while being helpful and efficient.
         Use the available tools to complete tasks effectively.
         Provide clear, actionable responses.
         """
-    
+
     def _create_prompt_template(self, system_prompt: str) -> PromptTemplate:
         """Create prompt template for the agent."""
         template = f"""{system_prompt}
@@ -211,7 +211,7 @@ New input: {{input}}
             template=template,
             input_variables=["input", "chat_history", "agent_scratchpad", "tools", "tool_names"]
         )
-    
+
     async def process_with_langchain(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process input using LangChain capabilities."""
         try:
@@ -221,19 +221,19 @@ New input: {{input}}
                 agent_name=self.name,
                 task_type="general"
             )
-            
+
             # Process with agent executor
             result = await self.agent_executor.ainvoke({
                 "input": secure_input.user_input
             })
-            
+
             return {
                 "success": True,
                 "result": result,
                 "agent": self.name,
                 "timestamp": datetime.utcnow().isoformat()
             }
-            
+
         except Exception as e:
             self.logger.error(f"Error in LangChain processing: {e}")
             return {
@@ -242,7 +242,7 @@ New input: {{input}}
                 "agent": self.name,
                 "timestamp": datetime.utcnow().isoformat()
             }
-    
+
     def get_capabilities(self) -> str:
         """Return agent capabilities description."""
         tool_names = [tool.name for tool in self.tools]
@@ -259,11 +259,11 @@ from typing import List
 
 class SecureInput(BaseModel):
     """Validates and sanitizes inputs before LLM processing."""
-    
+
     user_input: str
     agent_name: str
     task_type: str
-    
+
     @validator('user_input')
     def sanitize_input(cls, v):
         """Remove potentially harmful content."""
@@ -272,7 +272,7 @@ class SecureInput(BaseModel):
         v = re.sub(r'system:', '', v, flags=re.IGNORECASE)
         v = re.sub(r'assistant:', '', v, flags=re.IGNORECASE)
         v = re.sub(r'human:', '', v, flags=re.IGNORECASE)
-        
+
         # Remove potential prompt injection
         injection_patterns = [
             r'ignore previous instructions',
@@ -281,16 +281,16 @@ class SecureInput(BaseModel):
             r'system override',
             r'admin mode'
         ]
-        
+
         for pattern in injection_patterns:
             v = re.sub(pattern, '', v, flags=re.IGNORECASE)
-        
+
         # Limit length
         if len(v) > 10000:
             v = v[:10000]
-        
+
         return v.strip()
-    
+
     @validator('agent_name')
     def validate_agent(cls, v):
         """Ensure agent name is valid."""
@@ -298,7 +298,7 @@ class SecureInput(BaseModel):
         if v not in valid_agents:
             raise ValueError(f"Invalid agent name: {v}")
         return v
-    
+
     @validator('task_type')
     def validate_task_type(cls, v):
         """Ensure task type is valid."""
@@ -313,24 +313,24 @@ class SecureInput(BaseModel):
 
 class OutputFilter:
     """Filters LLM outputs for security and compliance."""
-    
+
     @staticmethod
     def filter_sensitive_data(output: str) -> str:
         """Remove or mask sensitive information."""
         # Mask email addresses
         output = re.sub(r'[\w\.-]+@[\w\.-]+\.\w+', '[EMAIL]', output)
-        
+
         # Mask phone numbers
         output = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '[PHONE]', output)
-        
+
         # Mask credit card numbers
         output = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[CARD]', output)
-        
+
         # Mask SSN
         output = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[SSN]', output)
-        
+
         return output
-    
+
     @staticmethod
     def validate_json_output(output: str) -> dict:
         """Validate and sanitize JSON outputs."""
@@ -340,7 +340,7 @@ class OutputFilter:
             return OutputFilter._sanitize_dict(data)
         except json.JSONDecodeError:
             return {"error": "Invalid JSON output", "raw_output": output[:500]}
-    
+
     @staticmethod
     def _sanitize_dict(data: dict) -> dict:
         """Recursively sanitize dictionary data."""
@@ -375,70 +375,70 @@ LANGCHAIN_TOKEN_USAGE = Counter('langchain_token_usage_total', 'Total tokens use
 
 class MonitoringCallback(BaseCallbackHandler):
     """Custom callback for monitoring LangChain operations."""
-    
+
     def __init__(self, agent_name: str, notion_client):
         self.agent_name = agent_name
         self.notion_client = notion_client
         self.start_time = None
         self.current_model = None
-    
+
     def on_llm_start(self, serialized: Dict[str, Any], prompts: List[str], **kwargs):
         """Log when LLM starts processing."""
         self.start_time = time.time()
         self.current_model = serialized.get("name", "unknown")
-        
+
         LANGCHAIN_REQUESTS.labels(agent=self.agent_name, model=self.current_model).inc()
-        
+
         logger.info(f"LLM started for {self.agent_name} using {self.current_model}")
-    
+
     def on_llm_end(self, response, **kwargs):
         """Log when LLM completes processing."""
         if self.start_time:
             duration = time.time() - self.start_time
             LANGCHAIN_DURATION.labels(agent=self.agent_name, model=self.current_model).observe(duration)
-            
+
             # Track token usage if available
             if hasattr(response, 'llm_output') and response.llm_output:
                 token_usage = response.llm_output.get("token_usage", {})
                 if token_usage:
                     LANGCHAIN_TOKEN_USAGE.labels(
-                        agent=self.agent_name, 
-                        model=self.current_model, 
+                        agent=self.agent_name,
+                        model=self.current_model,
                         type='prompt'
                     ).inc(token_usage.get('prompt_tokens', 0))
-                    
+
                     LANGCHAIN_TOKEN_USAGE.labels(
-                        agent=self.agent_name, 
-                        model=self.current_model, 
+                        agent=self.agent_name,
+                        model=self.current_model,
                         type='completion'
                     ).inc(token_usage.get('completion_tokens', 0))
-            
+
             logger.info(f"LLM completed for {self.agent_name} in {duration:.2f}s")
-    
+
     def on_llm_error(self, error: Exception, **kwargs):
         """Log LLM errors."""
         error_type = type(error).__name__
         LANGCHAIN_ERRORS.labels(agent=self.agent_name, error_type=error_type).inc()
-        
+
         logger.error(f"LLM error for {self.agent_name}: {error}")
-    
+
     def on_tool_start(self, serialized: Dict[str, Any], input_str: str, **kwargs):
         """Log when tool starts."""
         tool_name = serialized.get("name", "unknown")
         logger.debug(f"Tool {tool_name} started for {self.agent_name}")
-    
+
     def on_tool_end(self, output: str, **kwargs):
         """Log when tool completes."""
         logger.debug(f"Tool completed for {self.agent_name}")
-    
+
     def on_tool_error(self, error: Exception, **kwargs):
         """Log tool errors."""
         logger.error(f"Tool error for {self.agent_name}: {error}")
-    
+
     def on_agent_action(self, action, **kwargs):
         """Log agent actions."""
         logger.debug(f"Agent {self.agent_name} taking action: {action.tool}")
-    
+
     def on_agent_finish(self, finish, **kwargs):
         """Log agent completion."""
         logger.info(f"Agent {self.agent_name} finished processing")

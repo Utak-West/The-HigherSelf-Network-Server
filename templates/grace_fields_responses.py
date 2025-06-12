@@ -6,8 +6,9 @@ This module contains professional response templates and delegation scripts
 for Grace Fields enhanced customer service orchestration.
 """
 
-from typing import Dict, Any
-from models.customer_service_models import IssueCategory, BusinessEntity, SeverityLevel
+from typing import Any, Dict
+
+from models.customer_service_models import BusinessEntity, IssueCategory, SeverityLevel
 
 
 class GraceFieldsResponseTemplates:
@@ -29,7 +30,7 @@ class GraceFieldsResponseTemplates:
         agent_role: str,
         personality_trait: str,
         specific_action: str,
-        timeframe: str
+        timeframe: str,
     ) -> str:
         """Get template for single agent delegation."""
         return (
@@ -64,9 +65,7 @@ class GraceFieldsResponseTemplates:
 
     @staticmethod
     def get_human_escalation(
-        human_specialist: str,
-        ticket_id: str,
-        timeframe: str
+        human_specialist: str, ticket_id: str, timeframe: str
     ) -> str:
         """Get template for human escalation communication."""
         return (
@@ -88,7 +87,7 @@ class GraceFieldsResponseTemplates:
         action_taken: str,
         outcome: str,
         next_steps: str,
-        business_entity: str
+        business_entity: str,
     ) -> str:
         """Get template for issue resolution confirmation."""
         return (
@@ -106,7 +105,7 @@ class GraceFieldsResponseTemplates:
         workflow_id: str,
         current_step: str,
         progress_percentage: int,
-        estimated_completion: str
+        estimated_completion: str,
     ) -> str:
         """Get template for workflow status updates."""
         return (
@@ -128,7 +127,9 @@ class GraceFieldsResponseTemplates:
         )
 
     @staticmethod
-    def get_service_recovery_acknowledgment(customer_name: str, issue_description: str) -> str:
+    def get_service_recovery_acknowledgment(
+        customer_name: str, issue_description: str
+    ) -> str:
         """Get template for service recovery situations."""
         return (
             f"Dear {customer_name}, I sincerely apologize that your experience with us hasn't met "
@@ -144,10 +145,7 @@ class GraceFieldsDelegationScripts:
 
     @staticmethod
     def get_solari_delegation(
-        customer_email: str,
-        issue_description: str,
-        priority: str,
-        business_entity: str
+        customer_email: str, issue_description: str, priority: str, business_entity: str
     ) -> str:
         """Get delegation script for Solari (Booking & Order Manager)."""
         return (
@@ -165,7 +163,7 @@ class GraceFieldsDelegationScripts:
         customer_email: str,
         sentiment_analysis: str,
         feedback_category: str,
-        business_entity: str
+        business_entity: str,
     ) -> str:
         """Get delegation script for Sage (Community Curator)."""
         return (
@@ -180,10 +178,7 @@ class GraceFieldsDelegationScripts:
 
     @staticmethod
     def get_nyra_delegation(
-        customer_email: str,
-        lead_source: str,
-        business_entity: str,
-        priority: str
+        customer_email: str, lead_source: str, business_entity: str, priority: str
     ) -> str:
         """Get delegation script for Nyra (Lead Capture Specialist)."""
         return (
@@ -201,7 +196,7 @@ class GraceFieldsDelegationScripts:
         project_context: str,
         current_status: str,
         dependencies: str,
-        timeline_requirements: str
+        timeline_requirements: str,
     ) -> str:
         """Get delegation script for Ruvo (Task Orchestrator)."""
         return (
@@ -221,7 +216,7 @@ class GraceFieldsDelegationScripts:
         marketing_objective: str,
         budget_indicators: str,
         timeline: str,
-        target_audience: str
+        target_audience: str,
     ) -> str:
         """Get delegation script for Liora (Marketing Strategist)."""
         return (
@@ -240,7 +235,7 @@ class GraceFieldsDelegationScripts:
         content_type: str,
         creative_brief: str,
         brand_guidelines: str,
-        delivery_timeline: str
+        delivery_timeline: str,
     ) -> str:
         """Get delegation script for Elan (Content Choreographer)."""
         return (
@@ -259,7 +254,7 @@ class GraceFieldsDelegationScripts:
         analysis_request: str,
         data_sources: str,
         business_questions: str,
-        reporting_timeline: str
+        reporting_timeline: str,
     ) -> str:
         """Get delegation script for Zevi (Audience Analyst)."""
         return (
@@ -317,7 +312,9 @@ class BusinessEntitySpecificTemplates:
         )
 
     @staticmethod
-    def get_luxury_renovations_greeting(customer_name: str = "discerning homeowner") -> str:
+    def get_luxury_renovations_greeting(
+        customer_name: str = "discerning homeowner",
+    ) -> str:
         """Get luxury renovations specific greeting."""
         return (
             f"Welcome, {customer_name}. I'm Grace Fields, your luxury renovation orchestrator. "

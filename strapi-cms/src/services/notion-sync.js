@@ -25,7 +25,7 @@ module.exports = ({ strapi }) => ({
 
   /**
    * Sync Strapi content to Notion with optimistic locking
-   * 
+   *
    * @param {string} entityType Type of entity being synced (exhibit, artist, wellness, etc.)
    * @param {Object} data Entity data to sync
    * @param {string|null} notionPageId Existing Notion page ID if updating
@@ -35,21 +35,21 @@ module.exports = ({ strapi }) => ({
     try {
       const notion = this.getNotionClient();
       const databaseId = this.getNotionDatabaseId(entityType);
-      
+
       // Implement optimistic locking for real-time sync protection
       const lockKey = `notion:lock:${entityType}:${notionPageId || 'new'}`;
       const lockAcquired = await this.acquireLock(lockKey);
-      
+
       if (!lockAcquired) {
         throw new Error('Another synchronization is in progress. Please try again.');
       }
-      
+
       try {
         // Prepare data according to Notion schema
         const notionProperties = this.mapToNotionProperties(entityType, data);
-        
+
         let response;
-        
+
         if (notionPageId) {
           // Update existing page
           response = await notion.pages.update({
@@ -63,10 +63,10 @@ module.exports = ({ strapi }) => ({
             properties: notionProperties
           });
         }
-        
+
         // Audit trail for database operations
         await this.logSyncOperation(entityType, data.id, response.id, notionPageId ? 'update' : 'create');
-        
+
         return {
           success: true,
           notionPageId: response.id
@@ -83,7 +83,7 @@ module.exports = ({ strapi }) => ({
       };
     }
   },
-  
+
   /**
    * Get database ID for specified entity type
    * @param {string} entityType Type of entity
@@ -92,14 +92,14 @@ module.exports = ({ strapi }) => ({
   getNotionDatabaseId(entityType) {
     const envKey = `NOTION_DATABASE_ID_${entityType.toUpperCase()}`;
     const databaseId = process.env[envKey];
-    
+
     if (!databaseId) {
       throw new Error(`Notion database ID for ${entityType} is missing in environment variables`);
     }
-    
+
     return databaseId;
   },
-  
+
   /**
    * Map Strapi data to Notion properties based on entity type
    * @param {string} entityType Type of entity
@@ -110,7 +110,7 @@ module.exports = ({ strapi }) => ({
     // Implementation would map Strapi fields to Notion properties
     // based on the 16-database schema design
     const properties = {};
-    
+
     // Map common properties
     if (data.title) {
       properties['Name'] = {
@@ -121,19 +121,19 @@ module.exports = ({ strapi }) => ({
         title: [{ text: { content: data.name } }]
       };
     }
-    
+
     if (data.status) {
       properties['Status'] = {
         select: { name: data.status }
       };
     }
-    
+
     // Entity-specific mappings would be implemented here
     // based on the schema for each entity type
-    
+
     return properties;
   },
-  
+
   /**
    * Acquire a distributed lock for sync operations
    * @param {string} lockKey Lock identifier
@@ -151,7 +151,7 @@ module.exports = ({ strapi }) => ({
       return false;
     }
   },
-  
+
   /**
    * Release a distributed lock
    * @param {string} lockKey Lock identifier
@@ -164,7 +164,7 @@ module.exports = ({ strapi }) => ({
       strapi.log.error('Lock release error:', error);
     }
   },
-  
+
   /**
    * Log sync operation for audit trail
    * @param {string} entityType Entity type

@@ -34,7 +34,7 @@ async def crawl_and_store_website():
     """Crawl a website and store its content in the vector store."""
     logger.info("Initializing Crawl4AI service...")
     crawl_service = await get_crawl4ai_service()
-    
+
     # Configure the crawl
     config = CrawlConfig(
         url="https://crawl4ai.com",
@@ -46,12 +46,12 @@ async def crawl_and_store_website():
             "importance": "high"
         }
     )
-    
+
     try:
         # Crawl and store the website
         logger.info(f"Crawling website: {config.url}")
         result = await crawl_service.crawl_and_store(config)
-        
+
         if result and result.get("success"):
             logger.info(f"Successfully crawled and stored {config.url}: {result.get('embedding_id')}")
         else:
@@ -69,7 +69,7 @@ async def deep_crawl_website():
     """Perform a deep crawl of a website and store its content."""
     logger.info("Initializing Crawl4AI service...")
     crawl_service = await get_crawl4ai_service()
-    
+
     # Configure the deep crawl
     config = DeepCrawlConfig(
         url="https://docs.crawl4ai.com",
@@ -83,12 +83,12 @@ async def deep_crawl_website():
             "importance": "high"
         }
     )
-    
+
     try:
         # Deep crawl and store the website
         logger.info(f"Deep crawling website: {config.url}")
         result = await crawl_service.deep_crawl_and_store(config)
-        
+
         if result and result.get("success"):
             logger.info(f"Successfully deep crawled and stored {config.url}")
             logger.info(f"Pages crawled: {len(result.get('pages', []))}")
@@ -106,42 +106,42 @@ This function demonstrates how to generate responses using the RAG pipeline:
 async def generate_rag_completion():
     """Generate a completion using the RAG pipeline."""
     logger.info("Initializing RAG pipeline...")
-    
+
     # Get the AI router
     ai_router = AIRouter()
     await ai_router.initialize()
-    
+
     # Get the RAG pipeline
     rag_pipeline = await get_rag_pipeline(ai_router)
-    
+
     # Define some example queries
     queries = [
         "What is Crawl4AI and what are its main features?",
         "How can I use Crawl4AI for RAG applications?",
         "What are the advantages of using Crawl4AI over other web crawlers?"
     ]
-    
+
     # Generate completions for each query
     for query in queries:
         try:
             logger.info(f"Generating RAG completion for query: {query}")
-            
+
             response = await rag_pipeline.generate(
                 query=query,
                 content_types=["web_page"],
                 search_limit=5,
                 include_sources=True
             )
-            
+
             logger.info("Successfully generated RAG completion")
             logger.info(f"Sources used: {len(response.sources)}")
-            
+
             print("\n" + "=" * 50)
             print(f"Query: {query}")
             print("=" * 50)
             print(response.text)
             print("=" * 50 + "\n")
-            
+
         except Exception as e:
             logger.error(f"Failed to generate RAG completion: {e}")
 ```

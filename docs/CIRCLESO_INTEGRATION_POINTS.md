@@ -131,8 +131,8 @@ Contains references to Circle.so in the community roadmap:
 
 Contains references to Circle.so in the agent descriptions:
 ```markdown
-**Type:** `CommunityEngagementAgent`  
-**Tone:** Warm & connected  
+**Type:** `CommunityEngagementAgent`
+**Tone:** Warm & connected
 **Description:** Sage embodies the collective wisdom of community interactions, holding space for relationships within Circle.so and other engagement platforms.
 ```
 

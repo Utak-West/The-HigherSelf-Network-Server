@@ -94,7 +94,7 @@ docker-compose up -d
 log "Checking deployment status"
 if docker-compose ps | grep -q "Up"; then
   log "Deployment successful!"
-  
+
   # Update Notion about successful deployment if possible
   if [ -f ".env" ] && grep -q "NOTION_API_TOKEN" .env; then
     log "Updating Notion about successful deployment"

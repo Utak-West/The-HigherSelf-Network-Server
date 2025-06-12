@@ -28,7 +28,7 @@ operational workflows documented in `docs/OPERATIONAL_WORKFLOWS.md`.
 
 ### Audit Trail Implementation
 - **Database**: Workflow Instances DB (`1f021ff4d5fb8025a0afe55a3d757783`)
-- **Change**: Added "Audit_Trail" field 
+- **Change**: Added "Audit_Trail" field
 - **Purpose**: Comprehensive logging of database operations to support audit requirements
 - **Implementation Date**: May 16, 2025
 

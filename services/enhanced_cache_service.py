@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 from services.redis_service import redis_service
 from utils.error_handling import ErrorHandler
@@ -23,7 +23,7 @@ from utils.error_handling import ErrorHandler
 # Optional metrics - only use if prometheus_client is available
 try:
     from prometheus_client import Counter, Gauge, Histogram
-    
+
     CACHE_HITS = Counter(
         'enhanced_cache_hits',
         'Cache hit count',

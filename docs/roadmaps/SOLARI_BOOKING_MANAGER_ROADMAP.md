@@ -110,39 +110,39 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Booking Approval Flow
     IncomingBooking[Incoming Booking Request] :::entryPoint
     IncomingBooking --> BasicValidation[Basic Data Validation] :::eventProcess
     BasicValidation --> ValidationCheck{Valid Booking Data?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidBooking[Handle Invalid Booking] :::eventProcess
     ValidationCheck -->|Yes| AvailabilityCheck[Check Resource Availability] :::eventProcess
-    
+
     AvailabilityCheck --> ResourceAvailable{Resources Available?} :::decisionNode
     ResourceAvailable -->|No| UnavailableProcess[Handle Unavailable Time Slot] :::eventProcess
     ResourceAvailable -->|Yes| PaymentRequired{Payment Required?} :::decisionNode
-    
+
     PaymentRequired -->|No| AutoApprove[Auto-Approve Booking] :::eventProcess
     PaymentRequired -->|Yes| PaymentProcessing[Process Payment] :::eventProcess
-    
+
     PaymentProcessing --> PaymentSuccessful{Payment Successful?} :::decisionNode
     PaymentSuccessful -->|No| PaymentFailureProcess[Handle Payment Failure] :::eventProcess
     PaymentSuccessful -->|Yes| BookingConfirmation[Confirm Booking] :::eventProcess
-    
+
     UnavailableProcess --> SuggestAlternatives[Suggest Alternative Times] :::eventProcess
     PaymentFailureProcess --> RetryOptions[Provide Retry Options] :::eventProcess
-    
+
     InvalidBooking --> RequestAdditionalInfo[Request Additional Information] :::eventProcess
     SuggestAlternatives --> CustomerResponse{Customer Response} :::decisionNode
     RetryOptions --> PaymentRetry{Retry Payment?} :::decisionNode
-    
+
     CustomerResponse -->|Select Alternative| AvailabilityCheck
     CustomerResponse -->|Cancel Request| CancelProcess[Cancel Booking Request] :::eventProcess
-    
+
     PaymentRetry -->|Yes| PaymentProcessing
     PaymentRetry -->|No| CancelProcess
-    
+
     AutoApprove --> BookingConfirmation
     BookingConfirmation --> ResourceAllocation[Allocate Resources] :::eventProcess
     ResourceAllocation --> CalendarUpdate[Update Calendars] :::eventProcess
@@ -162,71 +162,71 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Resource Allocation Flow
     ApprovedBooking[Approved Booking] :::entryPoint
     ApprovedBooking --> ServiceType{Service Type} :::decisionNode
-    
+
     ServiceType -->|Requires Specialist| SpecialistSelection[Select Specialist] :::eventProcess
     ServiceType -->|Group Event| RoomSelection[Select Room/Space] :::eventProcess
     ServiceType -->|Virtual Service| VirtualResourceSelection[Select Virtual Resources] :::eventProcess
     ServiceType -->|Product Delivery| InventoryCheck[Check Product Inventory] :::eventProcess
-    
+
     SpecialistSelection --> SpecialistPreference{Specialist Preference?} :::decisionNode
     SpecialistPreference -->|Specific Request| RequestedSpecialistCheck[Check Requested Specialist] :::eventProcess
     SpecialistPreference -->|Any Available| AvailabilityMatching[Match Based on Availability] :::eventProcess
-    
+
     RequestedSpecialistCheck --> RequestedAvailable{Requested Available?} :::decisionNode
     RequestedAvailable -->|Yes| AssignRequested[Assign Requested Specialist] :::eventProcess
     RequestedAvailable -->|No| OfferAlternatives[Offer Alternative Specialists] :::eventProcess
-    
+
     AvailabilityMatching --> ExpertiseMatch[Match Expertise to Service] :::eventProcess
     ExpertiseMatch --> LoadBalance[Consider Load Balancing] :::eventProcess
     LoadBalance --> AssignOptimal[Assign Optimal Specialist] :::eventProcess
-    
+
     RoomSelection --> RoomCapacity[Check Required Capacity] :::eventProcess
     RoomCapacity --> RoomFeatures[Evaluate Required Features] :::eventProcess
     RoomFeatures --> LocationPreference{Location Preference?} :::decisionNode
-    
+
     LocationPreference -->|Specific Location| RequestedLocationCheck[Check Location Availability] :::eventProcess
     LocationPreference -->|Any Location| OptimalLocationSelection[Select Optimal Location] :::eventProcess
-    
+
     VirtualResourceSelection --> PlatformSelection[Select Meeting Platform] :::eventProcess
     PlatformSelection --> ResourceReservation[Reserve Digital Resources] :::eventProcess
-    
+
     InventoryCheck --> InventoryAvailable{Inventory Available?} :::decisionNode
     InventoryAvailable -->|Yes| AllocateInventory[Allocate Inventory] :::eventProcess
     InventoryAvailable -->|No| BackorderProcess[Process Backorder] :::eventProcess
-    
+
     AssignRequested --> FinalizeAllocation[Finalize Resource Allocation] :::eventProcess
     OfferAlternatives --> CustomerChoice{Customer Accepts Alternative?} :::decisionNode
     AssignOptimal --> FinalizeAllocation
-    
+
     RequestedLocationCheck --> LocationAvailable{Location Available?} :::decisionNode
     LocationAvailable -->|Yes| ReserveRequestedLocation[Reserve Requested Location] :::eventProcess
     LocationAvailable -->|No| SuggestAlternativeLocations[Suggest Alternative Locations] :::eventProcess
-    
+
     OptimalLocationSelection --> ReserveOptimalLocation[Reserve Optimal Location] :::eventProcess
     ResourceReservation --> GenerateAccessDetails[Generate Access Details] :::eventProcess
     AllocateInventory --> ScheduleDelivery[Schedule Delivery] :::eventProcess
-    
+
     CustomerChoice -->|Yes| FinalizeAllocation
     CustomerChoice -->|No| RescheduleOrCancel{Reschedule or Cancel?} :::decisionNode
-    
+
     ReserveRequestedLocation --> FinalizeAllocation
     SuggestAlternativeLocations --> CustomerLocationChoice{Customer Choice} :::decisionNode
     ReserveOptimalLocation --> FinalizeAllocation
-    
+
     GenerateAccessDetails --> FinalizeAllocation
     ScheduleDelivery --> FinalizeAllocation
     BackorderProcess --> NotifyDelay[Notify Customer of Delay] :::eventProcess
-    
+
     RescheduleOrCancel -->|Reschedule| ApprovedBooking
     RescheduleOrCancel -->|Cancel| ProcessCancellation[Process Cancellation] :::eventProcess
-    
+
     CustomerLocationChoice -->|Accept Alternative| ReserveOptimalLocation
     CustomerLocationChoice -->|Reject All| RescheduleOrCancel
-    
+
     NotifyDelay --> CustomerAcceptsDelay{Customer Accepts?} :::decisionNode
     CustomerAcceptsDelay -->|Yes| FinalizeAllocation
     CustomerAcceptsDelay -->|No| ProcessCancellation
@@ -244,54 +244,54 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Payment Processing Flow
     PaymentRequest[Payment Request] :::entryPoint
     PaymentRequest --> PaymentType{Payment Type} :::decisionNode
-    
+
     PaymentType -->|Full Payment| ProcessFullPayment[Process Full Payment] :::eventProcess
     PaymentType -->|Deposit Only| ProcessDeposit[Process Deposit] :::eventProcess
     PaymentType -->|Installment Plan| SetupInstallments[Setup Installment Plan] :::eventProcess
     PaymentType -->|Invoice/PO| ProcessInvoice[Process Invoice] :::eventProcess
-    
+
     ProcessFullPayment --> PaymentMethod{Payment Method} :::decisionNode
     ProcessDeposit --> PaymentMethod
     SetupInstallments --> FirstInstallment[Process First Installment] :::eventProcess
     ProcessInvoice --> GenerateInvoice[Generate Invoice] :::eventProcess
-    
+
     PaymentMethod -->|Credit Card| ProcessCreditCard[Process Credit Card] :::eventProcess
     PaymentMethod -->|ACH/Bank Transfer| ProcessBankTransfer[Process Bank Transfer] :::eventProcess
     PaymentMethod -->|Digital Wallet| ProcessDigitalWallet[Process Digital Wallet] :::eventProcess
     PaymentMethod -->|Crypto| ProcessCrypto[Process Cryptocurrency] :::eventProcess
-    
+
     ProcessCreditCard --> CardAuthCheck{Authorization Successful?} :::decisionNode
     ProcessBankTransfer --> TransferVerification{Transfer Verified?} :::decisionNode
     ProcessDigitalWallet --> WalletAuthCheck{Wallet Auth Successful?} :::decisionNode
     ProcessCrypto --> CryptoConfirmation{Transaction Confirmed?} :::decisionNode
-    
+
     CardAuthCheck -->|Yes| CapturePayment[Capture Card Payment] :::eventProcess
     CardAuthCheck -->|No| CardDeclined[Handle Declined Card] :::eventProcess
-    
+
     TransferVerification -->|Yes| RecordTransfer[Record Bank Transfer] :::eventProcess
     TransferVerification -->|No| TransferFailed[Handle Failed Transfer] :::eventProcess
-    
+
     WalletAuthCheck -->|Yes| CaptureWalletPayment[Capture Wallet Payment] :::eventProcess
     WalletAuthCheck -->|No| WalletDeclined[Handle Declined Wallet] :::eventProcess
-    
+
     CryptoConfirmation -->|Yes| RecordCryptoPayment[Record Crypto Payment] :::eventProcess
     CryptoConfirmation -->|No| CryptoFailed[Handle Failed Crypto Payment] :::eventProcess
-    
+
     CapturePayment --> RecordTransaction[Record Transaction] :::eventProcess
     RecordTransfer --> RecordTransaction
     CaptureWalletPayment --> RecordTransaction
     RecordCryptoPayment --> RecordTransaction
-    
+
     FirstInstallment --> ScheduleRemaining[Schedule Remaining Installments] :::eventProcess
     ScheduleRemaining --> RecordTransaction
-    
+
     GenerateInvoice --> SendInvoice[Send Invoice to Customer] :::eventProcess
     SendInvoice --> AwaitPayment[Await Invoice Payment] :::eventProcess
-    
+
     RecordTransaction --> GenerateReceipt[Generate Receipt] :::eventProcess
 ## Integration with Ruvo (Task Orchestrator)
 
@@ -318,56 +318,56 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Workflow Management Flow
     ConfirmedBooking[Confirmed Booking] :::entryPoint
     ConfirmedBooking --> DetermineWorkflowTemplate[Determine Workflow Template] :::eventProcess
     DetermineWorkflowTemplate --> ServiceType{Service Type} :::decisionNode
-    
+
     ServiceType -->|One-on-One Service| OneOnOneTemplate[Apply 1:1 Service Template] :::eventProcess
     ServiceType -->|Group Event| GroupEventTemplate[Apply Group Event Template] :::eventProcess
     ServiceType -->|Product Delivery| ProductTemplate[Apply Product Delivery Template] :::eventProcess
     ServiceType -->|Virtual Service| VirtualTemplate[Apply Virtual Service Template] :::eventProcess
-    
+
     OneOnOneTemplate --> PrepareWorkflowInstance[Prepare Workflow Instance] :::eventProcess
     GroupEventTemplate --> PrepareWorkflowInstance
     ProductTemplate --> PrepareWorkflowInstance
     VirtualTemplate --> PrepareWorkflowInstance
-    
+
     PrepareWorkflowInstance --> AddBookingDetails[Add Booking Details to Workflow] :::eventProcess
     AddBookingDetails --> AddCustomerInfo[Add Customer Information] :::eventProcess
     AddCustomerInfo --> AddResourceInfo[Add Resource Allocations] :::eventProcess
     AddResourceInfo --> CalculateTimelines[Calculate Task Timelines] :::eventProcess
-    
+
     CalculateTimelines --> PreparationLeadTime[Determine Preparation Lead Time] :::eventProcess
     PreparationLeadTime --> IdentifyMilestones[Identify Key Milestones] :::eventProcess
     IdentifyMilestones --> CreateNotificationSchedule[Create Notification Schedule] :::eventProcess
-    
+
     CreateNotificationSchedule --> FinalizeWorkflow[Finalize Workflow Instance] :::eventProcess
     FinalizeWorkflow --> SendToRuvo[Send Workflow to Ruvo] :::eventProcess
-    
+
     SendToRuvo --> Ruvo{Ruvo Task Orchestrator} :::agentNode
     Ruvo --> ReceiveConfirmation[Receive Workflow Confirmation] :::eventProcess
     ReceiveConfirmation --> MonitorProgress[Monitor Fulfillment Progress] :::eventProcess
-    
+
     MonitorProgress --> StatusUpdate{Status Updates} :::decisionNode
     StatusUpdate -->|Task Completed| UpdateBookingStatus[Update Booking Status] :::eventProcess
     StatusUpdate -->|Issue Reported| HandleFulfillmentIssue[Handle Fulfillment Issue] :::eventProcess
     StatusUpdate -->|Preparation Milestone| TriggerNotification[Trigger Customer Notification] :::eventProcess
-    
+
     UpdateBookingStatus --> AssessProgress[Assess Overall Progress] :::eventProcess
     HandleFulfillmentIssue --> DetermineImpact[Determine Impact on Booking] :::eventProcess
     TriggerNotification --> RecordCommunication[Record Customer Communication] :::eventProcess
-    
+
     DetermineImpact --> ImpactSeverity{Impact Severity} :::decisionNode
     ImpactSeverity -->|Minor| AdjustTasks[Adjust Tasks] :::eventProcess
     ImpactSeverity -->|Major| ContactCustomer[Contact Customer] :::eventProcess
-    
+
     AdjustTasks --> UpdateWorkflow[Update Workflow in Ruvo] :::eventProcess
     ContactCustomer --> CustomerResponse{Customer Response} :::decisionNode
     CustomerResponse -->|Proceed with Changes| AdjustBooking[Adjust Booking] :::eventProcess
     CustomerResponse -->|Cancel| InitiateCancellation[Initiate Cancellation] :::eventProcess
-    
+
     AdjustBooking --> UpdateWorkflow
     InitiateCancellation --> CancelWorkflow[Cancel Workflow in Ruvo] :::eventProcess
 ```
@@ -403,49 +403,49 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Event Coordination Flow
     CommunityEvent[Community Event Booking] :::entryPoint
     CommunityEvent --> EventType{Event Type} :::decisionNode
-    
+
     EventType -->|Open Event| OpenEventProcess[Process Open Event] :::eventProcess
     EventType -->|Member-Only| MemberEventProcess[Process Member-Only Event] :::eventProcess
     EventType -->|Special Interest| InterestGroupProcess[Process Interest Group Event] :::eventProcess
     EventType -->|Workshop/Training| WorkshopProcess[Process Workshop Event] :::eventProcess
-    
+
     OpenEventProcess --> NotifySage[Notify Sage of New Event] :::eventProcess
     MemberEventProcess --> NotifySage
     InterestGroupProcess --> NotifySage
     WorkshopProcess --> NotifySage
-    
+
     NotifySage --> Sage{Sage Community Curator} :::agentNode
     Sage --> CommunityCheck[Check Community Calendar] :::eventProcess
     CommunityCheck --> ConflictCheck{Calendar Conflict?} :::decisionNode
-    
+
     ConflictCheck -->|Yes| SuggestAlternatives[Suggest Alternative Times] :::eventProcess
     ConflictCheck -->|No| ApproveEventTime[Approve Event Time] :::eventProcess
-    
+
     SuggestAlternatives --> RescheduleEvent[Adjust Event Schedule] :::eventProcess
     RescheduleEvent --> NotifySage
-    
+
     ApproveEventTime --> CommunityPromotion[Add to Community Promotion] :::eventProcess
     CommunityPromotion --> MembershipCheck{Member-Restricted?} :::decisionNode
-    
+
     MembershipCheck -->|Yes| SetupMemberValidation[Setup Member Validation] :::eventProcess
     MembershipCheck -->|No| SetupPublicRegistration[Setup Public Registration] :::eventProcess
-    
+
     SetupMemberValidation --> EstablishWaitlist[Establish Waitlist Management] :::eventProcess
     SetupPublicRegistration --> EstablishWaitlist
-    
+
     EstablishWaitlist --> CoordinateResources[Coordinate Resource Needs] :::eventProcess
     CoordinateResources --> FinalizeCommunityEvent[Finalize Community Event] :::eventProcess
-    
+
     FinalizeCommunityEvent --> EventStatusUpdates{Event Status} :::decisionNode
     EventStatusUpdates -->|Registration Updates| UpdateAttendeeList[Update Attendee List] :::eventProcess
     EventStatusUpdates -->|Capacity Changes| AdjustCapacity[Adjust Event Capacity] :::eventProcess
     EventStatusUpdates -->|Date/Time Changes| ProcessReschedule[Process Event Reschedule] :::eventProcess
     EventStatusUpdates -->|Cancellation| ProcessEventCancellation[Process Event Cancellation] :::eventProcess
-    
+
     UpdateAttendeeList --> SyncWithSage[Synchronize with Sage] :::eventProcess
     AdjustCapacity --> SyncWithSage
     ProcessReschedule --> NotifySage
@@ -523,91 +523,91 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     WebForm[Website Booking Forms] :::entryPoint
     ThirdParty[Third-Party Platforms] :::entryPoint
     Ecommerce[E-commerce Systems] :::entryPoint
     ManualEntry[Manual Entry] :::entryPoint
     APIIntegration[API Integrations] :::entryPoint
-    
+
     %% Solari Processing Steps
     WebForm --> BookingReceived[Booking Received] :::eventProcess
     ThirdParty --> BookingReceived
     Ecommerce --> BookingReceived
     ManualEntry --> BookingReceived
     APIIntegration --> BookingReceived
-    
+
     BookingReceived --> BasicValidation[Basic Validation] :::eventProcess
     BasicValidation --> ValidationCheck{Valid Booking?} :::decisionNode
-    
+
     ValidationCheck -->|No| InvalidHandling[Handle Invalid Booking] :::errorNode
     ValidationCheck -->|Yes| AvailabilityCheck[Check Resource Availability] :::eventProcess
-    
+
     AvailabilityCheck --> AvailabilityResult{Resources Available?} :::decisionNode
     AvailabilityResult -->|No| UnavailableHandling[Handle Unavailable Resources] :::eventProcess
     AvailabilityResult -->|Yes| PaymentRequired{Payment Required?} :::decisionNode
-    
+
     UnavailableHandling --> AlternativeSuggestion[Suggest Alternatives] :::eventProcess
     AlternativeSuggestion --> CustomerResponse{Customer Response} :::decisionNode
     CustomerResponse -->|Accept Alternative| AvailabilityCheck
     CustomerResponse -->|Cancel| CancelBooking[Cancel Booking Request] :::eventProcess
-    
+
     PaymentRequired -->|No| SkipToConfirmation[Skip to Confirmation] :::eventProcess
     PaymentRequired -->|Yes| ProcessPayment[Process Payment] :::eventProcess
-    
+
     ProcessPayment --> PaymentGateways[Payment Gateways] :::integrationNode
     PaymentGateways --> PaymentResult{Payment Result} :::decisionNode
-    
+
     PaymentResult -->|Success| RecordTransaction[Record Transaction] :::eventProcess
     PaymentResult -->|Failure| PaymentFailureHandling[Handle Payment Failure] :::errorNode
-    
+
     PaymentFailureHandling --> RetryOrCancel{Retry or Cancel?} :::decisionNode
     RetryOrCancel -->|Retry| ProcessPayment
     RetryOrCancel -->|Cancel| CancelBooking
-    
+
     RecordTransaction --> GenerateReceipt[Generate Receipt] :::eventProcess
     SkipToConfirmation --> BookingConfirmation[Confirm Booking] :::eventProcess
     RecordTransaction --> BookingConfirmation
-    
+
     BookingConfirmation --> ResourceAllocation[Allocate Resources] :::eventProcess
     ResourceAllocation --> CalendarUpdate[Update Calendars] :::eventProcess
-    
+
     CalendarUpdate --> ExternalCalendars[External Calendar Systems] :::integrationNode
     CalendarUpdate --> WorkflowCreation[Create Fulfillment Workflow] :::eventProcess
-    
+
     WorkflowCreation --> PrepareWorkflowRequest[Prepare Workflow Request] :::eventProcess
     PrepareWorkflowRequest --> Ruvo[Ruvo - Task Orchestrator] :::agentNode
-    
+
     WorkflowCreation --> CommunityEvent{Community Event?} :::decisionNode
     CommunityEvent -->|Yes| NotifySage[Notify Sage] :::eventProcess
     CommunityEvent -->|No| SkipSage[Skip Sage Notification] :::eventProcess
-    
+
     NotifySage --> Sage[Sage - Community Curator] :::agentNode
     Sage --> EventCoordination[Coordinate Event Details] :::eventProcess
     SkipSage --> GenerateConfirmation[Generate Confirmation] :::eventProcess
     EventCoordination --> GenerateConfirmation
-    
+
     GenerateConfirmation --> SendNotifications[Send Notifications] :::eventProcess
     SendNotifications --> Customer[(Customer)] :::storageNode
     SendNotifications --> ServiceProviders[(Service Providers)] :::storageNode
-    
+
     SendNotifications --> BookingRecord[Create/Update Booking Record] :::eventProcess
     BookingRecord --> BookingDatabase[(Booking Database)] :::storageNode
-    
+
     BookingDatabase --> PostBookingManagement[Post-Booking Management] :::eventProcess
     PostBookingManagement --> BookingEvents{Booking Events} :::decisionNode
-    
+
     BookingEvents -->|Modification Request| ProcessModification[Process Modification] :::eventProcess
     BookingEvents -->|Reschedule Request| ProcessReschedule[Process Reschedule] :::eventProcess
     BookingEvents -->|Cancellation Request| ProcessCancellation[Process Cancellation] :::eventProcess
     BookingEvents -->|Reminder Due| SendReminder[Send Reminder] :::eventProcess
     BookingEvents -->|Service Completed| FinalizeBooking[Finalize Booking] :::eventProcess
-    
+
     ProcessModification --> UpdateResourceAllocation[Update Resource Allocation] :::eventProcess
     ProcessReschedule --> AvailabilityCheck
     ProcessCancellation --> RefundCheck{Refund Required?} :::decisionNode
-    
+
     RefundCheck -->|Yes| ProcessRefund[Process Refund] :::eventProcess
     RefundCheck -->|No| CompleteCancel[Complete Cancellation] :::eventProcess
 ## JSON Message Examples
@@ -986,13 +986,13 @@ As The HigherSelf Network continues to evolve, this roadmap will serve as a foun
 
     ProcessRefund --> UpdateBookingStatus[Update Booking Status] :::eventProcess
     CompleteCancel --> UpdateBookingStatus
-    
+
     SendReminder --> DeliveryChannels[Delivery Channels] :::eventProcess
     FinalizeBooking --> ServiceFeedback[Request Service Feedback] :::eventProcess
-    
+
     UpdateResourceAllocation --> NotifyRuvo[Notify Ruvo of Changes] :::eventProcess
     UpdateBookingStatus --> NotifyRuvo
-    
+
     NotifyRuvo --> UpdateWorkflow[Update Workflow in Ruvo] :::eventProcess
     ServiceFeedback --> AnalyticsUpdate[Update Analytics] :::eventProcess
 

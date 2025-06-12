@@ -1768,12 +1768,12 @@ class GraceFields:
 
                 # Record workflow in Notion if available
                 if self.message_bus and hasattr(self.message_bus, "notion_service"):
-                    from models.base import (
+                    from models.base import (  # Ensure this import exists or add it at top of file
                         InstanceStatus,
-                    )  # Ensure this import exists or add it at top of file
-                    from models.notion_db_models import (
+                    )
+                    from models.notion_db_models import (  # Ensure this import exists or add it at top of file
                         WorkflowInstance,
-                    )  # Ensure this import exists or add it at top of file
+                    )
 
                     # Data from event_data for key_data_payload
                     key_data = {

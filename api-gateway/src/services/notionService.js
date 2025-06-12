@@ -23,20 +23,20 @@ async function queryDatabase(databaseId, filter = {}, sorts = []) {
     const queryParams = {
       database_id: databaseId,
     };
-    
+
     // Add filter if provided
     if (Object.keys(filter).length > 0) {
       queryParams.filter = filter;
     }
-    
+
     // Add sorts if provided
     if (sorts.length > 0) {
       queryParams.sorts = sorts;
     }
-    
+
     // Execute the query with rate limit awareness
     const response = await notion.databases.query(queryParams);
-    
+
     // Return the results
     return response.results;
   } catch (error) {

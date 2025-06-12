@@ -25,7 +25,7 @@ from services.ai_router import AIRouter
 
 class MyAgent(BaseAgent, HuggingFaceMixin):
     """An agent with Hugging Face capabilities."""
-    
+
     def __init__(self, ai_router: AIRouter = None, **kwargs):
         # Initialize base agent
         BaseAgent.__init__(
@@ -43,7 +43,7 @@ class MyAgent(BaseAgent, HuggingFaceMixin):
             ],
             **kwargs
         )
-        
+
         # Initialize Hugging Face mixin
         HuggingFaceMixin.__init__(self, ai_router=ai_router)
 ```

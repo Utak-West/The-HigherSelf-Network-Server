@@ -1,8 +1,9 @@
-import pytest
 import os
 import sys
+from datetime import datetime  # Import datetime
 from pathlib import Path
-from datetime import datetime # Import datetime
+
+import pytest
 
 # Add the root directory to sys.path to allow importing higherself_schema
 # This assumes the test will be run from the root directory or the worker handles paths.
@@ -11,48 +12,57 @@ from datetime import datetime # Import datetime
 # sys.path.append(str(ROOT_DIR))
 
 try:
+    # Import the example script to test its execution
+    import schema_usage_example
     from higherself_schema import (
-        HigherSelfNetworkServer,
+        ServerComponent,  # Ensure all relevant sub-models are imported for isinstance checks
+    )
+    from higherself_schema import (
+        Agent,
+        AgentCapability,
         AgentPersonality,
         AgentRole,
-        AgentCapability,
-        IntegrationType,
-        WorkflowState,
-        NotionDatabaseType,
-        ServerComponent, # Ensure all relevant sub-models are imported for isinstance checks
         APIEndpoint,
-        Integration,
-        Agent,
-        NotionDatabase,
-        Workflow,
-        RAGComponent,
         DeploymentConfiguration,
-        LearningModule
+        HigherSelfNetworkServer,
+        Integration,
+        IntegrationType,
+        LearningModule,
+        NotionDatabase,
+        NotionDatabaseType,
+        RAGComponent,
+        Workflow,
+        WorkflowState,
     )
-    # Import the example script to test its execution
-    import schema_usage_example 
 except ModuleNotFoundError as e:
     # Fallback for environments where sys.path manipulation might not work as expected in the test runner
     # This indicates a potential issue with how tests are discovered/run if higherself_schema isn't found.
     print(f"Initial import failed: {e}. Attempting to adjust sys.path for testing context.")
     # Determine project root based on a known file/directory, assuming tests/ is one level down.
     # This is a common pattern for tests.
-    project_root = Path(__file__).parent.parent 
+    project_root = Path(__file__).parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
-    
+
+    import schema_usage_example
     from higherself_schema import (
-        HigherSelfNetworkServer,
+        Agent,
+        AgentCapability,
         AgentPersonality,
         AgentRole,
-        AgentCapability,
+        APIEndpoint,
+        DeploymentConfiguration,
+        HigherSelfNetworkServer,
+        Integration,
         IntegrationType,
-        WorkflowState,
+        LearningModule,
+        NotionDatabase,
         NotionDatabaseType,
-        ServerComponent, APIEndpoint, Integration, Agent, NotionDatabase, Workflow,
-        RAGComponent, DeploymentConfiguration, LearningModule
+        RAGComponent,
+        ServerComponent,
+        Workflow,
+        WorkflowState,
     )
-    import schema_usage_example
 
 
 JSON_FILE_PATH = Path(__file__).parent.parent / "server_documentation.json"
@@ -70,11 +80,11 @@ def server_doc() -> HigherSelfNetworkServer:
 def test_server_documentation_loading(server_doc: HigherSelfNetworkServer):
     assert server_doc is not None
     assert server_doc.version == "1.0.0"
-    
+
     # Check that lists are populated (as per our JSON, they should have at least one item)
     assert len(server_doc.components) > 0
     assert isinstance(server_doc.components[0], ServerComponent)
-    
+
     assert len(server_doc.api_endpoints) > 0
     assert isinstance(server_doc.api_endpoints[0], APIEndpoint)
 
@@ -105,7 +115,7 @@ def test_server_documentation_loading(server_doc: HigherSelfNetworkServer):
     assert isinstance(server_doc.learning_modules[0], LearningModule)
 
     # The field was `last_updated` in higherself_schema.py, ensure it exists and is datetime
-    assert hasattr(server_doc, 'last_updated') 
+    assert hasattr(server_doc, 'last_updated')
     assert isinstance(server_doc.last_updated, datetime)
 
 

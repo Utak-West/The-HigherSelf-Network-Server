@@ -25,7 +25,7 @@ The system uses 16 structured Notion databases that form the backbone of the ope
 
 ## Database Setup
 
-The `tools/notion_db_setup.py` utility script can be used to create all required databases in Notion. 
+The `tools/notion_db_setup.py` utility script can be used to create all required databases in Notion.
 
 To use it:
 
@@ -46,7 +46,7 @@ The system rigorously follows the Pydantic AI framework, with model definitions 
 Key models:
 
 - `BusinessEntity` - Maps to the Business Entities Registry database
-- `Agent` - Maps to the Agent Registry database  
+- `Agent` - Maps to the Agent Registry database
 - `Workflow` - Maps to the Workflows Library database
 - `WorkflowInstance` - Maps to the Active Workflow Instances database
 
@@ -54,7 +54,7 @@ Key models:
 
 The system interacts with Notion through the `NotionService` class, which provides methods to:
 
-- Create, update, and query database records 
+- Create, update, and query database records
 - Map between Pydantic models and Notion properties
 - Log workflow state transitions and actions
 - Create tasks from workflow instances

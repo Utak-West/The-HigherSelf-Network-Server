@@ -94,7 +94,7 @@
       },
       "relations": {
         "Active Workflows": "active_workflows",
-        "Bookings": "products_services", 
+        "Bookings": "products_services",
         "Tasks": "tasks"
       },
       "example_records": [
@@ -105,7 +105,7 @@
       "type": "agent_registry",
       "description": "Maintains a registry of all agents in The HigherSelf Network, their capabilities, and configurations.",
       "key_properties": {
-        "Agent ID": "Title", 
+        "Agent ID": "Title",
         "Personality": "Select (Nyra, Solari, etc.)",
         "Role": "Select (Lead Capture, Booking Manager, etc.)",
         "Status": "Select (Active, Inactive, Development)"

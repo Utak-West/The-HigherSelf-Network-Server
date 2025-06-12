@@ -21,7 +21,7 @@ This guide provides comprehensive instructions for deploying the enhanced Higher
 - **Memory**: 4GB dedicated RAM minimum
 
 #### Cache Requirements
-- **Redis**: Version 6+ 
+- **Redis**: Version 6+
 - **Memory**: 2GB minimum (4GB recommended)
 
 ## Installation Steps
@@ -200,18 +200,18 @@ limit_req_zone $binary_remote_addr zone=translate:10m rate=5r/s;
 server {
     listen 443 ssl http2;
     server_name yourdomain.com;
-    
+
     # SSL Configuration
     ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-    
+
     # Security headers
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
-    
+
     # Main API endpoints
     location /barter/ {
         limit_req zone=api burst=20 nodelay;
@@ -221,7 +221,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Search endpoints with higher rate limit
     location /barter/search/ {
         limit_req zone=search burst=50 nodelay;
@@ -231,7 +231,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Translation endpoints with stricter limits
     location /barter/translations/ {
         limit_req zone=translate burst=10 nodelay;
@@ -241,7 +241,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Authentication endpoints
     location ~ ^/(auth|login|register) {
         limit_req zone=auth burst=5 nodelay;
@@ -422,13 +422,13 @@ find $BACKUP_DIR -name "*backup_*" -mtime +14 -delete
 1. **Database Optimization**
    ```sql
    -- Create additional indexes for enhanced features
-   CREATE INDEX CONCURRENTLY idx_barter_translations_lookup 
+   CREATE INDEX CONCURRENTLY idx_barter_translations_lookup
    ON barter_translations (entity_type, entity_id, language_code);
-   
-   CREATE INDEX CONCURRENTLY idx_barter_user_profiles_activity 
+
+   CREATE INDEX CONCURRENTLY idx_barter_user_profiles_activity
    ON barter_user_profiles (last_activity DESC);
-   
-   CREATE INDEX CONCURRENTLY idx_barter_search_cache_expires 
+
+   CREATE INDEX CONCURRENTLY idx_barter_search_cache_expires
    ON barter_search_cache (expires_at) WHERE expires_at > NOW();
    ```
 

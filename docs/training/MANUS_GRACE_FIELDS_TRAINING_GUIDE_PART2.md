@@ -46,7 +46,7 @@ try {
       timestamp: currentTimestamp()
     }
   });
-  
+
   // Implement fallback
   if (error.type === "agent_unavailable") {
     // Route to backup agent
@@ -82,21 +82,21 @@ async def enhanced_transition(
         pass
     except Exception as e:
         result.error = f"Error during transition: {str(e)}"
-        
+
         # Determine if we should retry
         max_retries = getattr(transition, 'retry_count', 0)
         if retry_attempt < max_retries:
             result.retry_recommended = True
-            
+
             # Calculate retry delay with optional exponential backoff
             base_delay = getattr(transition, 'retry_delay_seconds', 60)
             use_backoff = getattr(transition, 'exponential_backoff', False)
-            
+
             if use_backoff:
                 retry_delay = base_delay * (2 ** retry_attempt)
             else:
                 retry_delay = base_delay
-                
+
             result.retry_after_seconds = retry_delay
 ```
 

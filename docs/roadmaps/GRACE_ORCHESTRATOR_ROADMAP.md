@@ -86,25 +86,25 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Event Flow
     IncomingEvent[Incoming Event] :::entryPoint
     IncomingEvent --> ExtractMetadata[Extract Event Metadata] :::eventProcess
     ExtractMetadata --> HasExplicitType{Has Explicit Type?} :::decisionNode
-    
+
     HasExplicitType -->|Yes| UseExplicitType[Use Defined Type] :::eventProcess
     HasExplicitType -->|No| AnalyzeContent[Analyze Event Content] :::eventProcess
-    
+
     AnalyzeContent --> MatchPatterns[Match Against Type Patterns] :::eventProcess
     MatchPatterns --> PatternMatch{Pattern Match?} :::decisionNode
-    
+
     PatternMatch -->|Yes| UseMatchedType[Use Matched Type] :::eventProcess
     PatternMatch -->|No| CheckSource[Check Event Source] :::eventProcess
-    
+
     CheckSource --> SourceBasedType{Source Indicates Type?} :::decisionNode
     SourceBasedType -->|Yes| UseSourceType[Use Source-Based Type] :::eventProcess
     SourceBasedType -->|No| ApplyDefaultType[Apply Default Type] :::eventProcess
-    
+
     UseExplicitType --> TypeDetermined[Event Type Determined] :::dataNode
     UseMatchedType --> TypeDetermined
     UseSourceType --> TypeDetermined
@@ -123,24 +123,24 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Agent Selection Flow
     TypeDetermined[Event Type Determined] :::dataNode
     TypeDetermined --> PrimaryAgentCheck{Primary Agent Available?} :::decisionNode
-    
+
     PrimaryAgentCheck -->|Yes| LoadCheck{Agent Load Status} :::decisionNode
     PrimaryAgentCheck -->|No| FindBackupAgent[Find Backup Agent] :::eventProcess
-    
+
     LoadCheck -->|Below Threshold| SelectPrimaryAgent[Select Primary Agent] :::eventProcess
     LoadCheck -->|Above Threshold| CapacityCheck{System At Capacity?} :::decisionNode
-    
+
     CapacityCheck -->|Yes| QueueEvent[Queue Event For Later] :::eventProcess
     CapacityCheck -->|No| LoadBalanceSelection[Select Based on Load Balance] :::eventProcess
-    
+
     FindBackupAgent --> BackupAvailable{Backup Available?} :::decisionNode
     BackupAvailable -->|Yes| SelectBackupAgent[Select Backup Agent] :::eventProcess
     BackupAvailable -->|No| FallbackProcess[Use Fallback Process] :::eventProcess
-    
+
     SelectPrimaryAgent --> AgentSelected[Agent Selected] :::dataNode
     SelectBackupAgent --> AgentSelected
     LoadBalanceSelection --> AgentSelected
@@ -179,29 +179,29 @@ flowchart TD
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef actionNode fill:#e3f2fd,stroke:#0d47a1,color:#0d47a1,stroke-width:2px
-    
+
     %% Error Handling Flow
     ErrorDetected[Error Detected] :::errorNode
     ErrorDetected --> ClassifyError[Classify Error Type] :::eventProcess
     ClassifyError --> ErrorType{Error Type} :::decisionNode
-    
+
     ErrorType -->|Transient| RetryStrategy[Apply Retry Strategy] :::actionNode
     ErrorType -->|Persistent| AgentIssue{Agent-Specific?} :::decisionNode
     ErrorType -->|Fatal| LogFatalError[Log Fatal Error] :::errorNode
-    
+
     RetryStrategy --> RetrySuccessful{Retry Successful?} :::decisionNode
     RetrySuccessful -->|Yes| ResumeProcessing[Resume Normal Processing] :::actionNode
     RetrySuccessful -->|No| MaxRetriesCheck{Max Retries Reached?} :::decisionNode
-    
+
     MaxRetriesCheck -->|Yes| EscalateError[Escalate to Persistent] :::errorNode
     MaxRetriesCheck -->|No| RetryStrategy
-    
+
     AgentIssue -->|Yes| ActivateCircuitBreaker[Activate Circuit Breaker] :::actionNode
     AgentIssue -->|No| SystemIssue[Handle as System Issue] :::actionNode
-    
+
     ActivateCircuitBreaker --> RedirectToBackup[Redirect to Backup Agent] :::actionNode
     SystemIssue --> NotifyAdmin[Notify System Administrator] :::actionNode
-    
+
     LogFatalError --> GenerateIncident[Generate Incident Report] :::actionNode
     EscalateError --> AgentIssue
 ```
@@ -264,39 +264,39 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     API[API Endpoints] :::entryPoint
     Events[Internal Events] :::entryPoint
     Scheduled[Scheduled Triggers] :::entryPoint
     Webhooks[External Webhooks] :::entryPoint
-    
+
     %% Grace Processing Steps
     API --> EventReceived[Event Received] :::eventProcess
     Events --> EventReceived
     Scheduled --> EventReceived
     Webhooks --> EventReceived
-    
+
     EventReceived --> Validation[Validate Event] :::eventProcess
     Validation --> ValidationCheck{Valid Event?} :::decisionNode
-    
+
     ValidationCheck -->|No| ErrorHandling[Handle Validation Error] :::errorNode
     ValidationCheck -->|Yes| EnrichEvent[Enrich Event Context] :::eventProcess
-    
+
     EnrichEvent --> ClassifyEvent[Classify Event Type] :::eventProcess
     ClassifyEvent --> DetermineQueue[Determine Target Queue] :::eventProcess
     DetermineQueue --> EventQueue[Add to Event Queue] :::eventProcess
-    
+
     EventQueue --> ProcessQueue[Process from Queue] :::eventProcess
     ProcessQueue --> AgentSelection[Select Target Agent] :::eventProcess
-    
+
     AgentSelection --> AgentCheck{Agent Available?} :::decisionNode
     AgentCheck -->|No| FallbackProcess[Apply Fallback Strategy] :::eventProcess
     AgentCheck -->|Yes| PrepareForAgent[Prepare Event for Agent] :::eventProcess
-    
+
     PrepareForAgent --> DispatchEvent[Dispatch to Agent] :::eventProcess
     DispatchEvent --> AgentProcessing{Agent Processing} :::agentNode
-    
+
     %% Agent Processing
     AgentProcessing -->|Lead Event| Nyra[Nyra - Lead Specialist] :::agentNode
     AgentProcessing -->|Booking Event| Solari[Solari - Booking Manager] :::agentNode
@@ -305,7 +305,7 @@ flowchart TB
     AgentProcessing -->|Community Event| Sage[Sage - Community Curator] :::agentNode
     AgentProcessing -->|Content Event| Elan[Elan - Content Choreographer] :::agentNode
     AgentProcessing -->|Audience Event| Zevi[Zevi - Audience Analyst] :::agentNode
-    
+
     %% Response Handling
     Nyra --> ResponseReceived[Agent Response Received] :::eventProcess
     Solari --> ResponseReceived
@@ -314,32 +314,32 @@ flowchart TB
     Sage --> ResponseReceived
     Elan --> ResponseReceived
     Zevi --> ResponseReceived
-    
+
     ResponseReceived --> ResponseCheck{Response Type} :::decisionNode
     ResponseCheck -->|Success| ProcessSuccess[Process Successful Response] :::eventProcess
     ResponseCheck -->|Error| ProcessError[Process Error Response] :::errorNode
     ResponseCheck -->|Timeout| HandleTimeout[Handle Timeout] :::errorNode
-    
+
     ProcessSuccess --> TriggerDependents{Has Dependents?} :::decisionNode
     TriggerDependents -->|Yes| QueueDependentEvents[Queue Dependent Events] :::eventProcess
     TriggerDependents -->|No| FinalizeEvent[Finalize Event Processing] :::eventProcess
-    
+
     ProcessError --> RecoveryStrategy[Apply Recovery Strategy] :::eventProcess
     HandleTimeout --> TimeoutRecovery[Apply Timeout Recovery] :::eventProcess
-    
+
     RecoveryStrategy --> RecoveryCheck{Recovery Successful?} :::decisionNode
     TimeoutRecovery --> RecoveryCheck
-    
+
     RecoveryCheck -->|Yes| ResumeProcessing[Resume Processing] :::eventProcess
     RecoveryCheck -->|No| LogFailure[Log Processing Failure] :::errorNode
-    
+
     QueueDependentEvents --> EventQueue
     FinalizeEvent --> LogCompletion[Log Completion] :::eventProcess
     ResumeProcessing --> EventQueue
-    
+
     LogCompletion --> EventArchive[Archive Event Data] :::storageNode
     LogFailure --> NotifySystem[Notify System Administrators] :::eventProcess
-    
+
     %% External Connections
     EventArchive --> MongoDB[(MongoDB Storage)] :::storageNode
     LogCompletion --> Notion[(Notion Database)] :::storageNode

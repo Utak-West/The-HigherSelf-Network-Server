@@ -3,16 +3,17 @@ MCP Tools Registry for Higher Self Network Server.
 Provides registration, discovery, and management of MCP tools.
 """
 
-import os
-import json
 import asyncio
-from typing import Dict, List, Any, Optional, Set, Callable, TypeVar, Generic
+import json
+import os
 from enum import Enum
-from pydantic import BaseModel, Field, field_validatorfrom loguru import logger
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, TypeVar
 
-from services.consul_service import consul_service
-from services.cache_service import multi_level_cache, CacheType, CacheLevel
+from pydantic import BaseModel, Field, field_validatorfrom, import, logger, loguru
+
 from services.analytics_service import agent_analytics
+from services.cache_service import CacheLevel, CacheType, multi_level_cache
+from services.consul_service import consul_service
 
 # Type for tool handlers
 T = TypeVar('T')
@@ -78,7 +79,7 @@ class MCPTool(Generic[T]):
     """
     Representation of an MCP tool with its metadata and handler.
     """
-    
+
     def __init__(
         self,
         metadata: ToolMetadata,
@@ -88,7 +89,7 @@ class MCPTool(Generic[T]):
     ):
         """
         Initialize an MCP tool.
-        
+
         Args:
             metadata: Tool metadata
             handler: Function to handle tool calls
@@ -100,13 +101,13 @@ class MCPTool(Generic[T]):
         self.is_async = is_async
         self.env_var_name = env_var_name
         self.available = True
-        
+
         # Check if API key is required and available
         if metadata.requires_api_key and env_var_name:
             if not os.environ.get(env_var_name):
                 logger.warning(f"API key for {metadata.name} not found in environment variable {env_var_name}")
                 self.available = False
-    
+
     @property
     def name(self) -> str:
         """Get the tool name."""
@@ -118,7 +119,7 @@ class MCPToolsRegistry:
     Registry for MCP tools.
     Manages tool registration, discovery, and execution.
     """
-    
+
     def __init__(self):
         """Initialize the MCP tools registry."""
         self._tools: Dict[str, MCPTool] = {}
@@ -126,14 +127,14 @@ class MCPToolsRegistry:
             cap: [] for cap in ToolCapability
         }
         logger.info("MCP Tools Registry initialized")
-    
+
     def register_tool(self, tool: MCPTool) -> bool:
         """
         Register an MCP tool with the registry.
-        
+
         Args:
             tool: The tool to register
-            
+
         Returns:
             True if registration was successful, False otherwise
         """
@@ -141,34 +142,34 @@ class MCPToolsRegistry:
             # Check if tool is already registered
             if tool.name in self._tools:
                 logger.warning(f"Tool {tool.name} is already registered, updating")
-            
+
             # Register tool
             self._tools[tool.name] = tool
-            
+
             # Update capability map
             for capability in tool.metadata.capabilities:
                 if tool.name not in self._tool_map_by_capability[capability]:
                     self._tool_map_by_capability[capability].append(tool.name)
-            
+
             # Register with Consul if tool is available
             if tool.available:
                 consul_service.register_mcp_tool_service(tool.name)
                 logger.info(f"Registered tool {tool.name} with capabilities: {tool.metadata.capabilities}")
             else:
                 logger.warning(f"Tool {tool.name} is registered but not available")
-            
+
             return True
         except Exception as e:
             logger.error(f"Failed to register tool {tool.name}: {e}")
             return False
-    
+
     def unregister_tool(self, tool_name: str) -> bool:
         """
         Unregister an MCP tool from the registry.
-        
+
         Args:
             tool_name: The name of the tool to unregister
-            
+
         Returns:
             True if unregistration was successful, False otherwise
         """
@@ -177,113 +178,113 @@ class MCPToolsRegistry:
             if tool_name not in self._tools:
                 logger.warning(f"Tool {tool_name} is not registered")
                 return False
-            
+
             # Get tool
             tool = self._tools[tool_name]
-            
+
             # Remove from capability map
             for capability in tool.metadata.capabilities:
                 if tool_name in self._tool_map_by_capability[capability]:
                     self._tool_map_by_capability[capability].remove(tool_name)
-            
+
             # Deregister from Consul
             consul_service.deregister_service(f"mcp-tool-{tool_name}")
-            
+
             # Remove from registry
             del self._tools[tool_name]
-            
+
             logger.info(f"Unregistered tool {tool_name}")
             return True
         except Exception as e:
             logger.error(f"Failed to unregister tool {tool_name}: {e}")
             return False
-    
+
     def get_tool(self, tool_name: str) -> Optional[MCPTool]:
         """
         Get an MCP tool by name.
-        
+
         Args:
             tool_name: The name of the tool
-            
+
         Returns:
             The tool if found, None otherwise
         """
         return self._tools.get(tool_name)
-    
+
     def get_tools_by_capability(self, capability: ToolCapability) -> List[MCPTool]:
         """
         Get MCP tools by capability.
-        
+
         Args:
             capability: The capability to filter by
-            
+
         Returns:
             List of tools with the specified capability
         """
         tool_names = self._tool_map_by_capability.get(capability, [])
         return [self._tools[name] for name in tool_names if name in self._tools]
-    
+
     def list_tools(self, available_only: bool = True) -> List[str]:
         """
         List all registered MCP tools.
-        
+
         Args:
             available_only: Whether to list only available tools
-            
+
         Returns:
             List of tool names
         """
         if available_only:
             return [name for name, tool in self._tools.items() if tool.available]
         return list(self._tools.keys())
-    
+
     def list_tools_with_metadata(
         self,
         available_only: bool = True
     ) -> List[Dict[str, Any]]:
         """
         List all registered MCP tools with their metadata.
-        
+
         Args:
             available_only: Whether to list only available tools
-            
+
         Returns:
             List of tool metadata dictionaries
         """
         result = []
-        
+
         for name, tool in self._tools.items():
             if available_only and not tool.available:
                 continue
-            
+
             result.append({
                 "name": tool.name,
                 "metadata": tool.metadata.dict(),
                 "available": tool.available
             })
-        
+
         return result
-    
+
     def get_capabilities(self) -> Dict[str, List[str]]:
         """
         Get all capabilities and their associated tools.
-        
+
         Returns:
             Dictionary mapping capabilities to tool names
         """
         result = {}
-        
+
         for capability, tool_names in self._tool_map_by_capability.items():
             available_tools = [
                 name for name in tool_names
                 if name in self._tools and self._tools[name].available
             ]
-            
+
             if available_tools:
                 result[capability] = available_tools
-        
+
         return result
-    
+
     async def execute_tool(
         self,
         tool_name: str,
@@ -294,20 +295,20 @@ class MCPToolsRegistry:
     ) -> Dict[str, Any]:
         """
         Execute an MCP tool.
-        
+
         Args:
             tool_name: The name of the tool to execute
             parameters: The parameters for the tool
             agent_id: The ID of the agent executing the tool
             use_cache: Whether to use cached results if available
             cache_ttl: Optional TTL for cache in seconds
-            
+
         Returns:
             The tool execution result
         """
         start_time = asyncio.get_event_loop().time()
         cache_hit = False
-        
+
         try:
             # Check if tool exists and is available
             tool = self.get_tool(tool_name)
@@ -316,26 +317,26 @@ class MCPToolsRegistry:
                     "error": f"Tool {tool_name} not found",
                     "success": False
                 }
-            
+
             if not tool.available:
                 return {
                     "error": f"Tool {tool_name} is not available",
                     "success": False
                 }
-            
+
             # Generate cache key
             cache_key = self._generate_cache_key(tool_name, parameters)
-            
+
             # Check cache if enabled
             if use_cache:
                 cached_result = await multi_level_cache.get(
                     cache_key, CacheType.MCP
                 )
-                
+
                 if cached_result is not None:
                     cache_hit = True
                     duration_ms = (asyncio.get_event_loop().time() - start_time) * 1000
-                    
+
                     # Record analytics
                     await agent_analytics.record_mcp_tool_usage(
                         tool_name=tool_name,
@@ -346,12 +347,12 @@ class MCPToolsRegistry:
                         outcome="success_cached",
                         result_summary="Retrieved from cache"
                     )
-                    
+
                     return {
                         **cached_result,
                         "from_cache": True
                     }
-            
+
             # Execute tool
             if tool.is_async:
                 result = await tool.handler(parameters, agent_id)
@@ -360,7 +361,7 @@ class MCPToolsRegistry:
                 result = await asyncio.get_event_loop().run_in_executor(
                     None, tool.handler, parameters, agent_id
                 )
-            
+
             # Format result
             formatted_result = {
                 "result": result,
@@ -368,19 +369,19 @@ class MCPToolsRegistry:
                 "tool_name": tool_name,
                 "from_cache": False
             }
-            
+
             # Cache result if enabled
             if use_cache:
                 await multi_level_cache.set(
-                    cache_key, 
-                    formatted_result, 
+                    cache_key,
+                    formatted_result,
                     CacheType.MCP,
                     ttl_override=cache_ttl
                 )
-            
+
             # Record duration and analytics
             duration_ms = (asyncio.get_event_loop().time() - start_time) * 1000
-            
+
             await agent_analytics.record_mcp_tool_usage(
                 tool_name=tool_name,
                 agent_id=agent_id,
@@ -390,12 +391,12 @@ class MCPToolsRegistry:
                 outcome="success",
                 result_summary=str(result)[:100]  # Truncate for summary
             )
-            
+
             return formatted_result
         except Exception as e:
             # Record error and analytics
             duration_ms = (asyncio.get_event_loop().time() - start_time) * 1000
-            
+
             await agent_analytics.record_mcp_tool_usage(
                 tool_name=tool_name,
                 agent_id=agent_id,
@@ -405,7 +406,7 @@ class MCPToolsRegistry:
                 outcome="error",
                 result_summary=str(e)
             )
-            
+
             logger.error(f"Error executing tool {tool_name}: {e}")
             return {
                 "error": str(e),
@@ -413,7 +414,7 @@ class MCPToolsRegistry:
                 "tool_name": tool_name,
                 "from_cache": False
             }
-    
+
     async def bulk_execute_tools(
         self,
         executions: List[Dict[str, Any]],
@@ -423,13 +424,13 @@ class MCPToolsRegistry:
     ) -> List[Dict[str, Any]]:
         """
         Execute multiple MCP tools in parallel or sequentially.
-        
+
         Args:
             executions: List of dictionaries with tool_name and parameters
             agent_id: The ID of the agent executing the tools
             use_cache: Whether to use cached results if available
             parallel: Whether to execute tools in parallel or sequentially
-            
+
         Returns:
             List of tool execution results
         """
@@ -446,7 +447,7 @@ class MCPToolsRegistry:
                     )
                     for execution in executions
                 ]
-                
+
                 return await asyncio.gather(*tasks)
             else:
                 # Execute tools sequentially
@@ -460,7 +461,7 @@ class MCPToolsRegistry:
                         execution.get("cache_ttl")
                     )
                     results.append(result)
-                
+
                 return results
         except Exception as e:
             logger.error(f"Error in bulk execute tools: {e}")
@@ -472,15 +473,15 @@ class MCPToolsRegistry:
                 }
                 for _ in executions
             ]
-    
+
     def _generate_cache_key(self, tool_name: str, parameters: Dict[str, Any]) -> str:
         """
         Generate a cache key for tool execution.
-        
+
         Args:
             tool_name: The name of the tool
             parameters: The parameters for the tool
-            
+
         Returns:
             Cache key string
         """

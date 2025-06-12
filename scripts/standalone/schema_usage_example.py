@@ -1,14 +1,21 @@
+from higherself_schema import Agent  # This is higherself_schema.Agent
 from higherself_schema import (
-    HigherSelfNetworkServer,
-    Agent, # This is higherself_schema.Agent
-    AgentPersonality, # This should be available via higherself_schema
-    AgentRole,      # This should be available via higherself_schema
-    AgentCapability, # This should be available via higherself_schema
-    APIEndpoint,
-    IntegrationType,
-    WorkflowState,
-    NotionDatabaseType
+    AgentCapability,  # This should be available via higherself_schema
 )
+from higherself_schema import (
+    AgentPersonality,  # This should be available via higherself_schema
+)
+from higherself_schema import (
+    AgentRole,  # This should be available via higherself_schema
+)
+from higherself_schema import (
+    APIEndpoint,
+    HigherSelfNetworkServer,
+    IntegrationType,
+    NotionDatabaseType,
+    WorkflowState,
+)
+
 # Note: AgentPersonality, AgentRole, AgentCapability are defined in higherself_schema.py,
 # attempting to import from models.base within that file.
 
@@ -26,7 +33,7 @@ def main():
 
     # Access specific components
     try:
-        grace_fields_agent = next(agent for agent in server_doc.agents 
+        grace_fields_agent = next(agent for agent in server_doc.agents
                                  if agent.personality == AgentPersonality.GRACE_FIELDS)
         print(f"Found Grace Fields agent: {grace_fields_agent.role}")
     except StopIteration:
@@ -60,7 +67,7 @@ def main():
     # Identify relevant integrations (adapted from API endpoints example)
     try:
         notion_integrations = [
-            integration for integration in server_doc.integrations 
+            integration for integration in server_doc.integrations
             if integration.type == IntegrationType.NOTION
         ]
         if notion_integrations:
@@ -75,12 +82,12 @@ def main():
     # Understand workflow transitions
     try:
         lead_capture_workflow_name = "Standard Lead Processing Workflow" # From our server_documentation.json
-        lead_capture_workflow = next(workflow for workflow in server_doc.workflows 
+        lead_capture_workflow = next(workflow for workflow in server_doc.workflows
                                     if workflow.name.lower() == lead_capture_workflow_name.lower())
         print(f"Found workflow: {lead_capture_workflow.name}")
-        
+
         # Example: Print transitions from 'initiated' state
-        current_state_example = WorkflowState.INITIATED 
+        current_state_example = WorkflowState.INITIATED
         possible_transitions = [
             transition for transition in lead_capture_workflow.transitions
             if transition.from_state == current_state_example
@@ -91,7 +98,7 @@ def main():
                 print(f"- To '{t.to_state.value}', Trigger: '{t.trigger}', Responsible: {t.responsible_agent.value if t.responsible_agent else 'N/A'}")
         else:
             print(f"No transitions found from state '{current_state_example.value}'.")
-            
+
     except StopIteration:
         print(f"Workflow '{lead_capture_workflow_name}' not found.")
     except Exception as e:
@@ -130,17 +137,17 @@ def main():
 def configure_art_gallery_automation(server_doc: HigherSelfNetworkServer) -> dict:
     # This function is adapted from the issue.
     # It might not find data if "Exhibition Management" or specific workflows aren't in server_documentation.json
-    
+
     # The capability "Exhibition Management" is not in our current AgentCapability enum.
     # For demonstration, let's try a capability that IS in the enum, e.g., "CONTENT_CREATION"
     # Or, we'd need to add "Exhibition Management" to AgentCapability if it's a real requirement.
     # For now, this part will likely find no agents.
-    
+
     # Let's assume "Exhibition Management" is a string value for a capability name for now.
     # The schema `AgentCapability` is an Enum, so direct string comparison won't work with `cap.name`.
     # The `primary_capabilities` in `higherself_schema.Agent` is `List[AgentCapability]`.
     # So, `capability` here is an `AgentCapability` enum member. We need to compare its value.
-    
+
     relevant_agents = []
     try:
         relevant_agents = [agent for agent in server_doc.agents
@@ -151,21 +158,21 @@ def configure_art_gallery_automation(server_doc: HigherSelfNetworkServer) -> dic
         print(f"Note: Could not find agents with specific capability due to: {e}")
 
 
-    art_databases = [db for db in server_doc.notion_databases 
-                    if db.type in [NotionDatabaseType.PRODUCTS_SERVICES, 
+    art_databases = [db for db in server_doc.notion_databases
+                    if db.type in [NotionDatabaseType.PRODUCTS_SERVICES,
                                   NotionDatabaseType.BUSINESS_ENTITIES]]
-    
+
     # This workflow name is hypothetical for the example.
     # Our server_documentation.json has "Standard Lead Processing".
     # This part will likely not find the workflow.
     exhibition_workflow = []
     try:
-        exhibition_workflow_name = "Art Exhibition Workflow" 
-        exhibition_workflow = [workflow for workflow in server_doc.workflows 
+        exhibition_workflow_name = "Art Exhibition Workflow"
+        exhibition_workflow = [workflow for workflow in server_doc.workflows
                                if exhibition_workflow_name.lower() in workflow.name.lower()]
     except Exception as e:
         print(f"Note: Could not find '{exhibition_workflow_name}' due to: {e}")
-        
+
     return {
         "agents": relevant_agents,
         "databases": art_databases,

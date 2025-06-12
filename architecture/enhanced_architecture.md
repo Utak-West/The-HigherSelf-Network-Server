@@ -22,7 +22,7 @@ graph TD
         N[Notion<br/>Primary Data Store] <-->|Bidirectional Sync| V[Vector Database<br/>Semantic Search]
         N -->|References| V
     end
-    
+
     A[AI Agents] -->|Query| V
     A -->|CRUD Operations| N
     S[Services] -->|Data Sync| N
@@ -79,18 +79,18 @@ graph TD
     BA --> CLA[Content Lifecycle Agent]
     BA --> CSA[Client Success Agent]
     BA --> AA[Analytics Agent]
-    
+
     subgraph "Notion Central Hub"
         N[Notion Databases]
     end
-    
+
     LCA -->|Updates| N
     BA -->|Updates| N
     EPA -->|Updates| N
     CLA -->|Updates| N
     CSA -->|Updates| N
     AA -->|Updates| N
-    
+
     LCA <-->|Collaboration| EPA
     EPA <-->|Collaboration| CLA
     CLA <-->|Collaboration| CSA

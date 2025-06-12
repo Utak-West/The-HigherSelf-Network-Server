@@ -5,18 +5,20 @@ This module provides functionality to store, retrieve, and search vector embeddi
 in Supabase using the pgvector extension.
 """
 
-import os
-import json
-import hashlib
-from typing import List, Dict, Any, Optional, Union, Tuple
-from datetime import datetime
-from uuid import UUID, uuid4
 import asyncio
+import hashlib
+import json
+import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+from uuid import UUID, uuid4
+
 from loguru import logger
 
-from .models import VectorRecord, ChunkRecord, SearchResult, EmbeddingMeta
-from .providers import provider_registry
 from services.supabase_service import SupabaseService
+
+from .models import ChunkRecord, EmbeddingMeta, SearchResult, VectorRecord
+from .providers import provider_registry
 
 
 class VectorStore:
@@ -41,6 +43,7 @@ class VectorStore:
         # Initialize Supabase service if not provided
         if self.supabase is None:
             from services.supabase_service import get_supabase_service
+
             self.supabase = await get_supabase_service()
 
         # Initialize provider registry if not already initialized
@@ -61,29 +64,26 @@ class VectorStore:
         try:
             # Check if we can connect to Supabase
             result = await self.supabase.execute_sql(
-                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'embeddings')")
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'embeddings')"
+            )
 
-            table_exists = result[0]['exists'] if result else False
+            table_exists = result[0]["exists"] if result else False
 
             if not table_exists:
                 return {
                     "healthy": False,
                     "error": "Embeddings table does not exist in Supabase",
-                    "component": "vector_store"
+                    "component": "vector_store",
                 }
 
             return {
                 "healthy": True,
                 "tables": ["embeddings", "vector_chunks"],
-                "component": "vector_store"
+                "component": "vector_store",
             }
         except Exception as e:
             logger.error(f"Vector store health check failed: {e}")
-            return {
-                "healthy": False,
-                "error": str(e),
-                "component": "vector_store"
-            }
+            return {"healthy": False, "error": str(e), "component": "vector_store"}
 
     def _compute_content_hash(self, content: str) -> str:
         """
@@ -95,7 +95,7 @@ class VectorStore:
         Returns:
             Content hash as a hexadecimal string
         """
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
     async def store_embedding(
         self,
@@ -135,12 +135,12 @@ class VectorStore:
                 SELECT id::text FROM embeddings
                 WHERE content_hash = $1 AND embedding_provider = $2
                 """,
-                [content_hash, provider_name]
+                [content_hash, provider_name],
             )
 
             if existing:
                 # Content exists, update it
-                embedding_id = UUID(existing[0]['id'])
+                embedding_id = UUID(existing[0]["id"])
 
                 # Update the embedding
                 await self.supabase.execute_sql(
@@ -151,7 +151,7 @@ class VectorStore:
                         updated_at = NOW()
                     WHERE id = $3::uuid
                     """,
-                    [embedding, json.dumps(metadata.dict()), str(embedding_id)]
+                    [embedding, json.dumps(metadata.dict()), str(embedding_id)],
                 )
 
                 logger.info(f"Updated existing embedding: {embedding_id}")
@@ -170,9 +170,15 @@ class VectorStore:
                 )
                 """,
                 [
-                    str(embedding_id), notion_page_id, notion_database_id, content_type,
-                    content_hash, embedding, json.dumps(metadata.dict()), provider_name
-                ]
+                    str(embedding_id),
+                    notion_page_id,
+                    notion_database_id,
+                    content_type,
+                    content_hash,
+                    embedding,
+                    json.dumps(metadata.dict()),
+                    provider_name,
+                ],
             )
 
             logger.info(f"Stored new embedding: {embedding_id}")
@@ -187,7 +193,7 @@ class VectorStore:
         embedding_id: UUID,
         chunks: List[str],
         chunk_embeddings: List[List[float]],
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> List[UUID]:
         """
         Store text chunks with their embeddings.
@@ -215,7 +221,7 @@ class VectorStore:
             # First, delete any existing chunks for this embedding
             await self.supabase.execute_sql(
                 "DELETE FROM vector_chunks WHERE embedding_id = $1::uuid",
-                [str(embedding_id)]
+                [str(embedding_id)],
             )
 
             # Insert new chunks
@@ -224,7 +230,7 @@ class VectorStore:
                 chunk_metadata = {
                     **metadata,
                     "chunk_index": i,
-                    "chunk_count": len(chunks)
+                    "chunk_count": len(chunks),
                 }
 
                 await self.supabase.execute_sql(
@@ -237,9 +243,13 @@ class VectorStore:
                     )
                     """,
                     [
-                        str(chunk_id), str(embedding_id), i, chunk,
-                        embedding, json.dumps(chunk_metadata)
-                    ]
+                        str(chunk_id),
+                        str(embedding_id),
+                        i,
+                        chunk,
+                        embedding,
+                        json.dumps(chunk_metadata),
+                    ],
                 )
 
                 chunk_ids.append(chunk_id)
@@ -274,7 +284,7 @@ class VectorStore:
                 FROM embeddings
                 WHERE id = $1::uuid
                 """,
-                [str(embedding_id)]
+                [str(embedding_id)],
             )
 
             if not result:
@@ -283,21 +293,21 @@ class VectorStore:
             row = result[0]
 
             # Parse the metadata
-            metadata_dict = row['metadata']
+            metadata_dict = row["metadata"]
             metadata = EmbeddingMeta.parse_obj(metadata_dict)
 
             # Create the vector record
             record = VectorRecord(
-                id=UUID(row['id']),
-                notion_page_id=row['notion_page_id'],
-                notion_database_id=row['notion_database_id'],
-                content_type=row['content_type'],
-                content_hash=row['content_hash'],
-                embedding_vector=row['embedding_vector'],
+                id=UUID(row["id"]),
+                notion_page_id=row["notion_page_id"],
+                notion_database_id=row["notion_database_id"],
+                content_type=row["content_type"],
+                content_hash=row["content_hash"],
+                embedding_vector=row["embedding_vector"],
                 metadata=metadata,
-                created_at=row['created_at'],
-                updated_at=row['updated_at'],
-                embedding_provider=row['embedding_provider']
+                created_at=row["created_at"],
+                updated_at=row["updated_at"],
+                embedding_provider=row["embedding_provider"],
             )
 
             return record
@@ -329,7 +339,7 @@ class VectorStore:
                 WHERE embedding_id = $1::uuid
                 ORDER BY chunk_index
                 """,
-                [str(embedding_id)]
+                [str(embedding_id)],
             )
 
             if not result:
@@ -338,13 +348,13 @@ class VectorStore:
             chunks = []
             for row in result:
                 chunk = ChunkRecord(
-                    id=UUID(row['id']),
-                    embedding_id=UUID(row['embedding_id']),
-                    chunk_index=row['chunk_index'],
-                    chunk_text=row['chunk_text'],
-                    chunk_embedding=row['chunk_embedding'],
-                    metadata=row['metadata'],
-                    created_at=row['created_at']
+                    id=UUID(row["id"]),
+                    embedding_id=UUID(row["embedding_id"]),
+                    chunk_index=row["chunk_index"],
+                    chunk_text=row["chunk_text"],
+                    chunk_embedding=row["chunk_embedding"],
+                    metadata=row["metadata"],
+                    created_at=row["created_at"],
                 )
                 chunks.append(chunk)
 
@@ -370,8 +380,7 @@ class VectorStore:
         try:
             # Delete the embedding (cascades to chunks)
             await self.supabase.execute_sql(
-                "DELETE FROM embeddings WHERE id = $1::uuid",
-                [str(embedding_id)]
+                "DELETE FROM embeddings WHERE id = $1::uuid", [str(embedding_id)]
             )
 
             logger.info(f"Deleted embedding: {embedding_id}")
@@ -387,7 +396,7 @@ class VectorStore:
         content_types: Optional[List[str]] = None,
         notion_database_id: Optional[str] = None,
         limit: int = 10,
-        threshold: float = 0.7
+        threshold: float = 0.7,
     ) -> List[SearchResult]:
         """
         Search for similar embeddings.
@@ -419,7 +428,7 @@ class VectorStore:
             params = [query_embedding]
 
             if content_types:
-                placeholders = ', '.join([f"${i+2}" for i in range(len(content_types))])
+                placeholders = ", ".join([f"${i+2}" for i in range(len(content_types))])
                 sql += f" AND content_type IN ({placeholders})"
                 params.extend(content_types)
 
@@ -437,28 +446,28 @@ class VectorStore:
             search_results = []
             for row in result:
                 # Parse the metadata
-                metadata_dict = row['metadata']
+                metadata_dict = row["metadata"]
                 metadata = EmbeddingMeta.parse_obj(metadata_dict)
 
                 # Create the vector record
                 record = VectorRecord(
-                    id=UUID(row['id']),
-                    notion_page_id=row['notion_page_id'],
-                    notion_database_id=row['notion_database_id'],
-                    content_type=row['content_type'],
-                    content_hash=row['content_hash'],
-                    embedding_vector=[], # We don't need the full vector in search results
+                    id=UUID(row["id"]),
+                    notion_page_id=row["notion_page_id"],
+                    notion_database_id=row["notion_database_id"],
+                    content_type=row["content_type"],
+                    content_hash=row["content_hash"],
+                    embedding_vector=[],  # We don't need the full vector in search results
                     metadata=metadata,
-                    created_at=row['created_at'],
-                    updated_at=row['updated_at'],
-                    embedding_provider=row['embedding_provider']
+                    created_at=row["created_at"],
+                    updated_at=row["updated_at"],
+                    embedding_provider=row["embedding_provider"],
                 )
 
                 # Create search result
                 search_result = SearchResult(
                     record=record,
-                    score=row['similarity'],
-                    distance=1.0 - row['similarity']
+                    score=row["similarity"],
+                    distance=1.0 - row["similarity"],
                 )
 
                 search_results.append(search_result)
@@ -470,10 +479,7 @@ class VectorStore:
             return []
 
     async def search_chunks(
-        self,
-        query_embedding: List[float],
-        limit: int = 10,
-        threshold: float = 0.7
+        self, query_embedding: List[float], limit: int = 10, threshold: float = 0.7
     ) -> List[SearchResult]:
         """
         Search for similar text chunks.
@@ -501,29 +507,29 @@ class VectorStore:
                 LIMIT $3
             """
 
-            result = await self.supabase.execute_sql(sql, [
-                query_embedding, threshold, limit
-            ])
+            result = await self.supabase.execute_sql(
+                sql, [query_embedding, threshold, limit]
+            )
 
             # Process results
             search_results = []
             for row in result:
                 # Create the chunk record
                 chunk = ChunkRecord(
-                    id=UUID(row['id']),
-                    embedding_id=UUID(row['embedding_id']),
-                    chunk_index=row['chunk_index'],
-                    chunk_text=row['chunk_text'],
-                    chunk_embedding=[], # We don't need the full vector in search results
-                    metadata=row['metadata'],
-                    created_at=row['created_at']
+                    id=UUID(row["id"]),
+                    embedding_id=UUID(row["embedding_id"]),
+                    chunk_index=row["chunk_index"],
+                    chunk_text=row["chunk_text"],
+                    chunk_embedding=[],  # We don't need the full vector in search results
+                    metadata=row["metadata"],
+                    created_at=row["created_at"],
                 )
 
                 # Create search result
                 search_result = SearchResult(
                     record=chunk,
-                    score=row['similarity'],
-                    distance=1.0 - row['similarity']
+                    score=row["similarity"],
+                    distance=1.0 - row["similarity"],
                 )
 
                 search_results.append(search_result)
@@ -537,6 +543,7 @@ class VectorStore:
 
 # Singleton instance
 _vector_store_instance = None
+
 
 async def get_vector_store() -> VectorStore:
     """Get or create the vector store singleton."""

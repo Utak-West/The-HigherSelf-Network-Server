@@ -79,10 +79,10 @@ async def test_process_event_valid({component_instance_name}, sample_event_data)
     """Test processing a valid event."""
     # Arrange
     event_type = "{valid_event_type}"
-    
+
     # Act
     result = await {component_instance_name}.process_event(event_type, sample_event_data)
-    
+
     # Assert
     assert result["status"] == "processed"
     # Add more assertions based on expected behavior
@@ -93,10 +93,10 @@ async def test_process_event_invalid({component_instance_name}, sample_event_dat
     """Test processing an invalid event."""
     # Arrange
     event_type = "invalid_event_type"
-    
+
     # Act
     result = await {component_instance_name}.process_event(event_type, sample_event_data)
-    
+
     # Assert
     assert result["status"] == "error"
     assert "Unsupported event type" in result["message"]
@@ -107,7 +107,7 @@ async def test_check_health({component_instance_name}):
     """Test health check functionality."""
     # Act
     health_result = await {component_instance_name}.check_health()
-    
+
     # Assert
     assert health_result["status"] in ["healthy", "degraded", "unhealthy"]
     assert "timestamp" in health_result
@@ -122,13 +122,13 @@ async def test_workflow_integration(mock_notion_service):
     # Arrange
     {component_instance_name} = {component_name}(notion_client=mock_notion_service)
     workflow_instance = create_test_workflow_instance()
-    
+
     # Mock necessary dependencies
     # ...
-    
+
     # Act
     # Perform workflow steps
-    
+
     # Assert
     # Verify workflow state and side effects
 
@@ -138,12 +138,12 @@ async def test_error_handling({component_instance_name}, sample_event_data):
     """Test error handling during event processing."""
     # Arrange
     event_type = "{valid_event_type}"
-    
+
     # Create a condition that will cause an error
     with patch.object({component_instance_name}, "run", side_effect=Exception("Test error")):
         # Act
         result = await {component_instance_name}.process_event(event_type, sample_event_data)
-        
+
         # Assert
         assert result["status"] == "error"
         assert "Test error" in result["message"]
@@ -158,15 +158,15 @@ async def test_performance({component_instance_name}, sample_event_data):
     # Arrange
     event_type = "{valid_event_type}"
     iterations = 100
-    
+
     # Act
     start_time = datetime.now()
-    
+
     for _ in range(iterations):
         await {component_instance_name}.process_event(event_type, sample_event_data)
-    
+
     execution_time = (datetime.now() - start_time).total_seconds()
-    
+
     # Assert
     assert execution_time / iterations < 0.1  # Average execution time should be less than 100ms
 ```

@@ -218,14 +218,14 @@ async def health_check():
             "agents": await check_agents_health()
         }
     }
-    
+
     # Determine overall status
     if any(status != "healthy" for status in health_status["components"].values()):
         health_status["status"] = "degraded"
-        
+
     if all(status == "unhealthy" for status in health_status["components"].values()):
         health_status["status"] = "unhealthy"
-        
+
     return health_status
 ```
 

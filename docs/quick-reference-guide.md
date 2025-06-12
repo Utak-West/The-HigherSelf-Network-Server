@@ -91,7 +91,7 @@ python main.py
 
 All integrations follow this pattern to maintain Notion as the central hub:
 
-1. **Incoming Data:** 
+1. **Incoming Data:**
    ```
    External Service → Service Integration → Integration Manager → Notion
    ```

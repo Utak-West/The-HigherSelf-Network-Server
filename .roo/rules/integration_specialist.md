@@ -49,7 +49,7 @@ class {source_system}Record(BaseModel):
     id: str = Field(..., description="Unique identifier")
     name: str = Field(..., description="Record name")
     # Add additional fields as needed
-    
+
 class {target_system}Record(BaseModel):
     """Data model for {target_system} records."""
     record_id: str = Field(..., description="Unique identifier")
@@ -62,10 +62,10 @@ class {target_system}Record(BaseModel):
 def transform_{source_system}_to_{target_system}(source_record: {source_system}Record) -> {target_system}Record:
     """
     Transform a {source_system} record to a {target_system} record.
-    
+
     Args:
         source_record: The source record to transform
-        
+
     Returns:
         Transformed record for the target system
     """
@@ -79,18 +79,18 @@ def transform_{source_system}_to_{target_system}(source_record: {source_system}R
 # Define synchronization functions
 
 async def sync_{source_system}_to_{target_system}(
-    source_client, 
+    source_client,
     target_client,
     last_sync_time: Optional[datetime] = None
 ) -> Dict[str, Any]:
     """
     Synchronize records from {source_system} to {target_system}.
-    
+
     Args:
         source_client: Client for the source system
         target_client: Client for the target system
         last_sync_time: Optional timestamp of last synchronization
-        
+
     Returns:
         Dict containing synchronization results
     """
@@ -99,7 +99,7 @@ async def sync_{source_system}_to_{target_system}(
         # Transform records
         # Update target system
         # Log results
-        
+
         return {
             "status": "success",
             "records_processed": 0,
@@ -124,30 +124,30 @@ async def run_sync(
 ) -> Dict[str, Any]:
     """
     Run the synchronization process.
-    
+
     Args:
         bidirectional: Whether to sync in both directions
         force_full_sync: Whether to force a full sync regardless of last sync time
-        
+
     Returns:
         Dict containing overall synchronization results
     """
     results = {}
-    
+
     # Initialize clients
     source_client = None  # Initialize source client
     target_client = None  # Initialize target client
-    
+
     # Get last sync time
     last_sync_time = None  # Get from persistent storage
-    
+
     # Sync source to target
     results["source_to_target"] = await sync_{source_system}_to_{target_system}(
         source_client,
         target_client,
         last_sync_time
     )
-    
+
     # Optionally sync target to source
     if bidirectional:
         results["target_to_source"] = await sync_{target_system}_to_{source_system}(
@@ -155,10 +155,10 @@ async def run_sync(
             source_client,
             last_sync_time
         )
-    
+
     # Store last sync time
     # Update persistent storage with current time
-    
+
     return results
 ```
 

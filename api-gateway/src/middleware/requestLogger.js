@@ -8,11 +8,11 @@ const requestLogger = (logger) => {
     const originalSend = res.send;
     const originalJson = res.json;
     const originalEnd = res.end;
-    
+
     // Log request details
     const startTime = Date.now();
     const requestId = req.headers['x-request-id'] || `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Log request information
     logger.info(`Request received: ${req.method} ${req.originalUrl}`, {
       requestId,
@@ -22,7 +22,7 @@ const requestLogger = (logger) => {
       userAgent: req.headers['user-agent'],
       body: req.method !== 'GET' ? JSON.stringify(req.body) : null
     });
-    
+
     // Override response methods to log response
     res.send = function (body) {
       const responseTime = Date.now() - startTime;
@@ -34,7 +34,7 @@ const requestLogger = (logger) => {
       });
       return originalSend.apply(res, arguments);
     };
-    
+
     res.json = function (body) {
       const responseTime = Date.now() - startTime;
       logger.info(`Response sent: ${res.statusCode} (${responseTime}ms)`, {
@@ -44,7 +44,7 @@ const requestLogger = (logger) => {
       });
       return originalJson.apply(res, arguments);
     };
-    
+
     res.end = function () {
       const responseTime = Date.now() - startTime;
       if (!res._headerSent) {
@@ -56,10 +56,10 @@ const requestLogger = (logger) => {
       }
       return originalEnd.apply(res, arguments);
     };
-    
+
     // Add request ID to response headers for client-side tracking
     res.set('X-Request-ID', requestId);
-    
+
     next();
   };
 };

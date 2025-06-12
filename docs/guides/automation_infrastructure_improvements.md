@@ -123,7 +123,7 @@ private async getWpPosts(args: any): Promise<{
     try {
         // Implementation with strong typing
         const { post_type = 'post', status = 'publish', per_page = 10, page = 1, search } = args;
-        
+
         // Rest of function...
         return {
             success: true,

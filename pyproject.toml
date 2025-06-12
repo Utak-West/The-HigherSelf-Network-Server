@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "the-higherself-network-server"
 version = "1.0.0"
 description = "AI-powered network server for The HigherSelf Network"
-authors = [{name = "The HigherSelf Network Team"}]
-license = {text = "MIT"}
+authors = [{ name = "The HigherSelf Network Team" }]
+license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.8"
 
@@ -41,9 +41,9 @@ ensure_newline_before_comments = true
 [tool.flake8]
 max-line-length = 88
 extend-ignore = [
-    "E203",  # whitespace before ':'
-    "E501",  # line too long (handled by black)
-    "W503",  # line break before binary operator
+    "E203", # whitespace before ':'
+    "E501", # line too long (handled by black)
+    "W503", # line break before binary operator
 ]
 exclude = [
     ".git",
@@ -140,3 +140,7 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests", "test_*", ".venv", "venv", "build", "dist"]
+skips = ["B101", "B601"]

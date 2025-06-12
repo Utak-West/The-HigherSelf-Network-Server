@@ -4,10 +4,11 @@ Simple test server for The HigherSelf Network Server.
 """
 
 import os
+
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 from loguru import logger
 
 # Load environment variables
@@ -32,13 +33,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     """Root endpoint."""
     return {
         "message": "Welcome to The HigherSelf Network Server Test API",
-        "status": "running"
+        "status": "running",
     }
+
 
 @app.get("/health")
 async def health_check():
@@ -50,12 +53,9 @@ async def health_check():
         "SERVER_PORT": os.getenv("SERVER_PORT", "8000"),
         "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     }
-    
-    return {
-        "status": "healthy",
-        "version": "1.0.0",
-        "environment": env_vars
-    }
+
+    return {"status": "healthy", "version": "1.0.0", "environment": env_vars}
+
 
 @app.get("/env")
 async def environment():
@@ -68,10 +68,9 @@ async def environment():
                 env_vars[key] = f"{value[:3]}...{value[-3:]}" if value else None
             else:
                 env_vars[key] = value
-    
-    return {
-        "environment": env_vars
-    }
+
+    return {"environment": env_vars}
+
 
 if __name__ == "__main__":
     port = int(os.getenv("SERVER_PORT", "8000"))

@@ -2,10 +2,11 @@
 Pydantic models for Softr to Higher Self Network server integration.
 These models define the API contract between Softr interfaces and backend services.
 """
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validatorfrom enum import Enum
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Enum, Field, enum, field_validatorfrom, import
 
 
 class SoftrIntegrationConfig(BaseModel):
@@ -14,7 +15,7 @@ class SoftrIntegrationConfig(BaseModel):
     api_key: str = Field(..., description="API key for authentication")
     webhook_secret: str = Field(..., description="Secret for webhook signature validation")
     softr_site_id: str = Field(..., description="Softr site identifier")
-    
+
     class Config:
         env_file = ".env"
         env_prefix = "HIGHERSELF_"
@@ -40,7 +41,7 @@ class WebhookPayload(BaseModel):
     site_id: str
     data: Dict[str, Any]
     signature: str
-    
+
 @field_validator('timestamp', pre=True, mode='before')    def parse_timestamp(cls, v):
         if isinstance(v, str):
             return datetime.fromisoformat(v.replace('Z', '+00:00'))
@@ -79,7 +80,7 @@ class PaymentData(BaseModel):
     status: str
     metadata: Optional[Dict[str, Any]] = None
     items: List[Dict[str, Any]]
-    
+
 
 class BookingData(BaseModel):
     """Data model for booking events from Softr"""
@@ -108,8 +109,8 @@ class ArtworkInquiryData(BaseModel):
     phone: Optional[str] = None
     message: str
     inquiry_type: str  # purchase, commission, more_info
-    
-    
+
+
 class ContactRequestData(BaseModel):
     """Data model for contact request events from Softr"""
     request_id: str = Field(default_factory=lambda: str(uuid4()))
@@ -190,7 +191,7 @@ class ServiceBookingRequest(BaseModel):
     user_phone: Optional[str] = None
     notes: Optional[str] = None
     payment_method: Optional[str] = None
-    
+
 @field_validator('end_time', always=True, mode='before')    def set_end_time(cls, v, values):
         if v is None and 'start_time' in values:
             # Default to 1 hour if not specified

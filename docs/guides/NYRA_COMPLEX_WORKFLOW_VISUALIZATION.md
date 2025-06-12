@@ -24,81 +24,81 @@
 ```mermaid
 graph TD
     A[Lead Received: Dr. Sarah Chen] --> B{Initial Data Validation}
-    
+
     B -->|Data Issues Detected| C[Nyra's Intuitive Assessment]
     C --> D[ContentAnalysisTool: Deep Message Analysis]
-    
+
     D --> E{Sentiment & Intent Analysis}
     E -->|Mixed Signals Detected| F[Enhanced Qualification Chain]
-    
+
     F --> G{LangChain Analysis Results}
     G -->|High Potential Despite Issues| H[Multi-Tool Problem Solving]
     G -->|Low Confidence| I[Escalation Protocol]
-    
+
     H --> J[Email Reconstruction Attempt]
     J -->|Success| K[Company Research Tool]
     J -->|Failure| L[Alternative Contact Strategy]
-    
+
     K -->|Company Found| M[Lead Scoring Adjustment]
     K -->|Unknown Company| N[Market Research Flag]
-    
+
     L --> O[LinkedIn Integration Tool]
     O -->|Contact Found| P[Direct Outreach Preparation]
     O -->|No Match| Q[Manual Review Task Creation]
-    
+
     M --> R[Personalized Response Generation]
     N --> S[New Market Opportunity Assessment]
     P --> T[Multi-Channel Engagement Strategy]
     Q --> U[Grace Escalation with Context]
-    
+
     R --> V{Response Quality Check}
     V -->|High Quality| W[Automated Send]
     V -->|Needs Review| X[Liora Collaboration Request]
-    
+
     S --> Y[Sage Consultation for Wellness Programs]
     T --> Z[Solari Booking Coordination]
     U --> AA[Grace Orchestrated Resolution]
-    
+
     W --> BB[Follow-up Workflow Trigger]
     X --> CC[Content Refinement Loop]
     Y --> DD[Program Recommendation Engine]
     Z --> EE[Flexible Scheduling Options]
     AA --> FF[Human-AI Hybrid Approach]
-    
+
     BB --> GG[Success Metrics Tracking]
     CC --> GG
     DD --> GG
     EE --> GG
     FF --> GG
-    
+
     %% Fallback Mechanisms
     I --> HH[System Health Check]
     HH -->|API Issues| II[Fallback LLM Provider]
     HH -->|Notion Issues| JJ[Redis Backup Storage]
     HH -->|Network Issues| KK[Offline Mode Activation]
-    
+
     II --> LL[Anthropic Claude Fallback]
     JJ --> MM[Temporary Lead Storage]
     KK --> NN[Queue for Later Processing]
-    
+
     LL --> OO{Fallback Success?}
     MM --> PP[Notion Sync When Available]
     NN --> QQ[Priority Queue Management]
-    
+
     OO -->|Yes| H
     OO -->|No| RR[Manual Intervention Required]
     PP --> H
     QQ --> H
-    
+
     RR --> SS[Grace Emergency Protocol]
     SS --> TT[Human Agent Assignment]
-    
+
     %% Success Metrics
     GG --> UU[Obstacle Resolution Score]
     UU --> VV[Lead Conversion Probability]
     VV --> WW[Process Improvement Insights]
     WW --> XX[Nyra Learning Update]
-    
+
     style A fill:#e1f5fe
     style C fill:#f3e5f5
     style H fill:#e8f5e8
@@ -118,7 +118,7 @@ async def handle_complex_lead(self, lead_data):
     # Initial intuitive assessment
     issues_detected = self._detect_data_issues(lead_data)
     confidence_level = self._assess_initial_confidence(lead_data)
-    
+
     if confidence_level < 0.6:  # Below threshold
         return await self._enhanced_problem_solving(lead_data, issues_detected)
 ```
@@ -134,13 +134,13 @@ try:
         content=lead_data.get('message', ''),
         analysis_type="general"
     )
-    
+
     # Parse mixed sentiment
     sentiment_data = json.loads(content_analysis)
     if sentiment_data.get('sentiment', {}).get('confidence', 0) < 0.7:
         # Low confidence - use enhanced analysis
         enhanced_analysis = await self._deep_sentiment_analysis(lead_data)
-        
+
 except Exception as e:
     # Fallback to rule-based analysis
     fallback_analysis = self._rule_based_content_analysis(lead_data)
@@ -152,19 +152,19 @@ except Exception as e:
 ```python
 async def _reconstruct_email(self, corrupted_email, name, company):
     """Nyra's intelligent email reconstruction"""
-    
+
     # Pattern analysis
     patterns = [
         f"{name.lower().replace(' ', '.')}@{company.lower()}.com",
         f"{name.split()[0].lower()}.{name.split()[1].lower()}@{company.lower()}.com",
         f"{name.split()[0][0].lower()}{name.split()[1].lower()}@{company.lower()}.com"
     ]
-    
+
     # Validate against common corporate patterns
     for pattern in patterns:
         if await self._validate_email_pattern(pattern):
             return pattern
-    
+
     return None
 ```
 
@@ -175,18 +175,18 @@ async def _reconstruct_email(self, corrupted_email, name, company):
 ```python
 async def _research_unknown_company(self, company_name):
     """Research unknown company using multiple sources"""
-    
+
     research_results = {}
-    
+
     # LinkedIn company search
     linkedin_data = await self._linkedin_company_lookup(company_name)
-    
+
     # Web search for company information
     web_results = await self._web_company_research(company_name)
-    
+
     # Industry classification
     industry_match = await self._classify_industry(company_name, web_results)
-    
+
     return {
         "company_size": linkedin_data.get("employee_count"),
         "industry": industry_match,
@@ -201,9 +201,9 @@ async def _research_unknown_company(self, company_name):
 ```python
 async def _orchestrate_agent_collaboration(self, lead_data, research_results):
     """Coordinate with other agents based on findings"""
-    
+
     collaboration_plan = []
-    
+
     # Sage for wellness program expertise
     if research_results.get("wellness_fit") == "high":
         sage_request = await self.tools[5]._arun(
@@ -217,7 +217,7 @@ async def _orchestrate_agent_collaboration(self, lead_data, research_results):
             }
         )
         collaboration_plan.append(sage_request)
-    
+
     # Liora for content strategy
     if "mixed experiences" in lead_data.get("message", "").lower():
         liora_request = await self.tools[5]._arun(
@@ -231,7 +231,7 @@ async def _orchestrate_agent_collaboration(self, lead_data, research_results):
             }
         )
         collaboration_plan.append(liora_request)
-    
+
     return collaboration_plan
 ```
 
@@ -241,20 +241,20 @@ async def _orchestrate_agent_collaboration(self, lead_data, research_results):
 ```python
 async def _handle_system_failures(self, operation_type, error):
     """Comprehensive error handling with multiple fallback strategies"""
-    
+
     fallback_strategies = {
         "llm_failure": self._llm_fallback_strategy,
         "notion_failure": self._notion_fallback_strategy,
         "network_failure": self._network_fallback_strategy,
         "tool_failure": self._tool_fallback_strategy
     }
-    
+
     strategy = fallback_strategies.get(operation_type, self._generic_fallback)
     return await strategy(error)
 
 async def _llm_fallback_strategy(self, error):
     """Handle LLM API failures"""
-    
+
     # Try alternative provider
     if "openai" in str(error).lower():
         try:
@@ -263,7 +263,7 @@ async def _llm_fallback_strategy(self, error):
         except Exception:
             # Use rule-based processing
             return await self._rule_based_processing()
-    
+
     # If all LLM options fail, escalate to Grace
     return await self._escalate_to_grace("llm_failure", error)
 ```
@@ -272,7 +272,7 @@ async def _llm_fallback_strategy(self, error):
 ```python
 async def _escalate_to_grace(self, issue_type, context):
     """Escalate complex issues to Grace with full context"""
-    
+
     escalation_data = {
         "escalating_agent": "Nyra",
         "issue_type": issue_type,
@@ -282,14 +282,14 @@ async def _escalate_to_grace(self, issue_type, context):
         "recommended_action": self._recommend_human_intervention(),
         "urgency_level": self._assess_escalation_urgency(context)
     }
-    
+
     grace_response = await self.tools[5]._arun(
         target_agent="Grace",
         message=f"Complex lead processing requires orchestration: {issue_type}",
         priority="urgent" if escalation_data["urgency_level"] == "high" else "high",
         context=escalation_data
     )
-    
+
     # Create manual review task
     manual_task = await self.tools[7]._arun(
         title=f"Manual Review Required: {context.get('lead_data', {}).get('name', 'Unknown')}",
@@ -298,7 +298,7 @@ async def _escalate_to_grace(self, issue_type, context):
         priority="urgent",
         context=escalation_data
     )
-    
+
     return {
         "escalation_sent": grace_response,
         "manual_task_created": manual_task,
@@ -312,7 +312,7 @@ async def _escalate_to_grace(self, issue_type, context):
 ```python
 def _calculate_obstacle_resolution_score(self, processing_results):
     """Calculate how effectively obstacles were handled"""
-    
+
     score_components = {
         "data_completion": self._score_data_completion(processing_results),
         "tool_success_rate": self._score_tool_success_rate(processing_results),
@@ -320,7 +320,7 @@ def _calculate_obstacle_resolution_score(self, processing_results):
         "lead_engagement": self._score_lead_engagement(processing_results),
         "collaboration_effectiveness": self._score_collaboration(processing_results)
     }
-    
+
     weighted_score = (
         score_components["data_completion"] * 0.25 +
         score_components["tool_success_rate"] * 0.20 +
@@ -328,7 +328,7 @@ def _calculate_obstacle_resolution_score(self, processing_results):
         score_components["lead_engagement"] * 0.20 +
         score_components["collaboration_effectiveness"] * 0.15
     )
-    
+
     return {
         "overall_score": weighted_score,
         "components": score_components,

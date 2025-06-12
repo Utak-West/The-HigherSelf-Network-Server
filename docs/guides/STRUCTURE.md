@@ -117,7 +117,7 @@ The system implements 8 key automation flows:
 4. Marketing Email Campaign
 5. Automated Task Management
 6. Community Engagement
-7. Content Creation & Distribution 
+7. Content Creation & Distribution
 8. Audience Analysis & Segmentation
 
 Each flow is implemented using a combination of agents, webhook handlers, and Notion database operations, with all data centralized in Notion.

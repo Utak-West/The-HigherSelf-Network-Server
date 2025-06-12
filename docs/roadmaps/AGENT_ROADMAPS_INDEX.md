@@ -51,17 +51,17 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     API[API Endpoints] :::entryPoint
     Events[Event Triggers] :::entryPoint
     Scheduled[Scheduled Triggers] :::entryPoint
     Webhooks[External Webhooks] :::entryPoint
-    
+
     %% Central Orchestration
     Grace{Grace - System Orchestrator} :::agentNode
     EventQueue[Event Queue] :::eventProcess
-    
+
     %% Main Agents
     Nyra[Nyra - Lead Capture Specialist] :::agentNode
     Solari[Solari - Booking & Order Manager] :::agentNode
@@ -70,21 +70,21 @@ flowchart TB
     Sage[Sage - Community Curator] :::agentNode
     Elan[Elan - Content Choreographer] :::agentNode
     Zevi[Zevi - Audience Analyst] :::agentNode
-    
+
     %% External Integrations
     N8N[N8N Workflows] :::integrationNode
     Zapier[Zapier Integrations] :::integrationNode
     Notion[Notion Database] :::storageNode
-    
+
     %% Event Flow
     API --> Grace
     Events --> Grace
     Scheduled --> Grace
     Webhooks --> Grace
-    
+
     Grace --> EventQueue
     EventQueue --> EventTypeDecision{Event Type?} :::decisionNode
-    
+
     %% Event Routing
     EventTypeDecision -->|Lead Event| Nyra
     EventTypeDecision -->|Booking Event| Solari
@@ -93,7 +93,7 @@ flowchart TB
     EventTypeDecision -->|Community Event| Sage
     EventTypeDecision -->|Content Event| Elan
     EventTypeDecision -->|Audience Event| Zevi
-    
+
     %% Internal Communication Patterns
     Nyra -- Lead qualification result --> Ruvo
     Nyra -. New lead alert .-> Liora
@@ -105,7 +105,7 @@ flowchart TB
     Sage -- Community task --> Ruvo
     Elan -- Content task status --> Ruvo
     Zevi -. Audience insights .-> Liora
-    
+
     %% External System Connections
     Ruvo --> N8N
     Ruvo --> Notion

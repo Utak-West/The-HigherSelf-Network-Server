@@ -9,17 +9,17 @@ module.exports = {
   beforeCreate(event) {
     validateStateTransition(null, event.params.data);
   },
-  
+
   beforeUpdate(event) {
     validateStateTransition(event.params.where.id, event.params.data);
   },
-  
+
   afterCreate(event) {
     const { result } = event;
     notifyAgentsOfStateChange(result);
     syncToNotion(result);
   },
-  
+
   afterUpdate(event) {
     const { result } = event;
     notifyAgentsOfStateChange(result);
@@ -37,10 +37,10 @@ async function validateStateTransition(id, data) {
   if (!data.exhibitStatus) {
     return;
   }
-  
+
   try {
     const strapi = require('@strapi/strapi').factories.createStrapi();
-    
+
     // For new exhibits, only 'concept' state is allowed
     if (!id) {
       if (data.exhibitStatus !== 'concept') {
@@ -48,21 +48,21 @@ async function validateStateTransition(id, data) {
       }
       return;
     }
-    
+
     // Get current exhibit
     const exhibit = await strapi.entityService.findOne('api::exhibit.exhibit', id, {});
     if (!exhibit) {
       throw new Error('Exhibit not found');
     }
-    
+
     // Get valid transitions for current state
     const validTransitions = await getValidTransitions('Gallery_Exhibit', exhibit.exhibitStatus);
-    
+
     // Check if transition is allowed
     if (!validTransitions.includes(data.exhibitStatus)) {
       throw new Error(`Invalid state transition from ${exhibit.exhibitStatus} to ${data.exhibitStatus}. Allowed transitions: ${validTransitions.join(', ')}`);
     }
-    
+
     // Add audit trail for state transition
     await strapi.entityService.create('api::state-transition-log.state-transition-log', {
       data: {
@@ -89,7 +89,7 @@ async function validateStateTransition(id, data) {
 async function getValidTransitions(workflowType, currentState) {
   try {
     const strapi = require('@strapi/strapi').factories.createStrapi();
-    
+
     // Get current state from workflow states
     const stateRecord = await strapi.db.query('api::workflow-state.workflow-state').findOne({
       where: {
@@ -97,11 +97,11 @@ async function getValidTransitions(workflowType, currentState) {
         stateKey: currentState
       }
     });
-    
+
     if (!stateRecord) {
       throw new Error(`State ${currentState} not found in workflow ${workflowType}`);
     }
-    
+
     // Get transitions from this state
     const transitions = await strapi.db.query('api::workflow-transition.workflow-transition').findMany({
       where: {
@@ -109,7 +109,7 @@ async function getValidTransitions(workflowType, currentState) {
       },
       populate: ['toState']
     });
-    
+
     // Return array of valid next state keys
     return transitions.map(transition => transition.toState.stateKey);
   } catch (error) {
@@ -127,7 +127,7 @@ async function getValidTransitions(workflowType, currentState) {
       closing: ['post_analysis'],
       post_analysis: ['archived']
     };
-    
+
     return fallbackTransitions[currentState] || [];
   }
 }
@@ -139,7 +139,7 @@ async function getValidTransitions(workflowType, currentState) {
 async function notifyAgentsOfStateChange(exhibit) {
   try {
     const strapi = require('@strapi/strapi').factories.createStrapi();
-    
+
     // Map exhibit states to responsible agents based on the workflow definition
     const responsibleAgents = {
       concept: ['design_agent'],
@@ -153,9 +153,9 @@ async function notifyAgentsOfStateChange(exhibit) {
       closing: ['task_management_agent'],
       post_analysis: ['marketing_campaign_agent']
     };
-    
+
     const agents = responsibleAgents[exhibit.exhibitStatus] || [];
-    
+
     // Notify each responsible agent
     for (const agentKey of agents) {
       await strapi.service('api::api-gateway.api-gateway').notifyGateway('exhibit_state_change', {

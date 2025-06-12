@@ -119,44 +119,44 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Campaign Strategy Flow
     CampaignRequest[Campaign Request] :::entryPoint
     CampaignRequest --> ExtractObjectives[Extract Campaign Objectives] :::eventProcess
     ExtractObjectives --> ObjectiveAnalysis{Primary Objective} :::decisionNode
-    
+
     ObjectiveAnalysis -->|Brand Awareness| AwarenessStrategy[Brand Awareness Strategy] :::eventProcess
     ObjectiveAnalysis -->|Lead Generation| LeadGenStrategy[Lead Generation Strategy] :::eventProcess
     ObjectiveAnalysis -->|Conversion| ConversionStrategy[Conversion Strategy] :::eventProcess
     ObjectiveAnalysis -->|Retention| RetentionStrategy[Retention Strategy] :::eventProcess
-    
+
     AwarenessStrategy --> AudienceAnalysis[Analyze Target Audience] :::eventProcess
     LeadGenStrategy --> AudienceAnalysis
     ConversionStrategy --> AudienceAnalysis
     RetentionStrategy --> AudienceAnalysis
-    
+
     AudienceAnalysis --> Zevi{Zevi Audience Analyst} :::agentNode
     Zevi --> AudienceInsights[Audience Insights Received] :::dataNode
-    
+
     AudienceInsights --> ChannelSelection[Select Optimal Channels] :::eventProcess
     ChannelSelection --> ChannelAnalysis{Channel Effectiveness} :::decisionNode
-    
+
     ChannelAnalysis -->|Social Primary| SocialStrategy[Social Media Focus] :::eventProcess
     ChannelAnalysis -->|Email Primary| EmailStrategy[Email Marketing Focus] :::eventProcess
     ChannelAnalysis -->|Content Primary| ContentStrategy[Content Marketing Focus] :::eventProcess
     ChannelAnalysis -->|Multi-channel| MultiChannelStrategy[Multi-channel Approach] :::eventProcess
-    
+
     SocialStrategy --> ContentRequirements[Determine Content Requirements] :::eventProcess
     EmailStrategy --> ContentRequirements
     ContentStrategy --> ContentRequirements
     MultiChannelStrategy --> ContentRequirements
-    
+
     ContentRequirements --> ContentRequest[Create Content Request] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> ContentDelivery[Content Deliverables Received] :::dataNode
     ContentDelivery --> CampaignAssembly[Assemble Campaign Elements] :::eventProcess
-    
+
     CampaignAssembly --> PerformanceMeasurement[Define Performance Metrics] :::eventProcess
     PerformanceMeasurement --> LaunchPreparation[Prepare Campaign Launch] :::eventProcess
     LaunchPreparation --> CampaignExecution[Execute Campaign] :::eventProcess
@@ -174,39 +174,39 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Channel Selection Flow
     AudienceData[Audience Data] :::entryPoint
     AudienceData --> ChannelAnalysis[Analyze Channel Preferences] :::eventProcess
     ChannelAnalysis --> ObjectiveAlignment[Align with Campaign Objectives] :::eventProcess
-    
+
     ObjectiveAlignment --> BudgetConsideration{Budget Level} :::decisionNode
     BudgetConsideration -->|Limited| FocusedApproach[Focused Channel Approach] :::eventProcess
     BudgetConsideration -->|Moderate| BalancedApproach[Balanced Channel Mix] :::eventProcess
     BudgetConsideration -->|High| ComprehensiveApproach[Comprehensive Channel Strategy] :::eventProcess
-    
+
     FocusedApproach --> PrimaryChannelSelection[Select Primary Channel] :::eventProcess
     BalancedApproach --> ChannelPrioritization[Prioritize Channel Mix] :::eventProcess
     ComprehensiveApproach --> FullChannelStack[Deploy Full Channel Stack] :::eventProcess
-    
+
     PrimaryChannelSelection --> ChannelType{Channel Type} :::decisionNode
-    
+
     ChannelType -->|Email| EmailStrategy[Email-focused Strategy] :::eventProcess
     ChannelType -->|Social| SocialStrategy[Social Media Strategy] :::eventProcess
     ChannelType -->|Content| ContentStrategy[Content Marketing Strategy] :::eventProcess
     ChannelType -->|Events| EventStrategy[Event Marketing Strategy] :::eventProcess
-    
+
     ChannelPrioritization --> PrimarySecondaryMix[Primary + Secondary Channels] :::eventProcess
     FullChannelStack --> IntegratedApproach[Fully Integrated Approach] :::eventProcess
-    
+
     EmailStrategy --> ChannelSpecificMetrics[Channel-specific Metrics] :::eventProcess
     SocialStrategy --> ChannelSpecificMetrics
     ContentStrategy --> ChannelSpecificMetrics
     EventStrategy --> ChannelSpecificMetrics
-    
+
     PrimarySecondaryMix --> CrossChannelMetrics[Cross-channel Metrics] :::eventProcess
     IntegratedApproach --> OmnichannelMetrics[Omnichannel Metrics] :::eventProcess
-    
+
     ChannelSpecificMetrics --> FinalChannelStrategy[Finalize Channel Strategy] :::eventProcess
     CrossChannelMetrics --> FinalChannelStrategy
     OmnichannelMetrics --> FinalChannelStrategy
@@ -224,49 +224,49 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% A/B Testing Flow
     TestOpportunity[Testing Opportunity] :::entryPoint
     TestOpportunity --> IdentifyVariables[Identify Test Variables] :::eventProcess
     IdentifyVariables --> PrioritizeTests[Prioritize Test Hypotheses] :::eventProcess
-    
+
     PrioritizeTests --> ImpactAssessment{Potential Impact} :::decisionNode
     ImpactAssessment -->|High Impact| HighPriorityTest[High Priority Test] :::eventProcess
     ImpactAssessment -->|Medium Impact| MediumPriorityTest[Medium Priority Test] :::eventProcess
     ImpactAssessment -->|Low Impact| LowPriorityTest[Low Priority Test] :::eventProcess
-    
+
     HighPriorityTest --> TestDesign[Design Test Parameters] :::eventProcess
     MediumPriorityTest --> TestBacklog[Add to Testing Backlog] :::dataNode
     LowPriorityTest --> TestBacklog
-    
+
     TestDesign --> SampleSize[Determine Sample Size] :::eventProcess
     SampleSize --> VariantCreation[Create Test Variants] :::eventProcess
-    
+
     VariantCreation --> ContentRequired{Content Creation Required?} :::decisionNode
     ContentRequired -->|Yes| ContentRequest[Request Content from Elan] :::eventProcess
     ContentRequired -->|No| SetupTest[Set Up Test] :::eventProcess
-    
+
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
     Elan --> VariantContent[Variant Content Received] :::dataNode
     VariantContent --> SetupTest
-    
+
     SetupTest --> TestDeployment[Deploy Test] :::eventProcess
     TestDeployment --> TestExecution[Execute Test] :::eventProcess
     TestExecution --> DataCollection[Collect Test Data] :::eventProcess
-    
+
     DataCollection --> SignificanceCheck{Statistical Significance?} :::decisionNode
     SignificanceCheck -->|Not Yet| ContinueTest[Continue Test] :::eventProcess
     SignificanceCheck -->|Achieved| AnalyzeResults[Analyze Test Results] :::eventProcess
-    
+
     ContinueTest --> DataCollection
     AnalyzeResults --> ClearWinner{Clear Winner?} :::decisionNode
-    
+
     ClearWinner -->|Yes| ImplementWinner[Implement Winning Variant] :::eventProcess
     ClearWinner -->|No| ReassessTest[Reassess Test Design] :::eventProcess
-    
+
     ImplementWinner --> DocumentLearnings[Document Test Insights] :::eventProcess
     ReassessTest --> ReviseHypothesis[Revise Test Hypothesis] :::eventProcess
-    
+
     DocumentLearnings --> KnowledgeBase[Update Testing Knowledge Base] :::dataNode
     ReviseHypothesis --> IdentifyVariables
 ```
@@ -298,64 +298,64 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Lead Nurture Flow
     NyraHandoff[Lead Handoff from Nyra] :::entryPoint
     NyraHandoff --> LeadAnalysis[Analyze Lead Data] :::eventProcess
-    
+
     LeadAnalysis --> InterestAssessment{Primary Interest} :::decisionNode
     InterestAssessment -->|Product Focused| ProductSequence[Product Nurture Sequence] :::eventProcess
     InterestAssessment -->|Service Focused| ServiceSequence[Service Nurture Sequence] :::eventProcess
     InterestAssessment -->|Content Focused| ContentSequence[Content Nurture Sequence] :::eventProcess
     InterestAssessment -->|Educational| EducationalSequence[Educational Nurture Sequence] :::eventProcess
-    
+
     ProductSequence --> SequencePersonalization[Personalize Sequence Content] :::eventProcess
     ServiceSequence --> SequencePersonalization
     ContentSequence --> SequencePersonalization
     EducationalSequence --> SequencePersonalization
-    
+
     SequencePersonalization --> ContentRequirements[Determine Content Requirements] :::eventProcess
     ContentRequirements --> ContentRequest[Request Custom Content] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> ContentDelivery[Nurture Content Received] :::dataNode
     ContentDelivery --> SequenceBuilding[Build Nurture Sequence] :::eventProcess
     SequenceBuilding --> SequenceActivation[Activate Nurture Sequence] :::eventProcess
-    
+
     SequenceActivation --> EngagementMonitoring[Monitor Lead Engagement] :::eventProcess
     EngagementMonitoring --> EngagementCheck{Engagement Level} :::decisionNode
-    
+
     EngagementCheck -->|Low| EngagementRecovery[Implement Recovery Tactics] :::eventProcess
     EngagementCheck -->|Moderate| SequenceContinuation[Continue Sequence] :::eventProcess
     EngagementCheck -->|High| AccelerationEvaluation[Evaluate for Acceleration] :::eventProcess
-    
+
     EngagementRecovery --> TacticSelection{Recovery Tactic} :::decisionNode
     TacticSelection -->|Channel Switch| ChannelAlternative[Try Alternative Channel] :::eventProcess
     TacticSelection -->|Content Change| ContentAdjustment[Adjust Content Approach] :::eventProcess
     TacticSelection -->|Timing Adjustment| TimingChange[Change Sequence Timing] :::eventProcess
-    
+
     ChannelAlternative --> EngagementRecheck[Recheck Engagement] :::eventProcess
     ContentAdjustment --> EngagementRecheck
     TimingChange --> EngagementRecheck
-    
+
     SequenceContinuation --> ProgressionCheck{Sequence Complete?} :::decisionNode
     AccelerationEvaluation --> ConversionReadiness{Conversion Ready?} :::decisionNode
-    
+
     ProgressionCheck -->|No| NextStepDelivery[Deliver Next Sequence Step] :::eventProcess
     ProgressionCheck -->|Yes| SequenceCompletion[Complete Sequence] :::eventProcess
-    
+
     ConversionReadiness -->|Yes| SQLConversion[Convert to SQL] :::eventProcess
     ConversionReadiness -->|No| SequenceAcceleration[Accelerate Sequence] :::eventProcess
-    
+
     NextStepDelivery --> EngagementMonitoring
     SequenceAcceleration --> NextStepDelivery
-    
+
     SQLConversion --> NyraNotification[Notify Nyra] :::eventProcess
     SequenceCompletion --> LeadStatusUpdate[Update Lead Status] :::eventProcess
-    
+
     NyraNotification --> Nyra{Nyra Lead Capture Specialist} :::agentNode
     LeadStatusUpdate --> SequenceEffectivenessAnalysis[Analyze Sequence Effectiveness] :::eventProcess
-    
+
     EngagementRecheck --> EngagementCheck
     SequenceEffectivenessAnalysis --> SequenceOptimization[Optimize Sequence] :::dataNode
 ```
@@ -397,44 +397,44 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Content Workflow
     CampaignPlanning[Campaign Planning] :::entryPoint
     CampaignPlanning --> ContentNeedsAssessment[Assess Content Needs] :::eventProcess
     ContentNeedsAssessment --> ContentInventory[Inventory Existing Content] :::eventProcess
-    
+
     ContentInventory --> ContentGapAnalysis{Content Gaps?} :::decisionNode
     ContentGapAnalysis -->|Yes| ContentBriefCreation[Create Content Brief] :::eventProcess
     ContentGapAnalysis -->|No| ContentRepurposing[Repurpose Existing Content] :::eventProcess
-    
+
     ContentBriefCreation --> AudienceDataIntegration[Integrate Audience Data] :::eventProcess
     AudienceDataIntegration --> Zevi{Zevi Audience Analyst} :::agentNode
     Zevi --> AudienceInsights[Audience Insights Received] :::dataNode
-    
+
     AudienceInsights --> EnhancedBrief[Enhance Brief with Audience Insights] :::eventProcess
     EnhancedBrief --> ContentRequest[Submit Content Request] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     ContentRepurposing --> ContentAdaptation[Adapt Content for Campaign] :::eventProcess
     ContentAdaptation --> RepurposedReview[Review Repurposed Content] :::eventProcess
-    
+
     Elan --> DraftDelivery[Content Draft Delivered] :::dataNode
     DraftDelivery --> ContentReview[Review Content Draft] :::eventProcess
-    
+
     ContentReview --> ApprovalCheck{Approved?} :::decisionNode
     ApprovalCheck -->|Yes| FinalContent[Finalize Content] :::eventProcess
     ApprovalCheck -->|No| RevisionRequest[Request Revisions] :::eventProcess
-    
+
     RevisionRequest --> RevisionDetails[Provide Revision Details] :::eventProcess
     RevisionDetails --> Elan
-    
+
     RepurposedReview --> ApprovalCheck
     FinalContent --> ContentCalendarIntegration[Add to Content Calendar] :::eventProcess
     ContentCalendarIntegration --> ChannelPreparation[Prepare for Channel Distribution] :::eventProcess
-    
+
     ChannelPreparation --> DistributionExecution[Execute Content Distribution] :::eventProcess
     DistributionExecution --> PerformanceTracking[Track Content Performance] :::eventProcess
-    
+
     PerformanceTracking --> PerformanceAnalysis[Analyze Content Performance] :::eventProcess
     PerformanceAnalysis --> InsightSharing[Share Insights with Elan] :::eventProcess
     InsightSharing --> Elan
@@ -478,37 +478,37 @@ flowchart TD
     classDef agentNode fill:#f3e5f5,stroke:#6a1b9a,color:#6a1b9a,stroke-width:2px
     classDef decisionNode fill:#fff3e0,stroke:#e65100,color:#e65100,stroke-width:2px
     classDef dataNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
-    
+
     %% Audience Targeting Flow
     CampaignObjectives[Campaign Objectives] :::entryPoint
     CampaignObjectives --> TargetingRequirements[Define Targeting Requirements] :::eventProcess
     TargetingRequirements --> SegmentRequest[Request Audience Segments] :::eventProcess
-    
+
     SegmentRequest --> Zevi{Zevi Audience Analyst} :::agentNode
     Zevi --> SegmentDelivery[Segment Data Delivered] :::dataNode
-    
+
     SegmentDelivery --> SegmentAnalysis[Analyze Segment Characteristics] :::eventProcess
     SegmentAnalysis --> SegmentPrioritization[Prioritize Segments] :::eventProcess
-    
+
     SegmentPrioritization --> MessageCustomization[Customize Messaging by Segment] :::eventProcess
     MessageCustomization --> ContentRequirements[Define Segment-specific Content] :::eventProcess
-    
+
     ContentRequirements --> ContentRequest[Request Segmented Content] :::eventProcess
     ContentRequest --> Elan{Elan Content Choreographer} :::agentNode
-    
+
     Elan --> SegmentedContent[Segmented Content Received] :::dataNode
     SegmentedContent --> ChannelMapping[Map Segments to Channels] :::eventProcess
-    
+
     ChannelMapping --> CampaignConfiguration[Configure Campaign Targeting] :::eventProcess
     CampaignConfiguration --> CampaignExecution[Execute Targeted Campaign] :::eventProcess
-    
+
     CampaignExecution --> SegmentPerformanceTracking[Track Segment Performance] :::eventProcess
     SegmentPerformanceTracking --> PerformanceAnalysis[Analyze Segment Responses] :::eventProcess
-    
+
     PerformanceAnalysis --> SegmentOptimization{Optimization Needed?} :::decisionNode
     SegmentOptimization -->|Yes| RefinementRequest[Request Segment Refinement] :::eventProcess
     SegmentOptimization -->|No| PerformanceDocumentation[Document Segment Performance] :::eventProcess
-    
+
     RefinementRequest --> Zevi
     PerformanceDocumentation --> SegmentInsights[Segment Insights Database] :::dataNode
     SegmentInsights --> FutureTargeting[Inform Future Targeting] :::eventProcess
@@ -611,123 +611,123 @@ flowchart TB
     classDef storageNode fill:#e0f2f1,stroke:#00695c,color:#00695c,stroke-width:2px
     classDef integrationNode fill:#ede7f6,stroke:#4527a0,color:#4527a0,stroke-width:2px
     classDef errorNode fill:#ffebee,stroke:#b71c1c,color:#b71c1c,stroke-width:2px
-    
+
     %% Entry Points
     CampaignRequest[Campaign Request] :::entryPoint
     LeadNurture[Lead Nurture Request] :::entryPoint
     Newsletter[Newsletter Request] :::entryPoint
     PerformanceAnalysis[Analytics Request] :::entryPoint
-    
+
     %% Liora Processing Steps
     CampaignRequest --> CampaignPlanning[Campaign Planning] :::eventProcess
     LeadNurture --> NurtureDesign[Lead Nurture Design] :::eventProcess
     Newsletter --> NewsletterPlanning[Newsletter Planning] :::eventProcess
     PerformanceAnalysis --> MetricsCollection[Metrics Collection] :::eventProcess
-    
+
     %% Campaign Flow
     CampaignPlanning --> CampaignType{Campaign Type} :::decisionNode
     CampaignType -->|Awareness| AwarenessStrategy[Awareness Strategy] :::eventProcess
     CampaignType -->|Lead Gen| LeadGenStrategy[Lead Gen Strategy] :::eventProcess
     CampaignType -->|Conversion| ConversionStrategy[Conversion Strategy] :::eventProcess
     CampaignType -->|Retention| RetentionStrategy[Retention Strategy] :::eventProcess
-    
+
     AwarenessStrategy --> AudienceTargeting[Audience Targeting] :::eventProcess
     LeadGenStrategy --> AudienceTargeting
     ConversionStrategy --> AudienceTargeting
     RetentionStrategy --> AudienceTargeting
-    
+
     %% Audience Targeting
     AudienceTargeting --> AudienceRequest[Request Audience Segments] :::eventProcess
     AudienceRequest --> Zevi[Zevi - Audience Analyst] :::agentNode
     Zevi --> SegmentData[Segment Data Received] :::dataNode
-    
+
     %% Content Creation
     SegmentData --> ContentNeeds[Determine Content Needs] :::eventProcess
     ContentNeeds --> ContentRequest[Content Creation Request] :::eventProcess
     ContentRequest --> Elan[Elan - Content Choreographer] :::agentNode
     Elan --> ContentDelivery[Content Deliverables] :::dataNode
-    
+
     %% Campaign Execution
     ContentDelivery --> ChannelStrategy[Channel Strategy Selection] :::eventProcess
     ChannelStrategy --> CampaignSetup[Campaign Setup & Configuration] :::eventProcess
     CampaignSetup --> CampaignLaunch[Campaign Launch] :::eventProcess
-    
+
     %% Performance Tracking
     CampaignLaunch --> PerformanceMonitoring[Performance Monitoring] :::eventProcess
     PerformanceMonitoring --> OptimizationCheck{Optimization Needed?} :::decisionNode
     OptimizationCheck -->|Yes| CampaignOptimization[Campaign Optimization] :::eventProcess
     OptimizationCheck -->|No| ContinueMonitoring[Continue Monitoring] :::eventProcess
-    
+
     CampaignOptimization --> ABTestDesign[A/B Test Design] :::eventProcess
     ABTestDesign --> TestExecution[Execute A/B Test] :::eventProcess
     TestExecution --> TestAnalysis[Analyze Test Results] :::eventProcess
     TestAnalysis --> ImplementChanges[Implement Improvements] :::eventProcess
     ImplementChanges --> PerformanceMonitoring
-    
+
     %% Lead Nurture Flow
     NurtureDesign --> LeadAnalysis[Analyze Lead Data] :::eventProcess
     LeadAnalysis --> SequenceSelection[Select Nurture Sequence] :::eventProcess
     SequenceSelection --> PersonalizationStrategy[Personalization Strategy] :::eventProcess
     PersonalizationStrategy --> NurtureContentRequest[Request Nurture Content] :::eventProcess
     NurtureContentRequest --> Elan
-    
+
     %% Nurture Sequence Execution
     Elan --> NurtureContent[Nurture Content Received] :::dataNode
     NurtureContent --> SequenceSetup[Set Up Nurture Sequence] :::eventProcess
     SequenceSetup --> SequenceActivation[Activate Sequence] :::eventProcess
     SequenceActivation --> EngagementTracking[Track Engagement] :::eventProcess
-    
+
     EngagementTracking --> EngagementLevel{Engagement Level} :::decisionNode
     EngagementLevel -->|High| EvaluateForSales[Evaluate for Sales Readiness] :::eventProcess
     EngagementLevel -->|Medium| ContinueNurture[Continue Nurture] :::eventProcess
     EngagementLevel -->|Low| AdjustStrategy[Adjust Nurture Strategy] :::eventProcess
-    
+
     EvaluateForSales --> SalesReady{Sales Ready?} :::decisionNode
     SalesReady -->|Yes| NyraNotification[Notify Nyra] :::eventProcess
     SalesReady -->|No| ContinueNurture
-    
+
     NyraNotification --> Nyra[Nyra - Lead Capture Specialist] :::agentNode
     AdjustStrategy --> SequenceSelection
-    
+
     %% Newsletter Flow
     NewsletterPlanning --> ContentThemeDevelopment[Develop Content Theme] :::eventProcess
     ContentThemeDevelopment --> SubscriberSegmentation[Segment Subscribers] :::eventProcess
     SubscriberSegmentation --> NewsletterContentRequest[Request Newsletter Content] :::eventProcess
     NewsletterContentRequest --> Elan
-    
+
     Elan --> NewsletterContent[Newsletter Content Received] :::dataNode
     NewsletterContent --> NewsletterAssembly[Assemble Newsletter] :::eventProcess
     NewsletterAssembly --> ABTestSetup[Set Up A/B Test] :::eventProcess
     ABTestSetup --> NewsletterScheduling[Schedule Newsletter] :::eventProcess
     NewsletterScheduling --> NewsletterDelivery[Deliver Newsletter] :::eventProcess
-    
+
     NewsletterDelivery --> NewsletterAnalytics[Analyze Performance] :::eventProcess
     NewsletterAnalytics --> NewsletterInsights[Document Insights] :::eventProcess
     NewsletterInsights --> ContentPerformanceSharing[Share Insights with Elan] :::eventProcess
     ContentPerformanceSharing --> Elan
-    
+
     %% Analytics Flow
     MetricsCollection --> DataSources[Connect to Data Sources] :::eventProcess
     DataSources --> GoogleAnalytics[Google Analytics] :::integrationNode
     DataSources --> EmailPlatforms[Email Platforms] :::integrationNode
     DataSources --> SocialPlatforms[Social Platforms] :::integrationNode
     DataSources --> CRM[CRM Systems] :::integrationNode
-    
+
     GoogleAnalytics --> MetricsConsolidation[Consolidate Metrics] :::eventProcess
     EmailPlatforms --> MetricsConsolidation
     SocialPlatforms --> MetricsConsolidation
     CRM --> MetricsConsolidation
-    
+
     MetricsConsolidation --> KPIAnalysis[Analyze KPIs] :::eventProcess
     KPIAnalysis --> InsightGeneration[Generate Insights] :::eventProcess
     InsightGeneration --> ReportCreation[Create Performance Reports] :::eventProcess
     ReportCreation --> StrategyRecommendations[Develop Recommendations] :::eventProcess
-    
+
     %% External Systems
     CampaignSetup --> MarketingPlatforms[Marketing Platforms] :::integrationNode
     SequenceSetup --> MarketingAutomation[Marketing Automation] :::integrationNode
     NewsletterAssembly --> EmailPlatforms
-    
+
     MarketingPlatforms --> HubSpot[HubSpot] :::integrationNode
     MarketingAutomation --> ActiveCampaign[ActiveCampaign] :::integrationNode
     EmailPlatforms --> Beehiiv[Beehiiv] :::integrationNode

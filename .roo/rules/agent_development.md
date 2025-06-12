@@ -115,7 +115,7 @@ class {agent_class_name}(BaseAgent):
         """
         try:
             # Perform health checks here
-            
+
             return {
                 "status": "healthy",
                 "timestamp": datetime.now().isoformat(),

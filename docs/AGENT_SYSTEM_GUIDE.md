@@ -34,7 +34,7 @@ The HigherSelf Network Server uses a sophisticated agent system to automate work
     │ Nyra          │   │ Solari    │   │ Ruvo     │   │ Liora     │
     │ Lead Capture  │   │ Booking   │   │ Task     │   │ Marketing │
     └───────────────┘   └───────────┘   └──────────┘   └───────────┘
-                                                          
+
     ┌───────────────┐   ┌───────────┐   ┌──────────┐
     │ Sage          │   │ Elan      │   │ Zevi     │
     │ Community     │   │ Content   │   │ Audience │

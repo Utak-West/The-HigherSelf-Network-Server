@@ -51,19 +51,19 @@ class Document(BaseModel):
     content: str = Field(..., description="Document content")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
     embedding: Optional[List[float]] = Field(None, description="Vector embedding")
-    
+
 class Query(BaseModel):
     """Represents a query to the RAG system."""
     text: str = Field(..., description="Query text")
     embedding: Optional[List[float]] = Field(None, description="Vector embedding")
     filters: Dict[str, Any] = Field(default_factory=dict, description="Query filters")
     top_k: int = Field(5, description="Number of results to return")
-    
+
 class RetrievalResult(BaseModel):
     """Represents a retrieval result."""
     document: Document
     score: float = Field(..., description="Relevance score")
-    
+
 class RAGResponse(BaseModel):
     """Represents a response from the RAG system."""
     query: str = Field(..., description="Original query")
@@ -75,26 +75,26 @@ class RAGResponse(BaseModel):
 
 class EmbeddingProvider:
     """Interface for embedding providers."""
-    
+
     async def generate_embedding(self, text: str) -> List[float]:
         """
         Generate an embedding for the given text.
-        
+
         Args:
             text: Text to embed
-            
+
         Returns:
             Vector embedding
         """
         raise NotImplementedError("Embedding providers must implement generate_embedding")
-        
+
     async def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
         Generate embeddings for multiple texts.
-        
+
         Args:
             texts: List of texts to embed
-            
+
         Returns:
             List of vector embeddings
         """
@@ -105,12 +105,12 @@ class EmbeddingProvider:
 def chunk_by_tokens(text: str, max_tokens: int = 512, overlap: int = 50) -> List[str]:
     """
     Chunk text by token count with overlap.
-    
+
     Args:
         text: Text to chunk
         max_tokens: Maximum tokens per chunk
         overlap: Number of tokens to overlap between chunks
-        
+
     Returns:
         List of text chunks
     """
@@ -120,12 +120,12 @@ def chunk_by_tokens(text: str, max_tokens: int = 512, overlap: int = 50) -> List
 def chunk_by_sentences(text: str, max_sentences: int = 10, overlap: int = 2) -> List[str]:
     """
     Chunk text by sentence count with overlap.
-    
+
     Args:
         text: Text to chunk
         max_sentences: Maximum sentences per chunk
         overlap: Number of sentences to overlap between chunks
-        
+
     Returns:
         List of text chunks
     """
@@ -137,11 +137,11 @@ def chunk_by_sentences(text: str, max_sentences: int = 10, overlap: int = 2) -> 
 def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     """
     Calculate cosine similarity between two vectors.
-    
+
     Args:
         vec1: First vector
         vec2: Second vector
-        
+
     Returns:
         Cosine similarity score
     """
@@ -155,7 +155,7 @@ class RAGPipeline:
     """
     Enhanced RAG pipeline with optimized retrieval and response generation.
     """
-    
+
     def __init__(
         self,
         embedding_provider: EmbeddingProvider,
@@ -166,7 +166,7 @@ class RAGPipeline:
     ):
         """
         Initialize the RAG pipeline.
-        
+
         Args:
             embedding_provider: Provider for generating embeddings
             vector_store: Vector store for document storage and retrieval
@@ -180,74 +180,74 @@ class RAGPipeline:
         self.cache_enabled = cache_enabled
         self.cache_ttl = cache_ttl
         self.embedding_cache = {}  # Simple in-memory cache
-        
+
     async def process_query(self, query: Query) -> RAGResponse:
         """
         Process a query through the RAG pipeline.
-        
+
         Args:
             query: Query to process
-            
+
         Returns:
             RAG response with retrieval results and generated response
         """
         start_time = datetime.now()
-        
+
         # Generate query embedding
         if not query.embedding:
             query.embedding = await self.embedding_provider.generate_embedding(query.text)
-        
+
         # Retrieve relevant documents
         results = await self.retrieve_documents(query)
-        
+
         # Generate response
         context = self.prepare_context(results)
         response = await self.generate_response(query.text, context)
-        
+
         # Calculate processing time
         processing_time = (datetime.now() - start_time).total_seconds()
-        
+
         return RAGResponse(
             query=query.text,
             results=results,
             generated_response=response,
             processing_time=processing_time
         )
-        
+
     async def retrieve_documents(self, query: Query) -> List[RetrievalResult]:
         """
         Retrieve relevant documents for a query.
-        
+
         Args:
             query: Query with embedding
-            
+
         Returns:
             List of retrieval results
         """
         # Implement vector store retrieval
         pass
-        
+
     def prepare_context(self, results: List[RetrievalResult]) -> str:
         """
         Prepare context from retrieval results for response generation.
-        
+
         Args:
             results: Retrieval results
-            
+
         Returns:
             Formatted context string
         """
         # Format retrieved documents into context
         pass
-        
+
     async def generate_response(self, query: str, context: str) -> str:
         """
         Generate a response using the LLM provider.
-        
+
         Args:
             query: Original query text
             context: Context from retrieved documents
-            
+
         Returns:
             Generated response
         """
