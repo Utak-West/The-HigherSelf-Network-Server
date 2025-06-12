@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "gitConflictResolution": {
+    "enabled": true,
+    "strategy": "agent_assisted_stash_merge",
+    "coordination": {
+      "primaryAgent": "ConflictCoordinator",
+      "supportAgents": [
+        "ContextAnalyzer",
+        "FileClassifier", 
+        "ConflictResolver",
+        "ValidationAgent"
+      ]
+    },
+    "workflow": {
+      "phases": [
+        {
+          "name": "pre_conflict_analysis",
+          "agent": "ContextAnalyzer",
+          "actions": [
+            "analyze_git_status",
+            "identify_conflict_patterns",
+            "assess_merge_complexity"
+          ],
+          "timeout": 30
+        },
+        {
+          "name": "safe_backup",
+          "agent": "ConflictCoordinator", 
+          "actions": [
+            "create_timestamp_stash",
+            "verify_stash_integrity",
+            "log_backup_location"
+          ],
+          "timeout": 60
+        },
+        {
+          "name": "merge_attempt",
+          "agent": "ConflictCoordinator",
+          "actions": [
+            "pull_origin_main",
+            "detect_merge_conflicts",
+            "categorize_conflict_types"
+          ],
+          "timeout": 120
+        },
+        {
+          "name": "conflict_resolution",
+          "agent": "ConflictResolver",
+          "actions": [
+            "resolve_by_category",
+            "preserve_local_changes",
+            "maintain_pr4_fixes"
+          ],
+          "parallel": true,
+          "timeout": 300
+        },
+        {
+          "name": "validation",
+          "agent": "ValidationAgent",
+          "actions": [
+            "verify_settings_loading",
+            "test_redis_service",
+            "check_ci_fixes_active"
+          ],
+          "timeout": 180
+        }
+      ]
+    },
+    "conflictCategories": {
+      "pydantic_migration": {
+        "priority": "high",
+        "strategy": "preserve_pr4_changes",
+        "files": ["config/settings.py"],
+        "description": "Pydantic V2 migration fixes from PR #4"
+      },
+      "dependency_updates": {
+        "priority": "high", 
+        "strategy": "preserve_pr4_changes",
+        "files": ["requirements.txt"],
+        "description": "python-dotenv version fix from PR #4"
+      },
+      "ci_configuration": {
+        "priority": "high",
+        "strategy": "preserve_pr4_changes", 
+        "files": [".github/workflows/enhanced-cicd.yml"],
+        "description": "CI environment variables from PR #4"
+      },
+      "agent_implementations": {
+        "priority": "medium",
+        "strategy": "merge_intelligently",
+        "patterns": ["agents/*.py", "services/*.py"],
+        "description": "Local agent development work"
+      },
+      "api_routes": {
+        "priority": "medium",
+        "strategy": "merge_intelligently",
+        "patterns": ["api/*.py"],
+        "description": "Local API development work"
+      },
+      "test_files": {
+        "priority": "low",
+        "strategy": "preserve_local",
+        "patterns": ["test*.py", "tests/*.py"],
+        "description": "Local testing and debugging files"
+      }
+    },
+    "errorRecovery": {
+      "maxRetries": 3,
+      "backoffStrategy": "exponential",
+      "fallbackStrategies": [
+        "manual_file_resolution",
+        "selective_stash_pop",
+        "human_escalation"
+      ],
+      "rollbackEnabled": true
+    },
+    "contextPreservation": {
+      "stashMessage": "WIP: Agent-augmented backup before PR #4 merge",
+      "backupLocation": "/tmp/git_conflict_backup",
+      "preserveUntracked": true,
+      "createPatch": true
+    },
+    "validation": {
+      "criticalChecks": [
+        {
+          "name": "settings_import",
+          "command": "python -c 'from config.settings import settings; print(\"✅ Settings loaded\")'",
+          "timeout": 10
+        },
+        {
+          "name": "redis_service",
+          "command": "python test_redis_isolated.py",
+          "timeout": 15
+        },
+        {
+          "name": "pydantic_warnings",
+          "command": "python -c 'import warnings; warnings.simplefilter(\"error\", DeprecationWarning); from config.settings import settings' 2>&1 | grep -c 'DeprecationWarning' || echo '0'",
+          "expectedOutput": "0"
+        }
+      ]
+    },
+    "reporting": {
+      "enabled": true,
+      "logLevel": "info",
+      "outputFormat": "structured",
+      "includeMetrics": true
+    }
+  }
+}
