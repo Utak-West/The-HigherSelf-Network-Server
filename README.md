@@ -685,10 +685,10 @@ cp .env.example .env
 # Edit .env with your organization's API credentials
 
 # Launch with Docker Compose
-docker-compose up -d
+docker-compose -f deployment/docker-compose.yml up -d
 
 # Verify deployment
-docker-compose logs -f
+docker-compose -f deployment/docker-compose.yml logs -f
 ```
 
 #### **Option 2: Direct Python Installation**
@@ -722,7 +722,7 @@ python main.py
 - **Digital Ocean App Platform** - Developer-friendly deployment
 
 **Deployment Resources:**
-- [Comprehensive Deployment Guide](./documentation/DEPLOYMENT_AND_TRAINING.md)
+- [Comprehensive Deployment Guide](./docs/DEPLOYMENT_AND_TRAINING.md)
 - [Cloud Configuration Templates](./deployment/)
 - [Security Best Practices](./docs/DEPLOYMENT.md)
 
@@ -1096,7 +1096,7 @@ class MyNewPlatformService(BaseService):
 
 For technical questions, implementation guidance, or system assistance:
 
-**Email:** [support@higherself.network](mailto:support@higherself.network)
+**Email:** [info@higherselflife.com](mailto:info@higherselflife.com)
 
 **Support Categories:**
 - Technical implementation and troubleshooting
@@ -1170,7 +1170,7 @@ pie title Business Category Distribution
 
 ---
 
-**© 2023-2025 The HigherSelf Network - All Rights Reserved**
+**© 2025 The HigherSelf Network - All Rights Reserved**
 
 *Intelligent automation platform for service organizations, practitioners, and businesses across diverse industries*
 
