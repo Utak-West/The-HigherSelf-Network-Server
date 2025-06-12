@@ -17,13 +17,15 @@ from services.base_service import BaseService, ServiceCredentials
 
 class TutorLMCredentials(ServiceCredentials):
     """Credentials for TutorLM service."""
+
     api_key: str
     organization_id: Optional[str] = None
 
     class Config:
         env_prefix = "TUTOR_LM_"
 
-@field_validator('api_key', mode='before')
+    @field_validator("api_key", mode="before")
+    @classmethod
     def validate_required_fields(cls, v):
         if not v:
             raise ValueError("API key is required")
@@ -32,6 +34,7 @@ class TutorLMCredentials(ServiceCredentials):
 
 class TutorSession(BaseModel):
     """Model representing a tutoring session."""
+
     id: Optional[str] = None
     student_id: Optional[str] = None
     student_email: Optional[str] = None
@@ -47,27 +50,33 @@ class TutorSession(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
 
-@field_validator('topic', 'subject_area', mode='before')
+    @field_validator("topic", "subject_area", mode="before")
+    @classmethod
     def validate_required_text(cls, v, values, **kwargs):
         if not v:
-            field_name = kwargs.get('field', 'This field')
+            field_name = kwargs.get("field", "This field")
             raise ValueError(f"{field_name} is required")
         return v
 
-@field_validator('difficulty_level', mode='before')
+    @field_validator("difficulty_level", mode="before")
+    @classmethod
     def validate_difficulty(cls, v):
         valid_levels = ["beginner", "intermediate", "advanced", "expert"]
         if v not in valid_levels:
-            raise ValueError(f"Difficulty level must be one of: {', '.join(valid_levels)}")
+            raise ValueError(
+                f"Difficulty level must be one of: {', '.join(valid_levels)}"
+            )
         return v
 
-@field_validator('duration_minutes', mode='before')
+    @field_validator("duration_minutes", mode="before")
+    @classmethod
     def validate_duration(cls, v):
         if v < 15 or v > 120:
             raise ValueError("Duration must be between 15 and 120 minutes")
         return v
 
-@field_validator('status', mode='before')
+    @field_validator("status", mode="before")
+    @classmethod
     def validate_status(cls, v):
         valid_statuses = ["scheduled", "in_progress", "completed", "cancelled"]
         if v not in valid_statuses:
@@ -99,7 +108,7 @@ class TutorLMService(BaseService):
             credentials = TutorLMCredentials(
                 service_name="tutor_lm",
                 api_key=api_key,
-                organization_id=organization_id
+                organization_id=organization_id,
             )
 
         # Initialize base service
@@ -108,7 +117,9 @@ class TutorLMService(BaseService):
         # Specific properties
         self.api_key = api_key
         self.organization_id = organization_id
-        self.base_url = os.environ.get("TUTOR_LM_API_URL", "https://api.tutorlm.example.com")
+        self.base_url = os.environ.get(
+            "TUTOR_LM_API_URL", "https://api.tutorlm.example.com"
+        )
 
         if not self.api_key:
             logger.warning("TutorLM API key not configured")
@@ -129,7 +140,9 @@ class TutorLMService(BaseService):
             headers = self._get_headers()
 
             # Test connection with a simple API call
-            response = await self.async_get(f"{self.base_url}/api/status", headers=headers)
+            response = await self.async_get(
+                f"{self.base_url}/api/status", headers=headers
+            )
 
             # Update credentials verification timestamp
             if self.credentials:
@@ -150,7 +163,7 @@ class TutorLMService(BaseService):
         """
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         if self.organization_id:
@@ -191,9 +204,7 @@ class TutorLMService(BaseService):
             headers = self._get_headers()
 
             response = await self.async_post(
-                f"{self.base_url}/api/sessions",
-                headers=headers,
-                json=session_data
+                f"{self.base_url}/api/sessions", headers=headers, json=session_data
             )
 
             # Extract session ID
@@ -211,13 +222,13 @@ class TutorLMService(BaseService):
                     # Update session with Notion page ID
                     update_data = {
                         "meta_data": session.meta_data,
-                        "notion_page_id": session.notion_page_id
+                        "notion_page_id": session.notion_page_id,
                     }
 
                     await self.async_patch(
                         f"{self.base_url}/api/sessions/{session_id}",
                         headers=headers,
-                        json=update_data
+                        json=update_data,
                     )
 
                     logger.info(f"Updated session {session_id} with Notion page ID")
@@ -250,7 +261,9 @@ class TutorLMService(BaseService):
 
         try:
             headers = self._get_headers()
-            response = await self.async_get(f"{self.base_url}/api/sessions/{session_id}", headers=headers)
+            response = await self.async_get(
+                f"{self.base_url}/api/sessions/{session_id}", headers=headers
+            )
 
             # Extract Notion page ID if it exists
             notion_page_id = None
@@ -261,9 +274,13 @@ class TutorLMService(BaseService):
             session_date = None
             if response.get("session_date"):
                 try:
-                    session_date = datetime.fromisoformat(response["session_date"].replace("Z", "+00:00"))
+                    session_date = datetime.fromisoformat(
+                        response["session_date"].replace("Z", "+00:00")
+                    )
                 except (ValueError, TypeError):
-                    logger.warning(f"Could not parse session_date from session {session_id}")
+                    logger.warning(
+                        f"Could not parse session_date from session {session_id}"
+                    )
 
             session = TutorSession(
                 id=response.get("id"),
@@ -279,7 +296,7 @@ class TutorLMService(BaseService):
                 tutor_feedback=response.get("tutor_feedback"),
                 student_feedback=response.get("student_feedback"),
                 meta_data=response.get("meta_data", {}),
-                notion_page_id=notion_page_id
+                notion_page_id=notion_page_id,
             )
 
             return session
@@ -287,7 +304,9 @@ class TutorLMService(BaseService):
             logger.error(f"Error getting tutoring session {session_id}: {e}")
             return None
 
-    async def update_session_status(self, session_id: str, status: str, notes: Optional[str] = None) -> bool:
+    async def update_session_status(
+        self, session_id: str, status: str, notes: Optional[str] = None
+    ) -> bool:
         """
         Update a tutoring session status.
 
@@ -320,7 +339,7 @@ class TutorLMService(BaseService):
             await self.async_patch(
                 f"{self.base_url}/api/sessions/{session_id}",
                 headers=headers,
-                json=update_data
+                json=update_data,
             )
 
             logger.info(f"Updated session {session_id} status to {status}")
@@ -333,12 +352,14 @@ class TutorLMService(BaseService):
             logger.error(f"Error updating session status: {e}")
             return False
 
-    async def list_sessions(self,
-                           student_id: Optional[str] = None,
-                           status: Optional[str] = None,
-                           from_date: Optional[datetime] = None,
-                           to_date: Optional[datetime] = None,
-                           limit: int = 100) -> List[TutorSession]:
+    async def list_sessions(
+        self,
+        student_id: Optional[str] = None,
+        status: Optional[str] = None,
+        from_date: Optional[datetime] = None,
+        to_date: Optional[datetime] = None,
+        limit: int = 100,
+    ) -> List[TutorSession]:
         """
         List tutoring sessions with optional filters.
 
@@ -375,9 +396,7 @@ class TutorLMService(BaseService):
             # Make API request
             headers = self._get_headers()
             response = await self.async_get(
-                f"{self.base_url}/api/sessions",
-                headers=headers,
-                params=params
+                f"{self.base_url}/api/sessions", headers=headers, params=params
             )
 
             # Process response
@@ -385,16 +404,23 @@ class TutorLMService(BaseService):
             for session_data in response.get("sessions", []):
                 # Extract Notion page ID if it exists
                 notion_page_id = None
-                if session_data.get("meta_data") and "notion_page_id" in session_data["meta_data"]:
+                if (
+                    session_data.get("meta_data")
+                    and "notion_page_id" in session_data["meta_data"]
+                ):
                     notion_page_id = session_data["meta_data"]["notion_page_id"]
 
                 # Parse session date if it exists
                 session_date = None
                 if session_data.get("session_date"):
                     try:
-                        session_date = datetime.fromisoformat(session_data["session_date"].replace("Z", "+00:00"))
+                        session_date = datetime.fromisoformat(
+                            session_data["session_date"].replace("Z", "+00:00")
+                        )
                     except (ValueError, TypeError):
-                        logger.warning(f"Could not parse session_date from session {session_data.get('id')}")
+                        logger.warning(
+                            f"Could not parse session_date from session {session_data.get('id')}"
+                        )
 
                 session = TutorSession(
                     id=session_data.get("id"),
@@ -402,7 +428,9 @@ class TutorLMService(BaseService):
                     student_email=session_data.get("student_email"),
                     topic=session_data.get("topic", ""),
                     subject_area=session_data.get("subject_area", ""),
-                    difficulty_level=session_data.get("difficulty_level", "intermediate"),
+                    difficulty_level=session_data.get(
+                        "difficulty_level", "intermediate"
+                    ),
                     duration_minutes=session_data.get("duration_minutes", 30),
                     session_date=session_date,
                     status=session_data.get("status", "scheduled"),
@@ -410,7 +438,7 @@ class TutorLMService(BaseService):
                     tutor_feedback=session_data.get("tutor_feedback"),
                     student_feedback=session_data.get("student_feedback"),
                     meta_data=session_data.get("meta_data", {}),
-                    notion_page_id=notion_page_id
+                    notion_page_id=notion_page_id,
                 )
 
                 sessions.append(session)
@@ -442,9 +470,7 @@ class TutorLMService(BaseService):
             # Prepare update data
             update_data = {
                 "tutor_feedback": feedback,
-                "meta_data": {
-                    "feedback_added_at": datetime.now().isoformat()
-                }
+                "meta_data": {"feedback_added_at": datetime.now().isoformat()},
             }
 
             # Update session
@@ -453,7 +479,7 @@ class TutorLMService(BaseService):
             await self.async_patch(
                 f"{self.base_url}/api/sessions/{session_id}",
                 headers=headers,
-                json=update_data
+                json=update_data,
             )
 
             logger.info(f"Added tutor feedback to session {session_id}")

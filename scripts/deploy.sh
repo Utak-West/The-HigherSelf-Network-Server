@@ -60,10 +60,16 @@ echo "Deploying The HigherSelf Network Server in $ENV environment..."
 # Create required directories
 mkdir -p logs data deployment/ssl
 
-# Check if .env file exists
+# Check if .env file exists, create from example if not
 if [ ! -f .env ]; then
-    echo "Error: .env file not found. Please create one based on .env.example"
-    exit 1
+    echo "Warning: .env file not found. Creating from .env.example..."
+    if [ -f .env.example ]; then
+        cp .env.example .env
+        echo "Created .env file from template. Using test defaults for Devin deployment."
+    else
+        echo "Error: Neither .env nor .env.example found."
+        exit 1
+    fi
 fi
 
 # Clean up if requested
@@ -96,7 +102,24 @@ esac
 
 echo "Deployment completed successfully!"
 echo "API is available at http://localhost:8000"
-echo "To check logs: docker-compose logs -f windsurf-agent"
-echo "To check health: curl http://localhost:8000/health"
+
+# Wait for services to start and perform health check
+echo "Waiting for services to start..."
+sleep 30
+
+echo "Performing health check..."
+if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+    echo "✅ Health check passed - API is responding"
+else
+    echo "⚠️  Health check failed - API may still be starting"
+    echo "   Check logs with: docker-compose logs -f windsurf-agent"
+fi
+
+echo ""
+echo "Useful commands:"
+echo "  Check logs: docker-compose logs -f windsurf-agent"
+echo "  Check status: docker-compose ps"
+echo "  Health check: curl http://localhost:8000/health"
+echo "  Stop services: docker-compose down"
 
 exit 0

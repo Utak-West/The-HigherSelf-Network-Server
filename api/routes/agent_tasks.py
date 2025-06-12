@@ -137,9 +137,9 @@ async def run_agent_task(request: TaskRequest) -> Dict[str, Any]:
 
     # Add Notion URL if available
     if task.notion_page_id:
-        response["notion_url"] = (
-            f"https://notion.so/{task.notion_page_id.replace('-', '')}"
-        )
+        response[
+            "notion_url"
+        ] = f"https://notion.so/{task.notion_page_id.replace('-', '')}"
 
     return response
 

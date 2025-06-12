@@ -2,6 +2,7 @@
 Pydantic models for Softr to Higher Self Network server integration.
 These models define the API contract between Softr interfaces and backend services.
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
@@ -11,9 +12,14 @@ from pydantic import BaseModel, Enum, Field, enum, field_validator
 
 class SoftrIntegrationConfig(BaseModel):
     """Configuration for Softr integration with Higher Self Network Server"""
-    server_api_endpoint: str = Field(..., description="Higher Self Network API endpoint")
+
+    server_api_endpoint: str = Field(
+        ..., description="Higher Self Network API endpoint"
+    )
     api_key: str = Field(..., description="API key for authentication")
-    webhook_secret: str = Field(..., description="Secret for webhook signature validation")
+    webhook_secret: str = Field(
+        ..., description="Secret for webhook signature validation"
+    )
     softr_site_id: str = Field(..., description="Softr site identifier")
 
     class Config:
@@ -23,6 +29,7 @@ class SoftrIntegrationConfig(BaseModel):
 
 class WebhookEventType(str, Enum):
     """Event types for Softr webhooks"""
+
     FORM_SUBMISSION = "form_submission"
     USER_REGISTRATION = "user_registration"
     USER_LOGIN = "user_login"
@@ -36,20 +43,24 @@ class WebhookEventType(str, Enum):
 
 class WebhookPayload(BaseModel):
     """Model for incoming webhook data from Softr"""
+
     event_type: WebhookEventType
     timestamp: datetime
     site_id: str
     data: Dict[str, Any]
     signature: str
 
-@field_validator('timestamp', pre=True, mode='before')    def parse_timestamp(cls, v):
+    @field_validator("timestamp", pre=True, mode="before")
+    @classmethod
+    def parse_timestamp(cls, v):
         if isinstance(v, str):
-            return datetime.fromisoformat(v.replace('Z', '+00:00'))
+            return datetime.fromisoformat(v.replace("Z", "+00:00"))
         return v
 
 
 class FormSubmissionData(BaseModel):
     """Data model for form submissions from Softr"""
+
     form_id: str
     form_name: str
     user_id: Optional[str] = None
@@ -60,6 +71,7 @@ class FormSubmissionData(BaseModel):
 
 class UserRegistrationData(BaseModel):
     """Data model for user registration events from Softr"""
+
     user_id: str
     email: str
     first_name: Optional[str] = None
@@ -71,6 +83,7 @@ class UserRegistrationData(BaseModel):
 
 class PaymentData(BaseModel):
     """Data model for payment events from Softr"""
+
     payment_id: str
     user_id: Optional[str] = None
     email: str
@@ -84,6 +97,7 @@ class PaymentData(BaseModel):
 
 class BookingData(BaseModel):
     """Data model for booking events from Softr"""
+
     booking_id: str
     user_id: Optional[str] = None
     service_id: str
@@ -99,6 +113,7 @@ class BookingData(BaseModel):
 
 class ArtworkInquiryData(BaseModel):
     """Data model for artwork inquiry events from Softr"""
+
     inquiry_id: str = Field(default_factory=lambda: str(uuid4()))
     artwork_id: str
     artwork_title: str
@@ -113,6 +128,7 @@ class ArtworkInquiryData(BaseModel):
 
 class ContactRequestData(BaseModel):
     """Data model for contact request events from Softr"""
+
     request_id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     email: str
@@ -125,6 +141,7 @@ class ContactRequestData(BaseModel):
 
 class ApiResponse(BaseModel):
     """Standard API response model for Higher Self Network server"""
+
     success: bool
     message: str
     data: Optional[Dict[str, Any]] = None
@@ -134,6 +151,7 @@ class ApiResponse(BaseModel):
 
 class WorkflowTriggerRequest(BaseModel):
     """Request model for triggering workflows in the Higher Self Network"""
+
     workflow_id: str
     trigger_event: str
     trigger_data: Dict[str, Any]
@@ -143,6 +161,7 @@ class WorkflowTriggerRequest(BaseModel):
 
 class ArtworkListRequest(BaseModel):
     """Request model for fetching artwork listings"""
+
     page: int = 1
     limit: int = 20
     sort_by: Optional[str] = None
@@ -152,6 +171,7 @@ class ArtworkListRequest(BaseModel):
 
 class ArtworkListResponse(BaseModel):
     """Response model for artwork listings"""
+
     items: List[Dict[str, Any]]
     total: int
     page: int
@@ -161,6 +181,7 @@ class ArtworkListResponse(BaseModel):
 
 class EventListRequest(BaseModel):
     """Request model for fetching event listings"""
+
     page: int = 1
     limit: int = 20
     start_date: Optional[datetime] = None
@@ -172,6 +193,7 @@ class EventListRequest(BaseModel):
 
 class EventListResponse(BaseModel):
     """Response model for event listings"""
+
     items: List[Dict[str, Any]]
     total: int
     page: int
@@ -181,6 +203,7 @@ class EventListResponse(BaseModel):
 
 class ServiceBookingRequest(BaseModel):
     """Request model for booking a wellness service"""
+
     service_id: str
     practitioner_id: Optional[str] = None
     start_time: datetime
@@ -192,15 +215,18 @@ class ServiceBookingRequest(BaseModel):
     notes: Optional[str] = None
     payment_method: Optional[str] = None
 
-@field_validator('end_time', always=True, mode='before')    def set_end_time(cls, v, values):
-        if v is None and 'start_time' in values:
+    @field_validator("end_time", always=True, mode="before")
+    @classmethod
+    def set_end_time(cls, v, values):
+        if v is None and "start_time" in values:
             # Default to 1 hour if not specified
-            return values['start_time'] + datetime.timedelta(hours=1)
+            return values["start_time"] + datetime.timedelta(hours=1)
         return v
 
 
 class ServiceBookingResponse(BaseModel):
     """Response model for service booking"""
+
     booking_id: str
     service_id: str
     practitioner_id: Optional[str]
@@ -214,6 +240,7 @@ class ServiceBookingResponse(BaseModel):
 
 class EmailSubscriptionRequest(BaseModel):
     """Request model for email list subscription"""
+
     email: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -224,6 +251,7 @@ class EmailSubscriptionRequest(BaseModel):
 
 class UserProfileData(BaseModel):
     """User profile data model for Softr integration"""
+
     user_id: str
     email: str
     first_name: Optional[str] = None
@@ -240,6 +268,7 @@ class UserProfileData(BaseModel):
 
 class ArtPurchaseRequest(BaseModel):
     """Request model for initiating an art purchase"""
+
     artwork_id: str
     user_id: Optional[str] = None
     user_email: str
@@ -255,6 +284,7 @@ class ArtPurchaseRequest(BaseModel):
 
 class ArtPurchaseResponse(BaseModel):
     """Response model for art purchase initiation"""
+
     purchase_id: str
     artwork_id: str
     status: str

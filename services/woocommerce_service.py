@@ -20,6 +20,7 @@ from services.base_service import BaseService, ServiceCredentials
 
 class WooCommerceCredentials(ServiceCredentials):
     """Configuration for WooCommerce API integration."""
+
     url: str
     consumer_key: str
     consumer_secret: str
@@ -29,7 +30,8 @@ class WooCommerceCredentials(ServiceCredentials):
     class Config:
         env_prefix = "WOOCOMMERCE_"
 
-@field_validator('url', 'consumer_key', 'consumer_secret', mode='before')
+    @field_validator("url", "consumer_key", "consumer_secret", mode="before")
+    @classmethod
     def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
@@ -38,6 +40,7 @@ class WooCommerceCredentials(ServiceCredentials):
 
 class WooProduct(BaseModel):
     """Model representing a WooCommerce product."""
+
     id: Optional[int] = None
     name: str
     type: str = "simple"
@@ -50,13 +53,15 @@ class WooProduct(BaseModel):
     meta_data: List[Dict[str, Any]] = Field(default_factory=list)
     notion_page_id: Optional[str] = None
 
-@field_validator('name', mode='before')
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, v):
         if not v or len(v) < 3:
             raise ValueError("Product name must be at least 3 characters")
         return v
 
-@field_validator('regular_price', mode='before')
+    @field_validator("regular_price", mode="before")
+    @classmethod
     def validate_price(cls, v):
         if not v:
             raise ValueError("Price is required")
@@ -69,6 +74,7 @@ class WooProduct(BaseModel):
 
 class WooOrder(BaseModel):
     """Model representing a WooCommerce order."""
+
     id: Optional[int] = None
     status: str
     date_created: datetime
@@ -86,6 +92,7 @@ class WooOrder(BaseModel):
 
 class WooCustomer(BaseModel):
     """Model representing a WooCommerce customer."""
+
     id: Optional[int] = None
     email: str
     first_name: str
@@ -100,7 +107,14 @@ class WooCustomer(BaseModel):
 class AsyncWooCommerceAPI:
     """Async wrapper around the WooCommerce API."""
 
-    def __init__(self, url: str, consumer_key: str, consumer_secret: str, version: str = "wc/v3", timeout: int = 30):
+    def __init__(
+        self,
+        url: str,
+        consumer_key: str,
+        consumer_secret: str,
+        version: str = "wc/v3",
+        timeout: int = 30,
+    ):
         """
         Initialize the async WooCommerce API wrapper.
 
@@ -116,7 +130,7 @@ class AsyncWooCommerceAPI:
             consumer_key=consumer_key,
             consumer_secret=consumer_secret,
             version=version,
-            timeout=timeout
+            timeout=timeout,
         )
 
     async def get(self, endpoint: str, **kwargs) -> Any:
@@ -142,7 +156,13 @@ class WooCommerceService(BaseService):
     Ensures all data is synchronized with Notion as the central hub.
     """
 
-    def __init__(self, url: str = None, consumer_key: str = None, consumer_secret: str = None, version: str = None):
+    def __init__(
+        self,
+        url: str = None,
+        consumer_key: str = None,
+        consumer_secret: str = None,
+        version: str = None,
+    ):
         """
         Initialize the WooCommerce service.
 
@@ -155,7 +175,9 @@ class WooCommerceService(BaseService):
         # Get credentials from environment if not provided
         url = url or os.environ.get("WOOCOMMERCE_URL")
         consumer_key = consumer_key or os.environ.get("WOOCOMMERCE_CONSUMER_KEY")
-        consumer_secret = consumer_secret or os.environ.get("WOOCOMMERCE_CONSUMER_SECRET")
+        consumer_secret = consumer_secret or os.environ.get(
+            "WOOCOMMERCE_CONSUMER_SECRET"
+        )
         version = version or os.environ.get("WOOCOMMERCE_VERSION", "wc/v3")
         webhook_secret = os.environ.get("WOOCOMMERCE_WEBHOOK_SECRET")
 
@@ -168,7 +190,7 @@ class WooCommerceService(BaseService):
                 consumer_key=consumer_key,
                 consumer_secret=consumer_secret,
                 version=version,
-                webhook_secret=webhook_secret
+                webhook_secret=webhook_secret,
             )
 
         # Initialize base service
@@ -190,7 +212,7 @@ class WooCommerceService(BaseService):
                     consumer_key=self.consumer_key,
                     consumer_secret=self.consumer_secret,
                     version=self.version,
-                    timeout=30
+                    timeout=30,
                 )
                 logger.info("WooCommerce client initialized successfully")
             except Exception as e:
@@ -256,7 +278,7 @@ class WooCommerceService(BaseService):
                 categories=data.get("categories", []),
                 images=data.get("images", []),
                 meta_data=data.get("meta_data", []),
-                notion_page_id=notion_page_id
+                notion_page_id=notion_page_id,
             )
             return product
         except Exception as e:
@@ -305,22 +327,17 @@ class WooCommerceService(BaseService):
                 meta_data.append(meta)
 
             if product.notion_page_id:
-                meta_data.append({
-                    "key": "notion_page_id",
-                    "value": product.notion_page_id
-                })
+                meta_data.append(
+                    {"key": "notion_page_id", "value": product.notion_page_id}
+                )
 
                 # Also add a metadata field to indicate this is managed by Notion
-                meta_data.append({
-                    "key": "notion_managed",
-                    "value": "true"
-                })
+                meta_data.append({"key": "notion_managed", "value": "true"})
 
                 # Add sync timestamp
-                meta_data.append({
-                    "key": "notion_sync_time",
-                    "value": datetime.now().isoformat()
-                })
+                meta_data.append(
+                    {"key": "notion_sync_time", "value": datetime.now().isoformat()}
+                )
 
             if meta_data:
                 product_data["meta_data"] = meta_data
@@ -339,7 +356,9 @@ class WooCommerceService(BaseService):
             logger.error(f"Error creating product: {e}")
             return None
 
-    async def update_product(self, product_id: int, update_data: Dict[str, Any]) -> bool:
+    async def update_product(
+        self, product_id: int, update_data: Dict[str, Any]
+    ) -> bool:
         """
         Update a product in WooCommerce.
 
@@ -361,13 +380,17 @@ class WooCommerceService(BaseService):
                 logger.info(f"Updated WooCommerce product: {product_id}")
                 return True
             else:
-                logger.error(f"Error updating product {product_id}: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Error updating product {product_id}: {response.status_code} - {response.text}"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error updating product {product_id}: {e}")
             return False
 
-    async def sync_product_to_notion(self, product_id: int, notion_page_id: str) -> bool:
+    async def sync_product_to_notion(
+        self, product_id: int, notion_page_id: str
+    ) -> bool:
         """
         Update the WooCommerce product with its associated Notion page ID.
 
@@ -380,18 +403,9 @@ class WooCommerceService(BaseService):
         """
         update_data = {
             "meta_data": [
-                {
-                    "key": "notion_page_id",
-                    "value": notion_page_id
-                },
-                {
-                    "key": "synced_to_notion",
-                    "value": "true"
-                },
-                {
-                    "key": "notion_sync_time",
-                    "value": datetime.now().isoformat()
-                }
+                {"key": "notion_page_id", "value": notion_page_id},
+                {"key": "synced_to_notion", "value": "true"},
+                {"key": "notion_sync_time", "value": datetime.now().isoformat()},
             ]
         }
 
@@ -426,7 +440,9 @@ class WooCommerceService(BaseService):
                 order = WooOrder(
                     id=data.get("id"),
                     status=data.get("status"),
-                    date_created=datetime.fromisoformat(data.get("date_created").replace("Z", "+00:00")),
+                    date_created=datetime.fromisoformat(
+                        data.get("date_created").replace("Z", "+00:00")
+                    ),
                     customer_id=data.get("customer_id"),
                     customer_note=data.get("customer_note", ""),
                     billing=data.get("billing", {}),
@@ -436,7 +452,7 @@ class WooCommerceService(BaseService):
                     payment_method=data.get("payment_method", ""),
                     payment_method_title=data.get("payment_method_title", ""),
                     meta_data=data.get("meta_data", []),
-                    notion_page_id=notion_page_id
+                    notion_page_id=notion_page_id,
                 )
                 return order
             else:
@@ -468,7 +484,9 @@ class WooCommerceService(BaseService):
                 logger.info(f"Updated WooCommerce order: {order_id}")
                 return True
             else:
-                logger.error(f"Error updating order {order_id}: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Error updating order {order_id}: {response.status_code} - {response.text}"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error updating order {order_id}: {e}")
@@ -487,18 +505,9 @@ class WooCommerceService(BaseService):
         """
         update_data = {
             "meta_data": [
-                {
-                    "key": "notion_page_id",
-                    "value": notion_page_id
-                },
-                {
-                    "key": "synced_to_notion",
-                    "value": "true"
-                },
-                {
-                    "key": "notion_sync_time",
-                    "value": datetime.now().isoformat()
-                }
+                {"key": "notion_page_id", "value": notion_page_id},
+                {"key": "synced_to_notion", "value": "true"},
+                {"key": "notion_sync_time", "value": datetime.now().isoformat()},
             ]
         }
 
@@ -519,7 +528,9 @@ class WooCommerceService(BaseService):
             return []
 
         try:
-            response = self.client.get("orders", params={"per_page": limit, "orderby": "date", "order": "desc"})
+            response = self.client.get(
+                "orders", params={"per_page": limit, "orderby": "date", "order": "desc"}
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -536,7 +547,9 @@ class WooCommerceService(BaseService):
                         order = WooOrder(
                             id=item.get("id"),
                             status=item.get("status"),
-                            date_created=datetime.fromisoformat(item.get("date_created").replace("Z", "+00:00")),
+                            date_created=datetime.fromisoformat(
+                                item.get("date_created").replace("Z", "+00:00")
+                            ),
                             customer_id=item.get("customer_id"),
                             customer_note=item.get("customer_note", ""),
                             billing=item.get("billing", {}),
@@ -546,7 +559,7 @@ class WooCommerceService(BaseService):
                             payment_method=item.get("payment_method", ""),
                             payment_method_title=item.get("payment_method_title", ""),
                             meta_data=item.get("meta_data", []),
-                            notion_page_id=notion_page_id
+                            notion_page_id=notion_page_id,
                         )
                         orders.append(order)
                     except Exception as e:
@@ -595,17 +608,21 @@ class WooCommerceService(BaseService):
                     billing=data.get("billing", {}),
                     shipping=data.get("shipping", {}),
                     meta_data=data.get("meta_data", []),
-                    notion_page_id=notion_page_id
+                    notion_page_id=notion_page_id,
                 )
                 return customer
             else:
-                logger.error(f"Error getting customer {customer_id}: {response.status_code}")
+                logger.error(
+                    f"Error getting customer {customer_id}: {response.status_code}"
+                )
                 return None
         except Exception as e:
             logger.error(f"Error getting customer {customer_id}: {e}")
             return None
 
-    async def sync_customer_to_notion(self, customer_id: int, notion_page_id: str) -> bool:
+    async def sync_customer_to_notion(
+        self, customer_id: int, notion_page_id: str
+    ) -> bool:
         """
         Update the WooCommerce customer with their associated Notion page ID.
 
@@ -618,18 +635,9 @@ class WooCommerceService(BaseService):
         """
         update_data = {
             "meta_data": [
-                {
-                    "key": "notion_page_id",
-                    "value": notion_page_id
-                },
-                {
-                    "key": "synced_to_notion",
-                    "value": "true"
-                },
-                {
-                    "key": "notion_sync_time",
-                    "value": datetime.now().isoformat()
-                }
+                {"key": "notion_page_id", "value": notion_page_id},
+                {"key": "synced_to_notion", "value": "true"},
+                {"key": "notion_sync_time", "value": datetime.now().isoformat()},
             ]
         }
 
@@ -644,13 +652,17 @@ class WooCommerceService(BaseService):
                 logger.info(f"Updated WooCommerce customer: {customer_id}")
                 return True
             else:
-                logger.error(f"Error updating customer {customer_id}: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Error updating customer {customer_id}: {response.status_code} - {response.text}"
+                )
                 return False
         except Exception as e:
             logger.error(f"Error updating customer {customer_id}: {e}")
             return False
 
-    async def process_order_webhook(self, payload: Dict[str, Any]) -> Optional[WooOrder]:
+    async def process_order_webhook(
+        self, payload: Dict[str, Any]
+    ) -> Optional[WooOrder]:
         """
         Process a webhook notification from WooCommerce for order creation/updates.
 
@@ -671,7 +683,9 @@ class WooCommerceService(BaseService):
             required_fields = ["id", "status", "date_created", "customer_id"]
             for field in required_fields:
                 if field not in order_data:
-                    logger.error(f"Invalid webhook payload: missing required field {field}")
+                    logger.error(
+                        f"Invalid webhook payload: missing required field {field}"
+                    )
                     return None
 
             # Extract Notion page ID from meta data if it exists
@@ -684,7 +698,9 @@ class WooCommerceService(BaseService):
             order = WooOrder(
                 id=order_data.get("id"),
                 status=order_data.get("status"),
-                date_created=datetime.fromisoformat(order_data.get("date_created").replace("Z", "+00:00")),
+                date_created=datetime.fromisoformat(
+                    order_data.get("date_created").replace("Z", "+00:00")
+                ),
                 customer_id=order_data.get("customer_id"),
                 customer_note=order_data.get("customer_note", ""),
                 billing=order_data.get("billing", {}),
@@ -694,7 +710,7 @@ class WooCommerceService(BaseService):
                 payment_method=order_data.get("payment_method", ""),
                 payment_method_title=order_data.get("payment_method_title", ""),
                 meta_data=order_data.get("meta_data", []),
-                notion_page_id=notion_page_id
+                notion_page_id=notion_page_id,
             )
 
             logger.info(f"Processed WooCommerce order webhook for order {order.id}")

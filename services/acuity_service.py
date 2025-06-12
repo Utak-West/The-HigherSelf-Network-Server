@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
+import requests
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
@@ -18,6 +19,7 @@ from services.base_service import BaseService, ServiceCredentials
 
 class AcuityCredentials(ServiceCredentials):
     """Credentials for Acuity Scheduling API integration."""
+
     user_id: str
     api_key: str
     base_url: str = "https://acuityscheduling.com/api/v1"
@@ -25,7 +27,8 @@ class AcuityCredentials(ServiceCredentials):
     class Config:
         env_prefix = "ACUITY_"
 
-@field_validator('user_id', 'api_key', mode='before')
+    @field_validator("user_id", "api_key", mode="before")
+    @classmethod
     def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
@@ -34,6 +37,7 @@ class AcuityCredentials(ServiceCredentials):
 
 class AcuityAppointment(BaseModel):
     """Model representing an Acuity Scheduling appointment."""
+
     id: Optional[int] = None
     calendar_id: int
     appointment_type_id: int
@@ -62,13 +66,15 @@ class AcuityAppointment(BaseModel):
     confirmation_email: Optional[str] = None
     notion_page_id: Optional[str] = None
 
-@field_validator('email', mode='before')
+    @field_validator("email", mode="before")
+    @classmethod
     def validate_email(cls, v):
-        if not v or '@' not in v:
+        if not v or "@" not in v:
             raise ValueError("Valid email is required")
         return v
 
-@field_validator('first_name', 'last_name', mode='before')
+    @field_validator("first_name", "last_name", mode="before")
+    @classmethod
     def validate_names(cls, v):
         if not v:
             raise ValueError("Name fields cannot be empty")
@@ -93,7 +99,9 @@ class AcuityService(BaseService):
         # Get credentials from environment if not provided
         user_id = user_id or os.environ.get("ACUITY_USER_ID")
         api_key = api_key or os.environ.get("ACUITY_API_KEY")
-        base_url = base_url or os.environ.get("ACUITY_BASE_URL", "https://acuityscheduling.com/api/v1")
+        base_url = base_url or os.environ.get(
+            "ACUITY_BASE_URL", "https://acuityscheduling.com/api/v1"
+        )
 
         # Create credentials object
         credentials = None
@@ -102,7 +110,7 @@ class AcuityService(BaseService):
                 service_name="acuity",
                 user_id=user_id,
                 api_key=api_key,
-                base_url=base_url
+                base_url=base_url,
             )
 
         # Initialize base service
@@ -177,7 +185,9 @@ class AcuityService(BaseService):
             # Use base service async request with retry logic
             appointment_types = await self.async_get(url, headers=headers)
 
-            logger.info(f"Retrieved {len(appointment_types)} appointment types from Acuity")
+            logger.info(
+                f"Retrieved {len(appointment_types)} appointment types from Acuity"
+            )
             return appointment_types
         except Exception as e:
             logger.error(f"Error getting appointment types: {e}")
@@ -233,7 +243,9 @@ class AcuityService(BaseService):
                 id=appointment_data.get("id"),
                 calendar_id=appointment_data.get("calendarID"),
                 appointment_type_id=appointment_data.get("appointmentTypeID"),
-                datetime=datetime.fromisoformat(appointment_data.get("datetime").replace("Z", "+00:00")),
+                datetime=datetime.fromisoformat(
+                    appointment_data.get("datetime").replace("Z", "+00:00")
+                ),
                 first_name=appointment_data.get("firstName", ""),
                 last_name=appointment_data.get("lastName", ""),
                 email=appointment_data.get("email", ""),
@@ -254,14 +266,17 @@ class AcuityService(BaseService):
                 labels=appointment_data.get("labels", []),
                 certificate=appointment_data.get("certificate"),
                 confirmation_page=appointment_data.get("confirmationPage"),
-                confirmation_email=appointment_data.get("confirmationEmail")
+                confirmation_email=appointment_data.get("confirmationEmail"),
             )
 
             # Check for custom fields that might contain Notion page ID
             if "forms" in appointment_data:
                 for form in appointment_data["forms"]:
                     for field in form.get("values", []):
-                        if field.get("fieldID") == "notion_page_id" or field.get("name") == "Notion Page ID":
+                        if (
+                            field.get("fieldID") == "notion_page_id"
+                            or field.get("name") == "Notion Page ID"
+                        ):
                             appointment.notion_page_id = field.get("value")
 
             # Calculate end time if not provided
@@ -273,7 +288,9 @@ class AcuityService(BaseService):
                         duration = apt_type.get("duration", 60)
                         break
 
-                appointment.end_time = appointment.datetime + timedelta(minutes=duration)
+                appointment.end_time = appointment.datetime + timedelta(
+                    minutes=duration
+                )
 
             logger.info(f"Retrieved Acuity appointment: {appointment_id}")
             return appointment
@@ -281,7 +298,9 @@ class AcuityService(BaseService):
             logger.error(f"Error getting appointment {appointment_id}: {e}")
             return None
 
-    async def get_appointments(self, min_date: datetime = None, max_date: datetime = None) -> List[AcuityAppointment]:
+    async def get_appointments(
+        self, min_date: datetime = None, max_date: datetime = None
+    ) -> List[AcuityAppointment]:
         """
         Get appointments within a date range.
 
@@ -308,7 +327,9 @@ class AcuityService(BaseService):
                 params["maxDate"] = max_date.strftime("%Y-%m-%d")
 
             # Use async request with retry logic
-            appointments_data = await self.async_get(url, headers=headers, params=params)
+            appointments_data = await self.async_get(
+                url, headers=headers, params=params
+            )
             appointments = []
 
             for data in appointments_data:
@@ -318,7 +339,9 @@ class AcuityService(BaseService):
                         id=data.get("id"),
                         calendar_id=data.get("calendarID"),
                         appointment_type_id=data.get("appointmentTypeID"),
-                        datetime=datetime.fromisoformat(data.get("datetime").replace("Z", "+00:00")),
+                        datetime=datetime.fromisoformat(
+                            data.get("datetime").replace("Z", "+00:00")
+                        ),
                         first_name=data.get("firstName", ""),
                         last_name=data.get("lastName", ""),
                         email=data.get("email", ""),
@@ -339,14 +362,17 @@ class AcuityService(BaseService):
                         labels=data.get("labels", []),
                         certificate=data.get("certificate"),
                         confirmation_page=data.get("confirmationPage"),
-                        confirmation_email=data.get("confirmationEmail")
+                        confirmation_email=data.get("confirmationEmail"),
                     )
 
                     # Check for custom fields that might contain Notion page ID
                     if "forms" in data:
                         for form in data["forms"]:
                             for field in form.get("values", []):
-                                if field.get("fieldID") == "notion_page_id" or field.get("name") == "Notion Page ID":
+                                if (
+                                    field.get("fieldID") == "notion_page_id"
+                                    or field.get("name") == "Notion Page ID"
+                                ):
                                     appointment.notion_page_id = field.get("value")
 
                     appointments.append(appointment)
@@ -387,7 +413,7 @@ class AcuityService(BaseService):
                 "datetime": appointment.datetime.isoformat(),
                 "firstName": appointment.first_name,
                 "lastName": appointment.last_name,
-                "email": appointment.email
+                "email": appointment.email,
             }
 
             if appointment.phone:
@@ -401,10 +427,12 @@ class AcuityService(BaseService):
                 if "fields" not in payload:
                     payload["fields"] = []
 
-                payload["fields"].append({
-                    "id": "notion_page_id",  # This ID must exist in Acuity's custom field configuration
-                    "value": appointment.notion_page_id
-                })
+                payload["fields"].append(
+                    {
+                        "id": "notion_page_id",  # This ID must exist in Acuity's custom field configuration
+                        "value": appointment.notion_page_id,
+                    }
+                )
 
             # Use async request with retry logic
             data = await self.async_post(url, json_data=payload, headers=headers)
@@ -420,7 +448,9 @@ class AcuityService(BaseService):
             logger.error(f"Error creating appointment: {e}")
             return None
 
-    async def update_appointment(self, appointment_id: int, update_data: Dict[str, Any]) -> bool:
+    async def update_appointment(
+        self, appointment_id: int, update_data: Dict[str, Any]
+    ) -> bool:
         """
         Update an existing appointment in Acuity.
 
@@ -448,7 +478,9 @@ class AcuityService(BaseService):
             logger.error(f"Error updating appointment {appointment_id}: {e}")
             return False
 
-    async def cancel_appointment(self, appointment_id: int, cancellation_reason: str = None) -> bool:
+    async def cancel_appointment(
+        self, appointment_id: int, cancellation_reason: str = None
+    ) -> bool:
         """
         Cancel an appointment in Acuity.
 
@@ -481,7 +513,9 @@ class AcuityService(BaseService):
             logger.error(f"Error cancelling appointment {appointment_id}: {e}")
             return False
 
-    async def reschedule_appointment(self, appointment_id: int, new_datetime: datetime) -> bool:
+    async def reschedule_appointment(
+        self, appointment_id: int, new_datetime: datetime
+    ) -> bool:
         """
         Reschedule an appointment in Acuity.
 
@@ -492,9 +526,13 @@ class AcuityService(BaseService):
         Returns:
             True if rescheduling successful, False otherwise
         """
-        return await self.update_appointment(appointment_id, {"datetime": new_datetime.isoformat()})
+        return await self.update_appointment(
+            appointment_id, {"datetime": new_datetime.isoformat()}
+        )
 
-    async def get_available_times(self, appointment_type_id: int, date: datetime) -> List[Dict[str, Any]]:
+    async def get_available_times(
+        self, appointment_type_id: int, date: datetime
+    ) -> List[Dict[str, Any]]:
         """
         Get available time slots for a specific appointment type and date.
 
@@ -515,20 +553,24 @@ class AcuityService(BaseService):
 
             params = {
                 "appointmentTypeID": appointment_type_id,
-                "date": date.strftime("%Y-%m-%d")
+                "date": date.strftime("%Y-%m-%d"),
             }
 
             response = requests.get(url, headers=headers, params=params)
             response.raise_for_status()
 
             availability = response.json()
-            logger.info(f"Retrieved {len(availability)} available time slots for appointment type {appointment_type_id}")
+            logger.info(
+                f"Retrieved {len(availability)} available time slots for appointment type {appointment_type_id}"
+            )
             return availability
         except Exception as e:
             logger.error(f"Error getting available times: {e}")
             return []
 
-    async def sync_appointment_to_notion(self, appointment_id: int, notion_page_id: str) -> bool:
+    async def sync_appointment_to_notion(
+        self, appointment_id: int, notion_page_id: str
+    ) -> bool:
         """
         Update an Acuity appointment with its associated Notion page ID.
         This is done through custom fields in Acuity.
@@ -544,24 +586,23 @@ class AcuityService(BaseService):
             # First, get the current appointment to check if it has custom fields
             appointment = await self.get_appointment(appointment_id)
             if not appointment:
-                logger.error(f"Could not find appointment {appointment_id} to sync with Notion")
+                logger.error(
+                    f"Could not find appointment {appointment_id} to sync with Notion"
+                )
                 return False
 
             # Add or update custom fields to store Notion page ID
             # NOTE: This assumes a custom field has been created in Acuity with ID "notion_page_id"
             update_data = {
-                "fields": [
-                    {
-                        "id": "notion_page_id",
-                        "value": notion_page_id
-                    }
-                ]
+                "fields": [{"id": "notion_page_id", "value": notion_page_id}]
             }
 
             # Also update the notes field to include the Notion link
             notes = appointment.notes or ""
             if "Notion Page:" not in notes:
-                notion_link = f"Notion Page: https://notion.so/{notion_page_id.replace('-', '')}"
+                notion_link = (
+                    f"Notion Page: https://notion.so/{notion_page_id.replace('-', '')}"
+                )
                 if notes:
                     notes += f"\n\n{notion_link}"
                 else:
@@ -575,7 +616,9 @@ class AcuityService(BaseService):
             logger.error(f"Error syncing appointment {appointment_id} to Notion: {e}")
             return False
 
-    async def process_webhook(self, webhook_data: Dict[str, Any]) -> Optional[AcuityAppointment]:
+    async def process_webhook(
+        self, webhook_data: Dict[str, Any]
+    ) -> Optional[AcuityAppointment]:
         """
         Process a webhook notification from Acuity Scheduling.
 
@@ -596,11 +639,15 @@ class AcuityService(BaseService):
             appointment = await self.get_appointment(appointment_id)
 
             if not appointment:
-                logger.error(f"Could not retrieve appointment {appointment_id} from webhook")
+                logger.error(
+                    f"Could not retrieve appointment {appointment_id} from webhook"
+                )
                 return None
 
             action = webhook_data.get("action")
-            logger.info(f"Processed Acuity webhook: {action} for appointment {appointment_id}")
+            logger.info(
+                f"Processed Acuity webhook: {action} for appointment {appointment_id}"
+            )
 
             return appointment
         except Exception as e:

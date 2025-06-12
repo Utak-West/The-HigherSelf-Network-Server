@@ -24,34 +24,47 @@ from utils.error_handling import ErrorHandler
 try:
     from prometheus_client import Counter, Gauge, Histogram
 
-    CACHE_HITS = Counter(
-        'enhanced_cache_hits',
-        'Cache hit count',
-        ['cache_type']
-    )
-    CACHE_MISSES = Counter(
-        'enhanced_cache_misses',
-        'Cache miss count',
-        ['cache_type']
-    )
+    CACHE_HITS = Counter("enhanced_cache_hits", "Cache hit count", ["cache_type"])
+    CACHE_MISSES = Counter("enhanced_cache_misses", "Cache miss count", ["cache_type"])
     CACHE_SIZE = Gauge(
-        'enhanced_cache_size',
-        'Current number of items in cache',
-        ['cache_type']
+        "enhanced_cache_size", "Current number of items in cache", ["cache_type"]
     )
     CACHE_LATENCY = Histogram(
-        'enhanced_cache_latency',
-        'Latency for cache operations in seconds',
-        ['operation', 'cache_type']
+        "enhanced_cache_latency",
+        "Latency for cache operations in seconds",
+        ["operation", "cache_type"],
     )
     CACHE_ERRORS = Counter(
-        'enhanced_cache_errors',
-        'Cache operation error count',
-        ['operation', 'cache_type']
+        "enhanced_cache_errors",
+        "Cache operation error count",
+        ["operation", "cache_type"],
     )
-    CACHE_HEALTH = Gauge(
-        'enhanced_cache_health',
-        default_ttl: int = 300  # 5 minutes default
+    CACHE_HEALTH = Gauge("enhanced_cache_health", "Cache health status", ["cache_type"])
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+
+
+class CacheType(Enum):
+    """Enumeration of cache types for better organization."""
+
+    NOTION = "notion"
+    AGENT = "agent"
+    VECTOR = "vector"
+    API = "api"
+    MCP = "mcp"
+    WORKFLOW = "workflow"
+    CONFIG = "config"
+    USER = "user"
+    SESSION = "session"
+
+
+class CacheService:
+    """Enhanced cache service with Redis backend."""
+
+    def __init__(
+        self,
+        default_ttl: int = 300,  # 5 minutes default
         logger: Optional[logging.Logger] = None,
     ):
         """

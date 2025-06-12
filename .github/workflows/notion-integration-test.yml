@@ -2,13 +2,13 @@ name: Notion Integration Tests (Mock Mode)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'services/**/*.py'
-      - 'api/**/*.py'
-      - 'tests/**/*.py'
+      - "services/**/*.py"
+      - "api/**/*.py"
+      - "tests/**/*.py"
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 # Add explicit permissions
@@ -26,7 +26,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -142,26 +142,15 @@ jobs:
             # Create conftest.py if it doesn't exist
             if [ ! -f tests/conftest.py ]; then
               mkdir -p tests
-              cat > tests/conftest.py << EOF
-      # import os
-      # import pytest
-      # from unittest.mock import patch, MagicMock
-
-@pytest.fixture(scope="session", autouse=True)
-def set_test_env():
-    """Set test environment variables."""
-    os.environ["TEST_MODE"] = "True"
-    os.environ["DISABLE_WEBHOOKS"] = "True"
-    os.environ["NOTION_API_TOKEN"] = "test_mock_token_not_real"
-
-@pytest.fixture
-def mock_notion_client():
-    """Provide a mock Notion client."""
-    with patch("services.notion_service.AsyncClient") as mock_client:
-        mock_instance = MagicMock()
-        mock_client.return_value = mock_instance
-        yield mock_instance
-EOF
+              echo "import os" > tests/conftest.py
+              echo "import pytest" >> tests/conftest.py
+              echo "from unittest.mock import patch, MagicMock" >> tests/conftest.py
+              echo "" >> tests/conftest.py
+              echo "@pytest.fixture(scope=\"session\", autouse=True)" >> tests/conftest.py
+              echo "def set_test_env():" >> tests/conftest.py
+              echo "    os.environ[\"TEST_MODE\"] = \"True\"" >> tests/conftest.py
+              echo "    os.environ[\"DISABLE_WEBHOOKS\"] = \"True\"" >> tests/conftest.py
+              echo "    os.environ[\"NOTION_API_TOKEN\"] = \"test_mock_token_not_real\"" >> tests/conftest.py
             fi
 
             # Run tests with proper error handling
@@ -169,11 +158,8 @@ EOF
           else
             echo "Test file not found, creating minimal test to pass CI"
             mkdir -p tests/notion_integration
-            cat > tests/notion_integration/test_minimal.py << EOF
-def test_minimal():
-    """Minimal test to pass CI."""
-    assert True
-EOF
+            echo "def test_minimal():" > tests/notion_integration/test_minimal.py
+            echo "    assert True" >> tests/notion_integration/test_minimal.py
             python -m pytest tests/notion_integration/ -v
           fi
 

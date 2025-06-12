@@ -17,6 +17,7 @@ from services.base_service import BaseService, ServiceCredentials
 
 class AIProviderCredentials(ServiceCredentials):
     """Credentials for AI Provider services."""
+
     provider_type: str  # "openai", "anthropic", etc.
     api_key: str
     organization_id: Optional[str] = None
@@ -24,14 +25,18 @@ class AIProviderCredentials(ServiceCredentials):
     class Config:
         env_prefix = "AI_PROVIDER_"
 
-@field_validator('provider_type', mode='before')
+    @field_validator("provider_type", mode="before")
+    @classmethod
     def validate_provider_type(cls, v):
         valid_providers = ["openai", "anthropic", "custom"]
         if v not in valid_providers:
-            raise ValueError(f"Provider type must be one of: {', '.join(valid_providers)}")
+            raise ValueError(
+                f"Provider type must be one of: {', '.join(valid_providers)}"
+            )
         return v
 
-@field_validator('api_key', mode='before')
+    @field_validator("api_key", mode="before")
+    @classmethod
     def validate_api_key(cls, v):
         if not v:
             raise ValueError("API key is required")
@@ -40,17 +45,20 @@ class AIProviderCredentials(ServiceCredentials):
 
 class AIMessage(BaseModel):
     """Model representing a message in an AI conversation."""
+
     role: str  # "system", "user", "assistant"
     content: str
 
-@field_validator('role', mode='before')
+    @field_validator("role", mode="before")
+    @classmethod
     def validate_role(cls, v):
         valid_roles = ["system", "user", "assistant", "function"]
         if v not in valid_roles:
             raise ValueError(f"Role must be one of: {', '.join(valid_roles)}")
         return v
 
-@field_validator('content', mode='before')
+    @field_validator("content", mode="before")
+    @classmethod
     def validate_content(cls, v):
         if not v:
             raise ValueError("Content is required")
@@ -59,6 +67,7 @@ class AIMessage(BaseModel):
 
 class AIRequest(BaseModel):
     """Model representing a request to an AI provider."""
+
     messages: List[AIMessage]
     model: str
     max_tokens: Optional[int] = None
@@ -71,25 +80,29 @@ class AIRequest(BaseModel):
     notion_page_id: Optional[str] = None
     meta_data: Dict[str, Any] = Field(default_factory=dict)
 
-@field_validator('messages', mode='before')
+    @field_validator("messages", mode="before")
+    @classmethod
     def validate_messages(cls, v):
         if not v:
             raise ValueError("At least one message is required")
         return v
 
-@field_validator('model', mode='before')
+    @field_validator("model", mode="before")
+    @classmethod
     def validate_model(cls, v):
         if not v:
             raise ValueError("Model is required")
         return v
 
-@field_validator('temperature', mode='before')
+    @field_validator("temperature", mode="before")
+    @classmethod
     def validate_temperature(cls, v):
         if v is not None and (v < 0 or v > 2):
             raise ValueError("Temperature must be between 0 and 2")
         return v
 
-@field_validator('top_p', mode='before')
+    @field_validator("top_p", mode="before")
+    @classmethod
     def validate_top_p(cls, v):
         if v is not None and (v < 0 or v > 1):
             raise ValueError("Top_p must be between 0 and 1")
@@ -98,6 +111,7 @@ class AIRequest(BaseModel):
 
 class AIResponse(BaseModel):
     """Model representing a response from an AI provider."""
+
     id: str
     model: str
     provider: str
@@ -145,7 +159,7 @@ class AIProviderService(BaseService):
                     service_name="ai_provider",
                     provider_type="openai",
                     api_key=openai_api_key,
-                    organization_id=openai_org_id
+                    organization_id=openai_org_id,
                 )
                 logger.info("OpenAI provider initialized")
             except Exception as e:
@@ -159,7 +173,7 @@ class AIProviderService(BaseService):
                 self.providers["anthropic"] = AIProviderCredentials(
                     service_name="ai_provider",
                     provider_type="anthropic",
-                    api_key=anthropic_api_key
+                    api_key=anthropic_api_key,
                 )
                 logger.info("Anthropic provider initialized")
             except Exception as e:
@@ -202,7 +216,9 @@ class AIProviderService(BaseService):
             logger.error(f"Error validating {provider_name} connection: {e}")
             return False
 
-    async def _validate_openai_connection(self, credentials: AIProviderCredentials) -> bool:
+    async def _validate_openai_connection(
+        self, credentials: AIProviderCredentials
+    ) -> bool:
         """
         Validate connection to OpenAI.
 
@@ -214,20 +230,21 @@ class AIProviderService(BaseService):
         """
         headers = {
             "Authorization": f"Bearer {credentials.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         if credentials.organization_id:
             headers["OpenAI-Organization"] = credentials.organization_id
 
         response = await self.async_get(
-            "https://api.openai.com/v1/models",
-            headers=headers
+            "https://api.openai.com/v1/models", headers=headers
         )
 
         return "data" in response
 
-    async def _validate_anthropic_connection(self, credentials: AIProviderCredentials) -> bool:
+    async def _validate_anthropic_connection(
+        self, credentials: AIProviderCredentials
+    ) -> bool:
         """
         Validate connection to Anthropic.
 
@@ -240,16 +257,14 @@ class AIProviderService(BaseService):
         headers = {
             "x-api-key": credentials.api_key,
             "Content-Type": "application/json",
-            "anthropic-version": "2023-06-01"
+            "anthropic-version": "2023-06-01",
         }
 
         # We can't just check models with Anthropic, so use a minimal message
         data = {
             "model": "claude-3-haiku-20240307",
             "max_tokens": 10,
-            "messages": [
-                {"role": "user", "content": "Hello"}
-            ]
+            "messages": [{"role": "user", "content": "Hello"}],
         }
 
         try:
@@ -257,7 +272,7 @@ class AIProviderService(BaseService):
                 "https://api.anthropic.com/v1/messages",
                 headers=headers,
                 json=data,
-                timeout=5  # Short timeout for validation
+                timeout=5,  # Short timeout for validation
             )
             return True
         except Exception as e:
@@ -320,7 +335,7 @@ class AIProviderService(BaseService):
 
         headers = {
             "Authorization": f"Bearer {provider_credentials.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         if provider_credentials.organization_id:
@@ -329,7 +344,7 @@ class AIProviderService(BaseService):
         # Build OpenAI API request
         api_request = {
             "model": request.model,
-            "messages": [m.dict() for m in request.messages]
+            "messages": [m.dict() for m in request.messages],
         }
 
         # Add optional parameters if present
@@ -352,7 +367,7 @@ class AIProviderService(BaseService):
             response = await self.async_post(
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
-                json=api_request
+                json=api_request,
             )
 
             # Process OpenAI response
@@ -379,18 +394,22 @@ class AIProviderService(BaseService):
                     provider="openai",
                     content=content,
                     usage=response.get("usage", {}),
-                    created_at=datetime.fromtimestamp(response.get("created", datetime.now().timestamp())),
+                    created_at=datetime.fromtimestamp(
+                        response.get("created", datetime.now().timestamp())
+                    ),
                     finish_reason=choice.get("finish_reason"),
                     function_call=function_call,
                     notion_page_id=request.notion_page_id,
-                    meta_data=request.meta_data.copy()
+                    meta_data=request.meta_data.copy(),
                 )
 
                 # If Notion integration is enabled
                 if request.notion_page_id:
                     # Add metadata indicating this is managed by Notion
                     ai_response.meta_data["notion_managed"] = True
-                    ai_response.meta_data["notion_sync_time"] = datetime.now().isoformat()
+                    ai_response.meta_data[
+                        "notion_sync_time"
+                    ] = datetime.now().isoformat()
 
                 return ai_response
             else:
@@ -400,7 +419,9 @@ class AIProviderService(BaseService):
             logger.error(f"Error calling OpenAI API: {e}")
             return None
 
-    async def _process_anthropic_request(self, request: AIRequest) -> Optional[AIResponse]:
+    async def _process_anthropic_request(
+        self, request: AIRequest
+    ) -> Optional[AIResponse]:
         """
         Process a request using Anthropic.
 
@@ -415,7 +436,7 @@ class AIProviderService(BaseService):
         headers = {
             "x-api-key": provider_credentials.api_key,
             "Content-Type": "application/json",
-            "anthropic-version": "2023-06-01"
+            "anthropic-version": "2023-06-01",
         }
 
         # Convert message format from OpenAI to Anthropic
@@ -431,16 +452,13 @@ class AIProviderService(BaseService):
         # Add non-system messages
         for msg in request.messages:
             if msg.role != "system":
-                anthropic_messages.append({
-                    "role": msg.role,
-                    "content": msg.content
-                })
+                anthropic_messages.append({"role": msg.role, "content": msg.content})
 
         # Build Anthropic API request
         api_request = {
             "model": request.model,
             "messages": anthropic_messages,
-            "max_tokens": request.max_tokens or 1024
+            "max_tokens": request.max_tokens or 1024,
         }
 
         # Add system content if present
@@ -458,7 +476,7 @@ class AIProviderService(BaseService):
             response = await self.async_post(
                 "https://api.anthropic.com/v1/messages",
                 headers=headers,
-                json=api_request
+                json=api_request,
             )
 
             # Process Anthropic response
@@ -473,23 +491,29 @@ class AIProviderService(BaseService):
                     provider="anthropic",
                     content=content,
                     usage={
-                        "input_tokens": response.get("usage", {}).get("input_tokens", 0),
-                        "output_tokens": response.get("usage", {}).get("output_tokens", 0),
-                        "total_tokens": response.get("usage", {}).get("input_tokens", 0) +
-                                       response.get("usage", {}).get("output_tokens", 0)
+                        "input_tokens": response.get("usage", {}).get(
+                            "input_tokens", 0
+                        ),
+                        "output_tokens": response.get("usage", {}).get(
+                            "output_tokens", 0
+                        ),
+                        "total_tokens": response.get("usage", {}).get("input_tokens", 0)
+                        + response.get("usage", {}).get("output_tokens", 0),
                     },
                     created_at=datetime.now(),  # Anthropic doesn't return a creation timestamp
                     finish_reason=response.get("stop_reason"),
                     function_call=None,  # Anthropic doesn't support function calling in the same way
                     notion_page_id=request.notion_page_id,
-                    meta_data=request.meta_data.copy()
+                    meta_data=request.meta_data.copy(),
                 )
 
                 # If Notion integration is enabled
                 if request.notion_page_id:
                     # Add metadata indicating this is managed by Notion
                     ai_response.meta_data["notion_managed"] = True
-                    ai_response.meta_data["notion_sync_time"] = datetime.now().isoformat()
+                    ai_response.meta_data[
+                        "notion_sync_time"
+                    ] = datetime.now().isoformat()
 
                 return ai_response
             else:

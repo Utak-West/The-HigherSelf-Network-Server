@@ -34,7 +34,7 @@ from services.notion_service import NotionService
 from workflow.transitions import ConditionGroup, TransitionCondition, TransitionTrigger
 
 # Type variable for state data
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class AgentAssignment(BaseModel):
@@ -42,18 +42,28 @@ class AgentAssignment(BaseModel):
     Defines how agents are assigned to a workflow state.
     Supports both static assignments and dynamic rules.
     """
+
     agent_id: Optional[str] = None
     agent_role: Optional[str] = None
     assignment_rule: Optional[str] = None
     fallback_agent_ids: List[str] = Field(default_factory=list)
     priority: int = 1
-    selection_strategy: str = "first_available"  # first_available, round_robin, load_balancing
+    selection_strategy: str = (
+        "first_available"  # first_available, round_robin, load_balancing
+    )
     context_dependent: bool = False
     context_condition: Optional[Dict[str, Any]] = None
     timeout_seconds: Optional[int] = None
 
-@field_validator('selection_strategy', mode='before')    def validate_selection_strategy(cls, v):
-        valid_strategies = ['first_available', 'round_robin', 'load_balancing', 'semantic_match']
+    @field_validator("selection_strategy", mode="before")
+    @classmethod
+    def validate_selection_strategy(cls, v):
+        valid_strategies = [
+            "first_available",
+            "round_robin",
+            "load_balancing",
+            "semantic_match",
+        ]
         if v not in valid_strategies:
             raise ValueError(f"Strategy must be one of {valid_strategies}")
         return v
@@ -63,6 +73,7 @@ class StateTimeout(BaseModel):
     """
     Defines timeout behavior for a workflow state.
     """
+
     duration_seconds: int
     action: str = "transition"  # transition, retry, alert, fail
     transition_on_timeout: Optional[str] = None
@@ -75,11 +86,14 @@ class ErrorHandling(BaseModel):
     """
     Defines error handling behavior for a workflow state.
     """
+
     retry_count: int = 0
     retry_delay_seconds: int = 60
     exponential_backoff: bool = False
     failure_transition: Optional[str] = None
-    error_handlers: Dict[str, str] = Field(default_factory=dict)  # error_type -> handler_function
+    error_handlers: Dict[str, str] = Field(
+        default_factory=dict
+    )  # error_type -> handler_function
     fallback_agent_id: Optional[str] = None
 
 
@@ -88,6 +102,7 @@ class WorkflowState(BaseModel, Generic[T]):
     Represents a single state in a workflow state machine.
     All state information is persisted in Notion.
     """
+
     name: str
     description: str
     is_terminal: bool = False
@@ -113,15 +128,19 @@ class WorkflowState(BaseModel, Generic[T]):
             "description": self.description,
             "is_terminal": self.is_terminal,
             "available_transitions": self.available_transitions,
-            "agent_assignments": [assignment.dict() for assignment in self.agent_assignments],
+            "agent_assignments": [
+                assignment.dict() for assignment in self.agent_assignments
+            ],
             "required_data_points": self.required_data_points,
             "entry_conditions": self.entry_conditions,
             "exit_conditions": self.exit_conditions,
             "timeout": self.timeout.dict() if self.timeout else None,
-            "error_handling": self.error_handling.dict() if self.error_handling else None,
+            "error_handling": (
+                self.error_handling.dict() if self.error_handling else None
+            ),
             "max_time_in_state_seconds": self.max_time_in_state_seconds,
             "auto_transition_after_seconds": self.auto_transition_after_seconds,
-            "auto_transition_to": self.auto_transition_to
+            "auto_transition_to": self.auto_transition_to,
         }
 
 
@@ -129,6 +148,7 @@ class TransitionResult(BaseModel):
     """
     Result of a state transition attempt.
     """
+
     success: bool
     instance: Optional[WorkflowInstance] = None
     error: Optional[str] = None
@@ -148,6 +168,7 @@ class StateTransition(BaseModel):
     Represents a transition between workflow states.
     Conditions and triggers determine when transitions occur.
     """
+
     from_state: str
     to_state: str
     name: str
@@ -166,7 +187,9 @@ class StateTransition(BaseModel):
     precondition_actions: List[str] = Field(default_factory=list)
     postcondition_actions: List[str] = Field(default_factory=list)
     failure_actions: List[str] = Field(default_factory=list)
-    conditional_routing: Dict[str, str] = Field(default_factory=dict)  # condition -> to_state
+    conditional_routing: Dict[str, str] = Field(
+        default_factory=dict
+    )  # condition -> to_state
 
     class Config:
         frozen = True
@@ -192,13 +215,11 @@ class StateTransition(BaseModel):
             "precondition_actions": self.precondition_actions,
             "postcondition_actions": self.postcondition_actions,
             "failure_actions": self.failure_actions,
-            "conditional_routing": self.conditional_routing
+            "conditional_routing": self.conditional_routing,
         }
 
     async def evaluate_conditions(
-        self,
-        instance: WorkflowInstance,
-        condition_evaluator: Optional[Callable] = None
+        self, instance: WorkflowInstance, condition_evaluator: Optional[Callable] = None
     ) -> bool:
         """
         Evaluate all conditions for this transition.
@@ -227,12 +248,15 @@ class StateTransition(BaseModel):
             if isinstance(condition, str):
                 # String reference to condition - would need to be looked up
                 # For now, just log that we can't evaluate it
-                logger.warning(f"String condition reference '{condition}' cannot be evaluated directly")
+                logger.warning(
+                    f"String condition reference '{condition}' cannot be evaluated directly"
+                )
                 condition_results.append(False)
             elif isinstance(condition, dict):
                 # Convert dict to TransitionCondition
                 try:
                     from workflow.transitions import TransitionCondition
+
                     cond = TransitionCondition.from_dict(condition)
                     condition_results.append(cond.is_satisfied(context_data))
                 except Exception as e:
@@ -244,6 +268,7 @@ class StateTransition(BaseModel):
         for group in self.condition_groups:
             try:
                 from workflow.transitions import ConditionGroup
+
                 group_obj = ConditionGroup.from_dict(group)
                 group_results.append(group_obj.is_satisfied(context_data))
             except Exception as e:
@@ -276,7 +301,9 @@ class StateTransition(BaseModel):
         for condition_str, target_state in self.conditional_routing.items():
             try:
                 # Parse condition as a field path and expected value
-                field_path, operator, expected_value = self._parse_condition_string(condition_str)
+                field_path, operator, expected_value = self._parse_condition_string(
+                    condition_str
+                )
 
                 # Get the actual value
                 actual_value = self._get_field_value(context_data, field_path)
@@ -285,7 +312,9 @@ class StateTransition(BaseModel):
                 if self._compare_values(actual_value, operator, expected_value):
                     return target_state
             except Exception as e:
-                logger.error(f"Error evaluating conditional routing '{condition_str}': {e}")
+                logger.error(
+                    f"Error evaluating conditional routing '{condition_str}': {e}"
+                )
 
         return None
 
@@ -370,7 +399,7 @@ class WorkflowStateMachine:
         states: Dict[str, WorkflowState],
         transitions: List[StateTransition],
         initial_state: str,
-        notion_service: Optional[NotionService] = None
+        notion_service: Optional[NotionService] = None,
     ):
         """
         Initialize the workflow state machine.
@@ -400,26 +429,36 @@ class WorkflowStateMachine:
 
         # Set up logger
         self.logger = logger.bind(workflow_id=workflow_id)
-        self.logger.info(f"Workflow '{name}' initialized with {len(states)} states and {len(transitions)} transitions")
+        self.logger.info(
+            f"Workflow '{name}' initialized with {len(states)} states and {len(transitions)} transitions"
+        )
 
     def _validate(self):
         """Validate the state machine structure."""
         # Check that initial state exists
         if self.initial_state not in self.states:
-            raise ValueError(f"Initial state '{self.initial_state}' not found in states")
+            raise ValueError(
+                f"Initial state '{self.initial_state}' not found in states"
+            )
 
         # Check that all transitions reference valid states
         for transition in self.transitions:
             if transition.from_state not in self.states:
-                raise ValueError(f"Transition '{transition.name}' references unknown from_state '{transition.from_state}'")
+                raise ValueError(
+                    f"Transition '{transition.name}' references unknown from_state '{transition.from_state}'"
+                )
             if transition.to_state not in self.states:
-                raise ValueError(f"Transition '{transition.name}' references unknown to_state '{transition.to_state}'")
+                raise ValueError(
+                    f"Transition '{transition.name}' references unknown to_state '{transition.to_state}'"
+                )
 
         # Check that all states have valid available transitions
         for state_name, state in self.states.items():
             for transition_name in state.available_transitions:
                 if not any(t.name == transition_name for t in self.transitions):
-                    raise ValueError(f"State '{state_name}' references unknown transition '{transition_name}'")
+                    raise ValueError(
+                        f"State '{state_name}' references unknown transition '{transition_name}'"
+                    )
 
     @property
     async def notion_service(self) -> NotionService:
@@ -432,7 +471,7 @@ class WorkflowStateMachine:
         self,
         business_entity_id: str,
         context_data: Dict[str, Any] = None,
-        instance_id: Optional[str] = None
+        instance_id: Optional[str] = None,
     ) -> WorkflowInstance:
         """
         Create a new instance of this workflow in Notion.
@@ -461,7 +500,7 @@ class WorkflowStateMachine:
             context_data=context_data or {},
             created_at=now,
             last_transition_date=now,
-            history_log=[f"Workflow instance created in state: {self.initial_state}"]
+            history_log=[f"Workflow instance created in state: {self.initial_state}"],
         )
 
         instance_page_id = await notion_svc.create_page(instance)
@@ -470,7 +509,9 @@ class WorkflowStateMachine:
         # Add to active instances
         self.active_instances[instance_id] = self.initial_state
 
-        self.logger.info(f"Created workflow instance {instance_id} in state {self.initial_state}")
+        self.logger.info(
+            f"Created workflow instance {instance_id} in state {self.initial_state}"
+        )
         return instance
 
     async def get_instance(self, instance_id: str) -> Optional[WorkflowInstance]:
@@ -488,9 +529,7 @@ class WorkflowStateMachine:
         # Query for the instance
         filter_conditions = {
             "property": "instance_id",
-            "rich_text": {
-                "equals": instance_id
-            }
+            "rich_text": {"equals": instance_id},
         }
 
         results = await notion_svc.query_database(WorkflowInstance, filter_conditions)
@@ -512,7 +551,7 @@ class WorkflowStateMachine:
         transition_name: str,
         agent_id: str,
         action_description: str = None,
-        transition_data: Dict[str, Any] = None
+        transition_data: Dict[str, Any] = None,
     ) -> Tuple[bool, WorkflowInstance]:
         """
         Transition a workflow instance to a new state in Notion.
@@ -539,24 +578,34 @@ class WorkflowStateMachine:
         current_state = self.states.get(current_state_name)
 
         if not current_state:
-            self.logger.error(f"Current state '{current_state_name}' not found in workflow definition")
+            self.logger.error(
+                f"Current state '{current_state_name}' not found in workflow definition"
+            )
             return False, instance
 
         # Check if transition is valid from current state
         if transition_name not in current_state.available_transitions:
-            self.logger.error(f"Transition '{transition_name}' not available from state '{current_state_name}'")
+            self.logger.error(
+                f"Transition '{transition_name}' not available from state '{current_state_name}'"
+            )
             return False, instance
 
         # Find the transition
-        transition = next((t for t in self.transitions if t.name == transition_name), None)
+        transition = next(
+            (t for t in self.transitions if t.name == transition_name), None
+        )
         if not transition:
-            self.logger.error(f"Transition '{transition_name}' not found in workflow definition")
+            self.logger.error(
+                f"Transition '{transition_name}' not found in workflow definition"
+            )
             return False, instance
 
         # Get target state
         target_state = self.states.get(transition.to_state)
         if not target_state:
-            self.logger.error(f"Target state '{transition.to_state}' not found in workflow definition")
+            self.logger.error(
+                f"Target state '{transition.to_state}' not found in workflow definition"
+            )
             return False, instance
 
         # Prepare the transition description
@@ -567,8 +616,7 @@ class WorkflowStateMachine:
         instance.current_state = transition.to_state
         instance.last_transition_date = datetime.now()
         instance.add_history_entry(
-            action=f"[{agent_id}] {action_description}",
-            details=transition_data
+            action=f"[{agent_id}] {action_description}", details=transition_data
         )
 
         # If target state is terminal, update status accordingly
@@ -587,7 +635,9 @@ class WorkflowStateMachine:
             # Update active instances cache
             self.active_instances[instance_id] = transition.to_state
 
-            self.logger.info(f"Transitioned instance {instance_id} from {current_state_name} to {transition.to_state}")
+            self.logger.info(
+                f"Transitioned instance {instance_id} from {current_state_name} to {transition.to_state}"
+            )
 
             # If terminal state, remove from active instances
             if target_state.is_terminal:
@@ -610,18 +660,8 @@ class WorkflowStateMachine:
         # Query for active instances of this workflow
         filter_conditions = {
             "and": [
-                {
-                    "property": "workflow_id",
-                    "rich_text": {
-                        "equals": self.workflow_id
-                    }
-                },
-                {
-                    "property": "status",
-                    "select": {
-                        "equals": "Active"
-                    }
-                }
+                {"property": "workflow_id", "rich_text": {"equals": self.workflow_id}},
+                {"property": "status", "select": {"equals": "Active"}},
             ]
         }
 
@@ -657,16 +697,20 @@ class WorkflowStateMachine:
         # Add states
         for state_name, state in self.states.items():
             if state.is_terminal:
-                mermaid += f"    state \"{state_name}\" as {state_name.replace(' ', '_')}\n"
+                mermaid += (
+                    f"    state \"{state_name}\" as {state_name.replace(' ', '_')}\n"
+                )
             elif current_state and state_name == current_state:
                 mermaid += f"    state \"{state_name}\" as {state_name.replace(' ', '_')} <<highlight>>\n"
             else:
-                mermaid += f"    state \"{state_name}\" as {state_name.replace(' ', '_')}\n"
+                mermaid += (
+                    f"    state \"{state_name}\" as {state_name.replace(' ', '_')}\n"
+                )
 
         # Add transitions
         for transition in self.transitions:
-            from_state = transition.from_state.replace(' ', '_')
-            to_state = transition.to_state.replace(' ', '_')
+            from_state = transition.from_state.replace(" ", "_")
+            to_state = transition.to_state.replace(" ", "_")
             mermaid += f"    {from_state} --> {to_state}: {transition.name}\n"
 
         # Add start and end markers

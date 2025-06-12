@@ -7,7 +7,7 @@
       "primaryAgent": "ConflictCoordinator",
       "supportAgents": [
         "ContextAnalyzer",
-        "FileClassifier", 
+        "FileClassifier",
         "ConflictResolver",
         "ValidationAgent"
       ]
@@ -26,7 +26,7 @@
         },
         {
           "name": "safe_backup",
-          "agent": "ConflictCoordinator", 
+          "agent": "ConflictCoordinator",
           "actions": [
             "create_timestamp_stash",
             "verify_stash_integrity",
@@ -75,14 +75,14 @@
         "description": "Pydantic V2 migration fixes from PR #4"
       },
       "dependency_updates": {
-        "priority": "high", 
+        "priority": "high",
         "strategy": "preserve_pr4_changes",
         "files": ["requirements.txt"],
         "description": "python-dotenv version fix from PR #4"
       },
       "ci_configuration": {
         "priority": "high",
-        "strategy": "preserve_pr4_changes", 
+        "strategy": "preserve_pr4_changes",
         "files": [".github/workflows/enhanced-cicd.yml"],
         "description": "CI environment variables from PR #4"
       },
