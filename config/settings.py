@@ -14,12 +14,11 @@ from dotenv import load_dotenv  # Added
 # Load .env file at the very beginning when this module is imported
 load_dotenv()  # Added
 
-# Using Pydantic v2 with pydantic-settings
-from pydantic import AnyHttpUrl, Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+# Since we're now using Pydantic v1 as specified in requirements.txt
+from pydantic import AnyHttpUrl, BaseSettings, Field, field_validator
 
-# Set to True since we're using Pydantic v2
-PYDANTIC_V2 = True
+# Explicitly set to False since we're using Pydantic v1
+PYDANTIC_V2 = False
 
 
 class LogLevel(str, Enum):
@@ -44,7 +43,7 @@ class Environment(str, Enum):
 class NotionSettings(BaseSettings):
     """Notion API configuration."""
 
-    api_token: str = Field(..., description="Notion API token")
+    api_token: str = Field(..., env="NOTION_API_TOKEN")
 
     @property
     def is_token_valid(self) -> bool:
@@ -53,56 +52,57 @@ class NotionSettings(BaseSettings):
             self.api_token and len(self.api_token) >= 50
         )  # Notion tokens are typically very long
 
-    parent_page_id: Optional[str] = Field(None, description="Parent page ID for database creation")
+    parent_page_id: Optional[str] = Field(None, env="NOTION_PARENT_PAGE_ID")
 
     # Database IDs
-    business_entities_db: Optional[str] = Field(None, description="Business entities database ID")
-    contacts_profiles_db: Optional[str] = Field(None, description="Contacts profiles database ID")
-    community_hub_db: Optional[str] = Field(None, description="Community hub database ID")
-    products_services_db: Optional[str] = Field(None, description="Products services database ID")
+    business_entities_db: Optional[str] = Field(None, env="NOTION_BUSINESS_ENTITIES_DB")
+    contacts_profiles_db: Optional[str] = Field(None, env="NOTION_CONTACTS_PROFILES_DB")
+    community_hub_db: Optional[str] = Field(None, env="NOTION_COMMUNITY_HUB_DB")
+    products_services_db: Optional[str] = Field(None, env="NOTION_PRODUCTS_SERVICES_DB")
     active_workflow_instances_db: Optional[str] = Field(
-        None, description="Active workflow instances database ID"
+        None, env="NOTION_ACTIVE_WORKFLOW_INSTANCES_DB"
     )
     marketing_campaigns_db: Optional[str] = Field(
-        None, description="Marketing campaigns database ID"
+        None, env="NOTION_MARKETING_CAMPAIGNS_DB"
     )
-    feedback_surveys_db: Optional[str] = Field(None, description="Feedback surveys database ID")
-    rewards_bounties_db: Optional[str] = Field(None, description="Rewards bounties database ID")
-    tasks_db: Optional[str] = Field(None, description="Tasks database ID")
+    feedback_surveys_db: Optional[str] = Field(None, env="NOTION_FEEDBACK_SURVEYS_DB")
+    rewards_bounties_db: Optional[str] = Field(None, env="NOTION_REWARDS_BOUNTIES_DB")
+    tasks_db: Optional[str] = Field(None, env="NOTION_TASKS_DB")
     agent_communication_db: Optional[str] = Field(
-        None, description="Agent communication database ID"
+        None, env="NOTION_AGENT_COMMUNICATION_DB"
     )
-    agent_registry_db: Optional[str] = Field(None, description="Agent registry database ID")
-    api_integrations_db: Optional[str] = Field(None, description="API integrations database ID")
+    agent_registry_db: Optional[str] = Field(None, env="NOTION_AGENT_REGISTRY_DB")
+    api_integrations_db: Optional[str] = Field(None, env="NOTION_API_INTEGRATIONS_DB")
     data_transformations_db: Optional[str] = Field(
-        None, description="Data transformations database ID"
+        None, env="NOTION_DATA_TRANSFORMATIONS_DB"
     )
     notifications_templates_db: Optional[str] = Field(
-        None, description="Notifications templates database ID"
+        None, env="NOTION_NOTIFICATIONS_TEMPLATES_DB"
     )
-    use_cases_db: Optional[str] = Field(None, description="Use cases database ID")
-    workflows_library_db: Optional[str] = Field(None, description="Workflows library database ID")
+    use_cases_db: Optional[str] = Field(None, env="NOTION_USE_CASES_DB")
+    workflows_library_db: Optional[str] = Field(None, env="NOTION_WORKFLOWS_LIBRARY_DB")
 
-    model_config = SettingsConfigDict(
-        env_prefix="NOTION_",
-        case_sensitive=False,
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="allow",
-    )
+    if PYDANTIC_V2:
+        # This code will not be used since PYDANTIC_V2 is False
+        @field_validator("api_token")
+        def validate_api_token(cls, v):
+            """Validate Notion API token."""
+            if not v or len(v) < 50:
+                raise ValueError(
+                    "Invalid Notion API token - must be at least 50 characters"
+                )
+            return v
 
-    @field_validator("api_token")
-    @classmethod
-    def validate_api_token(cls, v):
-        """Validate Notion API token."""
-        if not v:
-            import os
-            if os.environ.get("TEST_MODE", "").lower() == "true" or os.environ.get("TESTING_MODE", "").lower() == "true":
-                return "test_token_12345678901234567890123456789012345678901234567890"
-            raise ValueError("Notion API token is required")
-        if len(v) < 50:
-            raise ValueError("Invalid Notion API token - must be at least 50 characters")
-        return v
+    else:
+
+        @field_validator("api_token")
+        def validate_api_token(cls, v):
+            """Validate Notion API token."""
+            if not v or len(v) < 50:
+                raise ValueError(
+                    "Invalid Notion API token - must be at least 50 characters"
+                )
+            return v
 
     def get_database_mappings(self) -> Dict[str, str]:
         """Get database mappings for Notion service."""
@@ -129,30 +129,34 @@ class NotionSettings(BaseSettings):
 class ServerSettings(BaseSettings):
     """Server configuration."""
 
-    host: str = Field("0.0.0.0", description="Server host")
-    port: int = Field(8000, description="Server port")
-    reload: bool = Field(False, description="Server reload")
-    workers: int = Field(2, description="Server workers")  # Optimized for 4-core SiteGround plan
-    log_level: LogLevel = Field(LogLevel.INFO, description="Log level")
-    json_logs: bool = Field(False, description="JSON logs")
-    log_file: Optional[str] = Field("logs/app.log", description="Log file")
-    webhook_secret: str = Field(..., description="Webhook secret")
+    host: str = Field("0.0.0.0", env="SERVER_HOST")
+    port: int = Field(8000, env="SERVER_PORT")
+    reload: bool = Field(False, env="SERVER_RELOAD")
+    workers: int = Field(
+        2, env="SERVER_WORKERS"
+    )  # Optimized for 4-core SiteGround plan
+    log_level: LogLevel = Field(LogLevel.INFO, env="LOG_LEVEL")
+    json_logs: bool = Field(False, env="JSON_LOGS")
+    log_file: Optional[str] = Field("logs/app.log", env="LOG_FILE")
+    webhook_secret: str = Field(..., env="WEBHOOK_SECRET")
 
-    model_config = SettingsConfigDict(
-        env_prefix="SERVER_",
-        case_sensitive=False,
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="allow",
-    )
+    if PYDANTIC_V2:
 
-    @field_validator("port")
-    @classmethod
-    def validate_port(cls, v):
-        """Validate port number."""
-        if not 1024 <= v <= 65535:
-            raise ValueError("Port must be between 1024 and 65535")
-        return v
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1024 <= v <= 65535:
+                raise ValueError("Port must be between 1024 and 65535")
+            return v
+
+    else:
+
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1024 <= v <= 65535:
+                raise ValueError("Port must be between 1024 and 65535")
+            return v
 
 
 class RedisSettings(BaseSettings):
@@ -163,82 +167,102 @@ class RedisSettings(BaseSettings):
     """
 
     # Connection settings
-    uri: str = Field(default="redis://localhost:6379/0", description="Redis URI")
-    host: str = Field(default="localhost", description="Redis host")
-    port: int = Field(default=6379, description="Redis port")
-    database: int = Field(default=0, description="Redis database")
-    password: Optional[str] = Field(default="", description="Redis password")
-    username: Optional[str] = Field(default="default", description="Redis username")
+    uri: str = Field(default="redis://localhost:6379/0", env="REDIS_URI")
+    host: str = Field(default="localhost", env="REDIS_HOST")
+    port: int = Field(default=6379, env="REDIS_PORT")
+    database: int = Field(default=0, env="REDIS_DATABASE")
+    password: Optional[str] = Field(default="", env="REDIS_PASSWORD")
+    username: Optional[str] = Field(default="default", env="REDIS_USERNAME")
 
     # Connection pool settings - Optimized for SiteGround
-    max_connections: int = Field(default=8, description="Redis max connections")
-    timeout: int = Field(default=5, description="Redis timeout")
-    socket_connect_timeout: int = Field(default=5, description="Redis socket connect timeout")
-    socket_timeout: int = Field(default=5, description="Redis socket timeout")
-    health_check_interval: int = Field(default=30, description="Redis health check interval")
+    max_connections: int = Field(default=8, env="REDIS_MAX_CONNECTIONS")
+    timeout: int = Field(default=5, env="REDIS_TIMEOUT")
+    socket_connect_timeout: int = Field(default=5, env="REDIS_SOCKET_CONNECT_TIMEOUT")
+    socket_timeout: int = Field(default=5, env="REDIS_SOCKET_TIMEOUT")
+    health_check_interval: int = Field(default=30, env="REDIS_HEALTH_CHECK_INTERVAL")
 
     # Security settings
-    ssl_enabled: bool = Field(default=False, description="Redis SSL enabled")
-    ssl_cert_reqs: str = Field(default="required", description="Redis SSL cert reqs")
-    ssl_ca_certs: Optional[str] = Field(default=None, description="Redis SSL CA certs")
-    ssl_certfile: Optional[str] = Field(default=None, description="Redis SSL cert file")
-    ssl_keyfile: Optional[str] = Field(default=None, description="Redis SSL key file")
+    ssl_enabled: bool = Field(default=False, env="REDIS_SSL")
+    ssl_cert_reqs: str = Field(default="required", env="REDIS_SSL_CERT_REQS")
+    ssl_ca_certs: Optional[str] = Field(default=None, env="REDIS_SSL_CA_CERTS")
+    ssl_certfile: Optional[str] = Field(default=None, env="REDIS_SSL_CERTFILE")
+    ssl_keyfile: Optional[str] = Field(default=None, env="REDIS_SSL_KEYFILE")
 
     # Feature flags
-    cache_enabled: bool = Field(default=True, description="Redis cache enabled")
-    pubsub_enabled: bool = Field(default=True, description="Redis pubsub enabled")
-    session_store_enabled: bool = Field(default=True, description="Redis session store enabled")
-    rate_limiting_enabled: bool = Field(default=True, description="Redis rate limiting enabled")
+    cache_enabled: bool = Field(default=True, env="REDIS_CACHE_ENABLED")
+    pubsub_enabled: bool = Field(default=True, env="REDIS_PUBSUB_ENABLED")
+    session_store_enabled: bool = Field(default=True, env="REDIS_SESSION_STORE_ENABLED")
+    rate_limiting_enabled: bool = Field(default=True, env="REDIS_RATE_LIMITING_ENABLED")
 
     # Performance settings
-    retry_on_timeout: bool = Field(default=True, description="Redis retry on timeout")
-    retry_on_error: bool = Field(default=True, description="Redis retry on error")
-    max_retries: int = Field(default=3, description="Redis max retries")
-    retry_delay: float = Field(default=0.5, description="Redis retry delay")
+    retry_on_timeout: bool = Field(default=True, env="REDIS_RETRY_ON_TIMEOUT")
+    retry_on_error: bool = Field(default=True, env="REDIS_RETRY_ON_ERROR")
+    max_retries: int = Field(default=3, env="REDIS_MAX_RETRIES")
+    retry_delay: float = Field(default=0.5, env="REDIS_RETRY_DELAY")
 
     # Monitoring settings
-    metrics_enabled: bool = Field(default=True, description="Redis metrics enabled")
-    slow_query_threshold: float = Field(default=1.0, description="Redis slow query threshold")
+    metrics_enabled: bool = Field(default=True, env="REDIS_METRICS_ENABLED")
+    slow_query_threshold: float = Field(default=1.0, env="REDIS_SLOW_QUERY_THRESHOLD")
 
-    model_config = SettingsConfigDict(
-        env_prefix="REDIS_",
-        case_sensitive=False,
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="allow",
-    )
+    if PYDANTIC_V2:
 
-    @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
-    @classmethod
-    def validate_timeout_values(cls, v):
-        """Validate timeout values."""
-        if v < 1:
-            raise ValueError("Timeout must be at least 1 second")
-        return v
+        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
+        def validate_timeout_values(cls, v):
+            """Validate timeout values."""
+            if v < 1:
+                raise ValueError("Timeout must be at least 1 second")
+            return v
 
-    @field_validator("port")
-    @classmethod
-    def validate_port(cls, v):
-        """Validate port number."""
-        if not 1 <= v <= 65535:
-            raise ValueError("Port must be between 1 and 65535")
-        return v
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1 <= v <= 65535:
+                raise ValueError("Port must be between 1 and 65535")
+            return v
 
-    @field_validator("max_connections")
-    @classmethod
-    def validate_max_connections(cls, v):
-        """Validate max connections."""
-        if v < 1:
-            raise ValueError("Max connections must be at least 1")
-        return v
+        @field_validator("max_connections")
+        def validate_max_connections(cls, v):
+            """Validate max connections."""
+            if v < 1:
+                raise ValueError("Max connections must be at least 1")
+            return v
 
-    @field_validator("max_retries")
-    @classmethod
-    def validate_max_retries(cls, v):
-        """Validate max retries."""
-        if v < 0:
-            raise ValueError("Max retries cannot be negative")
-        return v
+        @field_validator("max_retries")
+        def validate_max_retries(cls, v):
+            """Validate max retries."""
+            if v < 0:
+                raise ValueError("Max retries cannot be negative")
+            return v
+
+    else:
+
+        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
+        def validate_timeout_values(cls, v):
+            """Validate timeout values."""
+            if v < 1:
+                raise ValueError("Timeout must be at least 1 second")
+            return v
+
+        @field_validator("port")
+        def validate_port(cls, v):
+            """Validate port number."""
+            if not 1 <= v <= 65535:
+                raise ValueError("Port must be between 1 and 65535")
+            return v
+
+        @field_validator("max_connections")
+        def validate_max_connections(cls, v):
+            """Validate max connections."""
+            if v < 1:
+                raise ValueError("Max connections must be at least 1")
+            return v
+
+        @field_validator("max_retries")
+        def validate_max_retries(cls, v):
+            """Validate max retries."""
+            if v < 0:
+                raise ValueError("Max retries cannot be negative")
+            return v
 
     def get_connection_url(self) -> str:
         """Generate Redis connection URL from individual components."""
@@ -450,12 +474,22 @@ class Settings(BaseSettings):
     redis: RedisSettings = Field(default_factory=RedisSettings)
     integrations: IntegrationSettings = Field(default_factory=IntegrationSettings)
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="allow",
-    )
+    if PYDANTIC_V2:
+        model_config = {
+            "env_file": ".env",
+            "env_file_encoding": "utf-8",
+            "case_sensitive": True,
+            "extra": "ignore",
+        }
+    else:
+
+        class Config:
+            """Pydantic configuration."""
+
+            env_file = ".env"
+            env_file_encoding = "utf-8"
+            case_sensitive = True
+            extra = "ignore"
 
 
 # Create global settings instance
