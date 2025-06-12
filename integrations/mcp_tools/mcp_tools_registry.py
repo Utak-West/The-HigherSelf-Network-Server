@@ -9,7 +9,8 @@ import os
 from enum import Enum
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, TypeVar
 
-from pydantic import BaseModel, Field, field_validator, logger, loguru
+from loguru import logger
+from pydantic import BaseModel, Field
 
 from services.analytics_service import agent_analytics
 from services.cache_service import CacheLevel, CacheType, multi_level_cache

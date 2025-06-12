@@ -117,6 +117,46 @@ class MCPConfig:
                     os.environ.get("MCP_SEQ_THINKING_ALLOWED_AGENTS", "*").split(",")
                 ),
             ),
+            "devon_ai": MCPToolConfig(
+                server_url=os.environ.get(
+                    "MCP_DEVON_AI_URL", "https://api.devon.ai/v1"
+                ),
+                api_key=os.environ.get("DEVON_AI_API_KEY"),
+                auth_type="api_key",
+                requires_permission=True,
+                allowed_agents=set(
+                    os.environ.get(
+                        "MCP_DEVON_AI_ALLOWED_AGENTS", "grace_fields,technical"
+                    ).split(",")
+                ),
+                rate_limit_per_min=10,
+            ),
+            "manus_ai": MCPToolConfig(
+                server_url=os.environ.get(
+                    "MCP_MANUS_AI_URL", "https://api.manus.ai/v1"
+                ),
+                api_key=os.environ.get("MANUS_AI_API_KEY"),
+                auth_type="api_key",
+                requires_permission=True,
+                allowed_agents=set(
+                    os.environ.get(
+                        "MCP_MANUS_AI_ALLOWED_AGENTS", "grace_fields,strategic"
+                    ).split(",")
+                ),
+                rate_limit_per_min=15,
+            ),
+            "genspark": MCPToolConfig(
+                server_url=os.environ.get(
+                    "MCP_GENSPARK_URL", "https://api.genspark.ai/v1"
+                ),
+                api_key=os.environ.get("GENSPARK_API_KEY"),
+                auth_type="api_key",
+                requires_permission=False,
+                allowed_agents=set(
+                    os.environ.get("MCP_GENSPARK_ALLOWED_AGENTS", "*").split(",")
+                ),
+                rate_limit_per_min=20,
+            ),
         }
 
         # Load custom tool configurations from environment variables
@@ -162,8 +202,9 @@ class MCPConfig:
                         os.environ.get(allowed_agents_env, "*").split(",")
                     ),
                     rate_limit_per_min=(
-                        int(os.environ.get(rate_limit_env))
-                        if os.environ.get(rate_limit_env)
+                        int(rate_limit_value)
+                        if (rate_limit_value := os.environ.get(rate_limit_env))
+                        and rate_limit_value.isdigit()
                         else None
                     ),
                 )

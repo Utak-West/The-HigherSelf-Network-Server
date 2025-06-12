@@ -23,14 +23,8 @@ logger = get_logger(__name__)
 from agents.base_agent import BaseAgent
 from models.base import AgentCapability, ApiPlatform
 from models.notion_db_models import BusinessEntity, Task, WorkflowInstance
-from models.task_models import (
-    TaskCategory,
-    TaskPriority,
-    TaskReminder,
-    TaskSource,
-    TaskStatus,
-    TaskTemplate,
-)
+from models.task_models import (TaskCategory, TaskPriority, TaskReminder,
+                                TaskSource, TaskStatus, TaskTemplate)
 from services.notion_service import NotionService
 
 

@@ -11,29 +11,15 @@ from uuid import uuid4
 
 import pytest
 
-from models.barter_models import (
-    BarterListing,
-    BarterProfile,
-    BarterRequest,
-    BarterTranslation,
-    BarterUserProfile,
-    CulturalRegion,
-    LanguageCode,
-    Location,
-    ServiceCategory,
-    SkillLevel,
-    TranslationEntity,
-    VerificationStatus,
-)
-from services.barter_notification_service import (
-    BarterNotificationService,
-    NotificationType,
-)
-from services.barter_service import (
-    BarterService,
-    CulturalAdaptationService,
-    LocationService,
-)
+from models.barter_models import (BarterListing, BarterProfile, BarterRequest,
+                                  BarterTranslation, BarterUserProfile,
+                                  CulturalRegion, LanguageCode, Location,
+                                  ServiceCategory, SkillLevel,
+                                  TranslationEntity, VerificationStatus)
+from services.barter_notification_service import (BarterNotificationService,
+                                                  NotificationType)
+from services.barter_service import (BarterService, CulturalAdaptationService,
+                                     LocationService)
 from services.barter_translation_service import TranslationService
 from services.barter_user_service import BarterUserService
 

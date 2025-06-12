@@ -14,12 +14,8 @@ from uuid import UUID
 from loguru import logger
 from pydantic import BaseModel
 
-from models.barter_models import (
-    BarterListing,
-    BarterMatch,
-    BarterRequest,
-    BarterTransaction,
-)
+from models.barter_models import (BarterListing, BarterMatch, BarterRequest,
+                                  BarterTransaction)
 from services.redis_service import redis_service
 
 

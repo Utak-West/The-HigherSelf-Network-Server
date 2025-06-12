@@ -28,17 +28,10 @@ except ImportError:
     logger.warning("ABBYY SDK not installed. ABBYY OCR functionality will be limited.")
     ABBYY_AVAILABLE = False
 
-from models.tesseract_models import (
-    ABBYYOCRConfig,
-    OCRBoundingBox,
-    OCRImageSource,
-    OCRLanguage,
-    OCROutputFormat,
-    OCRProvider,
-    OCRRequest,
-    OCRResponse,
-    OCRTextElement,
-)
+from models.tesseract_models import (ABBYYOCRConfig, OCRBoundingBox,
+                                     OCRImageSource, OCRLanguage,
+                                     OCROutputFormat, OCRProvider, OCRRequest,
+                                     OCRResponse, OCRTextElement)
 from services.ocr.base_ocr_service import BaseOCRService
 
 

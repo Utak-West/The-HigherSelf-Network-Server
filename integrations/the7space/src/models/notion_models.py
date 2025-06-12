@@ -6,7 +6,7 @@ Following The HigherSelf Network standardized data structure guidelines.
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Enum, Field, enum, field_validator
+from pydantic import BaseModel, Enum, Field, field_validator
 
 
 class NotionPropertyType(str, Enum):
@@ -140,7 +140,6 @@ class NotionPage(BaseModel):
     properties: Dict[str, Any]
 
     @field_validator("properties", mode="before")
-    @classmethod
     def validate_properties(cls, v):
         """Validate properties structure"""
         # Additional validation logic could be implemented here

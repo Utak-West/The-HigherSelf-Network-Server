@@ -9,13 +9,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field, validator
 
-from models.base import (
-    ApiPlatform,
-    ContentReviewStatus,
-    EntityType,
-    NotificationChannel,
-    TaskStatus,
-)
+from models.base import (ApiPlatform, ContentReviewStatus, EntityType,
+                         NotificationChannel, TaskStatus)
 
 
 class ContactProfile(BaseModel):

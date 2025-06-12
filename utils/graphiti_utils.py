@@ -11,14 +11,10 @@ from typing import Any, Dict, List, Optional, Union
 
 from loguru import logger
 
-from models.graphiti_models import (
-    GraphitiAgentName,
-    GraphitiBusinessContext,
-    GraphitiEpisodeRequest,
-    GraphitiEpisodeType,
-    GraphitiMemoryUpdate,
-    GraphitiSearchRequest,
-)
+from models.graphiti_models import (GraphitiAgentName, GraphitiBusinessContext,
+                                    GraphitiEpisodeRequest,
+                                    GraphitiEpisodeType, GraphitiMemoryUpdate,
+                                    GraphitiSearchRequest)
 
 
 def create_episode_from_agent_interaction(

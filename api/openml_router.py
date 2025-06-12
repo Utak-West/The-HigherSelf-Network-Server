@@ -5,6 +5,7 @@ This module provides API endpoints for managing OpenML datasets,
 including search, import, processing, and training.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query

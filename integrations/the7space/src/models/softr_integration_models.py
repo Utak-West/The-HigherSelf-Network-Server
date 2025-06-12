@@ -3,11 +3,11 @@ Pydantic models for Softr to Higher Self Network server integration.
 These models define the API contract between Softr interfaces and backend services.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Enum, Field, enum, field_validator
+from pydantic import BaseModel, Enum, Field, field_validator
 
 
 class SoftrIntegrationConfig(BaseModel):
@@ -50,8 +50,7 @@ class WebhookPayload(BaseModel):
     data: Dict[str, Any]
     signature: str
 
-    @field_validator("timestamp", pre=True, mode="before")
-    @classmethod
+    @field_validator("timestamp", mode="before")
     def parse_timestamp(cls, v):
         if isinstance(v, str):
             return datetime.fromisoformat(v.replace("Z", "+00:00"))
@@ -215,12 +214,11 @@ class ServiceBookingRequest(BaseModel):
     notes: Optional[str] = None
     payment_method: Optional[str] = None
 
-    @field_validator("end_time", always=True, mode="before")
-    @classmethod
+    @field_validator("end_time", mode="before")
     def set_end_time(cls, v, values):
         if v is None and "start_time" in values:
             # Default to 1 hour if not specified
-            return values["start_time"] + datetime.timedelta(hours=1)
+            return values["start_time"] + timedelta(hours=1)
         return v
 
 

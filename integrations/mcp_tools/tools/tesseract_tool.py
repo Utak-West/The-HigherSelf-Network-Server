@@ -16,28 +16,15 @@ import httpx
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from integrations.mcp_tools.mcp_tools_registry import (
-    MCPTool,
-    ToolCapability,
-    ToolMetadata,
-    mcp_tools_registry,
-)
-from models.tesseract_models import (
-    OCRDocumentType,
-    OCRImageSource,
-    OCRLanguage,
-    OCROutputFormat,
-    OCRProvider,
-    OCRRequest,
-    OCRResponse,
-)
+from integrations.mcp_tools.mcp_tools_registry import (MCPTool, ToolCapability,
+                                                       ToolMetadata,
+                                                       mcp_tools_registry)
+from models.tesseract_models import (OCRDocumentType, OCRImageSource,
+                                     OCRLanguage, OCROutputFormat, OCRProvider,
+                                     OCRRequest, OCRResponse)
 from services.cache_service import CacheLevel, CacheType, multi_level_cache
-from services.ocr import (
-    OCRServiceFactory,
-    abbyy_service,
-    google_vision_service,
-    tesseract_service,
-)
+from services.ocr import (OCRServiceFactory, abbyy_service,
+                          google_vision_service, tesseract_service)
 
 
 class TesseractTool(MCPTool):

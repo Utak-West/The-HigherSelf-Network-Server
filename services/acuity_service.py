@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
-import requests
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
@@ -28,7 +27,6 @@ class AcuityCredentials(ServiceCredentials):
         env_prefix = "ACUITY_"
 
     @field_validator("user_id", "api_key", mode="before")
-    @classmethod
     def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
@@ -67,14 +65,12 @@ class AcuityAppointment(BaseModel):
     notion_page_id: Optional[str] = None
 
     @field_validator("email", mode="before")
-    @classmethod
     def validate_email(cls, v):
         if not v or "@" not in v:
             raise ValueError("Valid email is required")
         return v
 
     @field_validator("first_name", "last_name", mode="before")
-    @classmethod
     def validate_names(cls, v):
         if not v:
             raise ValueError("Name fields cannot be empty")

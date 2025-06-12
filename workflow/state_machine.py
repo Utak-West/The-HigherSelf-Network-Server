@@ -26,7 +26,8 @@ from typing import (
     Union,
 )
 
-from pydantic import BaseModel, Field, field_validator, logger, loguru
+from loguru import logger
+from pydantic import BaseModel, Field, field_validator
 
 from knowledge import SemanticSearch, get_semantic_search
 from models.notion_db_models import WorkflowInstance
@@ -56,7 +57,6 @@ class AgentAssignment(BaseModel):
     timeout_seconds: Optional[int] = None
 
     @field_validator("selection_strategy", mode="before")
-    @classmethod
     def validate_selection_strategy(cls, v):
         valid_strategies = [
             "first_available",

@@ -25,11 +25,8 @@ from agents.agent_personalities import Ruvo  # TaskManagementAgent
 from agents.agent_personalities import Sage  # CommunityEngagementAgent
 from agents.agent_personalities import Solari  # BookingAgent
 from agents.agent_personalities import Zevi  # AudienceSegmentationAgent
-from agents.agent_personalities import (
-    GraceFields,
-    create_agent_collective,
-    create_grace_orchestrator,
-)
+from agents.agent_personalities import (GraceFields, create_agent_collective,
+                                        create_grace_orchestrator)
 from agents.audience_segmentation_agent import AudienceSegmentationAgent
 from agents.base_agent import BaseAgent
 from agents.booking_agent import BookingAgent

@@ -17,19 +17,11 @@ from loguru import logger
 from pydantic import BaseModel, Field, validator
 
 from config.settings import settings
-from models.gohighlevel_models import (
-    BusinessType,
-    ContactSource,
-    GHLAppointment,
-    GHLCampaign,
-    GHLContact,
-    GHLOpportunity,
-    GHLPipeline,
-    GHLSyncStatus,
-    GHLWebhookEvent,
-    OpportunityStage,
-    SubAccountType,
-)
+from models.gohighlevel_models import (BusinessType, ContactSource,
+                                       GHLAppointment, GHLCampaign, GHLContact,
+                                       GHLOpportunity, GHLPipeline,
+                                       GHLSyncStatus, GHLWebhookEvent,
+                                       OpportunityStage, SubAccountType)
 from services.base_service import BaseService, ServiceCredentials
 
 

@@ -31,7 +31,6 @@ class WooCommerceCredentials(ServiceCredentials):
         env_prefix = "WOOCOMMERCE_"
 
     @field_validator("url", "consumer_key", "consumer_secret", mode="before")
-    @classmethod
     def validate_required_fields(cls, v):
         if not v:
             raise ValueError("This field is required")
@@ -54,14 +53,12 @@ class WooProduct(BaseModel):
     notion_page_id: Optional[str] = None
 
     @field_validator("name", mode="before")
-    @classmethod
     def validate_name(cls, v):
         if not v or len(v) < 3:
             raise ValueError("Product name must be at least 3 characters")
         return v
 
     @field_validator("regular_price", mode="before")
-    @classmethod
     def validate_price(cls, v):
         if not v:
             raise ValueError("Price is required")

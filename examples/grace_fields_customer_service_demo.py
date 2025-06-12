@@ -176,15 +176,10 @@ async def demo_training_scenarios():
     try:
         from agents.grace_fields_enhanced import EnhancedGraceFields
         from models.customer_service_models import (
-            CustomerSentiment,
-            CustomerServiceBusinessEntity,
-            IssueCategory,
-            SeverityLevel,
-        )
+            CustomerSentiment, CustomerServiceBusinessEntity, IssueCategory,
+            SeverityLevel)
         from training.grace_fields_customer_service_training import (
-            CustomerServiceTrainingScenario,
-            GraceFieldsCustomerServiceTrainer,
-        )
+            CustomerServiceTrainingScenario, GraceFieldsCustomerServiceTrainer)
 
         # Create mock enhanced Grace Fields
         mock_agents = [

@@ -5,6 +5,7 @@ This module provides API endpoints for web crawling and content retrieval.
 """
 
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from loguru import logger

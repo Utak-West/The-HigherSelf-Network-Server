@@ -7,60 +7,32 @@ used throughout the system, aligned with the 16-database Notion structure.
 
 # Audience segmentation models
 from models.audience_models import *
-
 # Base models and enums
-from models.base import (
-    AgentCapability,
-    AgentStatus,
-    ApiPlatform,
-    ContentReviewStatus,
-    EntityType,
-    InstanceStatus,
-    IntegrationStatus,
-    NotificationChannel,
-    NotionIntegrationConfig,
-    NotionPage,
-    RuntimeEnvironment,
-    TaskStatus,
-    WorkflowStatus,
-)
-
+from models.base import (AgentCapability, AgentStatus, ApiPlatform,
+                         ContentReviewStatus, EntityType, InstanceStatus,
+                         IntegrationStatus, NotificationChannel,
+                         NotionIntegrationConfig, NotionPage,
+                         RuntimeEnvironment, TaskStatus, WorkflowStatus)
 # CapCut integration models
 from models.capcut_models import *
-
 # Content models
 from models.content_models import *
-
 # Customer service models
 from models.customer_service_models import *
-
 # Core Notion database models
-from models.notion_db_models import (
-    Agent,
-    AgentCommunication,
-    AIContentReview,
-    ApiIntegration,
-    BusinessEntity,
-    DataTransformation,
-    NotificationTemplate,
-    Task,
-    UseCase,
-    Workflow,
-    WorkflowInstance,
-)
-
+from models.notion_db_models import (Agent, AgentCommunication,
+                                     AIContentReview, ApiIntegration,
+                                     BusinessEntity, DataTransformation,
+                                     NotificationTemplate, Task, UseCase,
+                                     Workflow, WorkflowInstance)
 # Extended Notion database models for all 16 databases
 from models.notion_db_models_extended import *
-
 # Pipit payment integration models
 from models.pipit_models import *
-
 # Task management models
 from models.task_models import *
-
 # Video models
 from models.video_models import *
-
 # Video transaction models
 from models.video_transaction_models import *
 

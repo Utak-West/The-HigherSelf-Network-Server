@@ -14,20 +14,15 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from loguru import logger
 
-from models.graphiti_models import (
-    GraphitiAgentName,
-    GraphitiBusinessContext,
-    GraphitiEpisodeRequest,
-    GraphitiEpisodeType,
-)
+from models.graphiti_models import (GraphitiAgentName, GraphitiBusinessContext,
+                                    GraphitiEpisodeRequest,
+                                    GraphitiEpisodeType)
 from services.graphiti_service import graphiti_service
-from utils.graphiti_utils import (
-    create_episode_from_agent_interaction,
-    create_search_request,
-    create_structured_episode,
-    format_search_results_for_agent,
-    validate_graphiti_config,
-)
+from utils.graphiti_utils import (create_episode_from_agent_interaction,
+                                  create_search_request,
+                                  create_structured_episode,
+                                  format_search_results_for_agent,
+                                  validate_graphiti_config)
 
 
 async def demo_basic_graphiti_operations():
