@@ -8,7 +8,7 @@ specifically designed for Devin's automated testing system.
 """
 
 import os
-import subprocess
+import subprocess  # nosec B404 - needed for deployment automation
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -18,7 +18,9 @@ class DevinSetupManager:
     """Manages automated setup and testing for Devin AI integration."""
 
     def __init__(self):
-        self.project_root = Path(__file__).parent
+        self.project_root = Path(
+            __file__
+        ).parent.parent  # Go up one level from scripts/
         self.success_count = 0
         self.total_tests = 0
         self.results = []
@@ -38,13 +40,15 @@ class DevinSetupManager:
         self.log(f"Command: {command}")
 
         try:
-            result = subprocess.run(
-                command,
-                shell=True,
-                check=True,
-                capture_output=True,
-                text=True,
-                cwd=self.project_root,
+            result = (
+                subprocess.run(  # nosec B602 - shell=True needed for deployment scripts
+                    command,
+                    shell=True,
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    cwd=self.project_root,
+                )
             )
             self.log(f"{description} - PASSED", "SUCCESS")
             self.results.append((description, True, ""))
