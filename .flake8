@@ -1,0 +1,43 @@
+[flake8]
+max-line-length = 88
+extend-ignore = 
+    E203,  # whitespace before ':'
+    E501,  # line too long (handled by black)
+    W503,  # line break before binary operator
+    E402,  # module level import not at top of file (sometimes needed for dynamic imports)
+    F401,  # imported but unused (sometimes needed for re-exports)
+
+exclude = 
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .venv,
+    venv,
+    .eggs,
+    *.egg,
+    .tox,
+    .coverage,
+    .coverage.*,
+    .cache,
+    nosetests.xml,
+    coverage.xml,
+    *.cover,
+    *.log,
+    .mypy_cache,
+    .pytest_cache,
+    migrations,
+
+per-file-ignores =
+    # Allow unused imports in __init__.py files
+    __init__.py:F401
+    # Allow long lines in settings files
+    */settings*.py:E501
+    # Allow star imports in test files
+    test_*.py:F403,F405
+    # Allow unused variables in test files (fixtures)
+    test_*.py:F841
+
+max-complexity = 10
+import-order-style = google
+application-import-names = agents,api,config,models,services,utils,knowledge,workflow
