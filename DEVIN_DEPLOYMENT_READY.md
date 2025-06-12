@@ -43,10 +43,10 @@ The HigherSelf Network Server is now fully prepared for Devin AI deployment with
 
 ## 🚀 Quick Start for Devin
 
-### Option 1: Quick Validation
+### Option 1: Quick Validation (Recommended)
 ```bash
 cd "/Users/utakwest/Documents/Tech/The HigherSelf Network Server"
-python3 scripts/devin_quick_validation.py
+python3 scripts/devin_simple_validation.py
 ```
 
 ### Option 2: Full Test Suite
@@ -107,7 +107,8 @@ python3 scripts/devin_deploy.py
 ## 📁 Important Files
 
 - `docker-compose.yml` - Main deployment configuration
-- `scripts/devin_quick_validation.py` - Quick environment check
+- `scripts/devin_simple_validation.py` - Enhanced quick environment check (recommended)
+- `scripts/devin_quick_validation.py` - Comprehensive validation (may hang on some systems)
 - `scripts/devin_test_server.py` - Minimal test server
 - `scripts/devin_deploy.py` - Automated deployment
 - `run_tests.py` - Test runner

@@ -100,9 +100,10 @@ def main():
     print("Devin Quick Validation - The HigherSelf Network Server")
     print("=" * 60)
 
-    # Set PYTHONPATH to current directory
-    current_dir = Path(__file__).parent
-    os.environ["PYTHONPATH"] = str(current_dir)
+    # Set PYTHONPATH to project root directory
+    project_root = Path(__file__).parent.parent
+    os.environ["PYTHONPATH"] = str(project_root)
+    sys.path.insert(0, str(project_root))
 
     checks = []
 
@@ -160,13 +161,15 @@ def main():
     # Test execution capability
     print("\nTest Execution Check:")
     try:
-        import subprocess
+        import subprocess  # nosec B404 - needed for test execution validation
 
-        result = subprocess.run(
-            ["python3", "-c", "print('Test execution works')"],
-            capture_output=True,
-            text=True,
-            timeout=10,
+        result = (
+            subprocess.run(  # nosec B603, B607 - safe python command for validation
+                ["python3", "-c", "print('Test execution works')"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
         )
         if result.returncode == 0:
             print("PASS: Test Execution - Working")
