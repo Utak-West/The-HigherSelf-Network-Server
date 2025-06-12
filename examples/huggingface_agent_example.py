@@ -120,9 +120,9 @@ class ContentProcessingAgent(BaseAgent, HuggingFaceMixin):
         return {
             "status": "healthy" if huggingface_ready else "degraded",
             "huggingface_integration": "ready" if huggingface_ready else "not_ready",
-            "available_tasks": self.get_available_huggingface_tasks()
-            if huggingface_ready
-            else [],
+            "available_tasks": (
+                self.get_available_huggingface_tasks() if huggingface_ready else []
+            ),
         }
 
 

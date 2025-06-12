@@ -97,17 +97,20 @@ class ConnectionManager:
                             ),
                             "disconnected_at": datetime.utcnow().isoformat(),
                             "duration_seconds": (
-                                datetime.utcnow()
-                                - datetime.fromisoformat(
-                                    self.connection_info.get(client_id, {}).get(
-                                        "connected_at", datetime.utcnow().isoformat()
+                                (
+                                    datetime.utcnow()
+                                    - datetime.fromisoformat(
+                                        self.connection_info.get(client_id, {}).get(
+                                            "connected_at",
+                                            datetime.utcnow().isoformat(),
+                                        )
                                     )
+                                ).total_seconds()
+                                if self.connection_info.get(client_id, {}).get(
+                                    "connected_at"
                                 )
-                            ).total_seconds()
-                            if self.connection_info.get(client_id, {}).get(
-                                "connected_at"
-                            )
-                            else 0,
+                                else 0
+                            ),
                         },
                     )
 

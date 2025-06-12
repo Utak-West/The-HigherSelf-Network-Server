@@ -248,9 +248,9 @@ class DatabaseSyncService:
                     record_id=getattr(notion_record, "id", None),
                     notion_page_id=notion_page_id,
                     supabase_id=supabase_id,
-                    error_message=None
-                    if success
-                    else "Failed to update record in Supabase",
+                    error_message=(
+                        None if success else "Failed to update record in Supabase"
+                    ),
                 )
             else:
                 # Create a new record
@@ -289,9 +289,9 @@ class DatabaseSyncService:
                     record_id=getattr(notion_record, "id", None),
                     notion_page_id=notion_page_id,
                     supabase_id=supabase_id,
-                    error_message=None
-                    if supabase_id
-                    else "Failed to create record in Supabase",
+                    error_message=(
+                        None if supabase_id else "Failed to create record in Supabase"
+                    ),
                 )
         except Exception as e:
             logger.bind(
@@ -460,9 +460,9 @@ class DatabaseSyncService:
                     record_id=getattr(supabase_record, "id", None),
                     notion_page_id=notion_page_id,
                     supabase_id=supabase_id,
-                    error_message=None
-                    if success
-                    else "Failed to update page in Notion",
+                    error_message=(
+                        None if success else "Failed to update page in Notion"
+                    ),
                 )
             else:
                 # Create a new page
@@ -539,9 +539,9 @@ class DatabaseSyncService:
                     record_id=getattr(supabase_record, "id", None),
                     notion_page_id=notion_page_id,
                     supabase_id=supabase_id,
-                    error_message=None
-                    if notion_page_id
-                    else "Failed to create page in Notion",
+                    error_message=(
+                        None if notion_page_id else "Failed to create page in Notion"
+                    ),
                 )
         except Exception as e:
             logger.bind(

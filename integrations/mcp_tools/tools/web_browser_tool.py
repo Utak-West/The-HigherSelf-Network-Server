@@ -287,9 +287,9 @@ class WebBrowserTool:
                         {
                             "title": title_element.get_text(),
                             "link": href,
-                            "snippet": snippet_element.get_text()
-                            if snippet_element
-                            else "",
+                            "snippet": (
+                                snippet_element.get_text() if snippet_element else ""
+                            ),
                             "display_link": urlparse(href).netloc,
                         }
                     )

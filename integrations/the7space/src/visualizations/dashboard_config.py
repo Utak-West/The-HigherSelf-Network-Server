@@ -3,6 +3,7 @@ Dashboard configuration templates for The 7 Space Softr interfaces.
 These configurations define visualization components that can be
 implemented in Softr and connect to the Higher Self Network server.
 """
+
 from enum import Enum
 from typing import Any, Dict, List, Optional
 

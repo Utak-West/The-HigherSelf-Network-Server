@@ -2,6 +2,7 @@
 API routes for Hugging Face Pro integration.
 These routes provide access to Hugging Face models, spaces, and inference capabilities.
 """
+
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException

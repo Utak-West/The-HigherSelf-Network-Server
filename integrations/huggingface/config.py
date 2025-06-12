@@ -2,6 +2,7 @@
 Configuration for Hugging Face Pro integration with The HigherSelf Network.
 Uses Pydantic for data validation and settings management.
 """
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 

@@ -161,9 +161,11 @@ class MCPConfig:
                     allowed_agents=set(
                         os.environ.get(allowed_agents_env, "*").split(",")
                     ),
-                    rate_limit_per_min=int(os.environ.get(rate_limit_env))
-                    if os.environ.get(rate_limit_env)
-                    else None,
+                    rate_limit_per_min=(
+                        int(os.environ.get(rate_limit_env))
+                        if os.environ.get(rate_limit_env)
+                        else None
+                    ),
                 )
 
         # Add custom tools to configs

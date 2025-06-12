@@ -248,12 +248,16 @@ class AmeliaServiceClient:
                         customer_last_name=data.get("customerLastName", ""),
                         customer_email=data.get("customerEmail", ""),
                         customer_phone=data.get("customerPhone"),
-                        payment_amount=float(data.get("payment", {}).get("amount", 0))
-                        if "payment" in data
-                        else None,
-                        payment_status=data.get("payment", {}).get("status")
-                        if "payment" in data
-                        else None,
+                        payment_amount=(
+                            float(data.get("payment", {}).get("amount", 0))
+                            if "payment" in data
+                            else None
+                        ),
+                        payment_status=(
+                            data.get("payment", {}).get("status")
+                            if "payment" in data
+                            else None
+                        ),
                         internal_notes=data.get("internalNotes"),
                         custom_fields=custom_fields,
                         location_id=data.get("locationId"),
@@ -333,12 +337,14 @@ class AmeliaServiceClient:
                 customer_last_name=data.get("customerLastName", ""),
                 customer_email=data.get("customerEmail", ""),
                 customer_phone=data.get("customerPhone"),
-                payment_amount=float(data.get("payment", {}).get("amount", 0))
-                if "payment" in data
-                else None,
-                payment_status=data.get("payment", {}).get("status")
-                if "payment" in data
-                else None,
+                payment_amount=(
+                    float(data.get("payment", {}).get("amount", 0))
+                    if "payment" in data
+                    else None
+                ),
+                payment_status=(
+                    data.get("payment", {}).get("status") if "payment" in data else None
+                ),
                 internal_notes=data.get("internalNotes"),
                 custom_fields=custom_fields,
                 location_id=data.get("locationId"),

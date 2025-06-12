@@ -2,6 +2,7 @@
 Notion integration service for The 7 Space.
 Handles all interactions with Notion databases via the Notion API.
 """
+
 import json
 import os
 from datetime import datetime

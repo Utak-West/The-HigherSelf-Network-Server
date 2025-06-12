@@ -14,11 +14,12 @@ from dotenv import load_dotenv  # Added
 # Load .env file at the very beginning when this module is imported
 load_dotenv()  # Added
 
-# Since we're now using Pydantic v1 as specified in requirements.txt
-from pydantic import AnyHttpUrl, BaseSettings, Field, field_validator
+# Using Pydantic v2 with pydantic-settings
+from pydantic import AnyHttpUrl, Field, field_validator
+from pydantic_settings import BaseSettings
 
-# Explicitly set to False since we're using Pydantic v1
-PYDANTIC_V2 = False
+# Set to True since we're using Pydantic v2
+PYDANTIC_V2 = True
 
 
 class LogLevel(str, Enum):
@@ -82,27 +83,14 @@ class NotionSettings(BaseSettings):
     use_cases_db: Optional[str] = Field(None, env="NOTION_USE_CASES_DB")
     workflows_library_db: Optional[str] = Field(None, env="NOTION_WORKFLOWS_LIBRARY_DB")
 
-    if PYDANTIC_V2:
-        # This code will not be used since PYDANTIC_V2 is False
-        @field_validator("api_token")
-        def validate_api_token(cls, v):
-            """Validate Notion API token."""
-            if not v or len(v) < 50:
-                raise ValueError(
-                    "Invalid Notion API token - must be at least 50 characters"
-                )
-            return v
-
-    else:
-
-        @field_validator("api_token")
-        def validate_api_token(cls, v):
-            """Validate Notion API token."""
-            if not v or len(v) < 50:
-                raise ValueError(
-                    "Invalid Notion API token - must be at least 50 characters"
-                )
-            return v
+    @field_validator("api_token")
+    def validate_api_token(cls, v):
+        """Validate Notion API token."""
+        if not v or len(v) < 50:
+            raise ValueError(
+                "Invalid Notion API token - must be at least 50 characters"
+            )
+        return v
 
     def get_database_mappings(self) -> Dict[str, str]:
         """Get database mappings for Notion service."""
@@ -140,23 +128,12 @@ class ServerSettings(BaseSettings):
     log_file: Optional[str] = Field("logs/app.log", env="LOG_FILE")
     webhook_secret: str = Field(..., env="WEBHOOK_SECRET")
 
-    if PYDANTIC_V2:
-
-        @field_validator("port")
-        def validate_port(cls, v):
-            """Validate port number."""
-            if not 1024 <= v <= 65535:
-                raise ValueError("Port must be between 1024 and 65535")
-            return v
-
-    else:
-
-        @field_validator("port")
-        def validate_port(cls, v):
-            """Validate port number."""
-            if not 1024 <= v <= 65535:
-                raise ValueError("Port must be between 1024 and 65535")
-            return v
+    @field_validator("port")
+    def validate_port(cls, v):
+        """Validate port number."""
+        if not 1024 <= v <= 65535:
+            raise ValueError("Port must be between 1024 and 65535")
+        return v
 
 
 class RedisSettings(BaseSettings):
@@ -204,65 +181,33 @@ class RedisSettings(BaseSettings):
     metrics_enabled: bool = Field(default=True, env="REDIS_METRICS_ENABLED")
     slow_query_threshold: float = Field(default=1.0, env="REDIS_SLOW_QUERY_THRESHOLD")
 
-    if PYDANTIC_V2:
+    @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
+    def validate_timeout_values(cls, v):
+        """Validate timeout values."""
+        if v < 1:
+            raise ValueError("Timeout must be at least 1 second")
+        return v
 
-        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
-        def validate_timeout_values(cls, v):
-            """Validate timeout values."""
-            if v < 1:
-                raise ValueError("Timeout must be at least 1 second")
-            return v
+    @field_validator("port")
+    def validate_port(cls, v):
+        """Validate port number."""
+        if not 1 <= v <= 65535:
+            raise ValueError("Port must be between 1 and 65535")
+        return v
 
-        @field_validator("port")
-        def validate_port(cls, v):
-            """Validate port number."""
-            if not 1 <= v <= 65535:
-                raise ValueError("Port must be between 1 and 65535")
-            return v
+    @field_validator("max_connections")
+    def validate_max_connections(cls, v):
+        """Validate max connections."""
+        if v < 1:
+            raise ValueError("Max connections must be at least 1")
+        return v
 
-        @field_validator("max_connections")
-        def validate_max_connections(cls, v):
-            """Validate max connections."""
-            if v < 1:
-                raise ValueError("Max connections must be at least 1")
-            return v
-
-        @field_validator("max_retries")
-        def validate_max_retries(cls, v):
-            """Validate max retries."""
-            if v < 0:
-                raise ValueError("Max retries cannot be negative")
-            return v
-
-    else:
-
-        @field_validator("timeout", "socket_connect_timeout", "socket_timeout")
-        def validate_timeout_values(cls, v):
-            """Validate timeout values."""
-            if v < 1:
-                raise ValueError("Timeout must be at least 1 second")
-            return v
-
-        @field_validator("port")
-        def validate_port(cls, v):
-            """Validate port number."""
-            if not 1 <= v <= 65535:
-                raise ValueError("Port must be between 1 and 65535")
-            return v
-
-        @field_validator("max_connections")
-        def validate_max_connections(cls, v):
-            """Validate max connections."""
-            if v < 1:
-                raise ValueError("Max connections must be at least 1")
-            return v
-
-        @field_validator("max_retries")
-        def validate_max_retries(cls, v):
-            """Validate max retries."""
-            if v < 0:
-                raise ValueError("Max retries cannot be negative")
-            return v
+    @field_validator("max_retries")
+    def validate_max_retries(cls, v):
+        """Validate max retries."""
+        if v < 0:
+            raise ValueError("Max retries cannot be negative")
+        return v
 
     def get_connection_url(self) -> str:
         """Generate Redis connection URL from individual components."""
@@ -474,22 +419,12 @@ class Settings(BaseSettings):
     redis: RedisSettings = Field(default_factory=RedisSettings)
     integrations: IntegrationSettings = Field(default_factory=IntegrationSettings)
 
-    if PYDANTIC_V2:
-        model_config = {
-            "env_file": ".env",
-            "env_file_encoding": "utf-8",
-            "case_sensitive": True,
-            "extra": "ignore",
-        }
-    else:
-
-        class Config:
-            """Pydantic configuration."""
-
-            env_file = ".env"
-            env_file_encoding = "utf-8"
-            case_sensitive = True
-            extra = "ignore"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+        "extra": "ignore",
+    }
 
 
 # Create global settings instance

@@ -261,7 +261,9 @@ async def test_business_entity_routing():
                 priority="medium",
             )
 
-            logger.info(f"✅ {entity.value} routed successfully: {result.get('status')}")
+            logger.info(
+                f"✅ {entity.value} routed successfully: {result.get('status')}"
+            )
             assert result.get("status") in [
                 "delegated",
                 "coordinating",

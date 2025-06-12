@@ -309,9 +309,11 @@ class AgentTrainingPipeline:
                     "status": training_result.status,
                     "metrics": training_result.metrics,
                     "model_path": training_result.model_path,
-                    "completed_at": training_result.completed_at.isoformat()
-                    if training_result.completed_at
-                    else None,
+                    "completed_at": (
+                        training_result.completed_at.isoformat()
+                        if training_result.completed_at
+                        else None
+                    ),
                 },
             )
 

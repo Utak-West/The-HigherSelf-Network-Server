@@ -3,6 +3,7 @@ Higher Self Network Server API Integration for Softr interfaces.
 This module provides the core connectivity between Softr and the Higher Self Network.
 Follows the centralized deployment principles specified in The HigherSelf Network guidelines.
 """
+
 import hashlib
 import hmac
 import json

@@ -173,9 +173,9 @@ class EscalationService:
             msg = MIMEMultipart()
             msg["From"] = self.smtp_username
             msg["To"] = self.notification_email
-            msg[
-                "Subject"
-            ] = f"[URGENT - Grace Fields] Human intervention required - Ticket #{ticket.ticket_id}"
+            msg["Subject"] = (
+                f"[URGENT - Grace Fields] Human intervention required - Ticket #{ticket.ticket_id}"
+            )
 
             # Create email body
             email_body = self._create_escalation_email_body(ticket)
@@ -343,9 +343,11 @@ This is an automated notification from The HigherSelf Network Server.
                 "total_escalations": total_tickets,
                 "open_escalations": open_tickets,
                 "resolved_escalations": resolved_tickets,
-                "resolution_rate": round((resolved_tickets / total_tickets * 100), 2)
-                if total_tickets > 0
-                else 0,
+                "resolution_rate": (
+                    round((resolved_tickets / total_tickets * 100), 2)
+                    if total_tickets > 0
+                    else 0
+                ),
                 "average_resolution_hours": round(avg_resolution_hours, 2),
                 "escalations_by_priority": self._get_escalations_by_priority(),
                 "escalations_by_category": self._get_escalations_by_category(),

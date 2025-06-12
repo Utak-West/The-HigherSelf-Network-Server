@@ -134,12 +134,16 @@ class OpenAIProvider(AIProvider):
                     text=text,
                     provider="openai",
                     model=model,
-                    tokens_used=response.usage.total_tokens
-                    if hasattr(response, "usage")
-                    else None,
-                    finish_reason=response.choices[0].finish_reason
-                    if len(response.choices) > 0
-                    else None,
+                    tokens_used=(
+                        response.usage.total_tokens
+                        if hasattr(response, "usage")
+                        else None
+                    ),
+                    finish_reason=(
+                        response.choices[0].finish_reason
+                        if len(response.choices) > 0
+                        else None
+                    ),
                     metadata={
                         "completion_id": response.id,
                         "created": response.created,
@@ -168,12 +172,16 @@ class OpenAIProvider(AIProvider):
                     text=text,
                     provider="openai",
                     model=model,
-                    tokens_used=response.usage.total_tokens
-                    if hasattr(response, "usage")
-                    else None,
-                    finish_reason=response.choices[0].finish_reason
-                    if len(response.choices) > 0
-                    else None,
+                    tokens_used=(
+                        response.usage.total_tokens
+                        if hasattr(response, "usage")
+                        else None
+                    ),
+                    finish_reason=(
+                        response.choices[0].finish_reason
+                        if len(response.choices) > 0
+                        else None
+                    ),
                     metadata={
                         "completion_id": response.id,
                         "created": response.created,

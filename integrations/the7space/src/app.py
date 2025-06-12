@@ -3,6 +3,7 @@ The 7 Space Integration Application
 Connects Softr interfaces with the Higher Self Network server
 Acts as the central backend for The 7 Space Art Gallery & Wellness Center
 """
+
 import asyncio
 import json
 import os

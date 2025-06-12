@@ -346,9 +346,9 @@ class SemanticSearch:
                     "chunk_index": chunk.chunk_index,
                     "chunk_text": chunk.chunk_text,
                     "notion_page_id": embedding.notion_page_id if embedding else None,
-                    "notion_database_id": embedding.notion_database_id
-                    if embedding
-                    else None,
+                    "notion_database_id": (
+                        embedding.notion_database_id if embedding else None
+                    ),
                     "metadata": chunk.metadata,
                     "score": result.score,
                     "distance": result.distance,

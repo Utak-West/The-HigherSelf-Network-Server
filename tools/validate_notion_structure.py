@@ -177,9 +177,11 @@ class NotionStructureValidator:
             is_valid_structure = True
             status = {
                 "status": "valid" if is_valid_structure else "invalid_structure",
-                "message": "Database is accessible and structure appears valid"
-                if is_valid_structure
-                else "Database is accessible but structure has issues",
+                "message": (
+                    "Database is accessible and structure appears valid"
+                    if is_valid_structure
+                    else "Database is accessible but structure has issues"
+                ),
                 "is_valid": is_valid_structure,
             }
 

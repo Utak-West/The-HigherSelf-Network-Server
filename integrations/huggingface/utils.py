@@ -1,6 +1,7 @@
 """
 Utilities for Hugging Face Pro integration with The HigherSelf Network.
 """
+
 import os
 from typing import Any, Dict, Optional, Union
 

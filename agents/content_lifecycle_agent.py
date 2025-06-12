@@ -113,9 +113,11 @@ class ContentLifecycleAgent(BaseAgent):
                 {
                     "title": f"Sample idea {i+1} for {topic_area}",
                     "brief": f"This is a potential content piece about {topic_area}",
-                    "content_type": content_type.value
-                    if content_type
-                    else ContentType.BLOG_POST.value,
+                    "content_type": (
+                        content_type.value
+                        if content_type
+                        else ContentType.BLOG_POST.value
+                    ),
                     "keywords": [f"{topic_area}", "sample", f"keyword{i}"],
                 }
             )

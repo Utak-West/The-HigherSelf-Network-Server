@@ -383,9 +383,9 @@ class BarterNotificationService:
                 "service_type": listing.category.value.replace("_", " ").title(),
                 "provider_name": listing.provider_id,
                 "compatibility_score": f"{match.compatibility_score:.0%}",
-                "distance": f"{match.distance_km:.1f}km"
-                if match.distance_km
-                else "Virtual",
+                "distance": (
+                    f"{match.distance_km:.1f}km" if match.distance_km else "Virtual"
+                ),
             },
             related_match_id=match.id,
             related_listing_id=match.listing_id,

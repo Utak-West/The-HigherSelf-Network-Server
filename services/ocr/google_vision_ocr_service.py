@@ -222,12 +222,14 @@ class GoogleVisionOCRService(BaseOCRService):
                 output_format=request.output_format,
                 processing_time=time.time() - start_time,
                 metadata={
-                    "locale": response.full_text_annotation.pages[0]
-                    .property.detected_languages[0]
-                    .language_code
-                    if response.full_text_annotation
-                    and response.full_text_annotation.pages
-                    else None
+                    "locale": (
+                        response.full_text_annotation.pages[0]
+                        .property.detected_languages[0]
+                        .language_code
+                        if response.full_text_annotation
+                        and response.full_text_annotation.pages
+                        else None
+                    )
                 },
             )
 

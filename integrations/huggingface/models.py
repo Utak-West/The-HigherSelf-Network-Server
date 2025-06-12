@@ -2,26 +2,17 @@
 Pydantic models for Hugging Face Pro integration with Notion.
 These models enforce data validation and structure for all Hugging Face API interactions.
 """
+
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union
 
-from pydantic import (
-    Any,
-    BaseModel,
-    Dict,
-    Field,
-    HttpUrl,
-    List,
-    Optional,
-    Union,
-    field_validatorfrom,
-    import,
-    typing,
-)
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 
 class ModelType(str, Enum):
     """Types of models available in Hugging Face."""
+
     TEXT_GENERATION = "text-generation"
     TEXT_CLASSIFICATION = "text-classification"
     TOKEN_CLASSIFICATION = "token-classification"
@@ -42,6 +33,7 @@ class ModelType(str, Enum):
 
 class SpaceFramework(str, Enum):
     """Supported frameworks for Hugging Face Spaces."""
+
     GRADIO = "gradio"
     STREAMLIT = "streamlit"
     STATIC = "static"
@@ -51,6 +43,7 @@ class SpaceFramework(str, Enum):
 
 class NotionHuggingFaceModel(BaseModel):
     """Base model for Notion integration with Hugging Face."""
+
     notion_id: str
     name: str
     description: Optional[str] = None
@@ -65,7 +58,7 @@ class NotionHuggingFaceModel(BaseModel):
         log_entry = {
             "timestamp": datetime.now(),
             "action": action,
-            "details": details or {}
+            "details": details or {},
         }
         self.history_log.append(log_entry)
         self.updated_at = datetime.now()
@@ -73,6 +66,7 @@ class NotionHuggingFaceModel(BaseModel):
 
 class HuggingFaceModelReference(NotionHuggingFaceModel):
     """Reference to a Hugging Face model used in Notion."""
+
     model_id: str
     model_type: ModelType
     model_version: Optional[str] = None
@@ -82,15 +76,17 @@ class HuggingFaceModelReference(NotionHuggingFaceModel):
     fine_tuned: bool = False
     parameters: Dict[str, Any] = Field(default_factory=dict)
 
-@field_validator('hub_url', mode='before')    def validate_hub_url(cls, v, values):
+    @field_validator("hub_url", mode="before")
+    def validate_hub_url(cls, v, values):
         """Validate that the hub URL contains the model ID."""
-        if 'model_id' in values and values['model_id'] not in v:
+        if "model_id" in values and values["model_id"] not in v:
             raise ValueError(f"hub_url must contain model_id {values['model_id']}")
         return v
 
 
 class HuggingFaceSpace(NotionHuggingFaceModel):
     """Hugging Face Space reference for Notion integration."""
+
     space_id: str
     space_url: HttpUrl
     framework: SpaceFramework
@@ -101,6 +97,7 @@ class HuggingFaceSpace(NotionHuggingFaceModel):
 
 class HuggingFaceDataset(NotionHuggingFaceModel):
     """Hugging Face Dataset reference for Notion integration."""
+
     dataset_id: str
     dataset_url: HttpUrl
     version: Optional[str] = None
@@ -111,6 +108,7 @@ class HuggingFaceDataset(NotionHuggingFaceModel):
 
 class AgentToolConfig(BaseModel):
     """Configuration for Hugging Face Agent tools."""
+
     tool_name: str
     description: str
     parameters: Dict[str, Any] = Field(default_factory=dict)
@@ -119,6 +117,7 @@ class AgentToolConfig(BaseModel):
 
 class HuggingFaceAgent(NotionHuggingFaceModel):
     """Hugging Face Agent configuration for Notion integration."""
+
     base_model_id: str
     tools: List[AgentToolConfig] = Field(default_factory=list)
     memory_enabled: bool = True

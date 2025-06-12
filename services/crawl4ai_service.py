@@ -107,9 +107,11 @@ class Crawl4AIService:
 
             # Configure crawler
             run_config = CrawlerRunConfig(
-                cache_mode=CacheMode.ENABLED
-                if config.cache_mode == "enabled"
-                else CacheMode.BYPASS,
+                cache_mode=(
+                    CacheMode.ENABLED
+                    if config.cache_mode == "enabled"
+                    else CacheMode.BYPASS
+                ),
                 markdown_generator=DefaultMarkdownGenerator(
                     content_filter=content_filter
                 ),
@@ -206,9 +208,11 @@ class Crawl4AIService:
 
             # Configure crawler for deep crawl
             run_config = CrawlerRunConfig(
-                cache_mode=CacheMode.ENABLED
-                if config.cache_mode == "enabled"
-                else CacheMode.BYPASS,
+                cache_mode=(
+                    CacheMode.ENABLED
+                    if config.cache_mode == "enabled"
+                    else CacheMode.BYPASS
+                ),
                 markdown_generator=DefaultMarkdownGenerator(
                     content_filter=content_filter
                 ),

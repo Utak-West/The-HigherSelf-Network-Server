@@ -172,9 +172,11 @@ class DatasetProcessor:
                 file_path=file_path,
                 format="csv",
                 row_count=len(df),
-                feature_count=len(df.columns) - 1
-                if target_column in df.columns
-                else len(df.columns),
+                feature_count=(
+                    len(df.columns) - 1
+                    if target_column in df.columns
+                    else len(df.columns)
+                ),
             )
 
             # Save version to repository
@@ -189,9 +191,7 @@ class DatasetProcessor:
             logger.error(f"Error processing dataset {dataset_id}: {e}")
             return None
 
-    async def prepare_training_data(
-        self, config: DatasetTrainingConfig
-    ) -> Tuple[
+    async def prepare_training_data(self, config: DatasetTrainingConfig) -> Tuple[
         Optional[pd.DataFrame],
         Optional[pd.DataFrame],
         Optional[pd.DataFrame],

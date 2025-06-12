@@ -124,9 +124,11 @@ class OpenMLService:
                         ),
                         row_count=int(item.get("NumberOfInstances", 0)),
                         feature_count=int(item.get("NumberOfFeatures", 0)),
-                        tags=item.get("tags", {}).get("tag", [])
-                        if isinstance(item.get("tags", {}), dict)
-                        else [],
+                        tags=(
+                            item.get("tags", {}).get("tag", [])
+                            if isinstance(item.get("tags", {}), dict)
+                            else []
+                        ),
                     )
                     datasets.append(dataset)
                 except Exception as e:
@@ -198,9 +200,11 @@ class OpenMLService:
                 ),
                 row_count=int(dataset_info.get("number_of_instances", 0)),
                 feature_count=int(dataset_info.get("number_of_features", 0)),
-                tags=dataset_info.get("tag", [])
-                if isinstance(dataset_info.get("tag"), list)
-                else [],
+                tags=(
+                    dataset_info.get("tag", [])
+                    if isinstance(dataset_info.get("tag"), list)
+                    else []
+                ),
             )
 
             # Cache result
@@ -362,9 +366,11 @@ class OpenMLService:
                 feature_columns=[col for col in df.columns if col != target_column],
                 target_column=target_column,
                 row_count=len(df),
-                feature_count=len(df.columns) - 1
-                if target_column in df.columns
-                else len(df.columns),
+                feature_count=(
+                    len(df.columns) - 1
+                    if target_column in df.columns
+                    else len(df.columns)
+                ),
                 sample_data=df.head(5).to_dict(orient="records"),
             )
 

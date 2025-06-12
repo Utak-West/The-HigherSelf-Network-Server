@@ -347,9 +347,11 @@ class EnhancedStateMachine:
                 instance_id=instance_id,
                 transition_name=transition_name,
                 agent_id=agent_id,
-                action_description=f"{action_description} (retry {attempt})"
-                if action_description
-                else f"Retry {attempt}",
+                action_description=(
+                    f"{action_description} (retry {attempt})"
+                    if action_description
+                    else f"Retry {attempt}"
+                ),
                 transition_data=transition_data,
                 retry_attempt=attempt,
                 condition_evaluator=condition_evaluator,

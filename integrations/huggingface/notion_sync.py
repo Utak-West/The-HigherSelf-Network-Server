@@ -2,6 +2,7 @@
 Notion integration for Hugging Face Pro services.
 Synchronizes data between Hugging Face and Notion databases.
 """
+
 import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union

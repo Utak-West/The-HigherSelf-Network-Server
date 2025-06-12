@@ -172,11 +172,11 @@ class CapCutService(BaseService):
                 message="Video export started successfully",
                 export_id=data.get("export_id"),
                 content_id=content_id,
-                estimated_completion_time=datetime.fromisoformat(
-                    data.get("estimated_completion_time")
-                )
-                if data.get("estimated_completion_time")
-                else None,
+                estimated_completion_time=(
+                    datetime.fromisoformat(data.get("estimated_completion_time"))
+                    if data.get("estimated_completion_time")
+                    else None
+                ),
             )
 
         except httpx.HTTPStatusError as e:
@@ -249,9 +249,9 @@ class CapCutService(BaseService):
                                 else content.description
                             )
                             updates["duration"] = metadata.duration
-                            updates[
-                                "resolution"
-                            ] = f"{metadata.width}x{metadata.height}"
+                            updates["resolution"] = (
+                                f"{metadata.width}x{metadata.height}"
+                            )
                             updates["tags"] = metadata.tags
 
                         # Save updates to Notion
@@ -326,9 +326,11 @@ class CapCutService(BaseService):
                 if content:
                     # Update with video URL and status
                     updates = {
-                        "video_status": VideoStatus.COMPLETED.value
-                        if webhook_data.status == CapCutExportStatus.COMPLETED
-                        else VideoStatus.FAILED.value
+                        "video_status": (
+                            VideoStatus.COMPLETED.value
+                            if webhook_data.status == CapCutExportStatus.COMPLETED
+                            else VideoStatus.FAILED.value
+                        )
                     }
 
                     # Add video URL if available
@@ -348,9 +350,9 @@ class CapCutService(BaseService):
                             else content.description
                         )
                         updates["duration"] = webhook_data.metadata.duration
-                        updates[
-                            "resolution"
-                        ] = f"{webhook_data.metadata.width}x{webhook_data.metadata.height}"
+                        updates["resolution"] = (
+                            f"{webhook_data.metadata.width}x{webhook_data.metadata.height}"
+                        )
                         updates["tags"] = webhook_data.metadata.tags
 
                     # Save updates to Notion

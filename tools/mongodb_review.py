@@ -163,9 +163,11 @@ class MongoDBReviewer:
             print_data("MongoDB Version", server_info.get("version", "Unknown"))
             print_data(
                 "Connection URI",
-                self.mongo_uri.split("@")[-1]
-                if "@" in self.mongo_uri
-                else self.mongo_uri,
+                (
+                    self.mongo_uri.split("@")[-1]
+                    if "@" in self.mongo_uri
+                    else self.mongo_uri
+                ),
             )
             print_data("Database Name", self.db_name)
 

@@ -477,13 +477,15 @@ class GraceFieldsCustomerServiceTrainer:
             "training_summary": {
                 "total_scenarios": total_scenarios,
                 "passed_scenarios": passed_scenarios,
-                "success_rate": (passed_scenarios / total_scenarios * 100)
-                if total_scenarios > 0
-                else 0,
+                "success_rate": (
+                    (passed_scenarios / total_scenarios * 100)
+                    if total_scenarios > 0
+                    else 0
+                ),
                 "total_time_seconds": total_time,
-                "average_time_per_scenario": total_time / total_scenarios
-                if total_scenarios > 0
-                else 0,
+                "average_time_per_scenario": (
+                    total_time / total_scenarios if total_scenarios > 0 else 0
+                ),
             },
             "criteria_performance": criteria_averages,
             "improvement_areas": improvement_areas,

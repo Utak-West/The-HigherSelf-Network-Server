@@ -53,9 +53,9 @@ class TransitionTrigger(BaseModel):
             "description": self.description,
             "trigger_type": self.trigger_type.value,
             "event_types": self.event_types,
-            "scheduled_time": self.scheduled_time.isoformat()
-            if self.scheduled_time
-            else None,
+            "scheduled_time": (
+                self.scheduled_time.isoformat() if self.scheduled_time else None
+            ),
             "schedule_frequency": self.schedule_frequency,
             "agent_roles_allowed": self.agent_roles_allowed,
             "manual_prompt_template": self.manual_prompt_template,
@@ -183,9 +183,11 @@ class TransitionCondition(BaseModel):
             "description": self.description,
             "field_path": self.field_path,
             "operator": self.operator.value,
-            "expected_value": json.dumps(self.expected_value)
-            if self.expected_value is not None
-            else None,
+            "expected_value": (
+                json.dumps(self.expected_value)
+                if self.expected_value is not None
+                else None
+            ),
             "case_sensitive": self.case_sensitive,
         }
 

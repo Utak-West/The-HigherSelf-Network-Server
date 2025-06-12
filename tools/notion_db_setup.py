@@ -218,9 +218,9 @@ class NotionDatabaseSetup:
         database_ids["UseCase"] = await self.create_use_cases_db()
 
         # Create Notifications Templates
-        database_ids[
-            "NotificationTemplate"
-        ] = await self.create_notifications_templates_db()
+        database_ids["NotificationTemplate"] = (
+            await self.create_notifications_templates_db()
+        )
 
         # Create Agent Communication Patterns
         database_ids["AgentCommunication"] = await self.create_agent_communication_db()
