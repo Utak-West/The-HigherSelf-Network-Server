@@ -20,10 +20,10 @@ devin_higherself_setup() {
         export REDIS_URI=redis://localhost:6379/0
         export MONGODB_URI=mongodb://localhost:27017/test_db
         export OPENAI_API_KEY=test_openai_key
-        echo "✅ Devin environment configured for The HigherSelf Network Server"
-        echo "📁 Current directory: $(pwd)"
+        echo "Devin environment configured for The HigherSelf Network Server"
+        echo "Current directory: $(pwd)"
     else
-        echo "❌ Project directory not found: $DEVIN_PROJECT_ROOT"
+        echo "ERROR: Project directory not found: $DEVIN_PROJECT_ROOT"
         echo "Please ensure the repository is cloned to the correct location"
     fi
 }
@@ -40,90 +40,90 @@ alias devin-docs='cd $DEVIN_PROJECT_ROOT && open DEVIN_REPOSITORY_NOTES.md'
 
 # Advanced Devin functions
 devin_full_setup() {
-    echo "🤖 Running complete Devin setup for The HigherSelf Network Server..."
+    echo "Running complete Devin setup for The HigherSelf Network Server..."
     devin_higherself_setup
     python3 devin_quick_validation.py
     if [ $? -eq 0 ]; then
-        echo "✅ Setup completed successfully!"
-        echo "🚀 Ready to start development"
+        echo "Setup completed successfully!"
+        echo "Ready to start development"
     else
-        echo "❌ Setup validation failed"
-        echo "📚 Check DEVIN_REPOSITORY_NOTES.md for troubleshooting"
+        echo "Setup validation failed"
+        echo "Check DEVIN_REPOSITORY_NOTES.md for troubleshooting"
     fi
 }
 
 devin_commit_ready() {
-    echo "🔍 Checking if code is ready to commit..."
+    echo "Checking if code is ready to commit..."
     devin_higherself_setup
-    
+
     # Run validation
     if ! python3 devin_quick_validation.py; then
-        echo "❌ Validation failed - not ready to commit"
+        echo "Validation failed - not ready to commit"
         return 1
     fi
-    
+
     # Run core tests
     if ! python3 -m pytest tests/test_basic_functionality.py -v --no-cov; then
-        echo "❌ Core tests failed - not ready to commit"
+        echo "Core tests failed - not ready to commit"
         return 1
     fi
-    
+
     # Check syntax
     if ! python3 -c "import py_compile; py_compile.compile('main.py', doraise=True)"; then
-        echo "❌ Syntax errors found - not ready to commit"
+        echo "Syntax errors found - not ready to commit"
         return 1
     fi
-    
-    echo "✅ Code is ready to commit!"
+
+    echo "Code is ready to commit!"
     return 0
 }
 
 devin_start_dev() {
-    echo "🚀 Starting Devin development session..."
+    echo "Starting Devin development session..."
     devin_higherself_setup
-    
+
     # Start server in background
     python3 devin_test_server.py &
     SERVER_PID=$!
-    
+
     # Wait for server to start
     sleep 5
-    
+
     # Test health endpoint
     if curl -f http://localhost:8000/health > /dev/null 2>&1; then
-        echo "✅ Development server started successfully"
-        echo "🌐 Server running at: http://localhost:8000"
-        echo "❤️  Health check: http://localhost:8000/health"
-        echo "📚 API docs: http://localhost:8000/docs"
+        echo "Development server started successfully"
+        echo "Server running at: http://localhost:8000"
+        echo "Health check: http://localhost:8000/health"
+        echo "API docs: http://localhost:8000/docs"
         echo ""
-        echo "🛑 To stop server: kill $SERVER_PID"
+        echo "To stop server: kill $SERVER_PID"
     else
-        echo "❌ Server failed to start properly"
+        echo "Server failed to start properly"
         kill $SERVER_PID 2>/dev/null
     fi
 }
 
 devin_quick_test() {
-    echo "⚡ Running quick Devin test suite..."
+    echo "Running quick Devin test suite..."
     devin_higherself_setup
-    
+
     # Quick validation
     if python3 devin_quick_validation.py; then
-        echo "✅ Quick validation passed"
+        echo "Quick validation passed"
     else
-        echo "❌ Quick validation failed"
+        echo "Quick validation failed"
         return 1
     fi
-    
+
     # Basic functionality test
     if python3 -m pytest tests/test_basic_functionality.py -v --no-cov; then
-        echo "✅ Basic functionality tests passed"
+        echo "Basic functionality tests passed"
     else
-        echo "❌ Basic functionality tests failed"
+        echo "Basic functionality tests failed"
         return 1
     fi
-    
-    echo "🎉 All quick tests passed!"
+
+    echo "All quick tests passed!"
 }
 
 # Auto-completion for Devin commands
@@ -144,7 +144,7 @@ complete -F _devin_commands devin-validate devin-test devin-server
 # Display help when sourced
 devin_help() {
     echo ""
-    echo "🤖 Devin AI Commands for The HigherSelf Network Server"
+    echo "Devin AI Commands for The HigherSelf Network Server"
     echo "======================================================"
     echo ""
     echo "Setup Commands:"
@@ -169,11 +169,11 @@ devin_help() {
     echo "  devin-docs         - Open documentation"
     echo "  devin_help         - Show this help"
     echo ""
-    echo "🚀 Quick start: devin_full_setup"
+    echo "Quick start: devin_full_setup"
     echo ""
 }
 
 # Show help message when this file is sourced
-echo "✅ Devin AI configuration loaded for The HigherSelf Network Server"
-echo "📝 Type 'devin_help' to see available commands"
-echo "🚀 Type 'devin_full_setup' to get started"
+echo "Devin AI configuration loaded for The HigherSelf Network Server"
+echo "Type 'devin_help' to see available commands"
+echo "Type 'devin_full_setup' to get started"

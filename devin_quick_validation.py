@@ -17,11 +17,13 @@ def check_python_version():
     """Check Python version compatibility."""
     version = sys.version_info
     if version.major == 3 and version.minor >= 8:
-        print(f"✅ Python {version.major}.{version.minor}.{version.micro} - Compatible")
+        print(
+            f"PASS: Python {version.major}.{version.minor}.{version.micro} - Compatible"
+        )
         return True
     else:
         print(
-            f"❌ Python {version.major}.{version.minor}.{version.micro} - Requires Python 3.8+"
+            f"FAIL: Python {version.major}.{version.minor}.{version.micro} - Requires Python 3.8+"
         )
         return False
 
@@ -29,20 +31,20 @@ def check_python_version():
 def check_file_exists(filepath, description):
     """Check if a file exists."""
     if Path(filepath).exists():
-        print(f"✅ {description} - Found")
+        print(f"PASS: {description} - Found")
         return True
     else:
-        print(f"❌ {description} - Missing")
+        print(f"FAIL: {description} - Missing")
         return False
 
 
 def check_directory_exists(dirpath, description):
     """Check if a directory exists."""
     if Path(dirpath).is_dir():
-        print(f"✅ {description} - Found")
+        print(f"PASS: {description} - Found")
         return True
     else:
-        print(f"❌ {description} - Missing")
+        print(f"FAIL: {description} - Missing")
         return False
 
 
@@ -51,13 +53,13 @@ def check_import(module_name, description):
     try:
         spec = importlib.util.find_spec(module_name)
         if spec is not None:
-            print(f"✅ {description} - Available")
+            print(f"PASS: {description} - Available")
             return True
         else:
-            print(f"❌ {description} - Not found")
+            print(f"FAIL: {description} - Not found")
             return False
     except Exception as e:
-        print(f"❌ {description} - Error: {e}")
+        print(f"FAIL: {description} - Error: {e}")
         return False
 
 
@@ -75,27 +77,27 @@ def check_environment_variables():
 
     results = []
 
-    print("\n🔍 Environment Variables Check:")
+    print("\nEnvironment Variables Check:")
     for var, desc in critical_vars:
         if os.environ.get(var):
-            print(f"✅ {desc} ({var}) - Set")
+            print(f"PASS: {desc} ({var}) - Set")
             results.append(True)
         else:
-            print(f"⚠️  {desc} ({var}) - Not set (will be configured)")
+            print(f"WARN: {desc} ({var}) - Not set (will be configured)")
             results.append(True)  # Not critical for basic validation
 
     for var, desc in optional_vars:
         if os.environ.get(var):
-            print(f"✅ {desc} ({var}) - Set")
+            print(f"PASS: {desc} ({var}) - Set")
         else:
-            print(f"ℹ️  {desc} ({var}) - Not set (optional)")
+            print(f"INFO: {desc} ({var}) - Not set (optional)")
 
     return all(results)
 
 
 def main():
     """Main validation function."""
-    print("🚀 Devin Quick Validation - The HigherSelf Network Server")
+    print("Devin Quick Validation - The HigherSelf Network Server")
     print("=" * 60)
 
     # Set PYTHONPATH to current directory
@@ -105,18 +107,18 @@ def main():
     checks = []
 
     # Python version check
-    print("\n🐍 Python Environment:")
+    print("\nPython Environment:")
     checks.append(check_python_version())
 
     # Core files check
-    print("\n📁 Core Files:")
+    print("\nCore Files:")
     checks.append(check_file_exists("main.py", "Main Application File"))
     checks.append(check_file_exists("requirements.txt", "Requirements File"))
     checks.append(check_file_exists("pyproject.toml", "Project Configuration"))
     checks.append(check_file_exists("run_tests.py", "Test Runner"))
 
     # Directory structure check
-    print("\n📂 Directory Structure:")
+    print("\nDirectory Structure:")
     checks.append(check_directory_exists("agents", "Agents Directory"))
     checks.append(check_directory_exists("api", "API Directory"))
     checks.append(check_directory_exists("services", "Services Directory"))
@@ -124,39 +126,39 @@ def main():
     checks.append(check_directory_exists("tests", "Tests Directory"))
 
     # Core imports check
-    print("\n📦 Core Imports:")
+    print("\nCore Imports:")
     checks.append(check_import("pathlib", "Pathlib"))
     checks.append(check_import("json", "JSON"))
     checks.append(check_import("os", "OS"))
     checks.append(check_import("sys", "Sys"))
 
     # Project-specific imports (basic)
-    print("\n🏗️  Project Imports (Basic):")
+    print("\nProject Imports (Basic):")
     try:
         # Test basic model imports
         from models.base import BaseModel
 
-        print("✅ Base Models - Available")
+        print("PASS: Base Models - Available")
         checks.append(True)
     except Exception as e:
-        print(f"❌ Base Models - Error: {e}")
+        print(f"FAIL: Base Models - Error: {e}")
         checks.append(False)
 
     try:
         # Test settings import
         from config.settings import settings
 
-        print("✅ Settings Configuration - Available")
+        print("PASS: Settings Configuration - Available")
         checks.append(True)
     except Exception as e:
-        print(f"❌ Settings Configuration - Error: {e}")
+        print(f"FAIL: Settings Configuration - Error: {e}")
         checks.append(False)
 
     # Environment variables check
     checks.append(check_environment_variables())
 
     # Test execution capability
-    print("\n🧪 Test Execution Check:")
+    print("\nTest Execution Check:")
     try:
         import subprocess
 
@@ -167,18 +169,18 @@ def main():
             timeout=10,
         )
         if result.returncode == 0:
-            print("✅ Test Execution - Working")
+            print("PASS: Test Execution - Working")
             checks.append(True)
         else:
-            print(f"❌ Test Execution - Failed: {result.stderr}")
+            print(f"FAIL: Test Execution - Failed: {result.stderr}")
             checks.append(False)
     except Exception as e:
-        print(f"❌ Test Execution - Error: {e}")
+        print(f"FAIL: Test Execution - Error: {e}")
         checks.append(False)
 
     # Summary
     print("\n" + "=" * 60)
-    print("📊 VALIDATION SUMMARY")
+    print("VALIDATION SUMMARY")
     print("=" * 60)
 
     passed = sum(checks)
@@ -191,22 +193,22 @@ def main():
     print(f"Success Rate: {success_rate:.1f}%")
 
     if success_rate >= 90:
-        print("\n🎉 VALIDATION PASSED!")
-        print("✅ Environment is ready for Devin integration")
-        print("✅ You can proceed with automated testing")
-        print("\n🚀 Next Steps:")
+        print("\nVALIDATION PASSED!")
+        print("Environment is ready for Devin integration")
+        print("You can proceed with automated testing")
+        print("\nNext Steps:")
         print("   1. Run: python3 devin_automated_setup.py")
         print("   2. Or run: python3 run_tests.py")
         return 0
     elif success_rate >= 70:
-        print("\n⚠️  VALIDATION PARTIALLY PASSED")
-        print("🔧 Some issues detected but environment is mostly ready")
-        print("📚 Check the failed items above and refer to documentation")
+        print("\nVALIDATION PARTIALLY PASSED")
+        print("Some issues detected but environment is mostly ready")
+        print("Check the failed items above and refer to documentation")
         return 1
     else:
-        print("\n❌ VALIDATION FAILED")
-        print("🚨 Critical issues detected - environment needs setup")
-        print("📚 Refer to DEVIN_COMPREHENSIVE_SETUP_GUIDE.md")
+        print("\nVALIDATION FAILED")
+        print("Critical issues detected - environment needs setup")
+        print("Refer to DEVIN_COMPREHENSIVE_SETUP_GUIDE.md")
         return 2
 
 
