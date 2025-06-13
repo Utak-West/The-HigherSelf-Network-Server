@@ -96,14 +96,26 @@ body {
     height: 70px;
 }
 
-.header-left .logo h1 {
+.header-left .logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-left .logo .logo-image {
+    height: 50px;
+    width: auto;
+    max-width: 160px;
+}
+
+.header-left .logo .logo-text h1 {
     font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--primary-red);
     margin-bottom: var(--spacing-xs);
 }
 
-.header-left .logo .branch-name {
+.header-left .logo .logo-text .branch-name {
     font-size: var(--font-size-sm);
     color: var(--dark-gray);
     font-weight: 500;
@@ -401,7 +413,12 @@ body {
         height: 60px;
     }
 
-    .header-left .logo h1 {
+    .header-left .logo .logo-image {
+        height: 40px;
+        max-width: 120px;
+    }
+
+    .header-left .logo .logo-text h1 {
         font-size: var(--font-size-lg);
     }
 
