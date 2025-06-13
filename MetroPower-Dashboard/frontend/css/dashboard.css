@@ -7,9 +7,11 @@
  * Copyright 2025 The HigherSelf Network
  */
 
-/* CSS Variables - HigherSelf Brand Colors */
+/* CSS Variables - MetroPower Brand Colors */
 :root {
-    --primary-blue: #31B2E0;
+    --primary-red: #DC2626;
+    --primary-red-hover: #B91C1C;
+    --primary-red-light: #FEF2F2;
     --white: #FFFFFF;
     --black: #000000;
     --light-gray: #F8F9FA;
@@ -97,7 +99,7 @@ body {
 .header-left .logo h1 {
     font-size: var(--font-size-xl);
     font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--primary-red);
     margin-bottom: var(--spacing-xs);
 }
 
@@ -158,12 +160,12 @@ body {
 }
 
 .btn-primary, .login-btn {
-    background-color: var(--primary-blue);
+    background-color: var(--primary-red);
     color: var(--white);
 }
 
 .btn-primary:hover, .login-btn:hover {
-    background-color: #2A9BC7;
+    background-color: var(--primary-red-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px var(--shadow-hover);
 }
@@ -206,7 +208,7 @@ body {
     width: 40px;
     height: 40px;
     border: 4px solid var(--light-gray);
-    border-top: 4px solid var(--primary-blue);
+    border-top: 4px solid var(--primary-red);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: var(--spacing-md);
@@ -245,20 +247,26 @@ body {
 }
 
 .stat-icon {
-    font-size: var(--font-size-3xl);
     width: 60px;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--light-gray);
+    background-color: var(--primary-red-light);
     border-radius: var(--radius-lg);
+    border: 2px solid rgba(220, 38, 38, 0.1);
+}
+
+.stat-icon img {
+    width: 28px;
+    height: 28px;
+    filter: none;
 }
 
 .stat-content h3 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--primary-red);
     margin-bottom: var(--spacing-xs);
 }
 
@@ -312,7 +320,7 @@ body {
 }
 
 .employee-card:hover {
-    border-color: var(--primary-blue);
+    border-color: var(--primary-red);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px var(--shadow-hover);
 }
@@ -333,7 +341,7 @@ body {
 .employee-rate {
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--primary-blue);
+    color: var(--primary-red);
 }
 
 /* Week navigation */
@@ -355,9 +363,9 @@ body {
 }
 
 .week-nav-btn:hover {
-    background-color: var(--primary-blue);
+    background-color: var(--primary-red);
     color: var(--white);
-    border-color: var(--primary-blue);
+    border-color: var(--primary-red);
 }
 
 .current-week {
