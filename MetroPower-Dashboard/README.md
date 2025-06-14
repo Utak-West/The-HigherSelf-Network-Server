@@ -1,287 +1,209 @@
-# MetroPower Dashboard
+# 🏗️ MetroPower Dashboard - Tucker Branch
 
-A comprehensive workforce management system for tracking electricians and managing assignments at MetroPower's Tucker Branch. Built for Antione Harrell, Assistant Project Manager, to optimize operations and streamline workforce allocation.
+<div align="center">
+  <img src="frontend/assets/images/metropower-logo.png" alt="MetroPower Logo" width="200"/>
 
-## Project Overview
+  **Professional Workforce Management Dashboard**
 
-This repository contains the complete MetroPower Dashboard system, a comprehensive workforce management solution designed to solve critical issues with employee tracking, payroll accuracy, and resource allocation across multiple construction projects at MetroPower's Tucker Branch.
+  *Streamline your electrical construction operations with real-time employee tracking, project assignments, and comprehensive reporting tools.*
 
-## Core Problem Addressed
+  [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com)
+  [![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
+  [![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
+</div>
 
-The MetroPower Tucker Branch faced significant challenges with:
-- **Payroll Discrepancies**: Manual tracking led to inconsistencies between field assignments and payroll records
-- **Resource Allocation**: Difficulty in optimizing employee assignments across multiple projects
-- **Real-time Visibility**: Lack of instant access to employee locations and project status
-- **Cost Allocation**: Inaccurate project cost distribution affecting profitability analysis
+---
 
-## Solution Architecture
+## 🎯 Overview
 
-### Frontend Components
-- **Interactive Dashboard**: Real-time view of employee assignments and project status
-- **Drag-and-Drop Interface**: Intuitive employee assignment management
-- **Responsive Design**: Optimized for desktop and mobile devices
-- **Real-time Updates**: WebSocket-powered live data synchronization
+MetroPower Dashboard is a comprehensive workforce management system designed specifically for MetroPower's Tucker Branch operations. Built to handle the complexities of electrical construction workforce management, it provides real-time visibility into employee assignments, project tracking, and operational oversight.
 
-### Backend Infrastructure
-- **RESTful API**: Comprehensive endpoints for all dashboard operations
-- **Authentication System**: JWT-based security with role-based access control
-- **Database Integration**: PostgreSQL with connection pooling and failover
-- **Real-time Communication**: Socket.IO for live updates
-- **Export Capabilities**: Excel and PDF report generation
+### ✨ Key Features
 
-### Key Features
-- **Employee Management**: Track electricians, supervisors, and support staff
-- **Project Assignment**: Visual assignment interface with drag-and-drop functionality
-- **Time Tracking**: Automated attendance and hours calculation
-- **Reporting**: Comprehensive reports for payroll and project management
-- **Notifications**: Real-time alerts for assignment changes and updates
-- **Archive System**: Historical data retention and audit trails
+- **🔄 Real-time Employee Tracking** - Live updates on employee status and assignments
+- **📋 Project-based Workforce Allocation** - Organize teams by projects and locations
+- **🖱️ Interactive Drag-and-Drop Interface** - Intuitive assignment management
+- **📊 Comprehensive Reporting** - Export capabilities (Excel, CSV, PDF)
+- **🔐 Role-based Access Control** - Secure authentication and authorization
+- **📱 Responsive Design** - Works seamlessly on desktop and mobile devices
+- **⚡ Real-time Notifications** - Instant updates via WebSocket connections
+- **📈 Analytics Dashboard** - Workforce insights and performance metrics
 
-## Technology Stack
-
-### Frontend
-- **HTML5/CSS3**: Modern responsive design
-- **JavaScript (ES6+)**: Interactive functionality
-- **Socket.IO Client**: Real-time communication
-- **Chart.js**: Data visualization
-
-### Backend
-- **Node.js**: Server runtime environment
-- **Express.js**: Web application framework
-- **PostgreSQL**: Primary database
-- **Socket.IO**: Real-time communication
-- **JWT**: Authentication and authorization
-- **Bcrypt**: Password hashing
-- **Multer**: File upload handling
-
-### DevOps & Deployment
-- **Docker**: Containerization
-- **Docker Compose**: Multi-service orchestration
-- **Vercel**: Serverless deployment platform
-- **GitHub Actions**: CI/CD pipeline
-
-## Installation & Setup
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 13+
-- Docker (optional)
 
-### Local Development Setup
+- **Node.js** 18+ ([Download](https://nodejs.org))
+- **npm** 8+ (comes with Node.js)
+- **Git** ([Download](https://git-scm.com))
+
+### 🛠️ Local Development
 
 1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd MetroPower-Dashboard
-```
+   ```bash
+   git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
+   cd MetroPower-Dashboard
+   ```
 
 2. **Install dependencies**
-```bash
-npm install
-cd backend && npm install
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Access the application**
+   - Dashboard: `http://localhost:3001`
+   - API Docs: `http://localhost:3001/api-docs`
+   - Health Check: `http://localhost:3001/health`
+
+### 🔑 Default Login Credentials
+
+- **Email**: `Antoine.Harrell@metropower.com`
+- **Password**: `password`
+
+## 🏗️ Architecture
+
+### Technology Stack
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Frontend** | HTML5, CSS3, JavaScript (ES6+) | User interface and interactions |
+| **Backend** | Node.js, Express.js | API server and business logic |
+| **Database** | PostgreSQL / In-memory | Data persistence |
+| **Real-time** | Socket.IO | Live updates and notifications |
+| **Authentication** | JWT | Secure user sessions |
+| **File Processing** | ExcelJS, PDFKit | Document generation |
+| **Deployment** | Vercel | Cloud hosting platform |
+
+### Project Structure
+
+```
+MetroPower-Dashboard/
+├── 📁 api/                    # Vercel serverless functions
+│   ├── index.js              # Main API handler
+│   └── debug.js              # Debug endpoint
+├── 📁 backend/               # Express.js backend
+│   ├── server.js             # Main server file
+│   ├── src/                  # Source code
+│   │   ├── routes/           # API routes
+│   │   ├── middleware/       # Custom middleware
+│   │   ├── config/           # Configuration files
+│   │   └── utils/            # Utility functions
+│   └── package.json          # Backend dependencies
+├── 📁 frontend/              # Static frontend files
+│   ├── index.html            # Main HTML file
+│   ├── css/                  # Stylesheets
+│   ├── js/                   # JavaScript files
+│   └── assets/               # Images, icons, etc.
+├── 📁 scripts/               # Build and utility scripts
+├── 📁 uploads/               # File upload directory
+├── 📁 exports/               # Export files directory
+├── vercel.json               # Vercel configuration
+├── package.json              # Root package.json
+└── .env.example              # Environment variables template
 ```
 
-3. **Environment Configuration**
-```bash
-cp backend/.env.example backend/.env
-# Edit backend/.env with your configuration
-```
-
-4. **Database Setup**
-```bash
-# Start PostgreSQL (if using Docker)
-docker-compose up -d postgres
-
-# Run migrations
-npm run migrate
-
-# Seed initial data
-npm run seed
-```
-
-5. **Start Development Server**
-```bash
-npm run dev
-```
-
-The application will be available at:
-- **Dashboard**: http://localhost:3000
-- **API**: http://localhost:3001
-- **API Documentation**: http://localhost:3001/api-docs
-
-## Environment Variables
-
-### Required Variables
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=metropower_dashboard
-DB_USER=postgres
-DB_PASSWORD=your_password
-
-# JWT Configuration
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=24h
-JWT_REFRESH_SECRET=your_refresh_secret
-JWT_REFRESH_EXPIRES_IN=7d
-
-# Application Configuration
-NODE_ENV=development
-PORT=3001
-HOST=localhost
-```
-
-### Optional Variables
-```env
-# Email Configuration (for notifications)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-
-# File Upload Configuration
-MAX_FILE_SIZE=10485760
-ALLOWED_FILE_TYPES=xlsx,xls,csv,pdf
-
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-```
-
-## API Documentation
-
-The API follows RESTful conventions with comprehensive documentation available at `/api-docs` when running the server.
-
-### Authentication Endpoints
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/verify` - Token verification
-- `POST /api/auth/refresh` - Token refresh
-
-### Dashboard Endpoints
-- `GET /api/dashboard/current` - Current dashboard data
-- `GET /api/dashboard/metrics` - Key performance metrics
-- `GET /api/dashboard/week/:date` - Weekly assignment data
-
-### Employee Management
-- `GET /api/employees` - List all employees
-- `POST /api/employees` - Create new employee
-- `PUT /api/employees/:id` - Update employee
-- `DELETE /api/employees/:id` - Delete employee
-
-### Project Management
-- `GET /api/projects` - List all projects
-- `POST /api/projects` - Create new project
-- `PUT /api/projects/:id` - Update project
-- `DELETE /api/projects/:id` - Delete project
-
-### Assignment Management
-- `GET /api/assignments` - List assignments
-- `POST /api/assignments` - Create assignment
-- `PUT /api/assignments/:id` - Update assignment
-- `DELETE /api/assignments/:id` - Delete assignment
-
-## Deployment
+## 🚀 Deployment
 
 ### Vercel Deployment (Recommended)
 
+This application is optimized for Vercel deployment with serverless functions.
+
+#### Quick Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Utak-West/The-HigherSelf-Network-Server&project-name=metropower-dashboard&repository-name=metropower-dashboard&root-directory=MetroPower-Dashboard)
+
+#### Manual Deployment
+
 1. **Connect to Vercel**
-```bash
-npm install -g vercel
-vercel login
-vercel
-```
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Import your GitHub repository
+   - Set root directory to `MetroPower-Dashboard`
 
 2. **Configure Environment Variables**
-Set all required environment variables in the Vercel dashboard.
+   ```env
+   NODE_ENV=production
+   JWT_SECRET=your-super-secret-jwt-key
+   APP_NAME=MetroPower Dashboard
+   COMPANY_NAME=MetroPower
+   BRANCH_NAME=Tucker Branch
+   CORS_ORIGIN=https://your-app.vercel.app
+   ```
 
 3. **Deploy**
+   - Click "Deploy" and wait for completion
+   - Your app will be available at `https://your-app.vercel.app`
+
+For detailed deployment instructions, see [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md)
+
+## 📚 Documentation
+
+- **[Deployment Guide](VERCEL_DEPLOYMENT.md)** - Complete Vercel deployment instructions
+- **[Deployment Checklist](DEPLOYMENT_CHECKLIST.md)** - Step-by-step deployment checklist
+- **[Quick Start Guide](VERCEL_READY.md)** - Fast deployment summary
+
+## 🧪 Testing
+
+### Run Configuration Tests
 ```bash
-vercel --prod
+node scripts/test-vercel-config.js
 ```
 
-### Docker Deployment
-
-1. **Build and Run**
+### Build for Production
 ```bash
-docker-compose up -d
+npm run vercel-build
 ```
 
-2. **Access Application**
-- Dashboard: http://localhost:3000
-- API: http://localhost:3001
-
-## Testing
-
-### Run Tests
+### Local Testing
 ```bash
 npm test
 ```
 
-### Test Database Connection
-```bash
-npm run test-db
-```
+## 🔧 Configuration
 
-### Manual Testing
-1. Navigate to the dashboard
-2. Login with demo credentials (any username/password in demo mode)
-3. Test employee assignment functionality
-4. Verify real-time updates
-5. Test export functionality
+### Environment Variables
 
-## Security Features
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Environment mode | `development` |
+| `PORT` | Server port | `3001` |
+| `JWT_SECRET` | JWT signing secret | Required |
+| `DATABASE_URL` | PostgreSQL connection string | Optional |
+| `CORS_ORIGIN` | Allowed CORS origins | `http://localhost:3000` |
 
-- **JWT Authentication**: Secure token-based authentication
-- **Password Hashing**: Bcrypt with salt rounds
-- **Rate Limiting**: API endpoint protection
-- **Input Validation**: Comprehensive request validation
-- **SQL Injection Protection**: Parameterized queries
-- **XSS Protection**: Input sanitization
-- **CORS Configuration**: Controlled cross-origin requests
+See [.env.example](.env.example) for complete configuration options.
 
-## Performance Optimizations
-
-- **Connection Pooling**: Efficient database connections
-- **Caching**: Redis-based caching for frequently accessed data
-- **Compression**: Gzip compression for API responses
-- **Lazy Loading**: Optimized frontend resource loading
-- **Database Indexing**: Optimized query performance
-
-## Monitoring & Logging
-
-- **Structured Logging**: Winston-based logging system
-- **Error Tracking**: Comprehensive error handling and reporting
-- **Performance Monitoring**: Request timing and resource usage
-- **Health Checks**: Automated system health monitoring
-
-## Support & Maintenance
-
-### Troubleshooting
-1. Check application logs in `backend/logs/`
-2. Verify database connectivity
-3. Confirm environment variables are set correctly
-4. Review API documentation for endpoint usage
-
-### Common Issues
-- **Database Connection**: Ensure PostgreSQL is running and accessible
-- **Authentication Errors**: Verify JWT secrets are configured
-- **File Upload Issues**: Check file size limits and allowed types
-- **Real-time Updates**: Confirm WebSocket connections are established
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-Copyright 2025 The HigherSelf Network. All rights reserved.
+This project is proprietary software owned by **The HigherSelf Network**. All rights reserved.
 
-## Contact
+## 🆘 Support
 
-For support or questions, contact: info@higherselflife.com
+- **Documentation**: Check the `/docs` directory
+- **Issues**: Create a GitHub issue
+- **Email**: Contact the development team
+
+---
+
+<div align="center">
+  <p><strong>Built with ❤️ by The HigherSelf Network</strong></p>
+  <p>Empowering MetroPower's workforce management operations</p>
+</div>
