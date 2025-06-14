@@ -21,21 +21,8 @@ const router = express.Router();
  */
 router.get('/', asyncHandler(async (req, res) => {
   try {
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const projects = await demoService.getProjects();
-
-      return res.json({
-        success: true,
-        data: projects,
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    // For now, fallback to demo service
-    const demoService = require('../services/demoService');
-    const projects = await demoService.getProjects();
+    const dataService = require('../services/demoService');
+    const projects = await dataService.getProjects();
 
     res.json({
       success: true,

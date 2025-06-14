@@ -43,63 +43,43 @@ router.post('/login', [
 
   const { identifier, password } = req.body;
 
-  // Handle demo mode
-  if (global.isDemoMode) {
-    const demoService = require('../services/demoService');
-
-    try {
-      // In demo mode, accept any credentials and return demo user
-      const demoUser = await demoService.findUserById(1); // Antione Harrell
-
-      logger.info('Demo mode: Login successful with demo user', {
-        identifier,
-        userId: demoUser.user_id
-      });
-
-      return res.json({
-        message: 'Demo login successful',
-        user: {
-          user_id: demoUser.user_id,
-          username: demoUser.username,
-          email: demoUser.email,
-          first_name: demoUser.first_name,
-          last_name: demoUser.last_name,
-          role: demoUser.role,
-          last_login: new Date().toISOString()
-        },
-        accessToken: 'demo-token-' + Date.now(), // Simple demo token
-        isDemoMode: true
-      });
-    } catch (error) {
-      logger.error('Demo mode login error:', error);
-      return res.status(500).json({
-        error: 'Demo mode error',
-        message: 'Failed to authenticate in demo mode'
-      });
-    }
-  }
-
   try {
-    // Authenticate user
-    const authResult = await User.authenticate(identifier, password);
+    // Use data service for authentication
+    const dataService = require('../services/demoService');
+    const bcrypt = require('bcryptjs');
 
-    if (!authResult) {
-      logger.warn('Authentication failed', { identifier });
+    // Find user by identifier
+    const user = await dataService.findUserByIdentifier(identifier);
+
+    if (!user) {
+      logger.warn('Authentication failed - user not found', { identifier });
       return res.status(401).json({
         error: 'Authentication failed',
-        message: 'Invalid credentials or inactive account'
+        message: 'Invalid credentials'
       });
     }
 
-    const { user, tokens } = authResult;
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
-    // Set refresh token as httpOnly cookie
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    if (!isValidPassword) {
+      logger.warn('Authentication failed - invalid password', { identifier });
+      return res.status(401).json({
+        error: 'Authentication failed',
+        message: 'Invalid credentials'
+      });
+    }
+
+    if (!user.is_active) {
+      logger.warn('Authentication failed - inactive account', { identifier });
+      return res.status(401).json({
+        error: 'Authentication failed',
+        message: 'Account is inactive'
+      });
+    }
+
+    // Generate simple token (in production, use proper JWT)
+    const accessToken = 'token-' + Date.now() + '-' + user.user_id;
 
     logger.info('User login successful', {
       userId: user.user_id,
@@ -116,10 +96,12 @@ router.post('/login', [
         first_name: user.first_name,
         last_name: user.last_name,
         role: user.role,
-        last_login: user.last_login
+        last_login: new Date().toISOString()
       },
-      accessToken: tokens.accessToken
+      accessToken: accessToken
     });
+
+
   } catch (error) {
     logger.error('Login error:', error);
     res.status(500).json({
@@ -163,24 +145,7 @@ router.post('/logout', asyncHandler(async (req, res) => {
  */
 router.get('/verify', asyncHandler(async (req, res) => {
   try {
-    // Handle demo mode
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const demoUser = await demoService.findUserById(1);
-
-      return res.json({
-        message: 'Token verified (demo mode)',
-        user: {
-          user_id: demoUser.user_id,
-          username: demoUser.username,
-          email: demoUser.email,
-          first_name: demoUser.first_name,
-          last_name: demoUser.last_name,
-          role: demoUser.role
-        },
-        isDemoMode: true
-      });
-    }
+    const dataService = require('../services/demoService');
 
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
@@ -194,18 +159,27 @@ router.get('/verify', asyncHandler(async (req, res) => {
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
-    // Verify token
-    const decoded = await User.verifyAccessToken(token);
-
-    if (!decoded) {
+    // Simple token validation (in production, use proper JWT)
+    if (!token.startsWith('token-')) {
       return res.status(401).json({
         error: 'Invalid token',
-        message: 'The provided token is invalid or expired'
+        message: 'The provided token is invalid'
       });
     }
 
-    // Get fresh user data
-    const user = await User.findById(decoded.user_id);
+    // Extract user ID from token (simple implementation)
+    const tokenParts = token.split('-');
+    const userId = parseInt(tokenParts[tokenParts.length - 1]);
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'Invalid token',
+        message: 'The provided token is malformed'
+      });
+    }
+
+    // Get user data
+    const user = await dataService.findUserById(userId);
 
     if (!user || !user.is_active) {
       return res.status(401).json({
@@ -241,37 +215,12 @@ router.get('/verify', asyncHandler(async (req, res) => {
  */
 router.post('/refresh', asyncHandler(async (req, res) => {
   try {
-    // Handle demo mode
-    if (global.isDemoMode) {
-      return res.json({
-        message: 'Token refreshed (demo mode)',
-        accessToken: 'demo-token-' + Date.now(),
-        isDemoMode: true
-      });
-    }
-
-    const refreshToken = req.cookies.refreshToken;
-
-    if (!refreshToken) {
-      return res.status(401).json({
-        error: 'Refresh token required',
-        message: 'No refresh token provided'
-      });
-    }
-
-    // Verify refresh token and get new access token
-    const result = await User.refreshAccessToken(refreshToken);
-
-    if (!result) {
-      return res.status(401).json({
-        error: 'Invalid refresh token',
-        message: 'The refresh token is invalid or expired'
-      });
-    }
+    // Simple token refresh (in production, implement proper refresh token logic)
+    const newToken = 'token-' + Date.now() + '-1'; // Always return token for user ID 1
 
     res.json({
       message: 'Token refreshed successfully',
-      accessToken: result.accessToken
+      accessToken: newToken
     });
   } catch (error) {
     logger.error('Token refresh error:', error);

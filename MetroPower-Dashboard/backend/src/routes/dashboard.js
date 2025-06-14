@@ -10,6 +10,7 @@
 const express = require('express');
 const { asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
+const employeeDataService = require('../services/employeeDataService');
 
 const router = express.Router();
 
@@ -30,46 +31,7 @@ router.get('/current', asyncHandler(async (req, res) => {
     monday.setDate(today.getDate() + daysToMonday);
     const weekStartDate = monday.toISOString().split('T')[0];
 
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-
-      const [
-        unassignedToday,
-        activeProjects,
-        weekAssignments,
-        metrics
-      ] = await Promise.all([
-        demoService.getUnassignedEmployees(todayStr),
-        demoService.getActiveProjects(),
-        demoService.getWeekAssignments(weekStartDate),
-        demoService.getDashboardMetrics()
-      ]);
-
-      return res.json({
-        success: true,
-        data: {
-          weekStart: weekStartDate,
-          currentDate: todayStr,
-          unassignedToday,
-          activeProjects,
-          weekAssignments,
-          employeeStatistics: {
-            total: metrics.totalEmployees,
-            assigned: metrics.todayAssignments,
-            unassigned: metrics.unassignedToday.length
-          },
-          projectStatistics: {
-            active: metrics.activeProjects,
-            total: metrics.activeProjects
-          }
-        },
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    // For now, fallback to demo service
-    const demoService = require('../services/demoService');
+    const dataService = require('../services/demoService');
 
     const [
       unassignedToday,
@@ -77,11 +39,16 @@ router.get('/current', asyncHandler(async (req, res) => {
       weekAssignments,
       metrics
     ] = await Promise.all([
-      demoService.getUnassignedEmployees(todayStr),
-      demoService.getActiveProjects(),
-      demoService.getWeekAssignments(weekStartDate),
-      demoService.getDashboardMetrics()
+      dataService.getUnassignedEmployees(todayStr),
+      dataService.getActiveProjects(),
+      dataService.getWeekAssignments(weekStartDate),
+      dataService.getDashboardMetrics()
     ]);
+
+    // Get detailed employee statistics
+    const employeeStats = employeeDataService.isLoaded()
+      ? employeeDataService.getEmployeeStatistics()
+      : { byTrade: {}, byType: {} };
 
     res.json({
       success: true,
@@ -94,7 +61,13 @@ router.get('/current', asyncHandler(async (req, res) => {
         employeeStatistics: {
           total: metrics.totalEmployees,
           assigned: metrics.todayAssignments,
-          unassigned: metrics.unassignedToday.length
+          unassigned: metrics.unassignedToday.length,
+          byTrade: employeeStats.byTrade,
+          supervisors: employeeStats.byTrade['Field Supervisor'] || 0,
+          electricians: employeeStats.byTrade['Electrician'] || 0,
+          apprentices: employeeStats.byTrade['Apprentice'] || 0,
+          temps: employeeStats.byTrade['Temp Labor'] || 0,
+          laborers: employeeStats.byTrade['General Laborer'] || 0
         },
         projectStatistics: {
           active: metrics.activeProjects,
@@ -119,21 +92,8 @@ router.get('/current', asyncHandler(async (req, res) => {
  */
 router.get('/metrics', asyncHandler(async (req, res) => {
   try {
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const metrics = await demoService.getDashboardMetrics();
-
-      return res.json({
-        success: true,
-        data: metrics,
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    // For now, fallback to demo service
-    const demoService = require('../services/demoService');
-    const metrics = await demoService.getDashboardMetrics();
+    const dataService = require('../services/demoService');
+    const metrics = await dataService.getDashboardMetrics();
 
     res.json({
       success: true,
@@ -166,24 +126,8 @@ router.get('/week/:date', asyncHandler(async (req, res) => {
       });
     }
 
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const weekAssignments = await demoService.getWeekAssignments(date);
-
-      return res.json({
-        success: true,
-        data: {
-          weekStart: date,
-          assignments: weekAssignments
-        },
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    // For now, fallback to demo service
-    const demoService = require('../services/demoService');
-    const weekAssignments = await demoService.getWeekAssignments(date);
+    const dataService = require('../services/demoService');
+    const weekAssignments = await dataService.getWeekAssignments(date);
 
     res.json({
       success: true,
@@ -212,18 +156,14 @@ router.get('/health', asyncHandler(async (req, res) => {
     const healthStatus = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      database: global.isDemoMode ? 'demo' : 'connected',
+      database: 'in-memory',
       services: {
         authentication: 'operational',
         dashboard: 'operational',
         logging: 'operational'
-      }
+      },
+      message: 'Running with real employee data from Excel file'
     };
-
-    if (global.isDemoMode) {
-      healthStatus.mode = 'demo';
-      healthStatus.message = 'Running in demonstration mode with in-memory data';
-    }
 
     res.json({
       success: true,

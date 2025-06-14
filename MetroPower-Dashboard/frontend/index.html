@@ -8,9 +8,9 @@
     <meta name="author" content="The HigherSelf Network">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon.png">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/dashboard.css">
@@ -27,7 +27,7 @@
         <div class="header-container">
             <div class="header-left">
                 <div class="logo">
-                    <img src="/assets/images/metropower-logo.svg" alt="MetroPower Logo" class="logo-image">
+                    <img src="/assets/images/metropower-logo.png" alt="MetroPower Logo" class="logo-image">
                     <div class="logo-text">
                         <h1>MetroPower Dashboard</h1>
                         <span class="branch-name">Tucker Branch</span>
@@ -62,73 +62,110 @@
 
         <!-- Dashboard Content -->
         <div class="dashboard-container" id="dashboardContainer">
-            <!-- Statistics Cards -->
-            <section class="stats-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <img src="/assets/icons/users.svg" alt="Users" width="24" height="24">
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="totalEmployees">0</h3>
-                            <p>Total Employees</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <img src="/assets/icons/clipboard.svg" alt="Projects" width="24" height="24">
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="activeProjects">0</h3>
-                            <p>Active Projects</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <img src="/assets/icons/check-circle.svg" alt="Assignments" width="24" height="24">
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="todayAssignments">0</h3>
-                            <p>Today's Assignments</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <img src="/assets/icons/clock.svg" alt="Unassigned" width="24" height="24">
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="unassignedCount">0</h3>
-                            <p>Unassigned Today</p>
-                        </div>
-                    </div>
+            <!-- Week Navigation Header -->
+            <section class="week-header-section">
+                <div class="week-navigation-header">
+                    <button type="button" class="week-nav-btn" id="prevWeekBtn">◀</button>
+                    <h2 class="week-title">Week of: <span id="currentWeek">Loading...</span></h2>
+                    <button type="button" class="week-nav-btn" id="nextWeekBtn">▶</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="🔍 Search employees..." class="search-input">
                 </div>
             </section>
 
-            <!-- Unassigned Employees -->
-            <section class="unassigned-section">
-                <h2>Unassigned Employees - Today</h2>
-                <div class="employee-list" id="unassignedEmployees">
-                    <div class="empty-state">
-                        <p>Loading employees...</p>
-                    </div>
-                </div>
-            </section>
+            <!-- Main Dashboard Layout -->
+            <div class="dashboard-layout">
+                <!-- Left Sidebar -->
+                <aside class="sidebar">
+                    <!-- Unassigned Employees -->
+                    <section class="unassigned-section">
+                        <h3>Unassigned Employees</h3>
+                        <div class="employee-list" id="unassignedEmployees">
+                            <div class="empty-state">
+                                <p>Loading employees...</p>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Weekly Assignment Grid -->
-            <section class="assignment-section">
-                <div class="section-header">
-                    <h2>Weekly Assignments</h2>
-                    <div class="week-navigation">
-                        <button class="week-nav-btn" id="prevWeekBtn">← Previous Week</button>
-                        <span class="current-week" id="currentWeek">Loading...</span>
-                        <button class="week-nav-btn" id="nextWeekBtn">Next Week →</button>
-                    </div>
-                </div>
+                    <!-- Filters -->
+                    <section class="filters-section">
+                        <h3>Filters</h3>
+                        <div class="filter-list">
+                            <label class="filter-item">
+                                <input type="checkbox" id="filterElectricians" checked>
+                                <span>Electricians</span>
+                            </label>
+                            <label class="filter-item">
+                                <input type="checkbox" id="filterSupervisors" checked>
+                                <span>Field Supervisors</span>
+                            </label>
+                            <label class="filter-item">
+                                <input type="checkbox" id="filterApprentices" checked>
+                                <span>Apprentices</span>
+                            </label>
+                            <label class="filter-item">
+                                <input type="checkbox" id="filterLaborers" checked>
+                                <span>General Laborers</span>
+                            </label>
+                            <label class="filter-item">
+                                <input type="checkbox" id="filterTemps" checked>
+                                <span>Temps</span>
+                            </label>
+                        </div>
+                    </section>
 
-                <div class="assignment-grid" id="assignmentGrid">
-                    <div class="empty-state">
-                        <p>Loading assignment grid...</p>
+                    <!-- Summary Statistics -->
+                    <section class="summary-section">
+                        <h3>Summary</h3>
+                        <div class="summary-stats">
+                            <div class="summary-item">
+                                <span class="summary-label">Total Employees:</span>
+                                <span class="summary-value" id="totalEmployees">52</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Field Supervisors:</span>
+                                <span class="summary-value" id="supervisorCount">7</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Electricians:</span>
+                                <span class="summary-value" id="electricianCount">13</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Apprentices:</span>
+                                <span class="summary-value" id="apprenticeCount">24</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Temps:</span>
+                                <span class="summary-value" id="tempCount">10</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Unassigned:</span>
+                                <span class="summary-value" id="unassignedCount">3</span>
+                            </div>
+                        </div>
+                    </section>
+                </aside>
+
+                <!-- Main Assignment Grid -->
+                <main class="assignment-main">
+                    <div class="assignment-grid" id="assignmentGrid">
+                        <div class="empty-state">
+                            <p>Loading assignment grid...</p>
+                        </div>
                     </div>
+                </main>
+            </div>
+
+            <!-- Export Section -->
+            <section class="export-section">
+                <div class="export-buttons">
+                    <button class="export-btn" id="exportExcel">Export Excel</button>
+                    <button class="export-btn" id="exportCSV">Export CSV</button>
+                    <button class="export-btn" id="exportPDF">Export PDF</button>
+                </div>
+                <div class="last-updated">
+                    <span>Last updated: <span id="lastUpdated">Today at 10:45 AM</span></span>
                 </div>
             </section>
         </div>
@@ -155,8 +192,9 @@
                         <button type="submit" class="btn-primary">Login</button>
                     </div>
                 </form>
-                <div class="demo-notice">
-                    <p><strong>Demo Mode:</strong> Use any credentials to access the dashboard</p>
+                <div class="login-notice">
+                    <p><strong>Login:</strong> Antione.Harrell@metropower.com</p>
+                    <p><strong>Password:</strong> password</p>
                 </div>
             </div>
         </div>

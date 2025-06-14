@@ -171,11 +171,7 @@ async function handleLogin(event) {
         showAuthenticatedState(response.user);
         hideLoginModal();
 
-        if (response.isDemoMode) {
-            showNotification('Logged in successfully (Demo Mode)', 'success');
-        } else {
-            showNotification('Logged in successfully', 'success');
-        }
+        showNotification('Logged in successfully', 'success');
 
         await loadDashboardData();
 
@@ -224,9 +220,7 @@ async function loadDashboardData() {
         updateWeekDisplay();
         updateAssignmentGrid(data.weekAssignments || {});
 
-        if (response.isDemoMode) {
-            showNotification('Dashboard loaded (Demo Mode)', 'info');
-        }
+
 
     } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -243,10 +237,17 @@ function updateStatistics(data) {
     const stats = data.employeeStatistics || {};
     const projectStats = data.projectStatistics || {};
 
+    // Update main statistics
     updateElement('totalEmployees', stats.total || 0);
     updateElement('activeProjects', projectStats.active || 0);
     updateElement('todayAssignments', stats.assigned || 0);
     updateElement('unassignedCount', stats.unassigned || 0);
+
+    // Update detailed employee counts in sidebar
+    updateElement('supervisorCount', stats.supervisors || 0);
+    updateElement('electricianCount', stats.electricians || 0);
+    updateElement('apprenticeCount', stats.apprentices || 0);
+    updateElement('tempCount', stats.temps || 0);
 }
 
 /**

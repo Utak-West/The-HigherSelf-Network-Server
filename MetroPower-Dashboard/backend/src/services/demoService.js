@@ -9,31 +9,19 @@
 
 const config = require('../config/app');
 const logger = require('../utils/logger');
+const employeeDataService = require('./employeeDataService');
 
-// In-memory demo data
-let demoData = {
+// In-memory data
+let appData = {
   users: [
     {
       user_id: 1,
       username: 'antione.harrell',
-      email: 'antione.harrell@metropower.com',
-      password_hash: '$2a$12$demo.hash.for.antione.harrell', // Demo hash
+      email: 'Antione.Harrell@metropower.com',
+      password_hash: '$2a$12$4JYI8yrfXfMSY1m31gMbhOc/3CwpPtwAjC/.sHyBFheam35YM/JvO', // password: "password"
       first_name: 'Antione',
       last_name: 'Harrell',
       role: 'Project Manager',
-      is_active: true,
-      created_at: '2024-01-01T00:00:00.000Z',
-      updated_at: '2024-01-01T00:00:00.000Z',
-      last_login: new Date().toISOString()
-    },
-    {
-      user_id: 2,
-      username: 'demo.user',
-      email: 'demo@metropower.com',
-      password_hash: '$2a$12$demo.hash.for.demo.user', // Demo hash
-      first_name: 'Demo',
-      last_name: 'User',
-      role: 'View Only',
       is_active: true,
       created_at: '2024-01-01T00:00:00.000Z',
       updated_at: '2024-01-01T00:00:00.000Z',
@@ -168,16 +156,68 @@ let demoData = {
   ]
 };
 
-class DemoService {
+class DataService {
   /**
-   * Initialize demo service
+   * Initialize data service
    */
-  static initialize() {
-    logger.info('Demo service initialized with in-memory data');
-    logger.info(`Demo users: ${demoData.users.length}`);
-    logger.info(`Demo employees: ${demoData.employees.length}`);
-    logger.info(`Demo projects: ${demoData.projects.length}`);
-    logger.info(`Demo assignments: ${demoData.assignments.length}`);
+  static async initialize() {
+    // Try to load real employee data
+    const loaded = await employeeDataService.loadEmployeeData();
+
+    if (loaded) {
+      // Update app data with real employee data
+      appData.employees = employeeDataService.getEmployees();
+      appData.projects = employeeDataService.getActiveProjects();
+
+      // Generate some sample assignments for demo
+      this.generateSampleAssignments();
+
+      logger.info('Employee data service initialized with real employee data');
+    } else {
+      logger.info('Employee data service initialized with mock data');
+    }
+
+    logger.info(`Users: ${appData.users.length}`);
+    logger.info(`Employees: ${appData.employees.length}`);
+    logger.info(`Projects: ${appData.projects.length}`);
+    logger.info(`Assignments: ${appData.assignments.length}`);
+  }
+
+  /**
+   * Generate sample assignments
+   */
+  static generateSampleAssignments() {
+    const today = new Date();
+    const assignments = [];
+    let assignmentId = 1;
+
+    // Get a subset of employees for assignments (not all employees are assigned every day)
+    const activeEmployees = appData.employees.filter(e => e.is_active);
+    const assignedEmployees = activeEmployees.slice(0, Math.floor(activeEmployees.length * 0.7)); // 70% assigned
+
+    // Generate assignments for the current week
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - today.getDay() + dayOffset); // Start from Sunday
+      const dateStr = date.toISOString().split('T')[0];
+
+      // Assign employees to projects for this day
+      assignedEmployees.forEach((employee, index) => {
+        const projectIndex = index % appData.projects.length;
+        const project = appData.projects[projectIndex];
+
+        assignments.push({
+          assignment_id: assignmentId++,
+          employee_id: employee.employee_id,
+          project_id: project.project_id,
+          assignment_date: dateStr,
+          hours_assigned: 8,
+          status: 'Assigned'
+        });
+      });
+    }
+
+    appData.assignments = assignments;
   }
 
   /**
@@ -186,7 +226,7 @@ class DemoService {
    * @returns {Promise<Object|null>} User data or null
    */
   static async findUserById(userId) {
-    const user = demoData.users.find(u => u.user_id === userId);
+    const user = appData.users.find(u => u.user_id === userId);
     return user ? { ...user } : null;
   }
 
@@ -196,7 +236,7 @@ class DemoService {
    * @returns {Promise<Object|null>} User data or null
    */
   static async findUserByIdentifier(identifier) {
-    const user = demoData.users.find(u =>
+    const user = appData.users.find(u =>
       u.username === identifier || u.email === identifier
     );
     return user ? { ...user } : null;
@@ -207,7 +247,7 @@ class DemoService {
    * @returns {Promise<Array>} Array of employees
    */
   static async getEmployees() {
-    return [...demoData.employees];
+    return [...appData.employees];
   }
 
   /**
@@ -216,11 +256,11 @@ class DemoService {
    * @returns {Promise<Array>} Array of unassigned employees
    */
   static async getUnassignedEmployees(date) {
-    const assignedEmployeeIds = demoData.assignments
+    const assignedEmployeeIds = appData.assignments
       .filter(a => a.assignment_date === date)
       .map(a => a.employee_id);
 
-    return demoData.employees.filter(e =>
+    return appData.employees.filter(e =>
       e.is_active && !assignedEmployeeIds.includes(e.employee_id)
     );
   }
@@ -230,7 +270,7 @@ class DemoService {
    * @returns {Promise<Array>} Array of projects
    */
   static async getProjects() {
-    return [...demoData.projects];
+    return [...appData.projects];
   }
 
   /**
@@ -238,7 +278,7 @@ class DemoService {
    * @returns {Promise<Array>} Array of active projects
    */
   static async getActiveProjects() {
-    return demoData.projects.filter(p => p.status === 'Active');
+    return appData.projects.filter(p => p.status === 'Active');
   }
 
   /**
@@ -262,11 +302,11 @@ class DemoService {
     weekDates.forEach(date => {
       assignments[date] = {};
 
-      demoData.projects.forEach(project => {
-        assignments[date][project.project_id] = demoData.assignments
+      appData.projects.forEach(project => {
+        assignments[date][project.project_id] = appData.assignments
           .filter(a => a.assignment_date === date && a.project_id === project.project_id)
           .map(a => {
-            const employee = demoData.employees.find(e => e.employee_id === a.employee_id);
+            const employee = appData.employees.find(e => e.employee_id === a.employee_id);
             return {
               ...a,
               employee
@@ -286,9 +326,9 @@ class DemoService {
     const today = new Date().toISOString().split('T')[0];
 
     return {
-      totalEmployees: demoData.employees.filter(e => e.is_active).length,
-      activeProjects: demoData.projects.filter(p => p.status === 'Active').length,
-      todayAssignments: demoData.assignments.filter(a => a.assignment_date === today).length,
+      totalEmployees: appData.employees.filter(e => e.is_active).length,
+      activeProjects: appData.projects.filter(p => p.status === 'Active').length,
+      todayAssignments: appData.assignments.filter(a => a.assignment_date === today).length,
       unassignedToday: await this.getUnassignedEmployees(today)
     };
   }
@@ -300,14 +340,14 @@ class DemoService {
    */
   static async createAssignment(assignmentData) {
     const newAssignment = {
-      assignment_id: Math.max(...demoData.assignments.map(a => a.assignment_id)) + 1,
+      assignment_id: Math.max(...appData.assignments.map(a => a.assignment_id)) + 1,
       ...assignmentData,
       status: 'Assigned'
     };
 
-    demoData.assignments.push(newAssignment);
+    appData.assignments.push(newAssignment);
 
-    logger.info('Demo assignment created', {
+    logger.info('Assignment created', {
       assignmentId: newAssignment.assignment_id,
       employeeId: newAssignment.employee_id,
       projectId: newAssignment.project_id
@@ -323,23 +363,23 @@ class DemoService {
    * @returns {Promise<Object>} Updated assignment
    */
   static async updateAssignment(assignmentId, updateData) {
-    const index = demoData.assignments.findIndex(a => a.assignment_id === assignmentId);
+    const index = appData.assignments.findIndex(a => a.assignment_id === assignmentId);
 
     if (index === -1) {
       throw new Error('Assignment not found');
     }
 
-    demoData.assignments[index] = {
-      ...demoData.assignments[index],
+    appData.assignments[index] = {
+      ...appData.assignments[index],
       ...updateData
     };
 
-    logger.info('Demo assignment updated', {
+    logger.info('Assignment updated', {
       assignmentId,
       updateData
     });
 
-    return demoData.assignments[index];
+    return appData.assignments[index];
   }
 
   /**
@@ -348,15 +388,15 @@ class DemoService {
    * @returns {Promise<boolean>} Success status
    */
   static async deleteAssignment(assignmentId) {
-    const index = demoData.assignments.findIndex(a => a.assignment_id === assignmentId);
+    const index = appData.assignments.findIndex(a => a.assignment_id === assignmentId);
 
     if (index === -1) {
       throw new Error('Assignment not found');
     }
 
-    demoData.assignments.splice(index, 1);
+    appData.assignments.splice(index, 1);
 
-    logger.info('Demo assignment deleted', {
+    logger.info('Assignment deleted', {
       assignmentId
     });
 
@@ -364,7 +404,9 @@ class DemoService {
   }
 }
 
-// Initialize demo service when module is loaded
-DemoService.initialize();
+// Initialize data service when module is loaded
+DataService.initialize().catch(error => {
+  logger.error('Failed to initialize data service:', error);
+});
 
-module.exports = DemoService;
+module.exports = DataService;

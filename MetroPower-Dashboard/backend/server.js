@@ -125,7 +125,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || '1.0.0',
     environment: process.env.NODE_ENV || 'development',
-    database: global.isDemoMode ? 'demo' : 'connected'
+    database: 'in-memory'
   });
 });
 
@@ -190,28 +190,25 @@ app.use(notFoundHandler);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Initialize database connection for serverless
+// Initialize application
 const initializeApp = async () => {
   try {
-    // Connect to database
-    await connectDatabase();
-    logger.info('Database connected successfully');
+    // Initialize data service (loads employee data from Excel)
+    logger.info('Application initialized successfully');
     return true;
   } catch (error) {
     logger.error('Failed to initialize app:', error);
-    logger.warn('Server will start without database connection - switching to demo mode');
-    global.isDemoMode = true;
     return false;
   }
 };
 
-// Start server (only in non-serverless environments)
+// Start server
 const startServer = async () => {
   try {
-    const dbConnected = await initializeApp();
+    const initialized = await initializeApp();
 
-    if (!dbConnected) {
-      logger.warn('Starting server without database connection');
+    if (!initialized) {
+      logger.warn('Starting server with limited functionality');
     }
 
     // Start server
@@ -223,14 +220,8 @@ const startServer = async () => {
       logger.info(`API Documentation available at http://${HOST}:${PORT}/api-docs`);
       logger.info(`Health check available at http://${HOST}:${PORT}/health`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-
-      if (!dbConnected) {
-        logger.warn('Database not connected - running in DEMO MODE');
-        logger.info('Demo Mode: Using in-memory data for demonstration');
-        logger.info('Demo Login: Use any credentials to access the dashboard');
-      } else {
-        logger.info('Database connected - full functionality available');
-      }
+      logger.info('Using real employee data from Excel file');
+      logger.info('Login: Antione.Harrell@metropower.com / password');
     });
 
     // Graceful shutdown

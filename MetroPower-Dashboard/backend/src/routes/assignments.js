@@ -34,21 +34,12 @@ router.post('/', requireManager, asyncHandler(async (req, res) => {
       });
     }
 
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const assignment = await demoService.createAssignment(assignmentData);
+    const dataService = require('../services/demoService');
+    const assignment = await dataService.createAssignment(assignmentData);
 
-      return res.status(201).json({
-        success: true,
-        data: assignment,
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    res.status(501).json({
-      error: 'Not implemented',
-      message: 'Assignment creation not yet implemented for database mode'
+    res.status(201).json({
+      success: true,
+      data: assignment
     });
 
   } catch (error) {
@@ -70,21 +61,12 @@ router.put('/:id', requireManager, asyncHandler(async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      const assignment = await demoService.updateAssignment(parseInt(id), updateData);
+    const dataService = require('../services/demoService');
+    const assignment = await dataService.updateAssignment(parseInt(id), updateData);
 
-      return res.json({
-        success: true,
-        data: assignment,
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    res.status(501).json({
-      error: 'Not implemented',
-      message: 'Assignment updates not yet implemented for database mode'
+    res.json({
+      success: true,
+      data: assignment
     });
 
   } catch (error) {
@@ -105,21 +87,12 @@ router.delete('/:id', requireManager, asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (global.isDemoMode) {
-      const demoService = require('../services/demoService');
-      await demoService.deleteAssignment(parseInt(id));
+    const dataService = require('../services/demoService');
+    await dataService.deleteAssignment(parseInt(id));
 
-      return res.json({
-        success: true,
-        message: 'Assignment deleted successfully',
-        isDemoMode: true
-      });
-    }
-
-    // Database mode implementation would go here
-    res.status(501).json({
-      error: 'Not implemented',
-      message: 'Assignment deletion not yet implemented for database mode'
+    res.json({
+      success: true,
+      message: 'Assignment deleted successfully'
     });
 
   } catch (error) {
