@@ -1,6 +1,6 @@
-# 📝 Notion Database Mapping Scripts 🌐
+# 📝 Database Mapping Scripts for Notion Integration 🌐
 
-This directory contains mapping scripts for all 16 databases in The HigherSelf Network system. These scripts are designed to be used with Notion AI to implement the required automations and ensure proper database structure.
+This directory contains mapping scripts for all 16 databases in The HigherSelf Network system when using Notion as a data visualization platform. These scripts help organizations that choose to integrate with Notion implement the required database structure and automations.
 
 ## 🛠️ How to Use These Scripts
 

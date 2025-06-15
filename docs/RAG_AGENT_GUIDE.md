@@ -184,14 +184,14 @@ result = await atlas.generate_rag_completion(
 )
 ```
 
-### Notion Database Integration
+### Database Integration
 
-Atlas can search specific Notion databases:
+Atlas can search specific databases across integrated platforms:
 
 ```python
 result = await atlas.generate_rag_completion(
     query="What are our current marketing campaigns?",
-    notion_database_ids=["your_notion_database_id"],
+    database_ids=["your_database_id"],
     search_limit=10
 )
 ```

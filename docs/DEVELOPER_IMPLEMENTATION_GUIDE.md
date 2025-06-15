@@ -110,13 +110,13 @@ The system maintains 16 tables in Supabase that mirror the 16 Notion databases:
 
 Each table includes:
 - Primary key (`id`)
-- Notion page ID reference (`notion_page_id`)
-- All fields from the corresponding Notion database
+- External platform reference IDs (when integrated with platforms like Notion)
+- All fields from the corresponding database structures
 - Timestamps (`created_at`, `updated_at`)
 
 ## Synchronization Process
 
-The synchronization process is bidirectional, allowing changes to be made in either Notion or Supabase and propagated to the other system.
+The synchronization process is bidirectional, allowing changes to be made in either integrated platforms (like Notion) or Supabase and propagated between systems.
 
 ### Sync Directions
 

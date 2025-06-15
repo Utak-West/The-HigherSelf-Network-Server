@@ -146,10 +146,10 @@ top -p $(pgrep -f "python main.py")
 
 ### Database Performance
 
-Monitor Notion API usage:
+Monitor integrated platform API usage:
 - Check the Agent Communication database for API call logs
 - Look for slow API calls (>1 second)
-- Monitor API rate limiting errors
+- Monitor API rate limiting errors across all integrated platforms
 
 ### Request Latency
 

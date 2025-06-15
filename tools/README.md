@@ -4,9 +4,9 @@ This directory contains utility scripts for setting up and maintaining The Highe
 
 ## Available Utilities
 
-### Notion Database Setup
+### Database Setup
 
-The `notion_db_setup.py` script initializes all required Notion databases for the agent system, ensuring Notion serves as the central hub for all operations as required by The HigherSelf Network.
+The `notion_db_setup.py` script initializes all required databases for the agent system when using Notion as a data visualization and management interface. This integration provides familiar interfaces for teams already using Notion.
 
 #### Features
 

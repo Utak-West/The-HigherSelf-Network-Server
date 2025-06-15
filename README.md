@@ -7,7 +7,9 @@
 
 ## **Overview**
 
-**The HigherSelf Network Server** is a comprehensive automation platform designed to streamline operations for businesses, service organizations, and practitioners within the HigherSelf network ecosystem. Our intelligent agent-based architecture transforms how organizations manage workflows, client relationships, and operational processes through seamless integration with Notion as the central command hub.
+**The HigherSelf Network Server** is a proprietary business automation platform built by HigherSelf to drive growth and operational excellence for businesses, service organizations, and practitioners. Our intelligent multi-agent architecture transforms how organizations manage workflows, client relationships, and operational processes through sophisticated automation and seamless integrations with essential business tools.
+
+**The HigherSelf Network** is a professional platform designed to connect and support businesses, entrepreneurs, and service providers across all industries. Our inclusive network serves as a bridge between ethical business professionals and opportunities for growth, collaboration, and positive impact in their respective fields.
 
 ### **Platform Capabilities**
 
@@ -34,23 +36,23 @@ The HigherSelf Network Server supports diverse business models and service categ
 
 Our platform features a sophisticated team of **named agent personalities**, each with specialized capabilities and distinct characteristics. These digital team members work collaboratively to automate complex workflows while preserving the personal touch that defines exceptional service organizations.
 
-### **Notion-Powered Operations**
+### **Unified Data Operations**
 
-All organizational data, workflows, and communications flow through Notion, creating a unified operational ecosystem that's both powerful and intuitive. Your team leverages familiar Notion interfaces while our agents handle the complex automation behind the scenes.
+Our proprietary platform creates a unified operational ecosystem that seamlessly integrates with your existing business tools. The system intelligently orchestrates data flow between platforms while our agents handle complex automation behind the scenes, ensuring your team can focus on high-value activities.
 
 ---
 
 ## **Core Platform Features**
 
-### **Notion-Powered Operations Center**
+### **Intelligent Operations Center**
 
-Our platform leverages Notion as the central nervous system for all organizational operations:
+Our proprietary platform provides comprehensive business operations management through sophisticated data architecture:
 
-- **Unified Database Architecture**: 16 interconnected Notion databases managing all aspects of business operations
-- **Real-time Data Synchronization**: Seamless information flow across all integrated systems
-- **Visual Process Tracking**: Complete visibility into workflow stages and progress
-- **Customizable Interface Views**: Adaptable Notion configurations for different team roles and preferences
-- **Centralized Knowledge Management**: All organizational information accessible through familiar Notion interfaces
+- **Unified Database Architecture**: 16 interconnected databases managing all aspects of business operations with seamless integration capabilities
+- **Real-time Data Synchronization**: Intelligent information flow across all integrated business systems and platforms
+- **Visual Process Tracking**: Complete visibility into workflow stages and progress through intuitive dashboards
+- **Customizable Interface Views**: Adaptable configurations for different team roles and business requirements
+- **Centralized Knowledge Management**: All organizational information accessible through unified interfaces and intelligent search
 
 ### **Intelligent Multi-Agent System**
 
@@ -114,7 +116,7 @@ Multi-provider AI infrastructure ensuring reliability and performance:
 Enterprise-grade natural language processing for diverse business applications:
 
 - **Specialized NLP Processing**: Access to state-of-the-art models for summarization, translation, sentiment analysis, and content generation
-- **Seamless Notion Integration**: Direct processing of organizational content stored in Notion databases
+- **Seamless Data Integration**: Direct processing of organizational content across all integrated business platforms and databases
 - **Real-time Webhook Processing**: Automated NLP task triggering from external systems and workflows
 - **Industry-Specific Model Curation**: Tailored model recommendations for different business sectors and use cases
 - **Intelligent Model Selection**: Automatic optimization based on task requirements and agent capabilities
@@ -148,7 +150,7 @@ Professional video content and payment processing workflow:
 
 - **Direct Video Export Processing**: Seamless integration with CapCut for automated video content workflows
 - **Premium Feature Payment Processing**: Pipit integration for handling premium video service transactions
-- **Comprehensive Metadata Management**: Automated video information storage and organization in Notion
+- **Comprehensive Metadata Management**: Automated video information storage and organization across integrated platforms
 - **Real-time Status Synchronization**: Live updates from both platforms ensuring workflow transparency
 
 
@@ -168,7 +170,7 @@ Established staff interface system for agent interaction:
 
 ## **Organizational Data Architecture**
 
-The HigherSelf Network Server utilizes a sophisticated system of **16 interconnected Notion databases** that form the backbone of our automation platform, supporting diverse business models and service organizations.
+The HigherSelf Network Server utilizes a sophisticated system of **16 interconnected databases** that form the backbone of our proprietary automation platform, supporting diverse business models and service organizations through intelligent data management and workflow orchestration.
 
 ### **Database Architecture Overview**
 
@@ -1002,22 +1004,23 @@ Guide for enabling staff to interface with agents through Softr.
 
 ### System Architecture
 
-The HigherSelf Network Server implements a hub-and-spoke architecture with Notion as the central hub:
+The HigherSelf Network Server implements a sophisticated microservices architecture with intelligent data orchestration:
 
 #### Key Components
 
-1. Models (`/models`): Pydantic models defining data structures
-2. Services (`/services`): Service classes for external API interactions
-3. Agents (`/agents`): Agent implementations with specific responsibilities
-4. API (`/api`): FastAPI server for external communication
+1. Models (`/models`): Pydantic models defining data structures and business logic
+2. Services (`/services`): Service classes for external API interactions and business operations
+3. Agents (`/agents`): Intelligent agent implementations with specialized business responsibilities
+4. API (`/api`): FastAPI server for external communication and webhook processing
+5. Workflow Engine (`/workflow`): State machine orchestration for business processes
 
 #### Data Flow
 
 1. External events trigger webhook calls to the API
-2. Events are processed by appropriate agents
-3. Agents create or update records in Notion via the NotionService
-4. Workflow instances track the state of business processes
-5. History logs maintain a complete audit trail
+2. Events are processed by appropriate intelligent agents
+3. Agents create or update records across integrated platforms via service layer
+4. Workflow instances track the state of business processes with full audit trails
+5. History logs maintain complete operational transparency and compliance tracking
 
 #### API Endpoints
 
