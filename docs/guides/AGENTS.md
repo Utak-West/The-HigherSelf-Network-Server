@@ -2,7 +2,7 @@
 
 ## Overview
 
-The HigherSelf Network Server implements a unique agent personality system that brings character and intentionality to automated processes. Instead of generic agent names, we've implemented a suite of named agents, each with a distinct personality, tone, and specialized role within the Notion-centered automation ecosystem.
+The HigherSelf Network Server implements a unique agent personality system that brings character and intentionality to automated processes. Instead of generic agent names, we've implemented a suite of named agents, each with a distinct personality, tone, and specialized role within our proprietary automation ecosystem designed to support ethical business practices and professional excellence.
 
 ## The Agent Collective
 

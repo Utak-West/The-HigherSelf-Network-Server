@@ -27,16 +27,16 @@ The Zapier ecosystem is a comprehensive automation platform that enhances the Hi
 
 ### Core Principles
 
-1. **Notion as Central Hub**: All data ultimately flows through Notion databases
-2. **Automation First**: Reduce manual tasks through intelligent automation
-3. **User-Centric Design**: Prioritize user experience and ease of use
-4. **Data Integrity**: Maintain accurate, synchronized data across all systems
-5. **Human-Centered Values**: Technology serves our community-focused mission
+1. **Ethical Data Handling**: All data flows through our proprietary architecture with transparency and accountability
+2. **Automation First**: Reduce manual tasks through intelligent automation that supports professional excellence
+3. **User-Centric Design**: Prioritize user experience and ease of use across diverse business needs
+4. **Data Integrity**: Maintain accurate, synchronized data across all systems with ethical practices
+5. **Human-Centered Values**: Technology serves our commitment to positive impact and inclusive business practices
 
 ### System Architecture
 
 ```
-User Interactions → Zapier Components → HigherSelf Network Server → Notion Hub
+User Interactions → Zapier Components → HigherSelf Network Server → Unified Data Layer
                                     ↓
                               GoHighLevel CRM ← → Softr Frontend
 ```

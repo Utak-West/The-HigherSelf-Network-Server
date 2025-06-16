@@ -23,7 +23,7 @@ This guide provides comprehensive instructions for implementing a complete Zapie
 
 ## Overview
 
-The HigherSelf Network Server uses a sophisticated agent system with named personalities (Nyra, Solari, Ruvo, Liora, Sage, Elan, Zevi, and GraceOrchestrator) that maintain Notion as the central hub for all data and workflows. This integration extends that architecture to include N8N and Zapier as additional automation platforms while preserving the core design principles.
+The HigherSelf Network Server uses a sophisticated agent system with named personalities (Nyra, Solari, Ruvo, Liora, Sage, Elan, Zevi, and GraceOrchestrator) that implement our proprietary automation architecture designed to support ethical business practices and professional excellence. This integration extends that architecture to include N8N and Zapier as additional automation platforms while preserving the core design principles.
 
 ## Implementation Plan
 

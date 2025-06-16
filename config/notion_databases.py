@@ -1,8 +1,9 @@
 """
 Configuration module for Notion databases in The HigherSelf Network Server.
 
-This module defines the structure and mappings for the 16-database Notion environment
-that serves as the central hub for all operations.
+This module defines the structure and mappings for the 16-database architecture
+that supports our proprietary automation platform designed for ethical business practices
+and professional excellence across all industries.
 """
 
 from typing import Any, Dict, List, Set

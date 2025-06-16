@@ -1,10 +1,10 @@
 # API and Webhook Integration Guide
 
-This document details the API endpoints and webhook integrations for The HigherSelf Network Server, which serves as the central hub for all Notion-centric operations.
+This document details the API endpoints and webhook integrations for The HigherSelf Network Server, which implements a proprietary automation architecture designed to support ethical business practices and professional excellence.
 
 ## API Server
 
-The system includes a FastAPI-based server that provides webhook endpoints for external system integration. All API interactions maintain Notion as the central hub for data and workflow management.
+The system includes a FastAPI-based server that provides webhook endpoints for external system integration. All API interactions maintain the HigherSelf Network's commitment to transparency, data integrity, and user-centric design.
 
 ### Server Configuration
 

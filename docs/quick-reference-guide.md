@@ -2,7 +2,7 @@
 
 ## Core Principle
 
-> **Notion serves as the central data and workflow management hub** for all operations within The HigherSelf Network, including The Connection Practice and The 7 Space.
+> **The HigherSelf Network Server implements a proprietary automation architecture** designed to support ethical business practices and professional excellence across all industries within The HigherSelf Network, upholding our values of integrity, quality, and positive impact.
 
 ## Integration Service Map
 

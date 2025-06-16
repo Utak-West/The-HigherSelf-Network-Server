@@ -1,7 +1,7 @@
 # The HigherSelf Network Server Development Guidelines
 
 ## Project Overview
-The HigherSelf Network Server is an intelligent automation platform for art galleries, wellness centers, and consultancy businesses, using a modular agent-based architecture with Notion as the central hub.
+The HigherSelf Network Server is a proprietary intelligent automation platform designed to support ethical business practices and professional excellence across all industries, using a modular agent-based architecture with sophisticated data orchestration.
 
 ## Key Components
 - Modular agent system with specialized personalities

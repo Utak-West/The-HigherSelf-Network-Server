@@ -37,13 +37,13 @@ The HigherSelf Network Server embodies the balance between cutting-edge technolo
 
 ### Core Concepts
 
-#### 1. Hub-and-Spoke Architecture
-The HigherSelf Network Server uses Notion as the central hub with all integrations and agents connecting through this unified data layer:
+#### 1. Proprietary Automation Architecture
+The HigherSelf Network Server implements a sophisticated proprietary architecture designed to support ethical business practices and professional excellence across all industries:
 
-- **Central Hub**: Notion databases store all business data
-- **Agent Layer**: 9 specialized agents process and coordinate workflows
-- **Integration Layer**: External services connect through standardized APIs
-- **User Interface**: Staff interact primarily through Notion and Softr
+- **Unified Data Layer**: 16 interconnected databases manage all business data with transparency and accountability
+- **Agent Layer**: 9 specialized agents process and coordinate workflows following HigherSelf Network values
+- **Integration Layer**: External services connect through standardized APIs with ethical data handling
+- **User Interface**: Staff interact through intuitive interfaces designed for diverse business needs
 
 #### 2. Agent Personalities and Roles
 Each agent has distinct characteristics and responsibilities:

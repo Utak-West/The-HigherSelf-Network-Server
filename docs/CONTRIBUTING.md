@@ -10,14 +10,22 @@ The HigherSelf Network Server represents the intersection of cutting-edge techno
 
 All contributions must adhere to the following foundational principles:
 
-### 1. Notion as Central Hub
-Notion serves as the central data and workflow management hub for all operations. This architectural decision ensures:
-- **Unified Data Model**: All business data flows through Notion's structured databases
-- **User Familiarity**: Teams already know and love Notion
-- **Visual Workflow Tracking**: Clear visibility into all processes
-- **Collaborative Management**: Team-friendly interface for all stakeholders
+### 1. Enterprise-Grade Proprietary Architecture
+The HigherSelf Network Server implements an enterprise-grade proprietary automation architecture that embodies our core values of **community**, **ecosystem**, and **spirit**. This "architecture for the people" ensures:
 
-**Requirement**: Any changes must maintain and enhance this Notion-centric architecture.
+**Enterprise Database Support:**
+- **Multi-Database Architecture**: PostgreSQL, MySQL, MariaDB, Microsoft SQL Server, Oracle Database
+- **ACID Compliance**: Full transaction integrity with comprehensive audit trails
+- **High Availability**: 99.9% uptime with automatic failover and disaster recovery
+- **Scalable Performance**: Connection pooling, optimization, and horizontal scaling
+
+**Community-Centered Design:**
+- **Human-First Technology**: Automation that enhances rather than replaces personal connections
+- **Ethical Data Handling**: Transparent and responsible data management with full accountability
+- **Inclusive Integration**: Support for diverse business models from wellness practices to creative services
+- **Relationship Preservation**: Technology that strengthens authentic business relationships
+
+**Requirement**: Any changes must maintain and enhance this enterprise architecture while upholding HigherSelf Network values of community growth, ethical practices, and positive human impact.
 
 ### 2. Pydantic AI Framework Compliance
 All data models and Notion interactions must strictly adhere to the Pydantic AI framework:

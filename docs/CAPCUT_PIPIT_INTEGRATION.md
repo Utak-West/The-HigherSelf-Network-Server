@@ -13,7 +13,7 @@ The integration allows users to:
 
 ## Architecture
 
-The integration follows the central hub architecture of The HigherSelf Network Server, with Notion serving as the central data store. All interactions with CapCut and Pipit are managed through dedicated service classes, and all data is synchronized with Notion.
+The integration follows the proprietary architecture of The HigherSelf Network Server, designed to support ethical business practices and professional excellence. All interactions with CapCut and Pipit are managed through dedicated service classes with transparent data handling and user-centric design.
 
 ```
 ┌─────────┐     ┌───────────────────────────┐     ┌────────┐
@@ -21,7 +21,7 @@ The integration follows the central hub architecture of The HigherSelf Network S
 └─────────┘     │ Server                    │     └────────┘
                 │                           │
                 │  ┌─────────────────────┐  │
-                │  │ Notion (Central Hub)│  │
+                │  │ Unified Data Layer  │  │
                 │  └─────────────────────┘  │
                 └───────────────────────────┘
 ```

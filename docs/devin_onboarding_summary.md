@@ -11,7 +11,7 @@ Generated: 2025-06-12T12:55:01.096454
   "deployment_target": "Devin AI automated deployment",
   "key_features": [
     "AI Agent Personalities (Grace Fields, etc.)",
-    "Notion-centric data management",
+    "Proprietary data management architecture",
     "Multi-platform integrations (The7Space, HuggingFace, etc.)",
     "MCP (Model Context Protocol) tools",
     "Automated workflow orchestration",
