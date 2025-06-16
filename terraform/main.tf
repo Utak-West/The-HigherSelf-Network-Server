@@ -1,9 +1,10 @@
 # HigherSelf Network Server - Main Terraform Configuration
-# Enterprise-grade Infrastructure as Code for automation platform
+# Enterprise-grade Infrastructure as Code with Gruntwork integration
+# This file is now managed by Terragrunt - see terragrunt.hcl for configuration
 
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
@@ -23,12 +24,8 @@ terraform {
     }
   }
 
-  # Remote state configuration (uncomment when ready)
-  # backend "s3" {
-  #   bucket = "higherself-terraform-state"
-  #   key    = "infrastructure/terraform.tfstate"
-  #   region = "us-east-1"
-  # }
+  # Backend configuration is now managed by Terragrunt
+  # See terragrunt.hcl for remote state configuration
 }
 
 # Local variables for configuration

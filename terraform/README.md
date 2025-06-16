@@ -1,6 +1,28 @@
-# HigherSelf Network Server - Terraform Infrastructure
+# HigherSelf Network Server - Infrastructure as Code
 
-Enterprise-grade Infrastructure as Code (IaC) for the HigherSelf Network Server automation platform.
+Enterprise-grade Infrastructure as Code (IaC) with Gruntwork integration for the HigherSelf Network Server automation platform.
+
+## 🚀 New: Gruntwork Integration
+
+The HigherSelf Network Server now leverages [Gruntwork's](https://www.gruntwork.io/) enterprise-grade infrastructure tools:
+
+- **Terragrunt**: For DRY Terraform configurations and multi-environment management
+- **IaC Library**: Battle-tested Terraform modules used by 500+ companies
+- **Secrets Management**: AWS Secrets Manager integration with automatic rotation
+- **Enterprise Security**: CIS AWS Foundations Benchmark compliance out-of-the-box
+
+### Quick Start with Terragrunt
+
+```bash
+# Deploy to development environment
+./terragrunt-deploy.sh development apply
+
+# Deploy secrets management
+./terragrunt-deploy.sh development apply secrets-manager
+
+# Deploy to production (with safety checks)
+./terragrunt-deploy.sh production apply
+```
 
 ## 🏗️ Architecture Overview
 
