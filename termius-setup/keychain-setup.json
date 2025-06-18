@@ -1,0 +1,159 @@
+{
+  "keychain_configuration": {
+    "name": "HigherSelf SSH Key Management",
+    "description": "Secure SSH key configuration with AWS Secrets Manager integration",
+    "aws_integration": true,
+    "auto_rotation": true
+  },
+  "ssh_keys": [
+    {
+      "id": "development-key",
+      "name": "HigherSelf Development Key",
+      "description": "SSH key for local development environment",
+      "key_type": "ed25519",
+      "environment": "development",
+      "security_level": "standard",
+      "setup_instructions": [
+        "Generate new ED25519 key: ssh-keygen -t ed25519 -f ~/.ssh/higherself_dev_ed25519 -C 'higherself-dev'",
+        "Add to SSH agent: ssh-add ~/.ssh/higherself_dev_ed25519",
+        "Copy public key: cat ~/.ssh/higherself_dev_ed25519.pub",
+        "Add to authorized_keys on development server"
+      ],
+      "local_path": "~/.ssh/higherself_dev_ed25519",
+      "public_key_path": "~/.ssh/higherself_dev_ed25519.pub",
+      "passphrase_required": false,
+      "auto_load": true,
+      "usage": ["localhost", "development-docker", "local-services"],
+      "tags": ["development", "local", "docker"]
+    },
+    {
+      "id": "staging-key",
+      "name": "HigherSelf Staging Key",
+      "description": "SSH key for staging environment access",
+      "key_type": "ed25519",
+      "environment": "staging",
+      "security_level": "enhanced",
+      "aws_secrets_manager": {
+        "enabled": true,
+        "secret_name": "higherself/staging/ssh-keys/main-key",
+        "region": "us-east-1",
+        "auto_rotation": true,
+        "rotation_schedule": "90d"
+      },
+      "setup_instructions": [
+        "Generate staging key: ssh-keygen -t ed25519 -f ~/.ssh/higherself_staging_ed25519 -C 'higherself-staging'",
+        "Store in AWS Secrets Manager",
+        "Configure Termius to fetch from AWS",
+        "Test connection to staging bastion"
+      ],
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 3600,
+      "usage": ["staging-bastion", "staging-servers", "staging-database"],
+      "tags": ["staging", "aws-managed", "secure"]
+    },
+    {
+      "id": "production-key",
+      "name": "HigherSelf Production Key",
+      "description": "SSH key for production environment - RESTRICTED ACCESS",
+      "key_type": "ed25519",
+      "environment": "production",
+      "security_level": "maximum",
+      "aws_secrets_manager": {
+        "enabled": true,
+        "secret_name": "higherself/production/ssh-keys/main-key",
+        "region": "us-east-1",
+        "auto_rotation": true,
+        "rotation_schedule": "30d"
+      },
+      "setup_instructions": [
+        "Generate production key: ssh-keygen -t ed25519 -f ~/.ssh/higherself_prod_ed25519 -C 'higherself-production'",
+        "Store in AWS Secrets Manager with encryption",
+        "Configure MFA requirement",
+        "Set up approval workflow",
+        "Test emergency access procedure"
+      ],
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 1800,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "usage": ["production-bastion", "emergency-access"],
+      "tags": ["production", "critical", "restricted", "aws-managed"]
+    }
+  ],
+  "aws_secrets_manager_setup": {
+    "prerequisites": [
+      "AWS CLI configured with appropriate permissions",
+      "IAM role for Termius secrets access",
+      "KMS key for encryption"
+    ],
+    "setup_commands": [
+      "# Create IAM policy for Termius",
+      "aws iam create-policy --policy-name TermiusSecretsAccess --policy-document file://termius-iam-policy.json",
+      "",
+      "# Create secrets for each environment",
+      "aws secretsmanager create-secret --name higherself/staging/ssh-keys/main-key --description 'HigherSelf staging SSH key'",
+      "aws secretsmanager create-secret --name higherself/production/ssh-keys/main-key --description 'HigherSelf production SSH key'",
+      "",
+      "# Store SSH keys in secrets manager",
+      "aws secretsmanager put-secret-value --secret-id higherself/staging/ssh-keys/main-key --secret-string file://staging-key.pem",
+      "aws secretsmanager put-secret-value --secret-id higherself/production/ssh-keys/main-key --secret-string file://production-key.pem"
+    ],
+    "iam_policy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret"
+          ],
+          "Resource": [
+            "arn:aws:secretsmanager:us-east-1:*:secret:higherself/staging/*",
+            "arn:aws:secretsmanager:us-east-1:*:secret:higherself/production/*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "kms:Decrypt"
+          ],
+          "Resource": "arn:aws:kms:us-east-1:*:key/*",
+          "Condition": {
+            "StringEquals": {
+              "kms:ViaService": "secretsmanager.us-east-1.amazonaws.com"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "key_management_workflow": {
+    "daily_operations": [
+      "Verify key availability in Termius",
+      "Check AWS Secrets Manager sync status",
+      "Monitor key usage logs"
+    ],
+    "weekly_maintenance": [
+      "Review key access logs",
+      "Check for rotation notifications",
+      "Verify backup key availability"
+    ],
+    "emergency_procedures": [
+      "Emergency key rotation process",
+      "Backup key activation",
+      "Incident response key access"
+    ]
+  },
+  "security_best_practices": [
+    "Use ED25519 keys for better security",
+    "Enable passphrases for staging and production keys",
+    "Store keys in AWS Secrets Manager with encryption",
+    "Implement automatic key rotation",
+    "Monitor key usage with CloudTrail",
+    "Maintain emergency backup keys",
+    "Regular security audits of key access"
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "docker_snippets": {
+    "name": "HigherSelf Docker Operations",
+    "description": "Complete Docker management snippets for HigherSelf Network Server",
+    "environment": "development",
+    "auto_import": true
+  },
+  "snippets": [
+    {
+      "id": "docker-compose-up",
+      "name": "🚀 Start HigherSelf Stack",
+      "description": "Start the complete HigherSelf development stack",
+      "command": "cd /path/to/higherself && docker-compose up -d && echo '⏳ Waiting for services to start...' && sleep 15 && docker-compose ps && echo '✅ Stack started! Testing health...' && curl -s http://localhost:8000/health | jq '.' || echo '❌ API not ready yet'",
+      "tags": ["startup", "essential", "development"],
+      "category": "Service Management",
+      "hotkey": "Ctrl+Shift+U"
+    },
+    {
+      "id": "docker-compose-down",
+      "name": "🛑 Stop HigherSelf Stack",
+      "description": "Stop and clean up the HigherSelf stack",
+      "command": "cd /path/to/higherself && echo '🛑 Stopping HigherSelf stack...' && docker-compose down && echo '🧹 Cleaning up...' && docker system prune -f && echo '✅ Stack stopped and cleaned'",
+      "tags": ["shutdown", "essential", "cleanup"],
+      "category": "Service Management",
+      "hotkey": "Ctrl+Shift+D"
+    },
+    {
+      "id": "docker-health-check",
+      "name": "🏥 Complete Health Check",
+      "description": "Comprehensive health check of all services",
+      "command": "echo '🏥 HigherSelf Health Check Report' && echo '================================' && echo '📅 Date:' $(date) && echo '' && echo '🐳 Docker Services:' && docker-compose ps && echo '' && echo '🌐 API Health:' && curl -s http://localhost:8000/health | jq '.' && echo '' && echo '🗄️ MongoDB Status:' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'print(\"✅ MongoDB:\", db.runCommand({ping: 1}).ok ? \"Connected\" : \"Failed\")' --quiet && echo '' && echo '⚡ Redis Status:' && redis-cli ping && echo '' && echo '📊 System Resources:' && echo 'Memory:' $(free -h | grep '^Mem:' | awk '{print $3\"/\"$2}') && echo 'Disk:' $(df -h / | tail -1 | awk '{print $3\"/\"$2\" (\"$5\" used)\"}') && echo '' && echo '✅ Health check complete!'",
+      "tags": ["health", "monitoring", "essential"],
+      "category": "Monitoring",
+      "hotkey": "Ctrl+Shift+H"
+    },
+    {
+      "id": "docker-logs-windsurf",
+      "name": "📋 Windsurf Agent Logs",
+      "description": "Show real-time logs for the main application",
+      "command": "echo '📋 Windsurf Agent Logs (Ctrl+C to stop)' && echo '======================================' && docker-compose logs -f windsurf-agent --tail=50",
+      "tags": ["logs", "windsurf-agent", "debugging"],
+      "category": "Debugging"
+    },
+    {
+      "id": "docker-logs-all",
+      "name": "📜 All Service Logs",
+      "description": "Show logs from all services",
+      "command": "echo '📜 All Service Logs' && echo '==================' && docker-compose logs --tail=20 --timestamps",
+      "tags": ["logs", "all-services", "debugging"],
+      "category": "Debugging"
+    },
+    {
+      "id": "docker-restart-windsurf",
+      "name": "🔄 Restart Windsurf Agent",
+      "description": "Restart the main application service",
+      "command": "echo '🔄 Restarting Windsurf Agent...' && docker-compose restart windsurf-agent && echo '⏳ Waiting for restart...' && sleep 10 && echo '🏥 Testing health...' && curl -s http://localhost:8000/health | jq '.' && echo '✅ Windsurf Agent restarted!'",
+      "tags": ["restart", "windsurf-agent", "maintenance"],
+      "category": "Service Management"
+    },
+    {
+      "id": "docker-rebuild-windsurf",
+      "name": "🔨 Rebuild Windsurf Agent",
+      "description": "Rebuild and restart the main application",
+      "command": "echo '🔨 Rebuilding Windsurf Agent...' && cd /path/to/higherself && docker-compose stop windsurf-agent && docker-compose build --no-cache windsurf-agent && docker-compose up -d windsurf-agent && echo '⏳ Waiting for rebuild...' && sleep 15 && curl -s http://localhost:8000/health | jq '.' && echo '✅ Windsurf Agent rebuilt!'",
+      "tags": ["rebuild", "windsurf-agent", "development"],
+      "category": "Development"
+    },
+    {
+      "id": "docker-shell-windsurf",
+      "name": "🐚 Shell into Windsurf Agent",
+      "description": "Open interactive shell in the main application container",
+      "command": "echo '🐚 Opening shell in Windsurf Agent container...' && docker-compose exec windsurf-agent /bin/bash",
+      "tags": ["shell", "windsurf-agent", "debugging"],
+      "category": "Debugging"
+    },
+    {
+      "id": "docker-stats",
+      "name": "📊 Container Resource Usage",
+      "description": "Show real-time resource usage for all containers",
+      "command": "echo '📊 Container Resource Usage' && echo '===========================' && docker stats --no-stream --format 'table {{.Name}}\\t{{.CPUPerc}}\\t{{.MemUsage}}\\t{{.MemPerc}}\\t{{.NetIO}}\\t{{.BlockIO}}'",
+      "tags": ["monitoring", "resources", "performance"],
+      "category": "Monitoring"
+    },
+    {
+      "id": "docker-cleanup",
+      "name": "🧹 Docker Cleanup",
+      "description": "Clean up unused Docker resources",
+      "command": "echo '🧹 Docker Cleanup Starting...' && echo 'Before cleanup:' && docker system df && echo '' && echo '🗑️ Removing unused containers, networks, images...' && docker system prune -f && echo '🗑️ Removing unused volumes...' && docker volume prune -f && echo '' && echo 'After cleanup:' && docker system df && echo '✅ Cleanup complete!'",
+      "tags": ["cleanup", "maintenance", "disk-space"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "docker-backup",
+      "name": "💾 Backup Docker Volumes",
+      "description": "Create backup of important Docker volumes",
+      "command": "BACKUP_DIR=./backups/docker/$(date +%Y%m%d-%H%M) && echo '💾 Creating Docker volume backup...' && mkdir -p $BACKUP_DIR && echo '📦 Backing up MongoDB data...' && docker run --rm -v higherself_mongodb_data:/data -v $(pwd)/$BACKUP_DIR:/backup alpine tar czf /backup/mongodb-$(date +%Y%m%d-%H%M).tar.gz -C /data . && echo '📦 Backing up Redis data...' && docker run --rm -v higherself_redis_data:/data -v $(pwd)/$BACKUP_DIR:/backup alpine tar czf /backup/redis-$(date +%Y%m%d-%H%M).tar.gz -C /data . && echo \"✅ Backup completed in: $BACKUP_DIR\" && ls -la $BACKUP_DIR",
+      "tags": ["backup", "volumes", "data-protection"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "docker-update",
+      "name": "⬆️ Update All Images",
+      "description": "Pull latest images and restart services",
+      "command": "echo '⬆️ Updating HigherSelf Docker images...' && cd /path/to/higherself && echo '📥 Pulling latest images...' && docker-compose pull && echo '🔄 Restarting services with new images...' && docker-compose up -d && echo '⏳ Waiting for services...' && sleep 20 && echo '🏥 Health check after update...' && curl -s http://localhost:8000/health | jq '.' && echo '🧹 Cleaning up old images...' && docker image prune -f && echo '✅ Update complete!'",
+      "tags": ["update", "images", "maintenance"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "docker-dev-reset",
+      "name": "🔄 Complete Development Reset",
+      "description": "Reset entire development environment",
+      "command": "echo '⚠️ COMPLETE DEVELOPMENT RESET' && echo '=============================' && read -p '🚨 This will destroy all data! Type YES to continue: ' confirm && if [ \"$confirm\" = \"YES\" ]; then echo '🛑 Stopping all services...' && docker-compose down -v && echo '🗑️ Removing all containers and volumes...' && docker system prune -af --volumes && echo '🔨 Rebuilding from scratch...' && docker-compose build --no-cache && echo '🚀 Starting fresh environment...' && docker-compose up -d && echo '⏳ Waiting for services...' && sleep 30 && echo '🏥 Final health check...' && curl -s http://localhost:8000/health | jq '.' && echo '✅ Development environment reset complete!'; else echo '❌ Reset cancelled'; fi",
+      "tags": ["reset", "development", "destructive"],
+      "category": "Development",
+      "confirmation_required": true
+    },
+    {
+      "id": "docker-port-check",
+      "name": "🔌 Port Status Check",
+      "description": "Check which ports are in use by Docker containers",
+      "command": "echo '🔌 Docker Port Status' && echo '====================' && echo '📋 Container port mappings:' && docker ps --format 'table {{.Names}}\\t{{.Ports}}' && echo '' && echo '🔍 System port usage:' && netstat -tuln | grep -E ':(8000|27017|6379|3000|9090|8500)' && echo '' && echo '✅ Port check complete!'",
+      "tags": ["ports", "networking", "debugging"],
+      "category": "Debugging"
+    },
+    {
+      "id": "docker-quick-test",
+      "name": "⚡ Quick Service Test",
+      "description": "Quick test of all critical services",
+      "command": "echo '⚡ Quick Service Test' && echo '===================' && echo '🌐 API Test:' && curl -s -w 'Response time: %{time_total}s\\n' http://localhost:8000/health | head -1 && echo '🗄️ MongoDB Test:' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.runCommand({ping: 1})' --quiet && echo '⚡ Redis Test:' && redis-cli ping && echo '✅ All services responding!'",
+      "tags": ["test", "quick", "health"],
+      "category": "Monitoring",
+      "hotkey": "Ctrl+Shift+T"
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "🚀 Essential Operations",
+      "description": "Most commonly used Docker operations",
+      "snippets": ["docker-compose-up", "docker-compose-down", "docker-health-check", "docker-quick-test"],
+      "hotkey_group": true
+    },
+    {
+      "name": "🔧 Service Management",
+      "description": "Start, stop, and manage services",
+      "snippets": ["docker-restart-windsurf", "docker-rebuild-windsurf", "docker-update"]
+    },
+    {
+      "name": "🐛 Debugging & Logs",
+      "description": "Troubleshooting and log analysis",
+      "snippets": ["docker-logs-windsurf", "docker-logs-all", "docker-shell-windsurf", "docker-port-check"]
+    },
+    {
+      "name": "📊 Monitoring",
+      "description": "Performance and resource monitoring",
+      "snippets": ["docker-stats", "docker-health-check", "docker-quick-test"]
+    },
+    {
+      "name": "🧹 Maintenance",
+      "description": "Cleanup and maintenance operations",
+      "snippets": ["docker-cleanup", "docker-backup", "docker-dev-reset"]
+    }
+  ],
+  "quick_access_menu": [
+    "docker-compose-up",
+    "docker-compose-down", 
+    "docker-health-check",
+    "docker-logs-windsurf",
+    "docker-quick-test"
+  ]
+}

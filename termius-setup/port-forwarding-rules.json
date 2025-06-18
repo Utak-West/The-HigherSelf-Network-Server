@@ -1,0 +1,260 @@
+{
+  "port_forwarding_configuration": {
+    "name": "HigherSelf Network Server Port Forwarding",
+    "description": "Complete port forwarding setup for all environments and services",
+    "auto_start_development": true,
+    "security_by_environment": true
+  },
+  "development_forwarding": {
+    "environment": "development",
+    "host": "higherself-dev-local",
+    "auto_start": true,
+    "rules": [
+      {
+        "name": "Windsurf Agent API",
+        "service": "windsurf-agent",
+        "local_port": 8000,
+        "remote_port": 8000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": true,
+        "health_check": "curl -s http://localhost:8000/health",
+        "description": "Main HigherSelf Network Server API"
+      },
+      {
+        "name": "MongoDB Database",
+        "service": "mongodb",
+        "local_port": 27017,
+        "remote_port": 27017,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": true,
+        "health_check": "mongosh mongodb://localhost:27017 --eval 'db.runCommand({ping: 1})'",
+        "description": "Development MongoDB database"
+      },
+      {
+        "name": "Redis Cache",
+        "service": "redis",
+        "local_port": 6379,
+        "remote_port": 6379,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": true,
+        "health_check": "redis-cli ping",
+        "description": "Development Redis cache"
+      },
+      {
+        "name": "Grafana Dashboard",
+        "service": "grafana",
+        "local_port": 3000,
+        "remote_port": 3000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": false,
+        "health_check": "curl -s http://localhost:3000/api/health",
+        "description": "Development Grafana monitoring dashboard"
+      },
+      {
+        "name": "Prometheus Metrics",
+        "service": "prometheus",
+        "local_port": 9090,
+        "remote_port": 9090,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": false,
+        "health_check": "curl -s http://localhost:9090/-/ready",
+        "description": "Development Prometheus metrics collection"
+      },
+      {
+        "name": "Consul Service Discovery",
+        "service": "consul",
+        "local_port": 8500,
+        "remote_port": 8500,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "auto_start": false,
+        "health_check": "curl -s http://localhost:8500/v1/status/leader",
+        "description": "Development Consul service discovery"
+      }
+    ]
+  },
+  "staging_forwarding": {
+    "environment": "staging",
+    "host": "higherself-staging-bastion",
+    "auto_start": false,
+    "security_required": true,
+    "rules": [
+      {
+        "name": "Staging API Access",
+        "service": "windsurf-agent",
+        "local_port": 8001,
+        "remote_host": "staging-app.higherself.internal",
+        "remote_port": 8000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "staging-bastion",
+        "description": "Staging HigherSelf API via bastion"
+      },
+      {
+        "name": "Staging MongoDB",
+        "service": "mongodb",
+        "local_port": 27018,
+        "remote_host": "staging-db.higherself.internal",
+        "remote_port": 27017,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "staging-bastion",
+        "session_logging": true,
+        "description": "Staging MongoDB via secure tunnel"
+      },
+      {
+        "name": "Staging Redis",
+        "service": "redis",
+        "local_port": 6380,
+        "remote_host": "staging-cache.higherself.internal",
+        "remote_port": 6379,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "staging-bastion",
+        "description": "Staging Redis cache via secure tunnel"
+      },
+      {
+        "name": "Staging Grafana",
+        "service": "grafana",
+        "local_port": 3001,
+        "remote_host": "staging-monitoring.higherself.internal",
+        "remote_port": 3000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "staging-bastion",
+        "description": "Staging Grafana dashboard"
+      },
+      {
+        "name": "Staging Prometheus",
+        "service": "prometheus",
+        "local_port": 9091,
+        "remote_host": "staging-monitoring.higherself.internal",
+        "remote_port": 9090,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "staging-bastion",
+        "description": "Staging Prometheus metrics"
+      }
+    ]
+  },
+  "production_forwarding": {
+    "environment": "production",
+    "host": "higherself-production-bastion",
+    "auto_start": false,
+    "security_required": true,
+    "approval_required": true,
+    "audit_logging": true,
+    "rules": [
+      {
+        "name": "Production Emergency API",
+        "service": "windsurf-agent",
+        "local_port": 8002,
+        "remote_host": "app-01.higherself.internal",
+        "remote_port": 8000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "production-bastion",
+        "emergency_only": true,
+        "approval_required": true,
+        "session_recording": true,
+        "description": "Production API - EMERGENCY ACCESS ONLY"
+      },
+      {
+        "name": "Production Database Emergency",
+        "service": "mongodb",
+        "local_port": 27019,
+        "remote_host": "db-primary.higherself.internal",
+        "remote_port": 27017,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "production-bastion",
+        "emergency_only": true,
+        "approval_required": true,
+        "mfa_required": true,
+        "session_recording": true,
+        "read_only": true,
+        "max_session_duration": 1800,
+        "description": "Production MongoDB - EMERGENCY READ-ONLY ACCESS"
+      },
+      {
+        "name": "Production Monitoring",
+        "service": "grafana",
+        "local_port": 3002,
+        "remote_host": "monitoring.higherself.internal",
+        "remote_port": 3000,
+        "protocol": "tcp",
+        "bind_address": "127.0.0.1",
+        "jump_host": "production-bastion",
+        "session_logging": true,
+        "description": "Production Grafana monitoring"
+      }
+    ]
+  },
+  "forwarding_groups": [
+    {
+      "name": "Development Full Stack",
+      "description": "All development services",
+      "environment": "development",
+      "rules": ["windsurf-agent", "mongodb", "redis", "grafana", "prometheus", "consul"],
+      "auto_start": true
+    },
+    {
+      "name": "Staging Core Services",
+      "description": "Essential staging services",
+      "environment": "staging",
+      "rules": ["windsurf-agent", "mongodb", "redis"],
+      "auto_start": false
+    },
+    {
+      "name": "Staging Monitoring",
+      "description": "Staging monitoring stack",
+      "environment": "staging",
+      "rules": ["grafana", "prometheus"],
+      "auto_start": false
+    },
+    {
+      "name": "Production Emergency",
+      "description": "Production emergency access",
+      "environment": "production",
+      "rules": ["emergency-api", "emergency-database"],
+      "auto_start": false,
+      "approval_required": true
+    }
+  ],
+  "quick_setup_commands": [
+    "# Start development environment",
+    "termius port-forward start development-full-stack",
+    "",
+    "# Test all development services",
+    "curl http://localhost:8000/health",
+    "mongosh mongodb://localhost:27017 --eval 'db.runCommand({ping: 1})'",
+    "redis-cli ping",
+    "",
+    "# Access monitoring dashboards",
+    "open http://localhost:3000  # Grafana",
+    "open http://localhost:9090  # Prometheus",
+    "open http://localhost:8500  # Consul"
+  ],
+  "troubleshooting": {
+    "port_conflicts": [
+      "Check for existing processes: lsof -i :8000",
+      "Kill conflicting processes: kill -9 $(lsof -t -i:8000)",
+      "Restart port forwarding"
+    ],
+    "connection_issues": [
+      "Verify SSH key is loaded: ssh-add -l",
+      "Test SSH connection: ssh -T user@host",
+      "Check Termius connection logs"
+    ],
+    "service_health": [
+      "Run health check snippets",
+      "Check Docker container status",
+      "Verify service logs"
+    ]
+  }
+}

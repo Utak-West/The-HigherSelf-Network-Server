@@ -1,0 +1,137 @@
+{
+  "development_hosts": {
+    "environment": "development",
+    "description": "Local development environment for HigherSelf Network Server",
+    "setup_priority": 1,
+    "auto_connect": true
+  },
+  "hosts": [
+    {
+      "id": "higherself-dev-local",
+      "name": "HigherSelf Development (Local Docker)",
+      "address": "localhost",
+      "port": 22,
+      "username": "developer",
+      "group": "Development",
+      "tags": ["development", "docker", "local", "primary"],
+      "description": "Local development environment with Docker services",
+      "connection_type": "ssh",
+      "key_id": "development-key",
+      "auto_connect": true,
+      "port_forwarding": [
+        {
+          "name": "Windsurf Agent API",
+          "local_port": 8000,
+          "remote_port": 8000,
+          "enabled": true,
+          "auto_start": true,
+          "description": "Main HigherSelf API endpoint"
+        },
+        {
+          "name": "MongoDB Database",
+          "local_port": 27017,
+          "remote_port": 27017,
+          "enabled": true,
+          "auto_start": true,
+          "description": "Development MongoDB instance"
+        },
+        {
+          "name": "Redis Cache",
+          "local_port": 6379,
+          "remote_port": 6379,
+          "enabled": true,
+          "auto_start": true,
+          "description": "Development Redis cache"
+        },
+        {
+          "name": "Grafana Dashboard",
+          "local_port": 3000,
+          "remote_port": 3000,
+          "enabled": true,
+          "auto_start": false,
+          "description": "Development Grafana monitoring"
+        },
+        {
+          "name": "Prometheus Metrics",
+          "local_port": 9090,
+          "remote_port": 9090,
+          "enabled": true,
+          "auto_start": false,
+          "description": "Development Prometheus metrics"
+        },
+        {
+          "name": "Consul Service Discovery",
+          "local_port": 8500,
+          "remote_port": 8500,
+          "enabled": true,
+          "auto_start": false,
+          "description": "Development Consul service discovery"
+        }
+      ],
+      "startup_snippets": [
+        "dev-health-check",
+        "docker-status-check"
+      ],
+      "environment_variables": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "DEBUG",
+        "DOCKER_COMPOSE_FILE": "docker-compose.yml"
+      }
+    }
+  ],
+  "connection_groups": [
+    {
+      "name": "Development",
+      "color": "#28a745",
+      "icon": "development",
+      "description": "Local development environment",
+      "default_settings": {
+        "keep_alive": 300,
+        "compression": true,
+        "forward_agent": true
+      }
+    }
+  ],
+  "quick_access_urls": [
+    {
+      "name": "API Health Check",
+      "url": "http://localhost:8000/health",
+      "description": "HigherSelf API health endpoint"
+    },
+    {
+      "name": "Grafana Dashboard",
+      "url": "http://localhost:3000",
+      "description": "Development monitoring dashboard"
+    },
+    {
+      "name": "Prometheus Metrics",
+      "url": "http://localhost:9090",
+      "description": "Development metrics collection"
+    },
+    {
+      "name": "Consul UI",
+      "url": "http://localhost:8500",
+      "description": "Service discovery interface"
+    }
+  ],
+  "development_workflow": {
+    "startup_sequence": [
+      "Connect to higherself-dev-local",
+      "Run snippet: docker-compose-up",
+      "Run snippet: dev-health-check",
+      "Open browser tabs for monitoring"
+    ],
+    "common_tasks": [
+      "docker-compose-up",
+      "docker-compose-down",
+      "docker-logs-windsurf",
+      "mongodb-status-check",
+      "redis-status-check"
+    ],
+    "troubleshooting": [
+      "docker-health-check",
+      "system-resource-check",
+      "port-conflict-check"
+    ]
+  }
+}

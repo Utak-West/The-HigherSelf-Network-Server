@@ -1,0 +1,196 @@
+{
+  "terraform_snippets": {
+    "name": "HigherSelf Terraform/Terragrunt Operations",
+    "description": "Infrastructure management snippets for HigherSelf Network Server",
+    "environments": ["development", "staging", "production"],
+    "auto_import": true
+  },
+  "snippets": [
+    {
+      "id": "terraform-dev-init",
+      "name": "🏗️ Initialize Development",
+      "description": "Initialize Terraform for development environment",
+      "command": "cd /path/to/higherself/terraform && echo '🏗️ Initializing Development Environment...' && echo '=================================' && export TF_ENV=development && export AWS_PROFILE=higherself-dev && echo '🔧 Setting up Terraform...' && ./init.sh development && echo '🌍 Selecting workspace...' && terraform workspace select development || terraform workspace new development && echo '✅ Development environment initialized!' && terraform --version",
+      "tags": ["terraform", "development", "initialization"],
+      "category": "Development Infrastructure",
+      "environment": "development"
+    },
+    {
+      "id": "terraform-dev-plan",
+      "name": "📋 Plan Development Changes",
+      "description": "Create and review Terraform plan for development",
+      "command": "cd /path/to/higherself/terraform && echo '📋 Creating Development Plan...' && echo '=============================' && export TF_ENV=development && export AWS_PROFILE=higherself-dev && echo '🔍 Planning infrastructure changes...' && terraform plan -var-file='environments/development.tfvars' -out=dev.tfplan && echo '' && echo '📊 Plan Summary:' && terraform show -json dev.tfplan | jq '.resource_changes | group_by(.change.actions[]) | map({action: .[0].change.actions[0], count: length})' && echo '✅ Development plan created: dev.tfplan'",
+      "tags": ["terraform", "development", "planning"],
+      "category": "Development Infrastructure",
+      "environment": "development"
+    },
+    {
+      "id": "terraform-dev-apply",
+      "name": "🚀 Apply Development Changes",
+      "description": "Apply Terraform changes to development environment",
+      "command": "cd /path/to/higherself/terraform && echo '🚀 Applying Development Changes...' && echo '=================================' && export TF_ENV=development && if [ -f dev.tfplan ]; then echo '✅ Using existing plan: dev.tfplan' && terraform apply dev.tfplan && echo '📊 Deployment complete! Outputs:' && terraform output; else echo '❌ No plan file found. Run terraform-dev-plan first.'; fi",
+      "tags": ["terraform", "development", "deployment"],
+      "category": "Development Infrastructure",
+      "environment": "development"
+    },
+    {
+      "id": "terragrunt-staging-plan",
+      "name": "📋 Plan Staging Deployment",
+      "description": "Create Terragrunt plan for staging environment",
+      "command": "cd /path/to/higherself && echo '📋 Staging Environment Plan...' && echo '============================' && export TF_ENV=staging && export AWS_PROFILE=higherself-staging && echo '🔐 Checking AWS credentials...' && aws sts get-caller-identity && echo '🏗️ Running Terragrunt plan...' && ./terragrunt-deploy.sh staging plan && echo '✅ Staging plan complete!'",
+      "tags": ["terragrunt", "staging", "planning"],
+      "category": "Staging Infrastructure",
+      "environment": "staging"
+    },
+    {
+      "id": "terragrunt-staging-apply",
+      "name": "🚀 Deploy to Staging",
+      "description": "Apply Terragrunt changes to staging environment",
+      "command": "cd /path/to/higherself && echo '🚀 Deploying to Staging...' && echo '=========================' && export TF_ENV=staging && export AWS_PROFILE=higherself-staging && echo '⚠️ STAGING DEPLOYMENT' && read -p '🔍 Have you reviewed the plan? (yes/no): ' confirm && if [ \"$confirm\" = \"yes\" ]; then echo '🏗️ Applying changes...' && ./terragrunt-deploy.sh staging apply && echo '✅ Staging deployment complete!'; else echo '❌ Deployment cancelled'; fi",
+      "tags": ["terragrunt", "staging", "deployment"],
+      "category": "Staging Infrastructure",
+      "environment": "staging"
+    },
+    {
+      "id": "terragrunt-prod-plan",
+      "name": "📋 Plan Production (CRITICAL)",
+      "description": "Create Terragrunt plan for production - REQUIRES APPROVAL",
+      "command": "cd /path/to/higherself && echo '🚨 PRODUCTION ENVIRONMENT PLAN' && echo '==============================' && echo '⚠️ CRITICAL OPERATION - PRODUCTION INFRASTRUCTURE' && echo '📋 This operation requires:' && echo '   - Security team approval' && echo '   - Change management ticket' && echo '   - MFA authentication' && echo '' && read -p '📝 Enter change ticket number: ' ticket && read -p '🔐 Enter MFA token: ' mfa && if [ ! -z \"$ticket\" ] && [ ! -z \"$mfa\" ]; then export TF_ENV=production && export AWS_PROFILE=higherself-production && echo \"📋 Change Ticket: $ticket\" && echo '🏗️ Running production plan...' && ./terragrunt-deploy.sh production plan && echo '✅ Production plan complete - REQUIRES APPROVAL'; else echo '❌ Missing required information'; fi",
+      "tags": ["terragrunt", "production", "planning", "critical"],
+      "category": "Production Infrastructure",
+      "environment": "production",
+      "approval_required": true
+    },
+    {
+      "id": "terraform-validate",
+      "name": "✅ Validate Configuration",
+      "description": "Validate Terraform configuration files",
+      "command": "cd /path/to/higherself/terraform && echo '✅ Validating Terraform Configuration...' && echo '====================================' && echo '🔍 Checking syntax...' && terraform validate && echo '🎨 Checking formatting...' && terraform fmt -check=true -recursive && echo '🔒 Security scan...' && if command -v tfsec >/dev/null 2>&1; then tfsec . --format compact; else echo 'tfsec not installed - skipping security scan'; fi && echo '✅ Validation complete!'",
+      "tags": ["terraform", "validation", "security"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "terraform-format",
+      "name": "🎨 Format Terraform Files",
+      "description": "Format all Terraform configuration files",
+      "command": "cd /path/to/higherself/terraform && echo '🎨 Formatting Terraform Files...' && echo '===============================' && terraform fmt -recursive && echo '✅ All files formatted!'",
+      "tags": ["terraform", "formatting", "maintenance"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "terraform-state-list",
+      "name": "📋 List Terraform Resources",
+      "description": "List all resources in current Terraform state",
+      "command": "cd /path/to/higherself/terraform && echo '📋 Terraform State Resources...' && echo '==============================' && terraform state list | sort && echo '' && echo '📊 Resource Summary:' && terraform state list | cut -d. -f1 | sort | uniq -c | sort -nr",
+      "tags": ["terraform", "state", "resources"],
+      "category": "Information"
+    },
+    {
+      "id": "terraform-output",
+      "name": "📊 Show Terraform Outputs",
+      "description": "Display current Terraform output values",
+      "command": "cd /path/to/higherself/terraform && echo '📊 Terraform Outputs...' && echo '=====================' && terraform output -json | jq '.' && echo '' && echo '🔗 Quick Access URLs:' && terraform output -json | jq -r 'to_entries[] | select(.value.value | type == \"string\" and test(\"^https?://\")) | \"\\(.key): \\(.value.value)\"'",
+      "tags": ["terraform", "output", "information"],
+      "category": "Information"
+    },
+    {
+      "id": "aws-creds-check",
+      "name": "🔐 Check AWS Credentials",
+      "description": "Verify AWS credentials and permissions",
+      "command": "echo '🔐 AWS Credentials Check...' && echo '=========================' && echo '👤 Current Identity:' && aws sts get-caller-identity && echo '' && echo '🎫 Session Token:' && aws sts get-session-token --duration-seconds 3600 | jq '.Credentials | {AccessKeyId, SecretAccessKey, SessionToken, Expiration}' && echo '' && echo '🔍 Available Profiles:' && aws configure list-profiles && echo '✅ Credentials check complete!'",
+      "tags": ["aws", "credentials", "verification"],
+      "category": "AWS Management"
+    },
+    {
+      "id": "aws-secrets-list",
+      "name": "🔑 List HigherSelf Secrets",
+      "description": "List all HigherSelf secrets in AWS Secrets Manager",
+      "command": "echo '🔑 HigherSelf AWS Secrets...' && echo '==========================' && aws secretsmanager list-secrets --filters Key=name,Values=higherself/ --query 'SecretList[].{Name:Name,Description:Description,LastChanged:LastChangedDate}' --output table && echo '' && echo '🔍 Secret Details:' && aws secretsmanager list-secrets --filters Key=name,Values=higherself/ --query 'SecretList[].Name' --output text | xargs -I {} aws secretsmanager describe-secret --secret-id {} --query '{Name:Name,KmsKeyId:KmsKeyId,RotationEnabled:RotationEnabled}' --output table",
+      "tags": ["aws", "secrets", "management"],
+      "category": "AWS Management"
+    },
+    {
+      "id": "terraform-cost-estimate",
+      "name": "💰 Estimate Infrastructure Costs",
+      "description": "Estimate costs for Terraform changes",
+      "command": "cd /path/to/higherself/terraform && echo '💰 Infrastructure Cost Estimation...' && echo '==================================' && if command -v infracost >/dev/null 2>&1; then echo '📊 Generating cost breakdown...' && infracost breakdown --path . --terraform-var-file environments/${TF_ENV:-development}.tfvars --format table && echo '' && echo '📈 Cost comparison:' && infracost diff --path . --terraform-var-file environments/${TF_ENV:-development}.tfvars; else echo '❌ infracost not installed. Install with: curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'; fi",
+      "tags": ["terraform", "cost", "estimation"],
+      "category": "Analysis"
+    },
+    {
+      "id": "terraform-backup-state",
+      "name": "💾 Backup Terraform State",
+      "description": "Create backup of current Terraform state",
+      "command": "cd /path/to/higherself/terraform && BACKUP_DIR=./backups/terraform/$(date +%Y%m%d-%H%M) && echo '💾 Backing up Terraform State...' && echo '===============================' && mkdir -p $BACKUP_DIR && echo '📦 Creating state backup...' && terraform state pull > $BACKUP_DIR/terraform-state-$(date +%Y%m%d-%H%M%S).json && echo '📦 Backing up configuration...' && tar czf $BACKUP_DIR/terraform-config-$(date +%Y%m%d-%H%M%S).tar.gz *.tf environments/ modules/ 2>/dev/null || true && echo \"✅ Backup completed in: $BACKUP_DIR\" && ls -la $BACKUP_DIR",
+      "tags": ["terraform", "backup", "state"],
+      "category": "Maintenance"
+    },
+    {
+      "id": "terragrunt-run-all-plan",
+      "name": "📋 Terragrunt Run-All Plan",
+      "description": "Plan all Terragrunt modules in environment",
+      "command": "cd /path/to/higherself/terragrunt/environments/${TF_ENV:-staging} && echo '📋 Terragrunt Run-All Plan...' && echo '============================' && echo \"🌍 Environment: ${TF_ENV:-staging}\" && terragrunt run-all plan --terragrunt-non-interactive && echo '✅ Run-all plan complete!'",
+      "tags": ["terragrunt", "run-all", "planning"],
+      "category": "Advanced Operations"
+    },
+    {
+      "id": "infrastructure-health-check",
+      "name": "🏥 Infrastructure Health Check",
+      "description": "Check health of deployed infrastructure",
+      "command": "echo '🏥 Infrastructure Health Check...' && echo '================================' && echo '🔍 Checking Terraform state...' && cd /path/to/higherself/terraform && terraform refresh -var-file=environments/${TF_ENV:-development}.tfvars && echo '' && echo '📊 Resource status:' && terraform state list | wc -l | xargs echo 'Total resources:' && echo '' && echo '🌐 Testing endpoints...' && terraform output -json | jq -r 'to_entries[] | select(.value.value | type == \"string\" and test(\"^https?://\")) | .value.value' | xargs -I {} curl -s -o /dev/null -w '{}: %{http_code}\\n' {} && echo '✅ Infrastructure health check complete!'",
+      "tags": ["infrastructure", "health", "monitoring"],
+      "category": "Monitoring"
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "🏗️ Development Infrastructure",
+      "description": "Development environment management",
+      "snippets": ["terraform-dev-init", "terraform-dev-plan", "terraform-dev-apply"]
+    },
+    {
+      "name": "🎯 Staging Infrastructure", 
+      "description": "Staging environment management",
+      "snippets": ["terragrunt-staging-plan", "terragrunt-staging-apply"]
+    },
+    {
+      "name": "🚨 Production Infrastructure",
+      "description": "Production environment management - CRITICAL",
+      "snippets": ["terragrunt-prod-plan"]
+    },
+    {
+      "name": "🔧 Maintenance & Validation",
+      "description": "Infrastructure maintenance operations",
+      "snippets": ["terraform-validate", "terraform-format", "terraform-backup-state"]
+    },
+    {
+      "name": "📊 Information & Analysis",
+      "description": "Infrastructure information and analysis",
+      "snippets": ["terraform-state-list", "terraform-output", "terraform-cost-estimate", "infrastructure-health-check"]
+    },
+    {
+      "name": "☁️ AWS Management",
+      "description": "AWS-specific operations",
+      "snippets": ["aws-creds-check", "aws-secrets-list"]
+    }
+  ],
+  "environment_specific": {
+    "development": {
+      "required_snippets": ["terraform-dev-init", "terraform-dev-plan", "terraform-dev-apply"],
+      "aws_profile": "higherself-dev",
+      "auto_approve": false
+    },
+    "staging": {
+      "required_snippets": ["terragrunt-staging-plan", "terragrunt-staging-apply"],
+      "aws_profile": "higherself-staging",
+      "auto_approve": false
+    },
+    "production": {
+      "required_snippets": ["terragrunt-prod-plan"],
+      "aws_profile": "higherself-production",
+      "auto_approve": false,
+      "approval_required": true,
+      "mfa_required": true
+    }
+  }
+}
