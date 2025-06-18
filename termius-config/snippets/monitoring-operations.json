@@ -1,0 +1,171 @@
+{
+  "snippet_package": {
+    "name": "HigherSelf Monitoring Operations",
+    "description": "System monitoring, troubleshooting, and observability snippets",
+    "version": "1.0.0",
+    "environment": "multi",
+    "tags": ["monitoring", "troubleshooting", "observability", "grafana", "prometheus"]
+  },
+  "snippets": [
+    {
+      "id": "system-health-overview",
+      "name": "System Health Overview",
+      "description": "Complete system health check for HigherSelf infrastructure",
+      "command": "echo '=== HigherSelf System Health Overview ===' && echo 'Date:' $(date) && echo '\\n=== Service Status ===' && curl -s http://localhost:8000/health | jq '.' && echo '\\n=== Database Status ===' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.runCommand({ping: 1})' --quiet && redis-cli ping && echo '\\n=== System Resources ===' && df -h | grep -E '/$|/var|/tmp' && free -h && echo '\\n=== Docker Status ===' && docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'",
+      "tags": ["health", "overview", "system", "status"]
+    },
+    {
+      "id": "service-logs-tail",
+      "name": "Tail All Service Logs",
+      "description": "Monitor real-time logs from all HigherSelf services",
+      "command": "echo 'Monitoring all service logs (Ctrl+C to stop):' && docker-compose logs -f --tail=20",
+      "tags": ["logs", "monitoring", "real-time"]
+    },
+    {
+      "id": "error-log-analysis",
+      "name": "Error Log Analysis",
+      "description": "Search for errors in service logs",
+      "command": "echo '=== Recent Errors in Service Logs ===' && docker-compose logs --since=1h | grep -i -E 'error|exception|failed|critical' | tail -20",
+      "tags": ["logs", "errors", "analysis"]
+    },
+    {
+      "id": "performance-metrics",
+      "name": "Performance Metrics",
+      "description": "Collect performance metrics from all services",
+      "command": "echo '=== Performance Metrics ===' && echo 'API Response Time:' && curl -w '@-' -o /dev/null -s http://localhost:8000/health <<< 'time_total: %{time_total}\\ntime_connect: %{time_connect}\\ntime_starttransfer: %{time_starttransfer}' && echo '\\nDatabase Performance:' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.runCommand({serverStatus: 1}).opcounters' --quiet && echo '\\nRedis Performance:' && redis-cli info stats | grep -E 'total_commands_processed|instantaneous_ops_per_sec'",
+      "tags": ["performance", "metrics", "monitoring"]
+    },
+    {
+      "id": "disk-usage-check",
+      "name": "Disk Usage Check",
+      "description": "Check disk usage and identify large files",
+      "command": "echo '=== Disk Usage Analysis ===' && df -h && echo '\\n=== Largest Directories ===' && du -h --max-depth=2 /var/log /tmp 2>/dev/null | sort -hr | head -10 && echo '\\n=== Docker Disk Usage ===' && docker system df",
+      "tags": ["disk", "usage", "storage", "monitoring"]
+    },
+    {
+      "id": "network-connectivity-check",
+      "name": "Network Connectivity Check",
+      "description": "Test network connectivity to external services",
+      "command": "echo '=== Network Connectivity Check ===' && echo 'External APIs:' && curl -s -o /dev/null -w 'Notion API: %{http_code}\\n' https://api.notion.com/v1/users && curl -s -o /dev/null -w 'OpenAI API: %{http_code}\\n' https://api.openai.com/v1/models && echo '\\nDNS Resolution:' && nslookup google.com && echo '\\nInternal Services:' && nc -zv localhost 8000 && nc -zv localhost 27017 && nc -zv localhost 6379",
+      "tags": ["network", "connectivity", "external", "services"]
+    },
+    {
+      "id": "memory-usage-analysis",
+      "name": "Memory Usage Analysis",
+      "description": "Analyze memory usage across all services",
+      "command": "echo '=== Memory Usage Analysis ===' && free -h && echo '\\n=== Top Memory Consumers ===' && ps aux --sort=-%mem | head -10 && echo '\\n=== Docker Container Memory ===' && docker stats --no-stream --format 'table {{.Name}}\\t{{.MemUsage}}\\t{{.MemPerc}}'",
+      "tags": ["memory", "usage", "analysis", "monitoring"]
+    },
+    {
+      "id": "cpu-usage-analysis",
+      "name": "CPU Usage Analysis",
+      "description": "Analyze CPU usage and load",
+      "command": "echo '=== CPU Usage Analysis ===' && uptime && echo '\\n=== CPU Info ===' && lscpu | grep -E 'CPU\\(s\\)|Model name|CPU MHz' && echo '\\n=== Top CPU Consumers ===' && ps aux --sort=-%cpu | head -10 && echo '\\n=== Load Average History ===' && sar -u 1 5 2>/dev/null || echo 'sar not available'",
+      "tags": ["cpu", "usage", "load", "performance"]
+    },
+    {
+      "id": "security-audit-check",
+      "name": "Security Audit Check",
+      "description": "Basic security audit of the system",
+      "command": "echo '=== Security Audit Check ===' && echo 'Open Ports:' && netstat -tuln | grep LISTEN && echo '\\n=== Failed Login Attempts ===' && grep 'Failed password' /var/log/auth.log 2>/dev/null | tail -5 || echo 'No auth log access' && echo '\\n=== Docker Security ===' && docker ps --format 'table {{.Names}}\\t{{.Ports}}' && echo '\\n=== File Permissions ===' && ls -la /etc/passwd /etc/shadow 2>/dev/null || echo 'Limited access to system files'",
+      "tags": ["security", "audit", "ports", "access"]
+    },
+    {
+      "id": "backup-status-check",
+      "name": "Backup Status Check",
+      "description": "Check status of all backup operations",
+      "command": "echo '=== Backup Status Check ===' && echo 'Backup Directory:' && ls -la ./backups/ 2>/dev/null || echo 'No backup directory found' && echo '\\n=== Recent Backups ===' && find ./backups -type f -name '*.tar.gz' -o -name '*.rdb' -o -name '*.json' 2>/dev/null | head -10 && echo '\\n=== Backup Disk Usage ===' && du -sh ./backups/ 2>/dev/null || echo 'No backups found'",
+      "tags": ["backup", "status", "maintenance"]
+    },
+    {
+      "id": "api-endpoint-test",
+      "name": "API Endpoint Test",
+      "description": "Test all critical API endpoints",
+      "command": "echo '=== API Endpoint Testing ===' && echo 'Health Check:' && curl -s http://localhost:8000/health | jq '.status' && echo 'API Version:' && curl -s http://localhost:8000/version 2>/dev/null || echo 'Version endpoint not available' && echo 'Metrics:' && curl -s http://localhost:8000/metrics | head -5 && echo '\\n=== Response Times ===' && for endpoint in health version metrics; do echo -n \"$endpoint: \"; curl -w '%{time_total}s\\n' -o /dev/null -s http://localhost:8000/$endpoint 2>/dev/null || echo 'failed'; done",
+      "tags": ["api", "endpoints", "testing", "health"]
+    },
+    {
+      "id": "grafana-dashboard-check",
+      "name": "Grafana Dashboard Check",
+      "description": "Check Grafana dashboard availability and health",
+      "command": "echo '=== Grafana Dashboard Check ===' && curl -s -o /dev/null -w 'Grafana Status: %{http_code}\\n' http://localhost:3000/api/health && echo 'Dashboard URLs:' && echo 'Main Dashboard: http://localhost:3000/d/higherself-overview' && echo 'System Metrics: http://localhost:3000/d/system-metrics' && echo 'Application Metrics: http://localhost:3000/d/app-metrics'",
+      "tags": ["grafana", "dashboard", "monitoring"]
+    },
+    {
+      "id": "prometheus-metrics-check",
+      "name": "Prometheus Metrics Check",
+      "description": "Check Prometheus metrics collection",
+      "command": "echo '=== Prometheus Metrics Check ===' && curl -s -o /dev/null -w 'Prometheus Status: %{http_code}\\n' http://localhost:9090/-/ready && echo '\\n=== Target Status ===' && curl -s http://localhost:9090/api/v1/targets | jq '.data.activeTargets[] | {job: .labels.job, health: .health, lastScrape: .lastScrape}' 2>/dev/null || echo 'Unable to fetch target status' && echo '\\n=== Metrics Count ===' && curl -s http://localhost:9090/api/v1/label/__name__/values | jq '.data | length' 2>/dev/null || echo 'Unable to fetch metrics count'",
+      "tags": ["prometheus", "metrics", "monitoring"]
+    },
+    {
+      "id": "consul-service-check",
+      "name": "Consul Service Check",
+      "description": "Check Consul service discovery status",
+      "command": "echo '=== Consul Service Discovery Check ===' && curl -s -o /dev/null -w 'Consul Status: %{http_code}\\n' http://localhost:8500/v1/status/leader && echo '\\n=== Registered Services ===' && curl -s http://localhost:8500/v1/catalog/services | jq '.' 2>/dev/null || echo 'Unable to fetch services' && echo '\\n=== Health Checks ===' && curl -s http://localhost:8500/v1/health/state/any | jq '.[] | {service: .ServiceName, status: .Status, output: .Output}' 2>/dev/null | head -10 || echo 'Unable to fetch health checks'",
+      "tags": ["consul", "service-discovery", "health"]
+    },
+    {
+      "id": "incident-response-info",
+      "name": "Incident Response Information",
+      "description": "Collect comprehensive information for incident response",
+      "command": "echo '=== INCIDENT RESPONSE INFORMATION ===' && echo 'Timestamp:' $(date -u) && echo 'Hostname:' $(hostname) && echo '\\n=== Service Status ===' && docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.RunningFor}}' && echo '\\n=== Recent Errors ===' && docker-compose logs --since=30m | grep -i -E 'error|exception|failed|critical' | tail -10 && echo '\\n=== System Load ===' && uptime && echo '\\n=== Disk Space ===' && df -h | grep -E '/$|/var' && echo '\\n=== Memory Usage ===' && free -h && echo '\\n=== Network Connections ===' && netstat -tuln | grep LISTEN | head -10",
+      "tags": ["incident", "response", "emergency", "debugging"]
+    },
+    {
+      "id": "maintenance-mode-check",
+      "name": "Maintenance Mode Check",
+      "description": "Check if system is in maintenance mode",
+      "command": "echo '=== Maintenance Mode Status ===' && if [ -f /tmp/maintenance.flag ]; then echo 'SYSTEM IS IN MAINTENANCE MODE'; cat /tmp/maintenance.flag; else echo 'System is operational'; fi && echo '\\n=== Service Availability ===' && curl -s http://localhost:8000/health | jq '.maintenance_mode // false' 2>/dev/null || echo 'Unable to check maintenance status'",
+      "tags": ["maintenance", "mode", "status"]
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "System Health",
+      "description": "Overall system health and status monitoring",
+      "snippets": [
+        "system-health-overview",
+        "service-logs-tail",
+        "error-log-analysis",
+        "performance-metrics"
+      ]
+    },
+    {
+      "name": "Resource Monitoring",
+      "description": "System resource usage and performance",
+      "snippets": [
+        "disk-usage-check",
+        "memory-usage-analysis",
+        "cpu-usage-analysis",
+        "network-connectivity-check"
+      ]
+    },
+    {
+      "name": "Service Monitoring",
+      "description": "Individual service monitoring and health checks",
+      "snippets": [
+        "api-endpoint-test",
+        "grafana-dashboard-check",
+        "prometheus-metrics-check",
+        "consul-service-check"
+      ]
+    },
+    {
+      "name": "Security & Maintenance",
+      "description": "Security auditing and maintenance operations",
+      "snippets": [
+        "security-audit-check",
+        "backup-status-check",
+        "maintenance-mode-check"
+      ]
+    },
+    {
+      "name": "Incident Response",
+      "description": "Emergency response and troubleshooting",
+      "snippets": [
+        "incident-response-info"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "snippet_package": {
+    "name": "HigherSelf Database Operations",
+    "description": "Database and cache management snippets for MongoDB and Redis",
+    "version": "1.0.0",
+    "environment": "multi",
+    "tags": ["database", "mongodb", "redis", "cache", "administration"]
+  },
+  "snippets": [
+    {
+      "id": "mongodb-status-check",
+      "name": "MongoDB Status Check",
+      "description": "Check MongoDB server status and basic health",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.runCommand({serverStatus: 1}).ok ? \"MongoDB is healthy\" : \"MongoDB has issues\"' --quiet",
+      "tags": ["mongodb", "health", "status"]
+    },
+    {
+      "id": "mongodb-database-stats",
+      "name": "MongoDB Database Statistics",
+      "description": "Display database statistics and collection information",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'print(\"Database Stats:\"); printjson(db.stats()); print(\"\\nCollections:\"); db.getCollectionNames().forEach(function(name) { print(name + \": \" + db.getCollection(name).countDocuments() + \" documents\"); });' --quiet",
+      "tags": ["mongodb", "statistics", "collections"]
+    },
+    {
+      "id": "mongodb-backup-database",
+      "name": "Backup MongoDB Database",
+      "description": "Create a backup of the HigherSelf database",
+      "command": "mkdir -p ./backups/mongodb/$(date +%Y%m%d) && mongodump --host localhost:27017 --db higherselfnetwork --out ./backups/mongodb/$(date +%Y%m%d) && echo \"Backup completed: ./backups/mongodb/$(date +%Y%m%d)\"",
+      "tags": ["mongodb", "backup", "maintenance"]
+    },
+    {
+      "id": "mongodb-restore-database",
+      "name": "Restore MongoDB Database",
+      "description": "Restore MongoDB database from backup",
+      "command": "echo 'Enter backup directory path:' && read BACKUP_PATH && mongorestore --host localhost:27017 --db higherselfnetwork --drop $BACKUP_PATH/higherselfnetwork",
+      "tags": ["mongodb", "restore", "recovery"]
+    },
+    {
+      "id": "mongodb-list-collections",
+      "name": "List MongoDB Collections",
+      "description": "List all collections in the HigherSelf database",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.getCollectionNames().forEach(function(name) { var count = db.getCollection(name).countDocuments(); var size = db.getCollection(name).stats().size; print(name + \": \" + count + \" documents, \" + (size/1024/1024).toFixed(2) + \" MB\"); });' --quiet",
+      "tags": ["mongodb", "collections", "information"]
+    },
+    {
+      "id": "mongodb-index-analysis",
+      "name": "MongoDB Index Analysis",
+      "description": "Analyze indexes for all collections",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.getCollectionNames().forEach(function(name) { print(\"\\n=== \" + name + \" ===\"); db.getCollection(name).getIndexes().forEach(function(index) { print(\"Index: \" + index.name + \" on \" + JSON.stringify(index.key)); }); });' --quiet",
+      "tags": ["mongodb", "indexes", "performance"]
+    },
+    {
+      "id": "mongodb-slow-queries",
+      "name": "MongoDB Slow Query Analysis",
+      "description": "Analyze slow queries from MongoDB profiler",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.setProfilingLevel(2, {slowms: 100}); print(\"Profiling enabled. Run your operations, then check with: db.system.profile.find().sort({ts: -1}).limit(10)\");' --quiet",
+      "tags": ["mongodb", "performance", "profiling"]
+    },
+    {
+      "id": "mongodb-user-management",
+      "name": "MongoDB User Management",
+      "description": "Display current database users and roles",
+      "command": "mongosh mongodb://localhost:27017/higherselfnetwork --eval 'print(\"Database Users:\"); db.getUsers().forEach(function(user) { print(\"User: \" + user.user + \", Roles: \" + JSON.stringify(user.roles)); });' --quiet",
+      "tags": ["mongodb", "users", "security"]
+    },
+    {
+      "id": "redis-status-check",
+      "name": "Redis Status Check",
+      "description": "Check Redis server status and basic information",
+      "command": "redis-cli ping && echo 'Redis is responding' && redis-cli info server | grep redis_version",
+      "tags": ["redis", "health", "status"]
+    },
+    {
+      "id": "redis-memory-usage",
+      "name": "Redis Memory Usage",
+      "description": "Display Redis memory usage and statistics",
+      "command": "redis-cli info memory | grep -E 'used_memory_human|used_memory_peak_human|maxmemory_human' && echo '\\nTop 10 keys by memory:' && redis-cli --bigkeys | head -20",
+      "tags": ["redis", "memory", "statistics"]
+    },
+    {
+      "id": "redis-key-analysis",
+      "name": "Redis Key Analysis",
+      "description": "Analyze Redis keys and their types",
+      "command": "echo 'Total keys:' && redis-cli dbsize && echo '\\nKey types:' && redis-cli eval 'local keys = redis.call(\"keys\", \"*\"); local types = {}; for i=1,#keys do local t = redis.call(\"type\", keys[i]).ok; types[t] = (types[t] or 0) + 1; end; return types' 0",
+      "tags": ["redis", "keys", "analysis"]
+    },
+    {
+      "id": "redis-backup-data",
+      "name": "Backup Redis Data",
+      "description": "Create a backup of Redis data",
+      "command": "mkdir -p ./backups/redis/$(date +%Y%m%d) && redis-cli bgsave && sleep 5 && cp /var/lib/redis/dump.rdb ./backups/redis/$(date +%Y%m%d)/dump-$(date +%Y%m%d-%H%M).rdb && echo 'Redis backup completed'",
+      "tags": ["redis", "backup", "maintenance"]
+    },
+    {
+      "id": "redis-flush-cache",
+      "name": "Flush Redis Cache",
+      "description": "Clear all Redis cache data (with confirmation)",
+      "command": "echo 'WARNING: This will clear ALL Redis data!' && read -p 'Type YES to continue: ' confirm && [ \"$confirm\" = \"YES\" ] && redis-cli flushall && echo 'Redis cache cleared'",
+      "tags": ["redis", "flush", "maintenance"]
+    },
+    {
+      "id": "redis-monitor-commands",
+      "name": "Monitor Redis Commands",
+      "description": "Monitor Redis commands in real-time",
+      "command": "echo 'Monitoring Redis commands (Ctrl+C to stop):' && redis-cli monitor",
+      "tags": ["redis", "monitoring", "debugging"]
+    },
+    {
+      "id": "redis-slow-log",
+      "name": "Redis Slow Log Analysis",
+      "description": "Display Redis slow query log",
+      "command": "echo 'Redis Slow Log (last 10 entries):' && redis-cli slowlog get 10",
+      "tags": ["redis", "performance", "slow-log"]
+    },
+    {
+      "id": "redis-client-connections",
+      "name": "Redis Client Connections",
+      "description": "Display current Redis client connections",
+      "command": "redis-cli info clients && echo '\\nConnected clients:' && redis-cli client list",
+      "tags": ["redis", "clients", "connections"]
+    },
+    {
+      "id": "database-connection-test",
+      "name": "Test All Database Connections",
+      "description": "Test connectivity to all databases and caches",
+      "command": "echo '=== Testing Database Connections ===' && echo 'MongoDB:' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.runCommand({ping: 1})' --quiet && echo 'Redis:' && redis-cli ping && echo 'All database connections tested'",
+      "tags": ["database", "connectivity", "testing"]
+    },
+    {
+      "id": "database-performance-check",
+      "name": "Database Performance Check",
+      "description": "Quick performance check for all databases",
+      "command": "echo '=== Database Performance Check ===' && echo 'MongoDB Stats:' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'printjson(db.stats())' --quiet && echo '\\nRedis Info:' && redis-cli info stats | grep -E 'total_commands_processed|instantaneous_ops_per_sec'",
+      "tags": ["database", "performance", "monitoring"]
+    },
+    {
+      "id": "database-backup-all",
+      "name": "Backup All Databases",
+      "description": "Create backups of all databases and caches",
+      "command": "BACKUP_DIR=./backups/$(date +%Y%m%d-%H%M) && mkdir -p $BACKUP_DIR && echo 'Creating MongoDB backup...' && mongodump --host localhost:27017 --db higherselfnetwork --out $BACKUP_DIR && echo 'Creating Redis backup...' && redis-cli bgsave && sleep 5 && cp /var/lib/redis/dump.rdb $BACKUP_DIR/redis-dump.rdb && echo \"All backups completed in: $BACKUP_DIR\"",
+      "tags": ["database", "backup", "maintenance", "all"]
+    },
+    {
+      "id": "database-security-check",
+      "name": "Database Security Check",
+      "description": "Check database security configurations",
+      "command": "echo '=== Database Security Check ===' && echo 'MongoDB Auth:' && mongosh mongodb://localhost:27017/admin --eval 'db.runCommand({getParameter: 1, authenticationMechanisms: 1})' --quiet && echo '\\nRedis Config:' && redis-cli config get '*auth*' && redis-cli config get 'requirepass'",
+      "tags": ["database", "security", "configuration"]
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "MongoDB Operations",
+      "description": "MongoDB database management and administration",
+      "snippets": [
+        "mongodb-status-check",
+        "mongodb-database-stats",
+        "mongodb-list-collections",
+        "mongodb-backup-database",
+        "mongodb-restore-database"
+      ]
+    },
+    {
+      "name": "MongoDB Performance",
+      "description": "MongoDB performance monitoring and optimization",
+      "snippets": [
+        "mongodb-index-analysis",
+        "mongodb-slow-queries",
+        "mongodb-user-management"
+      ]
+    },
+    {
+      "name": "Redis Operations",
+      "description": "Redis cache management and administration",
+      "snippets": [
+        "redis-status-check",
+        "redis-memory-usage",
+        "redis-key-analysis",
+        "redis-backup-data",
+        "redis-flush-cache"
+      ]
+    },
+    {
+      "name": "Redis Monitoring",
+      "description": "Redis performance monitoring and debugging",
+      "snippets": [
+        "redis-monitor-commands",
+        "redis-slow-log",
+        "redis-client-connections"
+      ]
+    },
+    {
+      "name": "Database Maintenance",
+      "description": "General database maintenance and operations",
+      "snippets": [
+        "database-connection-test",
+        "database-performance-check",
+        "database-backup-all",
+        "database-security-check"
+      ]
+    }
+  ]
+}

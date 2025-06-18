@@ -1,0 +1,120 @@
+{
+  "hosts": [
+    {
+      "id": "higherself-local-docker",
+      "name": "HigherSelf Local Docker Services",
+      "address": "localhost",
+      "group": "Development/Local Services",
+      "tags": ["development", "docker", "local", "windsurf-agent"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "developer",
+          "key": "development-key"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Windsurf Agent API",
+          "local_port": 8000,
+          "remote_host": "localhost",
+          "remote_port": 8000,
+          "description": "Main HigherSelf Network Server API"
+        },
+        {
+          "name": "MongoDB Development",
+          "local_port": 27017,
+          "remote_host": "localhost",
+          "remote_port": 27017,
+          "description": "Development MongoDB instance"
+        },
+        {
+          "name": "Redis Development",
+          "local_port": 6379,
+          "remote_host": "localhost",
+          "remote_port": 6379,
+          "description": "Development Redis cache"
+        },
+        {
+          "name": "Grafana Dashboard",
+          "local_port": 3000,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "description": "Development Grafana monitoring"
+        },
+        {
+          "name": "Prometheus Metrics",
+          "local_port": 9090,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "description": "Development Prometheus metrics"
+        },
+        {
+          "name": "Consul Service Discovery",
+          "local_port": 8500,
+          "remote_host": "localhost",
+          "remote_port": 8500,
+          "description": "Development Consul service discovery"
+        }
+      ],
+      "environment_variables": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "DEBUG",
+        "TESTING_MODE": "true"
+      },
+      "startup_snippets": [
+        "docker-compose-health-check",
+        "development-status-check"
+      ]
+    },
+    {
+      "id": "higherself-dev-terraform",
+      "name": "HigherSelf Terraform Development",
+      "address": "localhost",
+      "group": "Development/Infrastructure",
+      "tags": ["development", "terraform", "terragrunt", "infrastructure"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "developer",
+          "key": "development-key"
+        }
+      },
+      "working_directory": "/path/to/higherself/terraform",
+      "environment_variables": {
+        "TF_ENV": "development",
+        "AWS_PROFILE": "higherself-dev",
+        "TERRAGRUNT_WORKING_DIR": "terragrunt/environments/development"
+      },
+      "startup_snippets": [
+        "terraform-init-development",
+        "aws-credentials-check"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "name": "Development",
+      "description": "Local development environment for HigherSelf Network Server",
+      "color": "#28a745",
+      "icon": "development",
+      "default_settings": {
+        "ssh": {
+          "compression": true,
+          "keep_alive": 60,
+          "server_alive_interval": 30
+        }
+      }
+    },
+    {
+      "name": "Development/Local Services",
+      "description": "Local Docker services and applications",
+      "parent": "Development"
+    },
+    {
+      "name": "Development/Infrastructure",
+      "description": "Infrastructure management and deployment tools",
+      "parent": "Development"
+    }
+  ]
+}

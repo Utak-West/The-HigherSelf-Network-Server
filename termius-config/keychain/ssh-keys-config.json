@@ -1,0 +1,326 @@
+{
+  "ssh_keys": [
+    {
+      "id": "development-key",
+      "name": "HigherSelf Development Key",
+      "description": "SSH key for local development environment access",
+      "type": "ed25519",
+      "environment": "development",
+      "security_level": "standard",
+      "usage": [
+        "local-docker-access",
+        "development-services",
+        "terraform-development"
+      ],
+      "key_source": {
+        "type": "local_file",
+        "path": "~/.ssh/higherself_dev_ed25519",
+        "public_key_path": "~/.ssh/higherself_dev_ed25519.pub"
+      },
+      "passphrase_required": false,
+      "auto_load": true,
+      "tags": ["development", "local", "docker"]
+    },
+    {
+      "id": "staging-deploy-key",
+      "name": "HigherSelf Staging Deploy Key",
+      "description": "SSH key for staging environment deployment and access",
+      "type": "ed25519",
+      "environment": "staging",
+      "security_level": "enhanced",
+      "usage": [
+        "staging-application-servers",
+        "staging-deployment",
+        "staging-monitoring"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/staging/ssh-keys/deploy-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-staging"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 3600,
+      "tags": ["staging", "deployment", "aws-managed"]
+    },
+    {
+      "id": "staging-bastion-key",
+      "name": "HigherSelf Staging Bastion Key",
+      "description": "SSH key for staging bastion host access",
+      "type": "ed25519",
+      "environment": "staging",
+      "security_level": "enhanced",
+      "usage": [
+        "staging-bastion-access",
+        "jump-host-authentication"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/staging/ssh-keys/bastion-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-staging"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 1800,
+      "tags": ["staging", "bastion", "jump-host", "aws-managed"]
+    },
+    {
+      "id": "staging-monitor-key",
+      "name": "HigherSelf Staging Monitor Key",
+      "description": "SSH key for staging monitoring systems access",
+      "type": "ed25519",
+      "environment": "staging",
+      "security_level": "enhanced",
+      "usage": [
+        "staging-monitoring-access",
+        "grafana-prometheus-access"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/staging/ssh-keys/monitor-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-staging"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 3600,
+      "tags": ["staging", "monitoring", "aws-managed"]
+    },
+    {
+      "id": "staging-terraform-key",
+      "name": "HigherSelf Staging Terraform Key",
+      "description": "SSH key for staging infrastructure management",
+      "type": "ed25519",
+      "environment": "staging",
+      "security_level": "enhanced",
+      "usage": [
+        "staging-terraform-access",
+        "infrastructure-deployment"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/staging/ssh-keys/terraform-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-staging"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 7200,
+      "tags": ["staging", "terraform", "infrastructure", "aws-managed"]
+    },
+    {
+      "id": "production-deploy-key",
+      "name": "HigherSelf Production Deploy Key",
+      "description": "SSH key for production environment deployment - CRITICAL ACCESS",
+      "type": "ed25519",
+      "environment": "production",
+      "security_level": "maximum",
+      "usage": [
+        "production-application-servers",
+        "production-deployment",
+        "emergency-access"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-keys/deploy-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 1800,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "tags": ["production", "deployment", "critical", "aws-managed"]
+    },
+    {
+      "id": "production-bastion-key",
+      "name": "HigherSelf Production Bastion Key",
+      "description": "SSH key for production bastion host access - MAXIMUM SECURITY",
+      "type": "ed25519",
+      "environment": "production",
+      "security_level": "maximum",
+      "usage": [
+        "production-bastion-access",
+        "production-jump-host"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-keys/bastion-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 900,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "session_recording": true,
+      "tags": ["production", "bastion", "jump-host", "critical", "aws-managed"]
+    },
+    {
+      "id": "production-db-key",
+      "name": "HigherSelf Production Database Key",
+      "description": "SSH key for production database access - RESTRICTED ACCESS",
+      "type": "ed25519",
+      "environment": "production",
+      "security_level": "maximum",
+      "usage": [
+        "production-database-access",
+        "mongodb-administration",
+        "emergency-database-access"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-keys/database-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 600,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "session_recording": true,
+      "restricted_access": true,
+      "tags": ["production", "database", "mongodb", "critical", "restricted", "aws-managed"]
+    },
+    {
+      "id": "production-cache-key",
+      "name": "HigherSelf Production Cache Key",
+      "description": "SSH key for production Redis cache access",
+      "type": "ed25519",
+      "environment": "production",
+      "security_level": "high",
+      "usage": [
+        "production-cache-access",
+        "redis-administration"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-keys/cache-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 1800,
+      "mfa_required": true,
+      "audit_logging": true,
+      "tags": ["production", "cache", "redis", "aws-managed"]
+    },
+    {
+      "id": "production-monitor-key",
+      "name": "HigherSelf Production Monitor Key",
+      "description": "SSH key for production monitoring systems access",
+      "type": "ed25519",
+      "environment": "production",
+      "security_level": "high",
+      "usage": [
+        "production-monitoring-access",
+        "grafana-prometheus-access"
+      ],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-keys/monitor-key",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "passphrase_required": true,
+      "auto_load": false,
+      "session_timeout": 3600,
+      "audit_logging": true,
+      "tags": ["production", "monitoring", "aws-managed"]
+    }
+  ],
+  "ssh_certificates": [
+    {
+      "id": "production-ssh-cert",
+      "name": "HigherSelf Production SSH Certificate",
+      "description": "SSH certificate for production environment access",
+      "environment": "production",
+      "certificate_authority": "higherself-production-ca",
+      "validity_period": "8h",
+      "principals": ["deploy", "emergency"],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-certificates/user-cert",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "auto_renewal": true,
+      "mfa_required": true,
+      "audit_logging": true,
+      "tags": ["production", "certificate", "aws-managed"]
+    },
+    {
+      "id": "production-bastion-cert",
+      "name": "HigherSelf Production Bastion Certificate",
+      "description": "SSH certificate for production bastion host access",
+      "environment": "production",
+      "certificate_authority": "higherself-production-ca",
+      "validity_period": "4h",
+      "principals": ["bastion-user"],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-certificates/bastion-cert",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "auto_renewal": true,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "session_recording": true,
+      "tags": ["production", "bastion", "certificate", "critical", "aws-managed"]
+    },
+    {
+      "id": "production-db-cert",
+      "name": "HigherSelf Production Database Certificate",
+      "description": "SSH certificate for production database access",
+      "environment": "production",
+      "certificate_authority": "higherself-production-ca",
+      "validity_period": "2h",
+      "principals": ["db-admin"],
+      "key_source": {
+        "type": "aws_secrets_manager",
+        "secret_name": "higherself/production/ssh-certificates/database-cert",
+        "region": "us-east-1",
+        "aws_profile": "higherself-production"
+      },
+      "auto_renewal": true,
+      "mfa_required": true,
+      "approval_required": true,
+      "audit_logging": true,
+      "session_recording": true,
+      "restricted_access": true,
+      "tags": ["production", "database", "certificate", "critical", "restricted", "aws-managed"]
+    }
+  ],
+  "aws_integration": {
+    "secrets_manager": {
+      "enabled": true,
+      "regions": ["us-east-1", "us-west-2"],
+      "profiles": {
+        "higherself-staging": {
+          "role_arn": "arn:aws:iam::STAGING-ACCOUNT:role/TermiusSecretsAccess",
+          "external_id": "higherself-staging-termius"
+        },
+        "higherself-production": {
+          "role_arn": "arn:aws:iam::PRODUCTION-ACCOUNT:role/TermiusSecretsAccess",
+          "external_id": "higherself-production-termius"
+        }
+      },
+      "auto_rotation": {
+        "enabled": true,
+        "rotation_schedule": "30d",
+        "notification_topic": "arn:aws:sns:us-east-1:ACCOUNT:higherself-key-rotation"
+      }
+    }
+  }
+}

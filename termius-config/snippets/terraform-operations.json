@@ -1,0 +1,271 @@
+{
+  "snippet_package": {
+    "name": "HigherSelf Terraform Operations",
+    "description": "Terraform and Terragrunt infrastructure management snippets",
+    "version": "1.0.0",
+    "environment": "multi",
+    "tags": ["terraform", "terragrunt", "infrastructure", "deployment"]
+  },
+  "snippets": [
+    {
+      "id": "terraform-init-dev",
+      "name": "Initialize Development Environment",
+      "description": "Initialize Terraform for development environment",
+      "command": "cd terraform && ./init.sh development && terraform workspace select development",
+      "working_directory": "/path/to/higherself",
+      "environment_variables": {
+        "TF_ENV": "development",
+        "AWS_PROFILE": "higherself-dev"
+      },
+      "tags": ["terraform", "development", "initialization"]
+    },
+    {
+      "id": "terraform-plan-dev",
+      "name": "Plan Development Deployment",
+      "description": "Create Terraform plan for development environment",
+      "command": "cd terraform && terraform plan -var-file='environments/development.tfvars' -out=dev.tfplan",
+      "working_directory": "/path/to/higherself",
+      "environment_variables": {
+        "TF_ENV": "development"
+      },
+      "tags": ["terraform", "development", "planning"]
+    },
+    {
+      "id": "terraform-apply-dev",
+      "name": "Apply Development Deployment",
+      "description": "Apply Terraform changes for development environment",
+      "command": "cd terraform && terraform apply dev.tfplan && terraform output",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "development", "deployment"]
+    },
+    {
+      "id": "terraform-destroy-dev",
+      "name": "Destroy Development Environment",
+      "description": "Destroy development infrastructure (with confirmation)",
+      "command": "cd terraform && echo 'WARNING: This will destroy the development environment!' && read -p 'Type YES to continue: ' confirm && [ \"$confirm\" = \"YES\" ] && terraform destroy -var-file='environments/development.tfvars' -auto-approve",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "development", "destroy"]
+    },
+    {
+      "id": "terragrunt-init-staging",
+      "name": "Initialize Staging with Terragrunt",
+      "description": "Initialize Terragrunt for staging environment",
+      "command": "cd terragrunt/environments/staging && terragrunt init",
+      "working_directory": "/path/to/higherself",
+      "environment_variables": {
+        "TF_ENV": "staging",
+        "AWS_PROFILE": "higherself-staging"
+      },
+      "tags": ["terragrunt", "staging", "initialization"]
+    },
+    {
+      "id": "terragrunt-plan-staging",
+      "name": "Plan Staging Deployment",
+      "description": "Create Terragrunt plan for staging environment",
+      "command": "./terragrunt-deploy.sh staging plan",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terragrunt", "staging", "planning"]
+    },
+    {
+      "id": "terragrunt-apply-staging",
+      "name": "Apply Staging Deployment",
+      "description": "Apply Terragrunt changes for staging environment",
+      "command": "./terragrunt-deploy.sh staging apply",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terragrunt", "staging", "deployment"]
+    },
+    {
+      "id": "terragrunt-plan-production",
+      "name": "Plan Production Deployment",
+      "description": "Create Terragrunt plan for production environment - REQUIRES APPROVAL",
+      "command": "echo 'PRODUCTION DEPLOYMENT PLAN' && echo 'This requires approval and MFA' && ./terragrunt-deploy.sh production plan",
+      "working_directory": "/path/to/higherself",
+      "environment_variables": {
+        "TF_ENV": "production",
+        "AWS_PROFILE": "higherself-production"
+      },
+      "security": {
+        "approval_required": true,
+        "mfa_required": true,
+        "audit_logging": true
+      },
+      "tags": ["terragrunt", "production", "planning", "critical"]
+    },
+    {
+      "id": "terragrunt-apply-production",
+      "name": "Apply Production Deployment",
+      "description": "Apply Terragrunt changes for production environment - CRITICAL OPERATION",
+      "command": "echo 'CRITICAL: PRODUCTION DEPLOYMENT' && echo 'Ensure plan has been reviewed and approved' && read -p 'Enter approval ticket number: ' ticket && echo 'Ticket: $ticket' && ./terragrunt-deploy.sh production apply",
+      "working_directory": "/path/to/higherself",
+      "security": {
+        "approval_required": true,
+        "mfa_required": true,
+        "audit_logging": true,
+        "session_recording": true
+      },
+      "tags": ["terragrunt", "production", "deployment", "critical"]
+    },
+    {
+      "id": "terraform-validate",
+      "name": "Validate Terraform Configuration",
+      "description": "Validate Terraform configuration files",
+      "command": "cd terraform && terraform validate && terraform fmt -check=true",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "validation", "formatting"]
+    },
+    {
+      "id": "terraform-format",
+      "name": "Format Terraform Files",
+      "description": "Format Terraform configuration files",
+      "command": "cd terraform && terraform fmt -recursive",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "formatting", "maintenance"]
+    },
+    {
+      "id": "terraform-state-list",
+      "name": "List Terraform State",
+      "description": "List all resources in Terraform state",
+      "command": "cd terraform && terraform state list",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "state", "resources"]
+    },
+    {
+      "id": "terraform-output",
+      "name": "Show Terraform Outputs",
+      "description": "Display Terraform output values",
+      "command": "cd terraform && terraform output -json | jq '.'",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "output", "information"]
+    },
+    {
+      "id": "aws-credentials-check",
+      "name": "Check AWS Credentials",
+      "description": "Verify AWS credentials and permissions",
+      "command": "aws sts get-caller-identity && aws sts get-session-token --duration-seconds 3600",
+      "tags": ["aws", "credentials", "verification"]
+    },
+    {
+      "id": "aws-secrets-list",
+      "name": "List AWS Secrets",
+      "description": "List HigherSelf secrets in AWS Secrets Manager",
+      "command": "aws secretsmanager list-secrets --filters Key=name,Values=higherself/ --query 'SecretList[].Name' --output table",
+      "tags": ["aws", "secrets", "management"]
+    },
+    {
+      "id": "terraform-import-resource",
+      "name": "Import Existing Resource",
+      "description": "Import an existing AWS resource into Terraform state",
+      "command": "echo 'Enter resource address (e.g., aws_instance.example):' && read resource && echo 'Enter resource ID:' && read id && cd terraform && terraform import $resource $id",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "import", "resources"]
+    },
+    {
+      "id": "terraform-refresh",
+      "name": "Refresh Terraform State",
+      "description": "Refresh Terraform state to match real infrastructure",
+      "command": "cd terraform && terraform refresh -var-file='environments/${TF_ENV:-development}.tfvars'",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "refresh", "state"]
+    },
+    {
+      "id": "terragrunt-run-all-plan",
+      "name": "Terragrunt Run All Plan",
+      "description": "Run plan for all Terragrunt modules",
+      "command": "cd terragrunt/environments/${TF_ENV:-staging} && terragrunt run-all plan",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terragrunt", "run-all", "planning"]
+    },
+    {
+      "id": "terragrunt-run-all-apply",
+      "name": "Terragrunt Run All Apply",
+      "description": "Apply all Terragrunt modules",
+      "command": "cd terragrunt/environments/${TF_ENV:-staging} && terragrunt run-all apply",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terragrunt", "run-all", "deployment"]
+    },
+    {
+      "id": "terraform-cost-estimate",
+      "name": "Estimate Infrastructure Costs",
+      "description": "Estimate costs for Terraform plan (requires infracost)",
+      "command": "cd terraform && infracost breakdown --path . --terraform-var-file environments/${TF_ENV:-development}.tfvars",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "cost", "estimation"]
+    },
+    {
+      "id": "terraform-security-scan",
+      "name": "Security Scan Terraform",
+      "description": "Run security scan on Terraform configuration (requires tfsec)",
+      "command": "cd terraform && tfsec . --format json | jq '.results[] | select(.severity == \"HIGH\" or .severity == \"CRITICAL\")'",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "security", "scanning"]
+    },
+    {
+      "id": "terraform-backup-state",
+      "name": "Backup Terraform State",
+      "description": "Create backup of Terraform state file",
+      "command": "cd terraform && mkdir -p backups && terraform state pull > backups/terraform-state-$(date +%Y%m%d-%H%M%S).json",
+      "working_directory": "/path/to/higherself",
+      "tags": ["terraform", "backup", "state"]
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "Development Operations",
+      "description": "Terraform operations for development environment",
+      "snippets": [
+        "terraform-init-dev",
+        "terraform-plan-dev",
+        "terraform-apply-dev",
+        "terraform-destroy-dev"
+      ]
+    },
+    {
+      "name": "Staging Operations",
+      "description": "Terragrunt operations for staging environment",
+      "snippets": [
+        "terragrunt-init-staging",
+        "terragrunt-plan-staging",
+        "terragrunt-apply-staging"
+      ]
+    },
+    {
+      "name": "Production Operations",
+      "description": "Critical production infrastructure operations",
+      "snippets": [
+        "terragrunt-plan-production",
+        "terragrunt-apply-production"
+      ]
+    },
+    {
+      "name": "Maintenance & Validation",
+      "description": "Infrastructure maintenance and validation",
+      "snippets": [
+        "terraform-validate",
+        "terraform-format",
+        "terraform-state-list",
+        "terraform-output",
+        "terraform-refresh"
+      ]
+    },
+    {
+      "name": "AWS Integration",
+      "description": "AWS-specific operations and checks",
+      "snippets": [
+        "aws-credentials-check",
+        "aws-secrets-list"
+      ]
+    },
+    {
+      "name": "Advanced Operations",
+      "description": "Advanced Terraform and Terragrunt operations",
+      "snippets": [
+        "terraform-import-resource",
+        "terragrunt-run-all-plan",
+        "terragrunt-run-all-apply",
+        "terraform-cost-estimate",
+        "terraform-security-scan",
+        "terraform-backup-state"
+      ]
+    }
+  ]
+}

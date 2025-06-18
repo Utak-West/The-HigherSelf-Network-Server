@@ -1,0 +1,310 @@
+{
+  "known_hosts_configuration": {
+    "name": "HigherSelf Network Server Known Hosts",
+    "description": "Secure host verification configuration for all HigherSelf environments",
+    "version": "1.0.0",
+    "last_updated": "2025-01-18",
+    "security_policy": {
+      "strict_host_key_checking": true,
+      "verify_host_key_dns": true,
+      "hash_known_hosts": true,
+      "auto_add_new_hosts": false,
+      "require_manual_verification": true
+    }
+  },
+  "known_hosts": [
+    {
+      "id": "localhost-dev",
+      "hostname": "localhost",
+      "environment": "development",
+      "ip_addresses": ["127.0.0.1", "::1"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...", 
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "development-team",
+      "verification_date": "2025-01-18",
+      "notes": "Local development environment",
+      "tags": ["development", "local", "docker"]
+    },
+    {
+      "id": "staging-bastion",
+      "hostname": "bastion-staging.higherself.com",
+      "environment": "staging",
+      "ip_addresses": ["10.0.1.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "devops-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "out-of-band",
+      "notes": "Staging environment bastion host - jump server",
+      "security_level": "enhanced",
+      "tags": ["staging", "bastion", "jump-host"]
+    },
+    {
+      "id": "staging-app-server",
+      "hostname": "staging.higherself.internal",
+      "environment": "staging",
+      "ip_addresses": ["10.0.2.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "devops-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Staging application server",
+      "accessed_via": "staging-bastion",
+      "tags": ["staging", "application", "windsurf-agent"]
+    },
+    {
+      "id": "staging-db-server",
+      "hostname": "staging-db.higherself.internal",
+      "environment": "staging",
+      "ip_addresses": ["10.0.3.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "devops-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Staging MongoDB database server",
+      "accessed_via": "staging-bastion",
+      "tags": ["staging", "database", "mongodb"]
+    },
+    {
+      "id": "staging-cache-server",
+      "hostname": "staging-cache.higherself.internal",
+      "environment": "staging",
+      "ip_addresses": ["10.0.3.11"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "devops-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Staging Redis cache server",
+      "accessed_via": "staging-bastion",
+      "tags": ["staging", "cache", "redis"]
+    },
+    {
+      "id": "staging-monitoring",
+      "hostname": "monitoring-staging.higherself.internal",
+      "environment": "staging",
+      "ip_addresses": ["10.0.4.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "devops-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Staging monitoring server (Grafana, Prometheus)",
+      "accessed_via": "staging-bastion",
+      "tags": ["staging", "monitoring", "grafana", "prometheus"]
+    },
+    {
+      "id": "production-bastion",
+      "hostname": "bastion.higherself.com",
+      "environment": "production",
+      "ip_addresses": ["203.0.113.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "in-person-verification",
+      "notes": "Production bastion host - CRITICAL INFRASTRUCTURE",
+      "security_level": "maximum",
+      "certificate_authority": "higherself-production-ca",
+      "monitoring": {
+        "connection_logging": true,
+        "session_recording": true,
+        "alert_on_access": true
+      },
+      "tags": ["production", "bastion", "critical", "jump-host"]
+    },
+    {
+      "id": "production-app-01",
+      "hostname": "app-01.higherself.com",
+      "environment": "production",
+      "ip_addresses": ["10.1.2.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Production application server 01",
+      "accessed_via": "production-bastion",
+      "security_level": "maximum",
+      "monitoring": {
+        "connection_logging": true,
+        "session_recording": true
+      },
+      "tags": ["production", "application", "windsurf-agent", "critical"]
+    },
+    {
+      "id": "production-app-02",
+      "hostname": "app-02.higherself.com",
+      "environment": "production",
+      "ip_addresses": ["10.1.2.11"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Production application server 02",
+      "accessed_via": "production-bastion",
+      "security_level": "maximum",
+      "monitoring": {
+        "connection_logging": true,
+        "session_recording": true
+      },
+      "tags": ["production", "application", "windsurf-agent", "critical"]
+    },
+    {
+      "id": "production-db-primary",
+      "hostname": "db-primary.higherself.internal",
+      "environment": "production",
+      "ip_addresses": ["10.1.3.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Production MongoDB primary database - RESTRICTED ACCESS",
+      "accessed_via": "production-bastion",
+      "security_level": "maximum",
+      "access_restrictions": {
+        "emergency_only": true,
+        "approval_required": true,
+        "mfa_required": true
+      },
+      "monitoring": {
+        "connection_logging": true,
+        "session_recording": true,
+        "alert_on_access": true,
+        "command_logging": true
+      },
+      "tags": ["production", "database", "mongodb", "critical", "restricted"]
+    },
+    {
+      "id": "production-cache",
+      "hostname": "cache.higherself.internal",
+      "environment": "production",
+      "ip_addresses": ["10.1.3.11"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Production Redis cache server",
+      "accessed_via": "production-bastion",
+      "security_level": "high",
+      "monitoring": {
+        "connection_logging": true,
+        "session_recording": true
+      },
+      "tags": ["production", "cache", "redis", "critical"]
+    },
+    {
+      "id": "production-monitoring",
+      "hostname": "monitoring.higherself.internal",
+      "environment": "production",
+      "ip_addresses": ["10.1.4.10"],
+      "host_key_type": "ssh-ed25519",
+      "host_key": "AAAAC3NzaC1lZDI1NTE5AAAAI...",
+      "fingerprint_sha256": "SHA256:...",
+      "fingerprint_md5": "MD5:...",
+      "verified_by": "security-team",
+      "verification_date": "2025-01-18",
+      "verification_method": "bastion-verified",
+      "notes": "Production monitoring server (Grafana, Prometheus)",
+      "accessed_via": "production-bastion",
+      "security_level": "high",
+      "monitoring": {
+        "connection_logging": true
+      },
+      "tags": ["production", "monitoring", "grafana", "prometheus"]
+    }
+  ],
+  "verification_procedures": {
+    "development": {
+      "required_verification": false,
+      "auto_accept": true,
+      "verification_method": "fingerprint-comparison",
+      "notes": "Development environment allows auto-acceptance for convenience"
+    },
+    "staging": {
+      "required_verification": true,
+      "auto_accept": false,
+      "verification_method": "out-of-band-verification",
+      "verification_team": "devops-team",
+      "notes": "Staging requires manual verification but can be done by DevOps team"
+    },
+    "production": {
+      "required_verification": true,
+      "auto_accept": false,
+      "verification_method": "in-person-verification",
+      "verification_team": "security-team",
+      "dual_verification": true,
+      "documentation_required": true,
+      "notes": "Production requires in-person verification by security team with dual approval"
+    }
+  },
+  "security_policies": {
+    "key_rotation": {
+      "enabled": true,
+      "rotation_schedule": "quarterly",
+      "notification_period": "30d",
+      "emergency_rotation": true
+    },
+    "monitoring": {
+      "log_all_connections": true,
+      "alert_on_new_hosts": true,
+      "alert_on_key_changes": true,
+      "session_recording": {
+        "production": true,
+        "staging": true,
+        "development": false
+      }
+    },
+    "compliance": {
+      "audit_trail": true,
+      "retention_period": "7y",
+      "encryption_at_rest": true,
+      "backup_verification": true
+    }
+  },
+  "integration": {
+    "aws_secrets_manager": {
+      "enabled": true,
+      "store_host_keys": true,
+      "auto_sync": true,
+      "secret_prefix": "higherself/known-hosts/"
+    },
+    "vault_sync": {
+      "enabled": true,
+      "sync_schedule": "daily",
+      "conflict_resolution": "manual-review"
+    },
+    "monitoring_integration": {
+      "grafana_dashboard": true,
+      "prometheus_metrics": true,
+      "alert_manager": true
+    }
+  }
+}

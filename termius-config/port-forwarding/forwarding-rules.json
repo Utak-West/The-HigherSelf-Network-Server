@@ -1,0 +1,367 @@
+{
+  "port_forwarding_rules": [
+    {
+      "id": "dev-full-stack",
+      "name": "Development Full Stack Access",
+      "description": "Complete port forwarding for local development environment",
+      "environment": "development",
+      "host": "higherself-local-docker",
+      "rules": [
+        {
+          "name": "Windsurf Agent API",
+          "local_port": 8000,
+          "remote_host": "localhost",
+          "remote_port": 8000,
+          "protocol": "tcp",
+          "auto_start": true,
+          "description": "Main HigherSelf Network Server API endpoint"
+        },
+        {
+          "name": "MongoDB Development",
+          "local_port": 27017,
+          "remote_host": "localhost",
+          "remote_port": 27017,
+          "protocol": "tcp",
+          "auto_start": true,
+          "description": "Development MongoDB database access"
+        },
+        {
+          "name": "Redis Development",
+          "local_port": 6379,
+          "remote_host": "localhost",
+          "remote_port": 6379,
+          "protocol": "tcp",
+          "auto_start": true,
+          "description": "Development Redis cache access"
+        },
+        {
+          "name": "Grafana Development",
+          "local_port": 3000,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "protocol": "tcp",
+          "auto_start": false,
+          "description": "Development Grafana monitoring dashboard"
+        },
+        {
+          "name": "Prometheus Development",
+          "local_port": 9090,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "protocol": "tcp",
+          "auto_start": false,
+          "description": "Development Prometheus metrics collection"
+        },
+        {
+          "name": "Consul Development",
+          "local_port": 8500,
+          "remote_host": "localhost",
+          "remote_port": 8500,
+          "protocol": "tcp",
+          "auto_start": false,
+          "description": "Development Consul service discovery"
+        }
+      ],
+      "tags": ["development", "full-stack", "local"]
+    },
+    {
+      "id": "staging-database-access",
+      "name": "Staging Database Access",
+      "description": "Secure database access for staging environment",
+      "environment": "staging",
+      "host": "higherself-staging-app",
+      "rules": [
+        {
+          "name": "Staging MongoDB",
+          "local_port": 27018,
+          "remote_host": "staging-db.higherself.internal",
+          "remote_port": 27017,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Staging MongoDB database - requires VPN"
+        },
+        {
+          "name": "Staging Redis",
+          "local_port": 6380,
+          "remote_host": "staging-cache.higherself.internal",
+          "remote_port": 6379,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Staging Redis cache - requires VPN"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true
+      },
+      "tags": ["staging", "database", "secure"]
+    },
+    {
+      "id": "staging-monitoring-access",
+      "name": "Staging Monitoring Access",
+      "description": "Monitoring dashboard access for staging environment",
+      "environment": "staging",
+      "host": "higherself-staging-monitoring",
+      "rules": [
+        {
+          "name": "Staging Grafana",
+          "local_port": 3001,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Staging Grafana monitoring dashboard"
+        },
+        {
+          "name": "Staging Prometheus",
+          "local_port": 9091,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Staging Prometheus metrics collection"
+        },
+        {
+          "name": "Staging Consul",
+          "local_port": 8501,
+          "remote_host": "localhost",
+          "remote_port": 8500,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Staging Consul service discovery"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true
+      },
+      "tags": ["staging", "monitoring", "grafana", "prometheus"]
+    },
+    {
+      "id": "production-emergency-database",
+      "name": "Production Emergency Database Access",
+      "description": "Emergency database access for production - RESTRICTED",
+      "environment": "production",
+      "host": "higherself-prod-db-primary",
+      "rules": [
+        {
+          "name": "Production MongoDB Primary - EMERGENCY",
+          "local_port": 27019,
+          "remote_host": "localhost",
+          "remote_port": 27017,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Production MongoDB primary - EMERGENCY ACCESS ONLY"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "approval_required": true,
+        "session_recording": true,
+        "access_window": "emergency_only",
+        "max_session_duration": 1800
+      },
+      "restrictions": {
+        "allowed_commands": ["show", "find", "explain", "stats"],
+        "blocked_commands": ["drop", "delete", "remove", "update", "insert"],
+        "read_only": true
+      },
+      "tags": ["production", "database", "emergency", "restricted", "critical"]
+    },
+    {
+      "id": "production-cache-readonly",
+      "name": "Production Cache Read-Only Access",
+      "description": "Read-only access to production Redis cache",
+      "environment": "production",
+      "host": "higherself-prod-cache",
+      "rules": [
+        {
+          "name": "Production Redis Cache - READ ONLY",
+          "local_port": 6381,
+          "remote_host": "localhost",
+          "remote_port": 6379,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Production Redis cache - READ-ONLY ACCESS"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "max_session_duration": 3600
+      },
+      "restrictions": {
+        "read_only": true,
+        "allowed_commands": ["get", "keys", "info", "monitor"],
+        "blocked_commands": ["set", "del", "flushdb", "flushall"]
+      },
+      "tags": ["production", "cache", "redis", "read-only"]
+    },
+    {
+      "id": "production-monitoring-access",
+      "name": "Production Monitoring Access",
+      "description": "Monitoring dashboard access for production environment",
+      "environment": "production",
+      "host": "higherself-prod-monitoring",
+      "rules": [
+        {
+          "name": "Production Grafana",
+          "local_port": 3002,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Production Grafana monitoring dashboard"
+        },
+        {
+          "name": "Production Prometheus",
+          "local_port": 9092,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "protocol": "tcp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "Production Prometheus metrics collection"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "max_session_duration": 7200
+      },
+      "tags": ["production", "monitoring", "grafana", "prometheus"]
+    },
+    {
+      "id": "terraform-socks-proxy",
+      "name": "Terraform SOCKS Proxy",
+      "description": "SOCKS proxy for secure Terraform operations",
+      "environment": "multi",
+      "rules": [
+        {
+          "name": "Staging Terraform SOCKS",
+          "local_port": 1080,
+          "remote_host": "staging-terraform.higherself.internal",
+          "remote_port": 22,
+          "protocol": "socks5",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "SOCKS5 proxy for staging Terraform operations"
+        },
+        {
+          "name": "Production Terraform SOCKS",
+          "local_port": 1081,
+          "remote_host": "production-terraform.higherself.internal",
+          "remote_port": 22,
+          "protocol": "socks5",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "SOCKS5 proxy for production Terraform operations"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true
+      },
+      "tags": ["terraform", "socks", "proxy", "infrastructure"]
+    },
+    {
+      "id": "sftp-file-transfer",
+      "name": "SFTP File Transfer Rules",
+      "description": "Secure file transfer configurations",
+      "environment": "multi",
+      "rules": [
+        {
+          "name": "Staging SFTP",
+          "local_port": 2222,
+          "remote_host": "staging.higherself.internal",
+          "remote_port": 22,
+          "protocol": "sftp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "SFTP access to staging environment"
+        },
+        {
+          "name": "Production SFTP - RESTRICTED",
+          "local_port": 2223,
+          "remote_host": "production.higherself.internal",
+          "remote_port": 22,
+          "protocol": "sftp",
+          "auto_start": false,
+          "bind_address": "127.0.0.1",
+          "description": "SFTP access to production environment - RESTRICTED"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "file_transfer_logging": true
+      },
+      "restrictions": {
+        "allowed_directories": ["/opt/higherself/uploads", "/tmp/transfers"],
+        "blocked_directories": ["/etc", "/var/log", "/home"],
+        "max_file_size": "100MB",
+        "allowed_extensions": [".tar.gz", ".zip", ".json", ".yaml", ".txt"]
+      },
+      "tags": ["sftp", "file-transfer", "secure"]
+    }
+  ],
+  "rule_groups": [
+    {
+      "name": "Development Rules",
+      "description": "Port forwarding rules for development environment",
+      "rules": ["dev-full-stack"],
+      "auto_enable": true,
+      "tags": ["development"]
+    },
+    {
+      "name": "Staging Rules",
+      "description": "Port forwarding rules for staging environment",
+      "rules": ["staging-database-access", "staging-monitoring-access"],
+      "auto_enable": false,
+      "tags": ["staging"]
+    },
+    {
+      "name": "Production Emergency Rules",
+      "description": "Emergency access rules for production environment",
+      "rules": ["production-emergency-database", "production-cache-readonly", "production-monitoring-access"],
+      "auto_enable": false,
+      "security": {
+        "approval_required": true,
+        "emergency_only": true
+      },
+      "tags": ["production", "emergency"]
+    },
+    {
+      "name": "Infrastructure Rules",
+      "description": "Infrastructure management and deployment rules",
+      "rules": ["terraform-socks-proxy", "sftp-file-transfer"],
+      "auto_enable": false,
+      "tags": ["infrastructure", "terraform"]
+    }
+  ],
+  "global_settings": {
+    "default_bind_address": "127.0.0.1",
+    "connection_timeout": 30,
+    "keep_alive_interval": 60,
+    "max_concurrent_forwards": 10,
+    "auto_reconnect": true,
+    "logging": {
+      "enabled": true,
+      "log_level": "info",
+      "log_file": "/var/log/termius/port-forwarding.log"
+    }
+  }
+}

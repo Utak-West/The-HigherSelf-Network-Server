@@ -1,0 +1,360 @@
+{
+  "session_logging_configuration": {
+    "name": "HigherSelf Network Server Session Logging",
+    "description": "Enterprise-grade session logging and audit configuration",
+    "version": "1.0.0",
+    "compliance_standards": ["SOC2", "ISO27001", "PCI-DSS"],
+    "last_updated": "2025-01-18"
+  },
+  "logging_policies": {
+    "development": {
+      "enabled": true,
+      "log_level": "info",
+      "session_recording": false,
+      "command_logging": true,
+      "file_transfer_logging": true,
+      "retention_period": "30d",
+      "encryption": false,
+      "real_time_monitoring": false,
+      "notes": "Basic logging for development troubleshooting"
+    },
+    "staging": {
+      "enabled": true,
+      "log_level": "info",
+      "session_recording": true,
+      "command_logging": true,
+      "file_transfer_logging": true,
+      "keystroke_logging": false,
+      "retention_period": "90d",
+      "encryption": true,
+      "real_time_monitoring": true,
+      "compliance_required": true,
+      "notes": "Enhanced logging for staging environment testing"
+    },
+    "production": {
+      "enabled": true,
+      "log_level": "debug",
+      "session_recording": true,
+      "command_logging": true,
+      "file_transfer_logging": true,
+      "keystroke_logging": true,
+      "screen_recording": true,
+      "retention_period": "7y",
+      "encryption": true,
+      "real_time_monitoring": true,
+      "real_time_alerts": true,
+      "compliance_required": true,
+      "audit_required": true,
+      "notes": "Maximum logging for production compliance and security"
+    }
+  },
+  "log_destinations": [
+    {
+      "id": "local-files",
+      "name": "Local Log Files",
+      "type": "file",
+      "enabled": true,
+      "path": "/var/log/termius/sessions/",
+      "rotation": {
+        "enabled": true,
+        "max_size": "100MB",
+        "max_files": 10,
+        "compress": true
+      },
+      "permissions": "0600",
+      "owner": "termius:termius"
+    },
+    {
+      "id": "aws-cloudwatch",
+      "name": "AWS CloudWatch Logs",
+      "type": "cloudwatch",
+      "enabled": true,
+      "log_group": "/higherself/termius/sessions",
+      "log_stream_prefix": "session-",
+      "region": "us-east-1",
+      "encryption": true,
+      "retention_days": 2555,
+      "tags": {
+        "Environment": "production",
+        "Application": "higherself-network-server",
+        "Component": "termius-logging"
+      }
+    },
+    {
+      "id": "aws-s3-archive",
+      "name": "AWS S3 Long-term Archive",
+      "type": "s3",
+      "enabled": true,
+      "bucket": "higherself-audit-logs",
+      "prefix": "termius-sessions/",
+      "encryption": "AES256",
+      "storage_class": "GLACIER",
+      "lifecycle_policy": {
+        "transition_to_ia": "30d",
+        "transition_to_glacier": "90d",
+        "expiration": "7y"
+      }
+    },
+    {
+      "id": "siem-integration",
+      "name": "SIEM Integration",
+      "type": "syslog",
+      "enabled": true,
+      "host": "siem.higherself.internal",
+      "port": 514,
+      "protocol": "tcp",
+      "format": "rfc5424",
+      "facility": "local0",
+      "encryption": true
+    }
+  ],
+  "session_metadata": {
+    "required_fields": [
+      "session_id",
+      "user_id",
+      "username",
+      "source_ip",
+      "destination_host",
+      "destination_ip",
+      "start_time",
+      "end_time",
+      "duration",
+      "environment",
+      "host_group",
+      "authentication_method",
+      "ssh_key_fingerprint"
+    ],
+    "optional_fields": [
+      "user_agent",
+      "client_version",
+      "jump_host",
+      "port_forwards",
+      "file_transfers",
+      "commands_executed",
+      "exit_code",
+      "bytes_transferred",
+      "approval_ticket",
+      "business_justification"
+    ],
+    "sensitive_fields": [
+      "ssh_private_key",
+      "passwords",
+      "api_keys",
+      "tokens"
+    ]
+  },
+  "command_logging": {
+    "enabled": true,
+    "log_all_commands": true,
+    "filter_sensitive_commands": true,
+    "sensitive_patterns": [
+      "password",
+      "passwd",
+      "secret",
+      "token",
+      "key",
+      "auth",
+      "credential"
+    ],
+    "blocked_commands": [
+      "sudo su -",
+      "su -",
+      "passwd",
+      "chpasswd"
+    ],
+    "command_analysis": {
+      "enabled": true,
+      "risk_scoring": true,
+      "anomaly_detection": true,
+      "ml_analysis": false
+    }
+  },
+  "file_transfer_logging": {
+    "enabled": true,
+    "log_uploads": true,
+    "log_downloads": true,
+    "file_hashing": true,
+    "virus_scanning": true,
+    "size_limits": {
+      "max_file_size": "1GB",
+      "max_session_transfer": "10GB"
+    },
+    "blocked_extensions": [
+      ".exe",
+      ".bat",
+      ".cmd",
+      ".scr",
+      ".pif"
+    ],
+    "quarantine_suspicious": true
+  },
+  "real_time_monitoring": {
+    "enabled": true,
+    "alert_conditions": [
+      {
+        "name": "Production Database Access",
+        "condition": "environment == 'production' AND destination_host LIKE '%db%'",
+        "severity": "high",
+        "notification": ["security-team", "dba-team"],
+        "action": "alert"
+      },
+      {
+        "name": "Off-Hours Production Access",
+        "condition": "environment == 'production' AND (hour < 8 OR hour > 18)",
+        "severity": "medium",
+        "notification": ["security-team"],
+        "action": "alert"
+      },
+      {
+        "name": "Suspicious Command Execution",
+        "condition": "command LIKE '%rm -rf%' OR command LIKE '%dd if=%' OR command LIKE '%mkfs%'",
+        "severity": "critical",
+        "notification": ["security-team", "incident-response"],
+        "action": "alert_and_record"
+      },
+      {
+        "name": "Multiple Failed Connections",
+        "condition": "failed_connections > 3 IN last_5_minutes",
+        "severity": "medium",
+        "notification": ["security-team"],
+        "action": "alert"
+      },
+      {
+        "name": "Large File Transfer",
+        "condition": "file_transfer_size > 100MB",
+        "severity": "low",
+        "notification": ["security-team"],
+        "action": "log"
+      }
+    ],
+    "notification_channels": [
+      {
+        "name": "security-team",
+        "type": "email",
+        "address": "security@higherself.com"
+      },
+      {
+        "name": "security-team",
+        "type": "slack",
+        "webhook": "https://hooks.slack.com/services/..."
+      },
+      {
+        "name": "incident-response",
+        "type": "pagerduty",
+        "integration_key": "..."
+      }
+    ]
+  },
+  "compliance_settings": {
+    "soc2": {
+      "enabled": true,
+      "requirements": [
+        "session_recording",
+        "command_logging",
+        "file_transfer_logging",
+        "real_time_monitoring",
+        "encryption_at_rest",
+        "encryption_in_transit",
+        "access_logging",
+        "retention_policy"
+      ]
+    },
+    "iso27001": {
+      "enabled": true,
+      "requirements": [
+        "audit_trail",
+        "access_control_logging",
+        "incident_logging",
+        "change_logging",
+        "security_event_logging"
+      ]
+    },
+    "gdpr": {
+      "enabled": true,
+      "data_protection": {
+        "anonymization": true,
+        "right_to_erasure": true,
+        "data_portability": true,
+        "consent_tracking": true
+      }
+    }
+  },
+  "encryption": {
+    "at_rest": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM",
+      "key_management": "aws-kms",
+      "key_rotation": "quarterly"
+    },
+    "in_transit": {
+      "enabled": true,
+      "protocol": "TLS-1.3",
+      "certificate_validation": true
+    }
+  },
+  "access_control": {
+    "log_access_roles": [
+      "security-admin",
+      "audit-admin",
+      "compliance-officer"
+    ],
+    "read_only_roles": [
+      "security-analyst",
+      "audit-analyst"
+    ],
+    "restricted_access": {
+      "production_logs": ["security-admin", "audit-admin"],
+      "sensitive_commands": ["security-admin"],
+      "user_sessions": ["security-admin", "audit-admin"]
+    }
+  },
+  "retention_policies": {
+    "development": {
+      "session_logs": "30d",
+      "command_logs": "30d",
+      "file_transfer_logs": "30d"
+    },
+    "staging": {
+      "session_logs": "90d",
+      "command_logs": "90d",
+      "file_transfer_logs": "90d",
+      "session_recordings": "90d"
+    },
+    "production": {
+      "session_logs": "7y",
+      "command_logs": "7y",
+      "file_transfer_logs": "7y",
+      "session_recordings": "7y",
+      "audit_logs": "10y"
+    }
+  },
+  "integration": {
+    "grafana": {
+      "enabled": true,
+      "dashboard_url": "http://localhost:3000/d/termius-audit",
+      "metrics": [
+        "active_sessions",
+        "failed_connections",
+        "command_count",
+        "file_transfers",
+        "security_alerts"
+      ]
+    },
+    "prometheus": {
+      "enabled": true,
+      "metrics_endpoint": "/metrics",
+      "custom_metrics": [
+        "termius_sessions_total",
+        "termius_commands_total",
+        "termius_file_transfers_total",
+        "termius_security_alerts_total"
+      ]
+    },
+    "elasticsearch": {
+      "enabled": false,
+      "cluster": "higherself-logging",
+      "index_pattern": "termius-logs-*",
+      "retention": "90d"
+    }
+  }
+}

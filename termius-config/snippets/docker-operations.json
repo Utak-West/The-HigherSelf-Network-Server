@@ -1,0 +1,205 @@
+{
+  "snippet_package": {
+    "name": "HigherSelf Docker Operations",
+    "description": "Docker and container management snippets for HigherSelf Network Server",
+    "version": "1.0.0",
+    "environment": "development",
+    "tags": ["docker", "containers", "development", "windsurf-agent"]
+  },
+  "snippets": [
+    {
+      "id": "docker-compose-up-dev",
+      "name": "Start Development Stack",
+      "description": "Start the complete HigherSelf development stack with Docker Compose",
+      "command": "docker-compose up -d && sleep 10 && docker-compose ps",
+      "working_directory": "/path/to/higherself",
+      "environment_variables": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "DEBUG"
+      },
+      "tags": ["startup", "development", "compose"]
+    },
+    {
+      "id": "docker-compose-down-dev",
+      "name": "Stop Development Stack",
+      "description": "Stop and remove the HigherSelf development stack",
+      "command": "docker-compose down && docker system prune -f",
+      "working_directory": "/path/to/higherself",
+      "tags": ["shutdown", "development", "cleanup"]
+    },
+    {
+      "id": "docker-health-check",
+      "name": "Health Check All Services",
+      "description": "Check health status of all HigherSelf services",
+      "command": "echo '=== Docker Services Status ===' && docker-compose ps && echo '\\n=== Health Checks ===' && curl -s http://localhost:8000/health | jq '.' && echo '\\n=== MongoDB Status ===' && mongosh mongodb://localhost:27017/higherselfnetwork --eval 'db.stats()' --quiet && echo '\\n=== Redis Status ===' && redis-cli ping",
+      "tags": ["health", "monitoring", "status"]
+    },
+    {
+      "id": "docker-logs-windsurf",
+      "name": "Windsurf Agent Logs",
+      "description": "Show real-time logs for the Windsurf Agent service",
+      "command": "docker-compose logs -f windsurf-agent --tail=100",
+      "tags": ["logs", "windsurf-agent", "debugging"]
+    },
+    {
+      "id": "docker-logs-all",
+      "name": "All Services Logs",
+      "description": "Show logs for all services in the stack",
+      "command": "docker-compose logs --tail=50",
+      "tags": ["logs", "all-services", "debugging"]
+    },
+    {
+      "id": "docker-rebuild-windsurf",
+      "name": "Rebuild Windsurf Agent",
+      "description": "Rebuild and restart the Windsurf Agent container",
+      "command": "docker-compose stop windsurf-agent && docker-compose build windsurf-agent && docker-compose up -d windsurf-agent && sleep 5 && curl -s http://localhost:8000/health",
+      "tags": ["rebuild", "windsurf-agent", "development"]
+    },
+    {
+      "id": "docker-exec-windsurf",
+      "name": "Shell into Windsurf Agent",
+      "description": "Open an interactive shell in the Windsurf Agent container",
+      "command": "docker-compose exec windsurf-agent /bin/bash",
+      "tags": ["shell", "windsurf-agent", "debugging"]
+    },
+    {
+      "id": "docker-exec-mongodb",
+      "name": "MongoDB Shell",
+      "description": "Open MongoDB shell for database operations",
+      "command": "docker-compose exec mongodb mongosh higherselfnetwork",
+      "tags": ["shell", "mongodb", "database"]
+    },
+    {
+      "id": "docker-exec-redis",
+      "name": "Redis CLI",
+      "description": "Open Redis CLI for cache operations",
+      "command": "docker-compose exec redis redis-cli",
+      "tags": ["shell", "redis", "cache"]
+    },
+    {
+      "id": "docker-stats",
+      "name": "Container Resource Usage",
+      "description": "Show real-time resource usage for all containers",
+      "command": "docker stats --no-stream",
+      "tags": ["monitoring", "resources", "performance"]
+    },
+    {
+      "id": "docker-cleanup",
+      "name": "Docker System Cleanup",
+      "description": "Clean up unused Docker resources",
+      "command": "docker system prune -f && docker volume prune -f && docker image prune -f",
+      "tags": ["cleanup", "maintenance", "disk-space"]
+    },
+    {
+      "id": "docker-backup-volumes",
+      "name": "Backup Docker Volumes",
+      "description": "Create backup of important Docker volumes",
+      "command": "mkdir -p ./backups/$(date +%Y%m%d) && docker run --rm -v higherself_mongodb_data:/data -v $(pwd)/backups/$(date +%Y%m%d):/backup alpine tar czf /backup/mongodb-$(date +%Y%m%d-%H%M).tar.gz -C /data .",
+      "tags": ["backup", "volumes", "mongodb"]
+    },
+    {
+      "id": "docker-restore-volumes",
+      "name": "Restore Docker Volumes",
+      "description": "Restore Docker volumes from backup (requires backup file path)",
+      "command": "echo 'Enter backup file path:' && read BACKUP_FILE && docker run --rm -v higherself_mongodb_data:/data -v $(pwd)/backups:/backup alpine tar xzf /backup/$BACKUP_FILE -C /data",
+      "tags": ["restore", "volumes", "mongodb"]
+    },
+    {
+      "id": "docker-network-inspect",
+      "name": "Inspect Docker Network",
+      "description": "Inspect the HigherSelf Docker network configuration",
+      "command": "docker network ls | grep higherself && docker network inspect higherself_default",
+      "tags": ["network", "debugging", "configuration"]
+    },
+    {
+      "id": "docker-compose-config",
+      "name": "Validate Docker Compose Config",
+      "description": "Validate and display the Docker Compose configuration",
+      "command": "docker-compose config",
+      "working_directory": "/path/to/higherself",
+      "tags": ["validation", "configuration", "compose"]
+    },
+    {
+      "id": "docker-update-images",
+      "name": "Update All Images",
+      "description": "Pull latest images and restart services",
+      "command": "docker-compose pull && docker-compose up -d && docker image prune -f",
+      "working_directory": "/path/to/higherself",
+      "tags": ["update", "images", "maintenance"]
+    },
+    {
+      "id": "docker-port-check",
+      "name": "Check Port Bindings",
+      "description": "Check which ports are bound by Docker containers",
+      "command": "docker-compose ps && echo '\\n=== Port Bindings ===' && docker ps --format 'table {{.Names}}\\t{{.Ports}}'",
+      "tags": ["ports", "networking", "debugging"]
+    },
+    {
+      "id": "docker-env-check",
+      "name": "Check Environment Variables",
+      "description": "Display environment variables for all services",
+      "command": "docker-compose config | grep -A 20 environment:",
+      "working_directory": "/path/to/higherself",
+      "tags": ["environment", "configuration", "debugging"]
+    },
+    {
+      "id": "docker-quick-restart",
+      "name": "Quick Restart All Services",
+      "description": "Quickly restart all services without rebuilding",
+      "command": "docker-compose restart && sleep 10 && curl -s http://localhost:8000/health | jq '.'",
+      "working_directory": "/path/to/higherself",
+      "tags": ["restart", "quick", "services"]
+    },
+    {
+      "id": "docker-production-build",
+      "name": "Production Build",
+      "description": "Build production-ready images",
+      "command": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache",
+      "working_directory": "/path/to/higherself",
+      "tags": ["production", "build", "deployment"]
+    }
+  ],
+  "snippet_groups": [
+    {
+      "name": "Service Management",
+      "description": "Start, stop, and manage HigherSelf services",
+      "snippets": [
+        "docker-compose-up-dev",
+        "docker-compose-down-dev",
+        "docker-quick-restart",
+        "docker-rebuild-windsurf"
+      ]
+    },
+    {
+      "name": "Monitoring & Debugging",
+      "description": "Monitor and debug HigherSelf services",
+      "snippets": [
+        "docker-health-check",
+        "docker-logs-windsurf",
+        "docker-logs-all",
+        "docker-stats",
+        "docker-port-check"
+      ]
+    },
+    {
+      "name": "Database Operations",
+      "description": "Database and cache management",
+      "snippets": [
+        "docker-exec-mongodb",
+        "docker-exec-redis",
+        "docker-backup-volumes",
+        "docker-restore-volumes"
+      ]
+    },
+    {
+      "name": "Maintenance",
+      "description": "System maintenance and cleanup",
+      "snippets": [
+        "docker-cleanup",
+        "docker-update-images",
+        "docker-compose-config",
+        "docker-env-check"
+      ]
+    }
+  ]
+}

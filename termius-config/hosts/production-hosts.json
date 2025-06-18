@@ -1,0 +1,251 @@
+{
+  "hosts": [
+    {
+      "id": "higherself-prod-app-01",
+      "name": "HigherSelf Production App Server 01",
+      "address": "app-01.higherself.com",
+      "group": "Production/Application Servers",
+      "tags": ["production", "application", "windsurf-agent", "critical", "load-balanced"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "deploy",
+          "key": "production-deploy-key",
+          "jump_host": "higherself-prod-bastion",
+          "certificate": "production-ssh-cert"
+        },
+        "sftp": {
+          "port": 22,
+          "username": "deploy",
+          "key": "production-deploy-key"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Production API (App-01)",
+          "local_port": 8002,
+          "remote_host": "localhost",
+          "remote_port": 8000,
+          "description": "Production HigherSelf Network Server API - App Server 01"
+        }
+      ],
+      "environment_variables": {
+        "ENVIRONMENT": "production",
+        "LOG_LEVEL": "WARN",
+        "TESTING_MODE": "false"
+      },
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "access_approval_required": true
+      },
+      "startup_snippets": [
+        "production-security-check",
+        "production-health-check"
+      ]
+    },
+    {
+      "id": "higherself-prod-app-02",
+      "name": "HigherSelf Production App Server 02",
+      "address": "app-02.higherself.com",
+      "group": "Production/Application Servers",
+      "tags": ["production", "application", "windsurf-agent", "critical", "load-balanced"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "deploy",
+          "key": "production-deploy-key",
+          "jump_host": "higherself-prod-bastion",
+          "certificate": "production-ssh-cert"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Production API (App-02)",
+          "local_port": 8003,
+          "remote_host": "localhost",
+          "remote_port": 8000,
+          "description": "Production HigherSelf Network Server API - App Server 02"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "access_approval_required": true
+      }
+    },
+    {
+      "id": "higherself-prod-bastion",
+      "name": "HigherSelf Production Bastion Host",
+      "address": "bastion.higherself.com",
+      "group": "Production/Infrastructure",
+      "tags": ["production", "bastion", "jump-host", "security", "critical"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "bastion-user",
+          "key": "production-bastion-key",
+          "certificate": "production-bastion-cert"
+        }
+      },
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "access_approval_required": true,
+        "session_recording": true
+      },
+      "startup_snippets": [
+        "production-bastion-security-check",
+        "production-access-audit"
+      ]
+    },
+    {
+      "id": "higherself-prod-db-primary",
+      "name": "HigherSelf Production Database Primary",
+      "address": "db-primary.higherself.internal",
+      "group": "Production/Database",
+      "tags": ["production", "database", "mongodb", "primary", "critical"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "db-admin",
+          "key": "production-db-key",
+          "jump_host": "higherself-prod-bastion",
+          "certificate": "production-db-cert"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Production MongoDB Primary",
+          "local_port": 27019,
+          "remote_host": "localhost",
+          "remote_port": 27017,
+          "description": "Production MongoDB primary database - RESTRICTED ACCESS"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true,
+        "access_approval_required": true,
+        "session_recording": true,
+        "restricted_commands": ["drop", "delete", "remove"]
+      },
+      "startup_snippets": [
+        "production-db-security-check",
+        "production-db-backup-status"
+      ]
+    },
+    {
+      "id": "higherself-prod-cache",
+      "name": "HigherSelf Production Redis Cache",
+      "address": "cache.higherself.internal",
+      "group": "Production/Database",
+      "tags": ["production", "cache", "redis", "critical"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "cache-admin",
+          "key": "production-cache-key",
+          "jump_host": "higherself-prod-bastion"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Production Redis Cache",
+          "local_port": 6381,
+          "remote_host": "localhost",
+          "remote_port": 6379,
+          "description": "Production Redis cache - READ-ONLY ACCESS"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": true
+      }
+    },
+    {
+      "id": "higherself-prod-monitoring",
+      "name": "HigherSelf Production Monitoring Server",
+      "address": "monitoring.higherself.internal",
+      "group": "Production/Monitoring",
+      "tags": ["production", "monitoring", "grafana", "prometheus", "critical"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "monitor",
+          "key": "production-monitor-key",
+          "jump_host": "higherself-prod-bastion"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Production Grafana",
+          "local_port": 3002,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "description": "Production Grafana dashboard"
+        },
+        {
+          "name": "Production Prometheus",
+          "local_port": 9092,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "description": "Production Prometheus metrics"
+        }
+      ],
+      "security": {
+        "session_logging": true,
+        "audit_required": true
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Production",
+      "description": "Production environment for HigherSelf Network Server - CRITICAL SYSTEMS",
+      "color": "#dc3545",
+      "icon": "production",
+      "default_settings": {
+        "ssh": {
+          "compression": true,
+          "keep_alive": 600,
+          "server_alive_interval": 120,
+          "strict_host_key_checking": true,
+          "verify_host_key_dns": true
+        },
+        "security": {
+          "session_logging": true,
+          "audit_required": true,
+          "mfa_required": true,
+          "access_approval_required": true,
+          "session_recording": true
+        }
+      }
+    },
+    {
+      "name": "Production/Application Servers",
+      "description": "Production application and service hosts",
+      "parent": "Production"
+    },
+    {
+      "name": "Production/Infrastructure",
+      "description": "Production infrastructure and management hosts",
+      "parent": "Production"
+    },
+    {
+      "name": "Production/Database",
+      "description": "Production database and cache hosts",
+      "parent": "Production"
+    },
+    {
+      "name": "Production/Monitoring",
+      "description": "Production monitoring and observability hosts",
+      "parent": "Production"
+    }
+  ]
+}

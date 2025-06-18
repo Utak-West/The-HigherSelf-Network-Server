@@ -1,0 +1,177 @@
+{
+  "hosts": [
+    {
+      "id": "higherself-staging-app",
+      "name": "HigherSelf Staging Application Server",
+      "address": "staging.higherself.internal",
+      "group": "Staging/Application Servers",
+      "tags": ["staging", "application", "windsurf-agent", "monitored"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "deploy",
+          "key": "staging-deploy-key",
+          "jump_host": "higherself-staging-bastion"
+        },
+        "sftp": {
+          "port": 22,
+          "username": "deploy",
+          "key": "staging-deploy-key"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Staging API Access",
+          "local_port": 8001,
+          "remote_host": "localhost",
+          "remote_port": 8000,
+          "description": "Staging HigherSelf Network Server API"
+        },
+        {
+          "name": "Staging MongoDB",
+          "local_port": 27018,
+          "remote_host": "staging-db.higherself.internal",
+          "remote_port": 27017,
+          "description": "Staging MongoDB database"
+        },
+        {
+          "name": "Staging Redis",
+          "local_port": 6380,
+          "remote_host": "staging-cache.higherself.internal",
+          "remote_port": 6379,
+          "description": "Staging Redis cache"
+        }
+      ],
+      "environment_variables": {
+        "ENVIRONMENT": "staging",
+        "LOG_LEVEL": "INFO",
+        "TESTING_MODE": "false"
+      },
+      "startup_snippets": [
+        "staging-health-check",
+        "staging-service-status"
+      ]
+    },
+    {
+      "id": "higherself-staging-bastion",
+      "name": "HigherSelf Staging Bastion Host",
+      "address": "bastion-staging.higherself.com",
+      "group": "Staging/Infrastructure",
+      "tags": ["staging", "bastion", "jump-host", "security"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "bastion-user",
+          "key": "staging-bastion-key"
+        }
+      },
+      "security": {
+        "session_logging": true,
+        "audit_required": true,
+        "mfa_required": false
+      },
+      "startup_snippets": [
+        "bastion-security-check"
+      ]
+    },
+    {
+      "id": "higherself-staging-monitoring",
+      "name": "HigherSelf Staging Monitoring Server",
+      "address": "monitoring-staging.higherself.internal",
+      "group": "Staging/Monitoring",
+      "tags": ["staging", "monitoring", "grafana", "prometheus"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "monitor",
+          "key": "staging-monitor-key",
+          "jump_host": "higherself-staging-bastion"
+        }
+      },
+      "port_forwarding": [
+        {
+          "name": "Staging Grafana",
+          "local_port": 3001,
+          "remote_host": "localhost",
+          "remote_port": 3000,
+          "description": "Staging Grafana dashboard"
+        },
+        {
+          "name": "Staging Prometheus",
+          "local_port": 9091,
+          "remote_host": "localhost",
+          "remote_port": 9090,
+          "description": "Staging Prometheus metrics"
+        },
+        {
+          "name": "Staging Consul",
+          "local_port": 8501,
+          "remote_host": "localhost",
+          "remote_port": 8500,
+          "description": "Staging Consul service discovery"
+        }
+      ]
+    },
+    {
+      "id": "higherself-staging-terraform",
+      "name": "HigherSelf Staging Terraform Runner",
+      "address": "terraform-staging.higherself.internal",
+      "group": "Staging/Infrastructure",
+      "tags": ["staging", "terraform", "terragrunt", "deployment"],
+      "protocols": {
+        "ssh": {
+          "port": 22,
+          "username": "terraform",
+          "key": "staging-terraform-key",
+          "jump_host": "higherself-staging-bastion"
+        }
+      },
+      "working_directory": "/opt/higherself/terraform",
+      "environment_variables": {
+        "TF_ENV": "staging",
+        "AWS_PROFILE": "higherself-staging",
+        "TERRAGRUNT_WORKING_DIR": "/opt/higherself/terragrunt/environments/staging"
+      },
+      "startup_snippets": [
+        "terraform-init-staging",
+        "aws-credentials-check",
+        "terragrunt-status-check"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "name": "Staging",
+      "description": "Staging environment for HigherSelf Network Server",
+      "color": "#ffc107",
+      "icon": "staging",
+      "default_settings": {
+        "ssh": {
+          "compression": true,
+          "keep_alive": 300,
+          "server_alive_interval": 60,
+          "strict_host_key_checking": true
+        },
+        "security": {
+          "session_logging": true,
+          "audit_required": true
+        }
+      }
+    },
+    {
+      "name": "Staging/Application Servers",
+      "description": "Staging application and service hosts",
+      "parent": "Staging"
+    },
+    {
+      "name": "Staging/Infrastructure",
+      "description": "Staging infrastructure and management hosts",
+      "parent": "Staging"
+    },
+    {
+      "name": "Staging/Monitoring",
+      "description": "Staging monitoring and observability hosts",
+      "parent": "Staging"
+    }
+  ]
+}
