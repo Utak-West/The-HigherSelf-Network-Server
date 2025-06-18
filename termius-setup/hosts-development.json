@@ -8,8 +8,9 @@
   "hosts": [
     {
       "id": "higherself-dev-local",
-      "name": "HigherSelf Development (Local Docker)",
+      "name": "HigherSelf-Dev-Local",
       "address": "localhost",
+      "hostname": "localhost",
       "port": 22,
       "username": "developer",
       "group": "Development",

@@ -243,15 +243,38 @@ class TermiusNotificationService:
     
     async def _send_to_terminal(self, session: TerminalSession, message: str) -> None:
         """Send message to a specific terminal session."""
-        # This would integrate with Termius API or use terminal escape sequences
-        # For now, we'll log the message and store it for retrieval
+        try:
+            import subprocess
+            import os
+
+            # Try simple file-based notifier first
+            simple_notifier_path = os.path.expanduser("~/.termius_higherself/scripts/simple_termius_notifier.py")
+            if os.path.exists(simple_notifier_path):
+                subprocess.run([
+                    "python3", simple_notifier_path, "send",
+                    "--message", message,
+                    "--type", "info",
+                    "--title", "HigherSelf Network Server"
+                ], capture_output=True, timeout=10)
+                logger.info(f"File notification sent to {session.session_id}")
+            else:
+                # Fallback: Try SSH notifier
+                ssh_notifier_path = os.path.expanduser("~/.termius_higherself/scripts/termius_ssh_notifier.py")
+                if os.path.exists(ssh_notifier_path):
+                    subprocess.run([
+                        "python3", ssh_notifier_path, "send",
+                        "--message", message,
+                        "--type", "info"
+                    ], capture_output=True, timeout=10)
+                    logger.info(f"SSH notification sent to {session.session_id}")
+                else:
+                    logger.warning(f"No notifier found at {simple_notifier_path} or {ssh_notifier_path}")
+
+        except Exception as e:
+            logger.error(f"Error sending notification: {e}")
+
+        # Always log the message as fallback
         logger.info(f"Terminal notification for {session.session_id}: {message}")
-        
-        # In a real implementation, this would:
-        # 1. Use Termius API to send notifications
-        # 2. Write to terminal using escape sequences
-        # 3. Display as system notifications
-        # 4. Store in terminal history
     
     def _add_to_history(self, notification: Dict[str, Any]) -> None:
         """Add notification to history."""

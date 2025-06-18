@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "hosts": [
+    {
+      "label": "HigherSelf-Local-Services",
+      "address": "localhost",
+      "port": 22,
+      "username": "$(whoami)",
+      "group": "Development",
+      "tags": ["development", "docker", "local", "services"],
+      "description": "Local machine for Docker service management",
+      "use_ssh_key": false,
+      "connection_type": "local_terminal"
+    }
+  ],
+  "groups": [
+    {
+      "name": "Development",
+      "color": "#28a745"
+    }
+  ],
+  "port_forwarding": [
+    {
+      "host": "HigherSelf-Local-Services",
+      "local_port": 27017,
+      "remote_port": 27017,
+      "description": "MongoDB (Already exposed by Docker)"
+    },
+    {
+      "host": "HigherSelf-Local-Services",
+      "local_port": 3000,
+      "remote_port": 3000,
+      "description": "Memgraph Lab (Already exposed by Docker)"
+    },
+    {
+      "host": "HigherSelf-Local-Services",
+      "local_port": 7475,
+      "remote_port": 7475,
+      "description": "Neo4j Browser (Already exposed by Docker)"
+    },
+    {
+      "host": "HigherSelf-Local-Services",
+      "local_port": 58888,
+      "remote_port": 58888,
+      "description": "Jupyter Notebook (Already exposed by Docker)"
+    }
+  ],
+  "quick_access": [
+    {
+      "name": "MongoDB",
+      "url": "mongodb://localhost:27017",
+      "description": "Direct MongoDB connection"
+    },
+    {
+      "name": "Memgraph Lab",
+      "url": "http://localhost:3000",
+      "description": "Graph database interface"
+    },
+    {
+      "name": "Neo4j Browser",
+      "url": "http://localhost:7475",
+      "description": "Neo4j database browser"
+    },
+    {
+      "name": "Jupyter Notebook",
+      "url": "http://localhost:58888",
+      "description": "Data science environment"
+    }
+  ]
+}
