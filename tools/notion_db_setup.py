@@ -228,6 +228,14 @@ class NotionDatabaseSetup:
         # Create Master Tasks Database
         database_ids["Task"] = await self.create_tasks_db()
 
+        # Create additional databases for complete 16-database setup
+        database_ids["ContactProfile"] = await self.create_contacts_profiles_db()
+        database_ids["CommunityMember"] = await self.create_community_hub_db()
+        database_ids["ProductService"] = await self.create_products_services_db()
+        database_ids["MarketingCampaign"] = await self.create_marketing_campaigns_db()
+        database_ids["FeedbackSurvey"] = await self.create_feedback_surveys_db()
+        database_ids["RewardsBounty"] = await self.create_rewards_bounties_db()
+
         return database_ids
 
     async def create_business_entities_db(self) -> str:
@@ -244,10 +252,10 @@ class NotionDatabaseSetup:
                 }
             },
             "API Keys Reference": {"rich_text": {}},
-            "Primary Workflows": {"relation": {}},
-            "Active Agents": {"relation": {}},
+            "Primary Workflows": {"rich_text": {}},
+            "Active Agents": {"rich_text": {}},
             "Integration Status": {
-                "status": {
+                "select": {
                     "options": [
                         {"name": "Active", "color": "green"},
                         {"name": "Pending", "color": "yellow"},
@@ -281,10 +289,10 @@ class NotionDatabaseSetup:
                     ]
                 }
             },
-            "Business Entity Association": {"relation": {}},
+            "Business Entity Association": {"rich_text": {}},
             "Capabilities": {"multi_select": {}},
             "Primary APIs Utilized": {"multi_select": {}},
-            "Supported Workflows": {"relation": {}},
+            "Supported Workflows": {"rich_text": {}},
             "Primary Data Sources": {"multi_select": {}},
             "Primary Data Sinks": {"multi_select": {}},
             "Runtime Environment": {
@@ -312,11 +320,11 @@ class NotionDatabaseSetup:
             "Name": {"rich_text": {}},
             "Description": {"rich_text": {}},
             "Version": {"rich_text": {}},
-            "Business Entity": {"relation": {}},
+            "Business Entity": {"rich_text": {}},
             "Initial State": {"rich_text": {}},
             "States": {"rich_text": {}},
             "Transitions": {"rich_text": {}},
-            "Required Agents": {"relation": {}},
+            "Required Agents": {"rich_text": {}},
             "Visualization URL": {"url": {}},
             "Status": {
                 "select": {
@@ -340,8 +348,8 @@ class NotionDatabaseSetup:
         """Create the Active Workflow Instances database."""
         properties = {
             "Instance ID": {"title": {}},
-            "Workflow": {"relation": {}},
-            "Business Entity": {"relation": {}},
+            "Workflow": {"rich_text": {}},
+            "Business Entity": {"rich_text": {}},
             "Current State": {"rich_text": {}},
             "Client/Lead Email": {"email": {}},
             "Client/Lead Name": {"rich_text": {}},
@@ -395,7 +403,7 @@ class NotionDatabaseSetup:
             "Credential Reference": {"rich_text": {}},
             "Primary Endpoints": {"multi_select": {}},
             "Documentation URL": {"url": {}},
-            "Business Entities": {"relation": {}},
+            "Business Entities": {"rich_text": {}},
             "Version": {"rich_text": {}},
             "Status": {
                 "select": {
@@ -426,7 +434,7 @@ class NotionDatabaseSetup:
             "Transformation Logic": {"rich_text": {}},
             "Sample Input (JSON)": {"rich_text": {}},
             "Sample Output (JSON)": {"rich_text": {}},
-            "Used By Workflows": {"relation": {}},
+            "Used By Workflows": {"rich_text": {}},
         }
 
         return await self.create_database(
@@ -442,8 +450,8 @@ class NotionDatabaseSetup:
             "Use Case ID": {"title": {}},
             "Title": {"rich_text": {}},
             "Description": {"rich_text": {}},
-            "Business Entities": {"relation": {}},
-            "Implemented By Workflows": {"relation": {}},
+            "Business Entities": {"rich_text": {}},
+            "Implemented By Workflows": {"rich_text": {}},
             "User Stories": {"rich_text": {}},
             "Acceptance Criteria": {"rich_text": {}},
             "Implementation Status": {
@@ -483,7 +491,7 @@ class NotionDatabaseSetup:
             "Content Template": {"rich_text": {}},
             "Subject Template": {"rich_text": {}},
             "Supported Placeholders": {"multi_select": {}},
-            "Business Entities": {"relation": {}},
+            "Business Entities": {"rich_text": {}},
             "Creator": {"rich_text": {}},
             "Created Date": {"date": {}},
             "Last Updated": {"date": {}},
@@ -501,8 +509,8 @@ class NotionDatabaseSetup:
         properties = {
             "Pattern Name": {"title": {}},
             "Description": {"rich_text": {}},
-            "Source Agent": {"relation": {}},
-            "Target Agent": {"relation": {}},
+            "Source Agent": {"rich_text": {}},
+            "Target Agent": {"rich_text": {}},
             "Message Format": {"rich_text": {}},
             "Communication Protocol": {
                 "select": {
@@ -514,7 +522,7 @@ class NotionDatabaseSetup:
                 }
             },
             "Sample Payload": {"rich_text": {}},
-            "Active Workflows Using": {"relation": {}},
+            "Active Workflows Using": {"rich_text": {}},
         }
 
         return await self.create_database(
@@ -552,8 +560,8 @@ class NotionDatabaseSetup:
             },
             "Due Date": {"date": {}},
             "Assigned To": {"rich_text": {}},
-            "Related Workflow Instance": {"relation": {}},
-            "Related Business Entity": {"relation": {}},
+            "Related Workflow Instance": {"rich_text": {}},
+            "Related Business Entity": {"rich_text": {}},
             "Created By": {"rich_text": {}},
             "Created Date": {"date": {}},
             "Last Edited Date": {"date": {}},
@@ -564,6 +572,224 @@ class NotionDatabaseSetup:
             parent_page_id=self.parent_page_id,
             title="Master Tasks Database",
             description="Centralize all actionable tasks generated from workflows or manually",
+            properties=properties,
+        )
+
+    async def create_contacts_profiles_db(self) -> str:
+        """Create the Contacts & Profiles database."""
+        properties = {
+            "Name": {"title": {}},
+            "Email": {"email": {}},
+            "Phone": {"phone_number": {}},
+            "Company": {"rich_text": {}},
+            "Role": {"rich_text": {}},
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Lead", "color": "yellow"},
+                        {"name": "Client", "color": "green"},
+                        {"name": "Partner", "color": "blue"},
+                        {"name": "Inactive", "color": "gray"},
+                    ]
+                }
+            },
+            "Source": {"rich_text": {}},
+            "Tags": {"multi_select": {}},
+            "Notes": {"rich_text": {}},
+            "Created Date": {"date": {}},
+            "Last Contact": {"date": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Contacts & Profiles Database",
+            description="Customer and contact information management",
+            properties=properties,
+        )
+
+    async def create_community_hub_db(self) -> str:
+        """Create the Community Hub database."""
+        properties = {
+            "Member Name": {"title": {}},
+            "Email": {"email": {}},
+            "Membership Type": {
+                "select": {
+                    "options": [
+                        {"name": "Free", "color": "gray"},
+                        {"name": "Premium", "color": "blue"},
+                        {"name": "VIP", "color": "purple"},
+                    ]
+                }
+            },
+            "Join Date": {"date": {}},
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Active", "color": "green"},
+                        {"name": "Inactive", "color": "gray"},
+                        {"name": "Suspended", "color": "red"},
+                    ]
+                }
+            },
+            "Interests": {"multi_select": {}},
+            "Engagement Score": {"number": {}},
+            "Last Activity": {"date": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Community Hub Database",
+            description="Community member data and engagement tracking",
+            properties=properties,
+        )
+
+    async def create_products_services_db(self) -> str:
+        """Create the Products & Services database."""
+        properties = {
+            "Name": {"title": {}},
+            "Type": {
+                "select": {
+                    "options": [
+                        {"name": "Product", "color": "blue"},
+                        {"name": "Service", "color": "green"},
+                        {"name": "Package", "color": "purple"},
+                    ]
+                }
+            },
+            "Description": {"rich_text": {}},
+            "Price": {"number": {}},
+            "Currency": {"rich_text": {}},
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Active", "color": "green"},
+                        {"name": "Draft", "color": "yellow"},
+                        {"name": "Discontinued", "color": "red"},
+                    ]
+                }
+            },
+            "Category": {"multi_select": {}},
+            "Created Date": {"date": {}},
+            "Last Updated": {"date": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Products & Services Database",
+            description="Product and service catalog management",
+            properties=properties,
+        )
+
+    async def create_marketing_campaigns_db(self) -> str:
+        """Create the Marketing Campaigns database."""
+        properties = {
+            "Campaign Name": {"title": {}},
+            "Type": {
+                "select": {
+                    "options": [
+                        {"name": "Email", "color": "blue"},
+                        {"name": "Social Media", "color": "green"},
+                        {"name": "Content", "color": "purple"},
+                        {"name": "Paid Ads", "color": "red"},
+                    ]
+                }
+            },
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Planning", "color": "gray"},
+                        {"name": "Active", "color": "green"},
+                        {"name": "Paused", "color": "yellow"},
+                        {"name": "Completed", "color": "blue"},
+                    ]
+                }
+            },
+            "Start Date": {"date": {}},
+            "End Date": {"date": {}},
+            "Budget": {"number": {}},
+            "Target Audience": {"rich_text": {}},
+            "Goals": {"rich_text": {}},
+            "Results": {"rich_text": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Marketing Campaigns Database",
+            description="Marketing campaign planning and tracking",
+            properties=properties,
+        )
+
+    async def create_feedback_surveys_db(self) -> str:
+        """Create the Feedback & Surveys database."""
+        properties = {
+            "Survey Name": {"title": {}},
+            "Type": {
+                "select": {
+                    "options": [
+                        {"name": "Customer Feedback", "color": "blue"},
+                        {"name": "Product Survey", "color": "green"},
+                        {"name": "Service Review", "color": "purple"},
+                        {"name": "General Survey", "color": "gray"},
+                    ]
+                }
+            },
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Draft", "color": "gray"},
+                        {"name": "Active", "color": "green"},
+                        {"name": "Closed", "color": "red"},
+                    ]
+                }
+            },
+            "Created Date": {"date": {}},
+            "Response Count": {"number": {}},
+            "Average Rating": {"number": {}},
+            "Key Insights": {"rich_text": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Feedback & Surveys Database",
+            description="Customer feedback and survey response management",
+            properties=properties,
+        )
+
+    async def create_rewards_bounties_db(self) -> str:
+        """Create the Rewards & Bounties database."""
+        properties = {
+            "Title": {"title": {}},
+            "Type": {
+                "select": {
+                    "options": [
+                        {"name": "Reward", "color": "green"},
+                        {"name": "Bounty", "color": "blue"},
+                        {"name": "Achievement", "color": "purple"},
+                    ]
+                }
+            },
+            "Value": {"number": {}},
+            "Currency": {"rich_text": {}},
+            "Status": {
+                "select": {
+                    "options": [
+                        {"name": "Available", "color": "green"},
+                        {"name": "In Progress", "color": "yellow"},
+                        {"name": "Completed", "color": "blue"},
+                        {"name": "Expired", "color": "red"},
+                    ]
+                }
+            },
+            "Description": {"rich_text": {}},
+            "Requirements": {"rich_text": {}},
+            "Deadline": {"date": {}},
+            "Assigned To": {"rich_text": {}},
+        }
+
+        return await self.create_database(
+            parent_page_id=self.parent_page_id,
+            title="Rewards & Bounties Database",
+            description="Incentive programs and achievement tracking",
             properties=properties,
         )
 
@@ -595,6 +821,13 @@ class NotionDatabaseSetup:
             ),
             "NOTION_AGENT_COMMUNICATION_DB": database_ids.get("AgentCommunication", ""),
             "NOTION_TASKS_DB": database_ids.get("Task", ""),
+            # Additional databases for complete 16-database setup
+            "NOTION_CONTACTS_PROFILES_DB": database_ids.get("ContactProfile", ""),
+            "NOTION_COMMUNITY_HUB_DB": database_ids.get("CommunityMember", ""),
+            "NOTION_PRODUCTS_SERVICES_DB": database_ids.get("ProductService", ""),
+            "NOTION_MARKETING_CAMPAIGNS_DB": database_ids.get("MarketingCampaign", ""),
+            "NOTION_FEEDBACK_SURVEYS_DB": database_ids.get("FeedbackSurvey", ""),
+            "NOTION_REWARDS_BOUNTIES_DB": database_ids.get("RewardsBounty", ""),
         }
 
         # Write to the .env file
