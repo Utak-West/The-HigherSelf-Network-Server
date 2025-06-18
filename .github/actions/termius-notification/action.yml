@@ -1,0 +1,172 @@
+name: 'Termius Notification'
+description: 'Send build and deployment notifications to Termius terminals'
+author: 'HigherSelf Network Server Team'
+
+inputs:
+  webhook_url:
+    description: 'Webhook URL for Termius notifications'
+    required: true
+  status:
+    description: 'Build/deployment status (success, failure, cancelled)'
+    required: true
+  workflow_name:
+    description: 'Name of the GitHub workflow'
+    required: false
+    default: ${{ github.workflow }}
+  branch:
+    description: 'Git branch name'
+    required: false
+    default: ${{ github.ref_name }}
+  commit_sha:
+    description: 'Git commit SHA'
+    required: false
+    default: ${{ github.sha }}
+  commit_message:
+    description: 'Git commit message'
+    required: false
+  actor:
+    description: 'GitHub actor who triggered the workflow'
+    required: false
+    default: ${{ github.actor }}
+  run_url:
+    description: 'URL to the GitHub Actions run'
+    required: false
+  environment:
+    description: 'Deployment environment'
+    required: false
+  image_tag:
+    description: 'Docker image tag'
+    required: false
+  pre_flight_status:
+    description: 'Pre-flight check status'
+    required: false
+  quality_checks_status:
+    description: 'Quality checks status'
+    required: false
+  test_suite_status:
+    description: 'Test suite status'
+    required: false
+  build_status:
+    description: 'Build status'
+    required: false
+  security_scan_status:
+    description: 'Security scan status'
+    required: false
+  deploy_status:
+    description: 'Deployment status'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Send notification to Termius
+      shell: bash
+      run: |
+        # Create notification payload
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        # Determine status emoji and color
+        case "${{ inputs.status }}" in
+          "success")
+            STATUS_EMOJI="✅"
+            STATUS_COLOR="#28a745"
+            ;;
+          "failure")
+            STATUS_EMOJI="❌"
+            STATUS_COLOR="#dc3545"
+            ;;
+          "cancelled")
+            STATUS_EMOJI="⚠️"
+            STATUS_COLOR="#ffc107"
+            ;;
+          *)
+            STATUS_EMOJI="ℹ️"
+            STATUS_COLOR="#17a2b8"
+            ;;
+        esac
+        
+        # Build notification message
+        MESSAGE="$STATUS_EMOJI **HigherSelf Network Server** - ${{ inputs.workflow_name }}"
+        MESSAGE="$MESSAGE\n**Status:** ${{ inputs.status }}"
+        MESSAGE="$MESSAGE\n**Branch:** ${{ inputs.branch }}"
+        MESSAGE="$MESSAGE\n**Commit:** \`${GITHUB_SHA:0:8}\`"
+        
+        if [ -n "${{ inputs.commit_message }}" ]; then
+          MESSAGE="$MESSAGE\n**Message:** ${{ inputs.commit_message }}"
+        fi
+        
+        if [ -n "${{ inputs.environment }}" ]; then
+          MESSAGE="$MESSAGE\n**Environment:** ${{ inputs.environment }}"
+        fi
+        
+        if [ -n "${{ inputs.image_tag }}" ]; then
+          MESSAGE="$MESSAGE\n**Image:** ${{ inputs.image_tag }}"
+        fi
+        
+        MESSAGE="$MESSAGE\n**Actor:** ${{ inputs.actor }}"
+        MESSAGE="$MESSAGE\n**Time:** $TIMESTAMP"
+        
+        # Add detailed status if available
+        if [ -n "${{ inputs.pre_flight_status }}" ]; then
+          MESSAGE="$MESSAGE\n\n**Detailed Status:**"
+          MESSAGE="$MESSAGE\n• Pre-flight: ${{ inputs.pre_flight_status }}"
+          MESSAGE="$MESSAGE\n• Quality Checks: ${{ inputs.quality_checks_status }}"
+          MESSAGE="$MESSAGE\n• Test Suite: ${{ inputs.test_suite_status }}"
+          MESSAGE="$MESSAGE\n• Build: ${{ inputs.build_status }}"
+          MESSAGE="$MESSAGE\n• Security Scan: ${{ inputs.security_scan_status }}"
+          MESSAGE="$MESSAGE\n• Deploy: ${{ inputs.deploy_status }}"
+        fi
+        
+        if [ -n "${{ inputs.run_url }}" ]; then
+          MESSAGE="$MESSAGE\n\n[View Run Details](${{ inputs.run_url }})"
+        fi
+        
+        # Create JSON payload
+        PAYLOAD=$(cat <<EOF
+        {
+          "source": "github_actions",
+          "event_type": "workflow_notification",
+          "timestamp": "$TIMESTAMP",
+          "data": {
+            "workflow": "${{ inputs.workflow_name }}",
+            "status": "${{ inputs.status }}",
+            "branch": "${{ inputs.branch }}",
+            "commit_sha": "${{ inputs.commit_sha }}",
+            "commit_message": "${{ inputs.commit_message }}",
+            "actor": "${{ inputs.actor }}",
+            "run_url": "${{ inputs.run_url }}",
+            "environment": "${{ inputs.environment }}",
+            "image_tag": "${{ inputs.image_tag }}",
+            "message": "$MESSAGE",
+            "color": "$STATUS_COLOR",
+            "emoji": "$STATUS_EMOJI"
+          }
+        }
+        EOF
+        )
+        
+        # Send notification
+        echo "Sending notification to Termius..."
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          -H "User-Agent: HigherSelf-Network-Server-CI" \
+          -d "$PAYLOAD" \
+          "${{ inputs.webhook_url }}" \
+          --max-time 30 \
+          --retry 3 \
+          --retry-delay 5 \
+          || echo "Failed to send notification to Termius"
+        
+        echo "Notification sent successfully"
+
+    - name: Log notification details
+      shell: bash
+      run: |
+        echo "=== Termius Notification Details ==="
+        echo "Status: ${{ inputs.status }}"
+        echo "Workflow: ${{ inputs.workflow_name }}"
+        echo "Branch: ${{ inputs.branch }}"
+        echo "Commit: ${{ inputs.commit_sha }}"
+        echo "Actor: ${{ inputs.actor }}"
+        echo "Environment: ${{ inputs.environment }}"
+        echo "=================================="
