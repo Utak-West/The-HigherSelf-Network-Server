@@ -4,6 +4,18 @@
 
 This document outlines a comprehensive workflow mapping and automation strategy for The HigherSelf Network Server, integrating 16 Notion databases across three priority business entities: **The 7 Space**, **AM Consulting**, and **HigherSelf** core platform.
 
+## Contact-Driven Workflow Automation Architecture
+
+### Overview
+Building upon the newly enriched contact data with 191 contacts categorized by Contact Type (Artists/Gallery Contacts, Business Contacts, Academic Contacts, Media Contacts, General Contacts) and Lead Source (Website, Event, Referral), this architecture implements intelligent, automated workflows that respond to contact classifications and business entity requirements.
+
+### Core Automation Principles
+1. **Contact-Centric Triggers**: All workflows begin with contact classification and lead source analysis
+2. **Business Entity Alignment**: Each workflow routes to appropriate business entity (The 7 Space, AM Consulting, HigherSelf)
+3. **Intelligent Personalization**: Messaging and actions adapt based on contact type and engagement history
+4. **Multi-Channel Engagement**: Coordinated outreach across email, tasks, notifications, and follow-up sequences
+5. **Continuous Learning**: Workflows adapt based on engagement metrics and feedback
+
 ## Database Architecture Overview
 
 ### 16 Connected Notion Databases
