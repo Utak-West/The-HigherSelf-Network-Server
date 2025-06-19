@@ -1,0 +1,29 @@
+{
+  "augment.advanced": {
+    "mcpServers": [
+      {
+        "name": "notion-higherself",
+        "command": "npx",
+        "args": ["-y", "@notionhq/notion-mcp-server"],
+        "env": {
+          "NOTION_TOKEN": "secret_your_notion_integration_token_here"
+        }
+      },
+      {
+        "name": "filesystem-higherself",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/utakwest/Documents/HigherSelf/The HigherSelf Network /The HigherSelf Network Server"],
+        "env": {}
+      },
+      {
+        "name": "slack-higherself",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-slack"],
+        "env": {
+          "SLACK_BOT_TOKEN": "xoxb-your-bot-token-here",
+          "SLACK_TEAM_ID": "your-team-id-here"
+        }
+      }
+    ]
+  }
+}

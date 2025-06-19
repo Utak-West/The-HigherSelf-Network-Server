@@ -29,6 +29,8 @@ from services.contact_workflow_automation import (
     BusinessEntity
 )
 
+# Global AI agent instances (will be initialized in main.py)
+nyra_realtime_agent = None
 
 router = APIRouter(prefix="/contact-workflows", tags=["Contact Workflows"])
 
@@ -246,18 +248,49 @@ async def register_new_contact(
         
         # Process workflow in background
         background_tasks.add_task(workflow_automation.process_contact_trigger, trigger)
-        
+
+        # NEW: Queue contact for real-time AI agent processing
+        background_tasks.add_task(_queue_contact_for_ai_processing, {
+            "contact_id": contact_id,
+            "email": request.email,
+            "first_name": request.first_name,
+            "last_name": request.last_name,
+            "phone": request.phone,
+            "message": request.message,
+            "interests": request.interests,
+            "source": lead_source,
+            "source_metadata": request.source_metadata,
+            "business_entities": business_entities,
+            "contact_types": contact_types
+        })
+
         return {
             "success": True,
-            "message": "Contact registered and workflows triggered",
+            "message": "Contact registered, workflows triggered, and AI processing queued",
             "contact_id": contact_id,
             "contact_email": request.email,
-            "workflows_triggered": True
+            "workflows_triggered": True,
+            "ai_processing_queued": True
         }
-        
+
+
+async def _queue_contact_for_ai_processing(contact_data: Dict[str, Any]):
+    """Queue contact for AI agent processing."""
+    try:
+        if nyra_realtime_agent is not None:
+            await nyra_realtime_agent.queue_contact_for_processing(contact_data)
+            logger.info(f"Contact queued for AI processing: {contact_data.get('email')}")
+        else:
+            logger.warning("Nyra real-time agent not initialized, skipping AI processing")
     except Exception as e:
-        logger.error(f"Error registering new contact: {e}")
-        raise HTTPException(status_code=500, detail=f"Error registering contact: {str(e)}")
+        logger.error(f"Error queuing contact for AI processing: {e}")
+
+
+def initialize_ai_agents(nyra_agent):
+    """Initialize AI agents for webhook processing."""
+    global nyra_realtime_agent
+    nyra_realtime_agent = nyra_agent
+    logger.info("AI agents initialized for webhook processing")
 
 
 @router.get("/status")
