@@ -1,0 +1,265 @@
+# Prometheus Configuration for The 7 Space Production Environment
+# Enterprise-grade monitoring for The 7 Space Art Gallery & Wellness Center
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: 'the7space-production'
+    environment: 'production'
+    business_entity: 'the_7_space'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load recording rules and alerting rules
+rule_files:
+  - "rules/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # The 7 Space main application
+  - job_name: 'the7space-app'
+    static_configs:
+      - targets: ['the7space-app:8000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: the7space-app:8000
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'the7space_.*'
+        target_label: business_entity
+        replacement: 'the_7_space'
+
+  # MongoDB monitoring
+  - job_name: 'the7space-mongodb'
+    static_configs:
+      - targets: ['the7space-mongodb:27017']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    params:
+      collect[]:
+        - mongodb_up
+        - mongodb_connections
+        - mongodb_memory
+        - mongodb_network
+        - mongodb_opcounters
+        - mongodb_oplog
+        - mongodb_replset
+        - mongodb_storage
+
+  # Redis monitoring
+  - job_name: 'the7space-redis'
+    static_configs:
+      - targets: ['the7space-redis:6379']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    params:
+      collect[]:
+        - redis_up
+        - redis_connected_clients
+        - redis_memory_usage
+        - redis_keyspace
+        - redis_commands_processed
+        - redis_net_input_bytes
+        - redis_net_output_bytes
+
+  # Consul monitoring
+  - job_name: 'the7space-consul'
+    static_configs:
+      - targets: ['the7space-consul:8500']
+    scrape_interval: 30s
+    metrics_path: /v1/agent/metrics
+    params:
+      format: ['prometheus']
+
+  # Nginx monitoring
+  - job_name: 'the7space-nginx'
+    static_configs:
+      - targets: ['the7space-nginx:80']
+    scrape_interval: 30s
+    metrics_path: /nginx_status
+    params:
+      format: ['prometheus']
+
+  # Grafana monitoring
+  - job_name: 'the7space-grafana'
+    static_configs:
+      - targets: ['the7space-grafana:3000']
+    scrape_interval: 60s
+    metrics_path: /metrics
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # The 7 Space business metrics
+  - job_name: 'the7space-business-metrics'
+    static_configs:
+      - targets: ['the7space-app:8000']
+    scrape_interval: 60s
+    metrics_path: /metrics/business
+    honor_labels: true
+    params:
+      business_entity: ['the_7_space']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'the7space_contacts_.*'
+        target_label: metric_type
+        replacement: 'contact_management'
+      - source_labels: [__name__]
+        regex: 'the7space_gallery_.*'
+        target_label: metric_type
+        replacement: 'gallery_operations'
+      - source_labels: [__name__]
+        regex: 'the7space_wellness_.*'
+        target_label: metric_type
+        replacement: 'wellness_services'
+      - source_labels: [__name__]
+        regex: 'the7space_workflow_.*'
+        target_label: metric_type
+        replacement: 'workflow_automation'
+
+  # External service monitoring
+  - job_name: 'the7space-external-services'
+    static_configs:
+      - targets: ['the7space-app:8000']
+    scrape_interval: 120s
+    metrics_path: /metrics/external
+    params:
+      check_external: ['true']
+    metric_relabel_configs:
+      - source_labels: [service]
+        regex: 'notion'
+        target_label: external_service
+        replacement: 'notion_api'
+      - source_labels: [service]
+        regex: 'wordpress'
+        target_label: external_service
+        replacement: 'wordpress_api'
+      - source_labels: [service]
+        regex: 'openai'
+        target_label: external_service
+        replacement: 'openai_api'
+
+  # Health check monitoring
+  - job_name: 'the7space-health-checks'
+    static_configs:
+      - targets: ['the7space-app:8000']
+    scrape_interval: 30s
+    metrics_path: /health/metrics
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: health_check_target
+      - target_label: job
+        replacement: 'the7space-health-checks'
+
+  # Custom application metrics
+  - job_name: 'the7space-custom-metrics'
+    static_configs:
+      - targets: ['the7space-app:8000']
+    scrape_interval: 60s
+    metrics_path: /metrics/custom
+    honor_labels: true
+    params:
+      include_custom: ['true']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'the7space_custom_.*'
+        target_label: metric_category
+        replacement: 'custom'
+
+# Remote write configuration (for long-term storage)
+remote_write:
+  - url: "http://thanos-receive:19291/api/v1/receive"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+    metadata_config:
+      send: true
+      send_interval: 30s
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'the7space_.*'
+        target_label: __tmp_keep
+        replacement: 'true'
+      - source_labels: [__tmp_keep]
+        regex: 'true'
+        action: keep
+
+# Storage configuration
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 30d
+    retention.size: 50GB
+    wal-compression: true
+    min-block-duration: 2h
+    max-block-duration: 25h
+
+# Query configuration
+query:
+  timeout: 2m
+  max_concurrent_queries: 20
+  max_samples: 50000000
+  lookback-delta: 5m
+
+# Web configuration
+web:
+  console.libraries: /etc/prometheus/console_libraries
+  console.templates: /etc/prometheus/consoles
+  enable-lifecycle: true
+  enable-admin-api: true
+  page-title: "The 7 Space Prometheus"
+  cors.origin: ".*"
+  max-connections: 512
+  read-timeout: 30s
+
+# Feature flags
+feature_flags:
+  - promql-at-modifier
+  - promql-negative-offset
+  - remote-write-receiver
+  - expand-external-labels
+
+# Tracing configuration
+tracing:
+  endpoint: "jaeger:14268/api/traces"
+  sampling_fraction: 0.1
+  insecure: true

@@ -1,0 +1,593 @@
+# The 7 Space Health Check Configuration
+# Enterprise-grade health monitoring for The 7 Space Art Gallery & Wellness Center
+
+# Global health check settings
+global:
+  check_interval: 30s
+  timeout: 30s
+  retries: 5
+  start_period: 120s
+  failure_threshold: 3
+  success_threshold: 2
+  
+  # Notification settings
+  notifications:
+    email:
+      enabled: true
+      recipients:
+        - admin@the7space.com
+        - tech@the7space.com
+      smtp_server: smtp.gmail.com
+      smtp_port: 587
+      smtp_username: ${SMTP_USERNAME}
+      smtp_password: ${SMTP_PASSWORD}
+    
+    slack:
+      enabled: false
+      webhook_url: ${SLACK_WEBHOOK_URL}
+      channel: "#the7space-alerts"
+    
+    webhook:
+      enabled: true
+      url: ${WEBHOOK_NOTIFICATION_URL}
+      secret: ${WEBHOOK_SECRET}
+
+# Service-specific health check configurations
+services:
+  # Main application server health checks
+  the7space-app:
+    primary_check:
+      type: http
+      endpoint: /health
+      port: 8000
+      method: GET
+      expected_status: 200
+      timeout: 30s
+      interval: 30s
+      retries: 5
+      start_period: 120s
+      headers:
+        User-Agent: "The7Space-HealthCheck/1.0"
+        Accept: "application/json"
+    
+    secondary_checks:
+      - name: api_readiness
+        type: http
+        endpoint: /health/ready
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 30s
+        description: "API readiness check"
+      
+      - name: database_connectivity
+        type: http
+        endpoint: /health/database
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 60s
+        description: "Database connectivity check"
+      
+      - name: external_services
+        type: http
+        endpoint: /health/external
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 30s
+        interval: 120s
+        description: "External services connectivity"
+      
+      - name: the7space_functionality
+        type: http
+        endpoint: /api/the7space/health
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 25s
+        interval: 60s
+        description: "The 7 Space specific functionality"
+      
+      - name: contact_management
+        type: http
+        endpoint: /api/the7space/contacts/health
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 300s
+        description: "Contact management system health"
+      
+      - name: workflow_automation
+        type: http
+        endpoint: /api/the7space/workflows/health
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 300s
+        description: "Workflow automation system health"
+      
+      - name: gallery_management
+        type: http
+        endpoint: /api/the7space/gallery/health
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 300s
+        description: "Gallery management system health"
+      
+      - name: wellness_center
+        type: http
+        endpoint: /api/the7space/wellness/health
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 300s
+        description: "Wellness center system health"
+    
+    startup_dependencies:
+      - the7space-mongodb
+      - the7space-redis
+      - the7space-consul
+    
+    failure_actions:
+      - restart_container
+      - notify_admin
+      - escalate_to_oncall
+    
+    recovery_actions:
+      - validate_configuration
+      - check_dependencies
+      - verify_external_services
+    
+    metrics:
+      - name: response_time
+        threshold: 500ms
+        critical_threshold: 2000ms
+      - name: error_rate
+        threshold: 5%
+        critical_threshold: 15%
+      - name: cpu_usage
+        threshold: 80%
+        critical_threshold: 95%
+      - name: memory_usage
+        threshold: 85%
+        critical_threshold: 95%
+
+  # MongoDB health checks
+  the7space-mongodb:
+    primary_check:
+      type: command
+      command: |
+        echo 'try {
+          db.runCommand("ping").ok ? 0 : 2
+        } catch(err) {
+          print("MongoDB health check failed: " + err);
+          2
+        }' | mongosh localhost:27017/the7space_production --quiet
+      timeout: 15s
+      interval: 30s
+      retries: 5
+      start_period: 60s
+    
+    secondary_checks:
+      - name: database_size
+        type: command
+        command: |
+          echo 'db.stats().dataSize' | mongosh localhost:27017/the7space_production --quiet
+        timeout: 10s
+        interval: 300s
+        description: "Database size monitoring"
+      
+      - name: connection_count
+        type: command
+        command: |
+          echo 'db.serverStatus().connections' | mongosh localhost:27017/the7space_production --quiet
+        timeout: 10s
+        interval: 60s
+        description: "Active connections monitoring"
+      
+      - name: replication_lag
+        type: command
+        command: |
+          echo 'rs.status()' | mongosh localhost:27017/the7space_production --quiet
+        timeout: 15s
+        interval: 120s
+        description: "Replication lag monitoring"
+    
+    failure_actions:
+      - restart_container
+      - check_disk_space
+      - notify_dba
+    
+    recovery_actions:
+      - repair_database
+      - check_indexes
+      - optimize_queries
+    
+    metrics:
+      - name: disk_usage
+        threshold: 80%
+        critical_threshold: 90%
+      - name: connection_usage
+        threshold: 80%
+        critical_threshold: 95%
+      - name: query_performance
+        threshold: 100ms
+        critical_threshold: 1000ms
+
+  # Redis health checks
+  the7space-redis:
+    primary_check:
+      type: command
+      command: redis-cli --no-auth-warning -a ${REDIS_PASSWORD} ping
+      expected_output: "PONG"
+      timeout: 10s
+      interval: 30s
+      retries: 5
+      start_period: 30s
+    
+    secondary_checks:
+      - name: memory_usage
+        type: command
+        command: redis-cli --no-auth-warning -a ${REDIS_PASSWORD} info memory
+        timeout: 10s
+        interval: 60s
+        description: "Redis memory usage"
+      
+      - name: connected_clients
+        type: command
+        command: redis-cli --no-auth-warning -a ${REDIS_PASSWORD} info clients
+        timeout: 10s
+        interval: 60s
+        description: "Connected clients count"
+      
+      - name: keyspace_info
+        type: command
+        command: redis-cli --no-auth-warning -a ${REDIS_PASSWORD} info keyspace
+        timeout: 10s
+        interval: 300s
+        description: "Keyspace information"
+    
+    failure_actions:
+      - restart_container
+      - clear_cache
+      - notify_admin
+    
+    recovery_actions:
+      - check_memory_usage
+      - optimize_cache_policies
+      - verify_persistence
+    
+    metrics:
+      - name: memory_usage
+        threshold: 80%
+        critical_threshold: 95%
+      - name: hit_rate
+        threshold: 90%
+        critical_threshold: 70%
+      - name: evicted_keys
+        threshold: 100/hour
+        critical_threshold: 1000/hour
+
+  # Consul health checks
+  the7space-consul:
+    primary_check:
+      type: command
+      command: consul members
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: leader_election
+        type: command
+        command: consul operator raft list-peers
+        timeout: 10s
+        interval: 60s
+        description: "Consul leader election status"
+      
+      - name: service_catalog
+        type: http
+        endpoint: /v1/catalog/services
+        port: 8500
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 120s
+        description: "Service catalog health"
+    
+    failure_actions:
+      - restart_container
+      - rejoin_cluster
+      - notify_admin
+    
+    recovery_actions:
+      - validate_configuration
+      - check_network_connectivity
+      - verify_cluster_state
+
+  # Nginx health checks
+  the7space-nginx:
+    primary_check:
+      type: command
+      command: nginx -t
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 10s
+    
+    secondary_checks:
+      - name: upstream_health
+        type: http
+        endpoint: /health
+        port: 80
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 30s
+        description: "Upstream server health"
+      
+      - name: ssl_certificate
+        type: command
+        command: openssl x509 -in /etc/nginx/ssl/the7space.crt -noout -checkend 2592000
+        timeout: 5s
+        interval: 86400s
+        description: "SSL certificate validity (30 days)"
+    
+    failure_actions:
+      - reload_configuration
+      - restart_container
+      - notify_admin
+    
+    recovery_actions:
+      - validate_configuration
+      - check_upstream_servers
+      - renew_certificates
+
+  # Prometheus health checks
+  the7space-prometheus:
+    primary_check:
+      type: http
+      endpoint: /-/healthy
+      port: 9090
+      method: GET
+      expected_status: 200
+      timeout: 15s
+      interval: 30s
+      retries: 5
+      start_period: 30s
+    
+    secondary_checks:
+      - name: targets_health
+        type: http
+        endpoint: /api/v1/targets
+        port: 9090
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 60s
+        description: "Scrape targets health"
+      
+      - name: storage_health
+        type: http
+        endpoint: /-/ready
+        port: 9090
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 120s
+        description: "Storage readiness"
+    
+    failure_actions:
+      - restart_container
+      - check_storage
+      - notify_monitoring_team
+    
+    recovery_actions:
+      - validate_configuration
+      - check_targets
+      - verify_storage
+
+  # Grafana health checks
+  the7space-grafana:
+    primary_check:
+      type: http
+      endpoint: /api/health
+      port: 3000
+      method: GET
+      expected_status: 200
+      timeout: 15s
+      interval: 30s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: datasource_health
+        type: http
+        endpoint: /api/datasources/proxy/1/api/v1/query?query=up
+        port: 3000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 300s
+        description: "Prometheus datasource health"
+      
+      - name: dashboard_health
+        type: http
+        endpoint: /api/dashboards/home
+        port: 3000
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 600s
+        description: "Dashboard accessibility"
+    
+    failure_actions:
+      - restart_container
+      - reset_database
+      - notify_admin
+    
+    recovery_actions:
+      - validate_datasources
+      - repair_dashboards
+      - check_plugins
+
+# Integration health checks
+integrations:
+  notion_api:
+    type: http
+    endpoint: https://api.notion.com/v1/users/me
+    method: GET
+    headers:
+      Authorization: "Bearer ${NOTION_API_TOKEN}"
+      Notion-Version: "2022-06-28"
+    expected_status: 200
+    timeout: 20s
+    interval: 300s
+    description: "Notion API connectivity"
+    
+    failure_actions:
+      - check_api_token
+      - verify_rate_limits
+      - notify_admin
+  
+  wordpress_api:
+    type: http
+    endpoint: ${THE_7_SPACE_WORDPRESS_URL}/wp-json/wp/v2/
+    method: GET
+    expected_status: 200
+    timeout: 15s
+    interval: 300s
+    description: "WordPress API connectivity"
+    
+    failure_actions:
+      - check_website_status
+      - verify_api_credentials
+      - notify_admin
+  
+  openai_api:
+    type: http
+    endpoint: https://api.openai.com/v1/models
+    method: GET
+    headers:
+      Authorization: "Bearer ${OPENAI_API_KEY}"
+    expected_status: 200
+    timeout: 20s
+    interval: 600s
+    description: "OpenAI API connectivity"
+    
+    failure_actions:
+      - check_api_key
+      - verify_rate_limits
+      - notify_admin
+
+# Business logic health checks
+business_logic:
+  contact_processing:
+    type: custom
+    script: /app/scripts/health-checks/check-contact-processing.py
+    timeout: 30s
+    interval: 300s
+    description: "Contact processing pipeline health"
+  
+  workflow_automation:
+    type: custom
+    script: /app/scripts/health-checks/check-workflow-automation.py
+    timeout: 30s
+    interval: 300s
+    description: "Workflow automation engine health"
+  
+  gallery_operations:
+    type: custom
+    script: /app/scripts/health-checks/check-gallery-operations.py
+    timeout: 30s
+    interval: 600s
+    description: "Gallery management operations health"
+  
+  wellness_services:
+    type: custom
+    script: /app/scripts/health-checks/check-wellness-services.py
+    timeout: 30s
+    interval: 600s
+    description: "Wellness center services health"
+
+# Alerting rules
+alerting:
+  rules:
+    - name: service_down
+      condition: "service_status == 'unhealthy'"
+      severity: critical
+      duration: 2m
+      message: "Service {{ $labels.service }} is down"
+      
+    - name: high_response_time
+      condition: "response_time > 1000ms"
+      severity: warning
+      duration: 5m
+      message: "High response time detected: {{ $value }}ms"
+      
+    - name: high_error_rate
+      condition: "error_rate > 10%"
+      severity: critical
+      duration: 3m
+      message: "High error rate detected: {{ $value }}%"
+      
+    - name: database_connection_issues
+      condition: "database_connections > 80%"
+      severity: warning
+      duration: 5m
+      message: "Database connection usage high: {{ $value }}%"
+      
+    - name: memory_usage_high
+      condition: "memory_usage > 90%"
+      severity: critical
+      duration: 2m
+      message: "Memory usage critical: {{ $value }}%"
+      
+    - name: disk_space_low
+      condition: "disk_usage > 85%"
+      severity: warning
+      duration: 10m
+      message: "Disk space running low: {{ $value }}%"
+      
+    - name: ssl_certificate_expiring
+      condition: "ssl_cert_expiry < 30d"
+      severity: warning
+      duration: 1h
+      message: "SSL certificate expiring in {{ $value }} days"
+
+# Maintenance windows
+maintenance:
+  windows:
+    - name: weekly_maintenance
+      schedule: "0 2 * * 0"  # Sunday 2 AM UTC
+      duration: 2h
+      disable_alerts: true
+      description: "Weekly maintenance window"
+      
+    - name: monthly_updates
+      schedule: "0 3 1 * *"  # First day of month 3 AM UTC
+      duration: 4h
+      disable_alerts: true
+      description: "Monthly system updates"
+
+# Health check dashboard
+dashboard:
+  enabled: true
+  refresh_interval: 30s
+  auto_refresh: true
+  panels:
+    - service_status
+    - response_times
+    - error_rates
+    - resource_usage
+    - integration_status
+    - business_logic_health

@@ -1,0 +1,391 @@
+# The 7 Space Production Deployment Configuration
+# Enterprise-grade Docker Compose for The 7 Space Art Gallery & Wellness Center
+# Integrates with HigherSelf Network Server multi-entity architecture
+
+version: '3.8'
+
+networks:
+  the7space-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  monitoring-network:
+    external: true
+    name: higherself-monitoring
+
+volumes:
+  the7space_mongodb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./data/the7space}/mongodb
+  the7space_redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./data/the7space}/redis
+  the7space_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${LOGS_PATH:-./logs/the7space}
+  the7space_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${BACKUP_PATH:-./backups/the7space}
+
+services:
+  # Main application server - The 7 Space focused
+  the7space-app:
+    image: thehigherselfnetworkserver:the7space-production
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        ENVIRONMENT: production
+        BUSINESS_ENTITY: the_7_space
+        BUILD_VERSION: ${BUILD_VERSION:-latest}
+    container_name: the7space-production-app
+    hostname: the7space-app
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+      - "${HTTPS_PORT:-8443}:8443"
+    environment:
+      # Core application settings
+      - RUNNING_IN_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - JSON_LOGS=true
+      
+      # Business entity configuration
+      - PRIMARY_BUSINESS_ENTITY=the_7_space
+      - BUSINESS_ENTITY_ISOLATION=true
+      - THE_7_SPACE_ENABLED=true
+      - AM_CONSULTING_ENABLED=false
+      - HIGHERSELF_CORE_ENABLED=false
+      
+      # The 7 Space specific settings
+      - THE_7_SPACE_CONTACT_COUNT=191
+      - THE_7_SPACE_GALLERY_MODE=true
+      - THE_7_SPACE_WELLNESS_MODE=true
+      - THE_7_SPACE_WORDPRESS_INTEGRATION=true
+      
+      # Database connections
+      - MONGODB_URI=mongodb://the7space_user:${MONGODB_PASSWORD}@the7space-mongodb:27017/the7space_production?authSource=admin
+      - REDIS_URI=redis://:${REDIS_PASSWORD}@the7space-redis:6379/0
+      - CONSUL_HTTP_ADDR=the7space-consul:8500
+      
+      # External service integrations
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - THE_7_SPACE_WORDPRESS_URL=${THE_7_SPACE_WORDPRESS_URL}
+      - THE_7_SPACE_WORDPRESS_API_KEY=${THE_7_SPACE_WORDPRESS_API_KEY}
+      
+      # Security settings
+      - SSL_ENABLED=true
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["https://the7space.com"]}
+      
+      # Performance settings
+      - SERVER_WORKERS=${SERVER_WORKERS:-4}
+      - MAX_REQUEST_SIZE=50MB
+      - REQUEST_TIMEOUT=120
+      - CONNECTION_TIMEOUT=60
+      
+      # Secrets management
+      - SECRETS_BACKEND=aws_secrets_manager
+      - SECRETS_FALLBACK_BACKEND=vault
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - VAULT_ADDR=http://the7space-vault:8200
+      
+    env_file:
+      - .env.the7space.production
+    volumes:
+      - the7space_logs:/app/logs
+      - ./data/the7space:/app/data
+      - ./config:/app/config:ro
+      - ./integrations/the7space:/app/integrations/the7space:ro
+    networks:
+      - the7space-network
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+    depends_on:
+      the7space-mongodb:
+        condition: service_healthy
+      the7space-redis:
+        condition: service_healthy
+      the7space-consul:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=8000"
+      - "prometheus.path=/metrics"
+      - "traefik.enable=true"
+      - "traefik.http.routers.the7space.rule=Host(`api.the7space.com`)"
+      - "traefik.http.routers.the7space.tls=true"
+
+  # MongoDB - The 7 Space data storage
+  the7space-mongodb:
+    image: mongo:6.0
+    container_name: the7space-production-mongodb
+    hostname: the7space-mongodb
+    restart: unless-stopped
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=the7space_production
+      - MONGO_APP_USER=the7space_user
+      - MONGO_APP_PASSWORD=${MONGODB_PASSWORD}
+    volumes:
+      - the7space_mongodb_data:/data/db
+      - ./deployment/mongodb/the7space:/docker-entrypoint-initdb.d
+      - the7space_logs:/var/log/mongodb
+      - the7space_backups:/backups
+    networks:
+      - the7space-network
+    command: >
+      mongod 
+      --auth 
+      --bind_ip_all 
+      --replSet rs0 
+      --oplogSize 1024
+      --wiredTigerCacheSizeGB 2
+      --slowOpThresholdMs 100
+      --profile 1
+    healthcheck:
+      test: |
+        echo 'try {
+          db.runCommand("ping").ok ? 0 : 2
+        } catch(err) {
+          print("MongoDB health check failed: " + err);
+          2
+        }' | mongosh localhost:27017/the7space_production --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=27017"
+
+  # Redis - Caching and session management
+  the7space-redis:
+    image: redis:7.0-alpine
+    container_name: the7space-production-redis
+    hostname: the7space-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - the7space_redis_data:/data
+      - ./deployment/redis/the7space.conf:/usr/local/etc/redis/redis.conf:ro
+      - the7space_logs:/var/log/redis
+    networks:
+      - the7space-network
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=6379"
+
+  # Consul - Service discovery and configuration
+  the7space-consul:
+    image: hashicorp/consul:1.15
+    container_name: the7space-production-consul
+    hostname: the7space-consul
+    restart: unless-stopped
+    ports:
+      - "${CONSUL_PORT:-8500}:8500"
+      - "8600:8600/udp"
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    volumes:
+      - ./deployment/consul/the7space:/consul/config:ro
+      - the7space_logs:/consul/logs
+    networks:
+      - the7space-network
+      - monitoring-network
+    command: >
+      consul agent
+      -server
+      -bootstrap-expect=1
+      -ui
+      -client=0.0.0.0
+      -bind=0.0.0.0
+      -data-dir=/consul/data
+      -config-dir=/consul/config
+      -log-level=INFO
+      -enable-script-checks=false
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=8500"
+
+  # Nginx - Load balancer and SSL termination
+  the7space-nginx:
+    image: nginx:alpine
+    container_name: the7space-production-nginx
+    hostname: the7space-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx/the7space.conf:/etc/nginx/nginx.conf:ro
+      - ./deployment/nginx/ssl:/etc/nginx/ssl:ro
+      - the7space_logs:/var/log/nginx
+    networks:
+      - the7space-network
+    depends_on:
+      - the7space-app
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=80"
+
+  # Prometheus - Metrics collection
+  the7space-prometheus:
+    image: prom/prometheus:latest
+    container_name: the7space-production-prometheus
+    hostname: the7space-prometheus
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./deployment/prometheus/the7space.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deployment/prometheus/rules:/etc/prometheus/rules:ro
+      - the7space_logs:/prometheus/logs
+    networks:
+      - the7space-network
+      - monitoring-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--log.level=info'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.2'
+          memory: 512M
+
+  # Grafana - Monitoring dashboards
+  the7space-grafana:
+    image: grafana/grafana:latest
+    container_name: the7space-production-grafana
+    hostname: the7space-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - ./deployment/grafana/the7space:/etc/grafana/provisioning:ro
+      - the7space_logs:/var/log/grafana
+    networks:
+      - the7space-network
+      - monitoring-network
+    depends_on:
+      - the7space-prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 256M
