@@ -44,7 +44,7 @@ nltk==3.8.1
 colorama==0.4.6
 
 # RAG dependencies
-# crawl4ai==0.5.2  # Temporarily commented out due to compatibility issues
+# crawl4ai==0.6.3  # Temporarily disabled for VM deployment due to dependency conflicts
 # aqua-client==0.3.1  # Temporarily commented out due to compatibility issues
 
 # Integration services
@@ -75,7 +75,7 @@ edge-tts==6.1.19
 pytesseract==0.3.10
 Pillow==10.1.0
 google-cloud-vision==3.4.5
-abbyy-cloud-ocr-sdk==1.0.0  # This is a placeholder, use the actual ABBYY SDK package
+# abbyy-cloud-ocr-sdk==1.0.0  # This is a placeholder, use the actual ABBYY SDK package - commented out for VM deployment
 
 # Core Infrastructure Dependencies (kept for server foundation)
 # Performance and Monitoring
@@ -86,7 +86,7 @@ psutil==5.9.6
 hiredis==2.2.3
 
 # Enhanced Security
-cryptography==41.0.8
+cryptography>=41.0.0
 
 # Additional Utilities
 pytz==2023.3

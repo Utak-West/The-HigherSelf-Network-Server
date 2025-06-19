@@ -14,9 +14,24 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 
 # Crawl4AI imports
-from crawl4ai import AsyncWebCrawler, BrowserConfig, CacheMode, CrawlerRunConfig
-from crawl4ai.content_filter_strategy import BM25ContentFilter, PruningContentFilter
-from crawl4ai.markdown_generation_strategy import DefaultMarkdownGenerator
+try:
+    from crawl4ai import AsyncWebCrawler, BrowserConfig, CacheMode, CrawlerRunConfig
+    CRAWL4AI_AVAILABLE = True
+except ImportError:
+    # Graceful fallback when crawl4ai is not available
+    CRAWL4AI_AVAILABLE = False
+    AsyncWebCrawler = None
+    BrowserConfig = None
+    CacheMode = None
+    CrawlerRunConfig = None
+try:
+    from crawl4ai.content_filter_strategy import BM25ContentFilter, PruningContentFilter
+    from crawl4ai.markdown_generation_strategy import DefaultMarkdownGenerator
+except ImportError:
+    # Graceful fallback when crawl4ai is not available
+    BM25ContentFilter = None
+    PruningContentFilter = None
+    DefaultMarkdownGenerator = None
 from loguru import logger
 from pydantic import BaseModel, Field
 
@@ -57,6 +72,11 @@ class Crawl4AIService:
         if self._initialized:
             return
 
+        if not CRAWL4AI_AVAILABLE:
+            logger.warning("Crawl4AI is not available - service will be disabled")
+            self._initialized = True
+            return
+
         try:
             # Initialize vector store and semantic search
             self.vector_store = await get_vector_store()
@@ -91,6 +111,14 @@ class Crawl4AIService:
         """
         if not self._initialized:
             await self.initialize()
+
+        if not CRAWL4AI_AVAILABLE:
+            logger.warning("Crawl4AI is not available - returning error response")
+            return {
+                "success": False,
+                "error": "Crawl4AI service is not available",
+                "url": config.url,
+            }
 
         try:
             # Configure content filter based on user query

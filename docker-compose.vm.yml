@@ -83,13 +83,12 @@ services:
       - MONGO_APP_USER=higherself_user
       - MONGO_APP_PASSWORD=${MONGODB_PASSWORD}
     command: >
-      mongod 
-      --auth 
-      --bind_ip_all 
-      --logpath /var/log/mongodb/mongod.log 
-      --logappend 
+      mongod
+      --auth
+      --bind_ip_all
+      --logpath /var/log/mongodb/mongod.log
+      --logappend
       --oplogSize 1024
-      --replSet rs0
     healthcheck:
       test: |
         echo 'try {
@@ -351,38 +350,18 @@ volumes:
   mongodb_vm_data:
     name: higherself_vm_mongodb_data
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/higherself/data/mongodb
   redis_vm_data:
     name: higherself_vm_redis_data
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/higherself/data/redis
   consul_vm_data:
     name: higherself_vm_consul_data
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/higherself/data/consul
   prometheus_vm_data:
     name: higherself_vm_prometheus_data
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/higherself/data/prometheus
   grafana_vm_data:
     name: higherself_vm_grafana_data
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/higherself/data/grafana
 
 networks:
   higherself-vm-network:
@@ -390,7 +369,7 @@ networks:
     name: higherself-vm-network
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 10.100.0.0/16
     labels:
       - "vm.network=production"
       - "business.entities=multi"

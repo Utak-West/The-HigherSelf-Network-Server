@@ -12,11 +12,15 @@ ENV PYTHONUNBUFFERED=1
 # Set environment variable to indicate we're running in a container
 ENV RUNNING_IN_CONTAINER=true
 
-# Install system dependencies
+# Install system dependencies including Tesseract OCR
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gcc \
     python3-dev \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    libleptonica-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

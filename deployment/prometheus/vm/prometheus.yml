@@ -1,0 +1,118 @@
+# HigherSelf Network Server - Prometheus VM Configuration
+# Enterprise Automation Platform Monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'higherself-vm'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # HigherSelf Server Application
+  - job_name: 'higherself-server'
+    static_configs:
+      - targets: ['higherself-server-vm:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # MongoDB Exporter (if available)
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['higherself-mongodb-vm:27017']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Redis Exporter (if available)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['higherself-redis-vm:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Consul
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['higherself-consul-vm:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Node Exporter (if available)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Docker containers metrics (if available)
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['localhost:9323']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Business Entity Specific Monitoring
+  - job_name: 'the-7-space-metrics'
+    static_configs:
+      - targets: ['higherself-server-vm:8000']
+    metrics_path: '/metrics/the-7-space'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    params:
+      entity: ['the_7_space']
+
+  - job_name: 'am-consulting-metrics'
+    static_configs:
+      - targets: ['higherself-server-vm:8000']
+    metrics_path: '/metrics/am-consulting'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    params:
+      entity: ['am_consulting']
+
+  - job_name: 'higherself-core-metrics'
+    static_configs:
+      - targets: ['higherself-server-vm:8000']
+    metrics_path: '/metrics/higherself-core'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    params:
+      entity: ['higherself_core']
+
+# Remote write configuration (for external monitoring systems)
+# remote_write:
+#   - url: "https://your-remote-prometheus-endpoint/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+
+# Remote read configuration (for external monitoring systems)
+# remote_read:
+#   - url: "https://your-remote-prometheus-endpoint/api/v1/read"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"

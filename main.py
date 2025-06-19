@@ -21,7 +21,7 @@ from agents import (  # Legacy agent imports (for backwards compatibility); Name
     CommunityEngagementAgent,
     ContentLifecycleAgent,
     Elan,
-    GraceOrchestrator,
+    GraceFields,
     LeadCaptureAgent,
     Liora,
     MarketingCampaignAgent,
