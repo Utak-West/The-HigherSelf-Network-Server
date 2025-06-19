@@ -40,6 +40,7 @@ from api.webhooks_circleso import router as circleso_router
 from api.zapier_ecosystem import router as zapier_ecosystem_router
 from api.termius_integration import router as termius_router
 from api.contact_workflow_webhooks import router as contact_workflow_router
+from api.notion_mail_integration import router as notion_mail_router
 from models.base import ApiPlatform, NotionIntegrationConfig
 from models.notion_db_models import WorkflowInstance
 from services.acuity_service import AcuityService
@@ -93,6 +94,7 @@ app.include_router(barter_router)  # Added Barter system router
 app.include_router(zapier_ecosystem_router)  # Added Zapier ecosystem router
 app.include_router(termius_router)  # Added Termius integration router
 app.include_router(contact_workflow_router)  # Added Contact Workflow automation router
+app.include_router(notion_mail_router)  # Added Notion Mail Integration router
 app.include_router(
     mcp_tools_router
 )  # Added MCP tools router for Context7 and other MCP services
