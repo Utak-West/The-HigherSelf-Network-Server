@@ -1,0 +1,56 @@
+{
+  "datacenter": "the7space-demo",
+  "data_dir": "/consul/data",
+  "log_level": "INFO",
+  "node_name": "the7space-demo-consul",
+  "server": true,
+  "bootstrap_expect": 1,
+  "ui_config": {
+    "enabled": true
+  },
+  "connect": {
+    "enabled": true
+  },
+  "client_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
+  "retry_join": [],
+  "services": [
+    {
+      "name": "the7space-demo-app",
+      "port": 8000,
+      "address": "the7space-demo",
+      "tags": ["demo", "the7space", "api"],
+      "check": {
+        "http": "http://the7space-demo:8000/health",
+        "interval": "30s",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "mongodb-demo",
+      "port": 27017,
+      "address": "mongodb-demo",
+      "tags": ["demo", "database", "mongodb"],
+      "check": {
+        "tcp": "mongodb-demo:27017",
+        "interval": "30s",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "redis-demo",
+      "port": 6379,
+      "address": "redis-demo",
+      "tags": ["demo", "cache", "redis"],
+      "check": {
+        "tcp": "redis-demo:6379",
+        "interval": "30s",
+        "timeout": "10s"
+      }
+    }
+  ],
+  "acl": {
+    "enabled": false,
+    "default_policy": "allow"
+  }
+}

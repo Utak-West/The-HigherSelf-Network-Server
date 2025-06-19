@@ -1,0 +1,74 @@
+# Prometheus configuration for The 7 Space Demo Environment
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: 'demo'
+    business_entity: 'the_7_space'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - "alert_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  # The 7 Space Demo Application
+  - job_name: 'the7space-demo-app'
+    static_configs:
+      - targets: ['the7space-demo:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    labels:
+      service: 'the7space-demo'
+      environment: 'demo'
+
+  # MongoDB Exporter (if available)
+  - job_name: 'mongodb-demo'
+    static_configs:
+      - targets: ['mongodb-demo:27017']
+    metrics_path: '/metrics'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    labels:
+      service: 'mongodb'
+      environment: 'demo'
+
+  # Redis Exporter (if available)
+  - job_name: 'redis-demo'
+    static_configs:
+      - targets: ['redis-demo:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    labels:
+      service: 'redis'
+      environment: 'demo'
+
+  # Consul
+  - job_name: 'consul-demo'
+    static_configs:
+      - targets: ['consul-demo:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    labels:
+      service: 'consul'
+      environment: 'demo'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    labels:
+      service: 'prometheus'
+      environment: 'demo'

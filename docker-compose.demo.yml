@@ -1,0 +1,242 @@
+# ======================================================
+# THE HIGHERSELF NETWORK SERVER - DEMO ENVIRONMENT
+# THE 7 SPACE FOCUSED DOCKER COMPOSE CONFIGURATION
+# ======================================================
+
+version: '3.8'
+
+services:
+  # Main application server - The 7 Space Demo
+  the7space-demo:
+    image: thehigherselfnetworkserver:demo
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        ENVIRONMENT: demo
+    container_name: the7space-demo-app
+    ports:
+      - "8000:8000"
+    environment:
+      - RUNNING_IN_CONTAINER=true
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=demo
+      - DEMO_MODE=true
+      - PRIMARY_BUSINESS_ENTITY=the_7_space
+      - MONGODB_URI=mongodb://demo_user:demo_password@mongodb-demo:27017/higherself_demo
+      - REDIS_URI=redis://redis-demo:6379/1
+      - CONSUL_HTTP_ADDR=consul-demo:8500
+    env_file:
+      - .env.demo
+    volumes:
+      - ./logs/demo:/app/logs
+      - ./data/demo:/app/data
+      - ./config:/app/config:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    depends_on:
+      mongodb-demo:
+        condition: service_healthy
+      redis-demo:
+        condition: service_healthy
+      consul-demo:
+        condition: service_healthy
+    networks:
+      - the7space-demo-network
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=8000"
+      - "prometheus.path=/metrics"
+      - "demo.entity=the_7_space"
+      - "demo.environment=demo"
+
+  # MongoDB - Demo instance with The 7 Space data
+  mongodb-demo:
+    image: mongo:6.0
+    container_name: the7space-demo-mongodb
+    ports:
+      - "27018:27017"  # Different port to avoid conflicts
+    volumes:
+      - mongodb_demo_data:/data/db
+      - ./deployment/mongodb/demo:/docker-entrypoint-initdb.d
+      - ./logs/demo/mongodb:/var/log/mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=demo_admin_password
+      - MONGO_INITDB_DATABASE=higherself_demo
+      - MONGO_APP_USER=demo_user
+      - MONGO_APP_PASSWORD=demo_password
+    healthcheck:
+      test: |
+        echo 'try {
+          db.runCommand("ping").ok ? 0 : 2
+        } catch(err) {
+          print("MongoDB health check failed: " + err);
+          2
+        }' | mongosh localhost:27017/higherself_demo --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - the7space-demo-network
+    labels:
+      - "demo.service=database"
+      - "demo.entity=the_7_space"
+
+  # Redis - Demo instance for caching and job queuing
+  redis-demo:
+    image: redis:7-alpine
+    container_name: the7space-demo-redis
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    volumes:
+      - redis_demo_data:/data
+      - ./logs/demo/redis:/var/log/redis
+    command: >
+      redis-server 
+      --requirepass demo_redis_password
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - the7space-demo-network
+    labels:
+      - "demo.service=cache"
+      - "demo.entity=the_7_space"
+
+  # Consul - Service discovery and configuration for demo
+  consul-demo:
+    image: consul:1.15
+    container_name: the7space-demo-consul
+    ports:
+      - "8501:8500"  # Different port to avoid conflicts
+    volumes:
+      - consul_demo_data:/consul/data
+      - ./deployment/consul/demo:/consul/config
+      - ./logs/demo/consul:/consul/logs
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    command: >
+      consul agent 
+      -server 
+      -bootstrap-expect=1 
+      -datacenter=the7space-demo 
+      -data-dir=/consul/data 
+      -config-dir=/consul/config 
+      -ui-content-path=/consul/ 
+      -log-level=INFO 
+      -client=0.0.0.0
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - the7space-demo-network
+    labels:
+      - "demo.service=discovery"
+      - "demo.entity=the_7_space"
+
+  # Prometheus - Metrics collection for demo monitoring
+  prometheus-demo:
+    image: prom/prometheus:latest
+    container_name: the7space-demo-prometheus
+    ports:
+      - "9091:9090"  # Different port to avoid conflicts
+    volumes:
+      - ./deployment/prometheus/demo:/etc/prometheus
+      - prometheus_demo_data:/prometheus
+      - ./logs/demo/prometheus:/var/log/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+      - '--web.external-url=http://localhost:9091'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      - the7space-demo
+    networks:
+      - the7space-demo-network
+    labels:
+      - "demo.service=monitoring"
+      - "demo.entity=the_7_space"
+
+  # Grafana - Demo dashboard and visualization
+  grafana-demo:
+    image: grafana/grafana:latest
+    container_name: the7space-demo-grafana
+    ports:
+      - "3001:3000"  # Different port to avoid conflicts
+    volumes:
+      - ./deployment/grafana/demo:/etc/grafana/provisioning
+      - grafana_demo_data:/var/lib/grafana
+      - ./logs/demo/grafana:/var/log/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=demo_admin_2024
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/the7space-demo.json
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      - prometheus-demo
+    networks:
+      - the7space-demo-network
+    labels:
+      - "demo.service=dashboard"
+      - "demo.entity=the_7_space"
+
+volumes:
+  mongodb_demo_data:
+    name: the7space_demo_mongodb_data
+  redis_demo_data:
+    name: the7space_demo_redis_data
+  consul_demo_data:
+    name: the7space_demo_consul_data
+  prometheus_demo_data:
+    name: the7space_demo_prometheus_data
+  grafana_demo_data:
+    name: the7space_demo_grafana_data
+
+networks:
+  the7space-demo-network:
+    driver: bridge
+    name: the7space-demo-network
+    labels:
+      - "demo.network=the_7_space"
+      - "demo.environment=demo"
