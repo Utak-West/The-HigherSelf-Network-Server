@@ -1,0 +1,450 @@
+# ======================================================
+# HIGHERSELF NETWORK SERVER - NETWORK CONFIGURATION
+# Comprehensive networking setup for secure service communication
+# ======================================================
+
+# Network topology configuration
+networks:
+  # Main application network
+  higherself_network:
+    driver: bridge
+    name: higherself-network-${ENVIRONMENT:-dev}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${NETWORK_SUBNET:-172.20.0.0/16}
+          gateway: ${NETWORK_GATEWAY:-172.20.0.1}
+    labels:
+      com.higherself.network: main
+      com.higherself.environment: ${ENVIRONMENT:-development}
+      com.higherself.purpose: service-communication
+    options:
+      com.docker.network.bridge.name: higherself-br0
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: "1500"
+
+  # Database network (isolated)
+  database_network:
+    driver: bridge
+    name: higherself-database-${ENVIRONMENT:-dev}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DATABASE_SUBNET:-172.21.0.0/24}
+          gateway: ${DATABASE_GATEWAY:-172.21.0.1}
+    labels:
+      com.higherself.network: database
+      com.higherself.environment: ${ENVIRONMENT:-development}
+      com.higherself.purpose: database-isolation
+    options:
+      com.docker.network.bridge.name: higherself-db-br0
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+
+  # Cache network (isolated)
+  cache_network:
+    driver: bridge
+    name: higherself-cache-${ENVIRONMENT:-dev}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${CACHE_SUBNET:-172.22.0.0/24}
+          gateway: ${CACHE_GATEWAY:-172.22.0.1}
+    labels:
+      com.higherself.network: cache
+      com.higherself.environment: ${ENVIRONMENT:-development}
+      com.higherself.purpose: cache-isolation
+    options:
+      com.docker.network.bridge.name: higherself-cache-br0
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+
+  # Monitoring network
+  monitoring_network:
+    driver: bridge
+    name: higherself-monitoring-${ENVIRONMENT:-dev}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${MONITORING_SUBNET:-172.23.0.0/24}
+          gateway: ${MONITORING_GATEWAY:-172.23.0.1}
+    labels:
+      com.higherself.network: monitoring
+      com.higherself.environment: ${ENVIRONMENT:-development}
+      com.higherself.purpose: monitoring-isolation
+    options:
+      com.docker.network.bridge.name: higherself-mon-br0
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+
+  # External services network
+  external_network:
+    driver: bridge
+    name: higherself-external-${ENVIRONMENT:-dev}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${EXTERNAL_SUBNET:-172.24.0.0/24}
+          gateway: ${EXTERNAL_GATEWAY:-172.24.0.1}
+    labels:
+      com.higherself.network: external
+      com.higherself.environment: ${ENVIRONMENT:-development}
+      com.higherself.purpose: external-communication
+    options:
+      com.docker.network.bridge.name: higherself-ext-br0
+      com.docker.network.bridge.enable_icc: "false"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+
+# Service network assignments
+service_networks:
+  higherself-server:
+    networks:
+      - higherself_network
+      - database_network
+      - cache_network
+      - external_network
+    aliases:
+      - api
+      - app
+      - server
+    ipv4_address:
+      higherself_network: ${API_SERVER_IP:-172.20.0.10}
+
+  mongodb:
+    networks:
+      - database_network
+      - monitoring_network
+    aliases:
+      - db
+      - database
+      - mongo
+    ipv4_address:
+      database_network: ${MONGODB_IP:-172.21.0.10}
+
+  redis:
+    networks:
+      - cache_network
+      - monitoring_network
+    aliases:
+      - cache
+      - redis-server
+    ipv4_address:
+      cache_network: ${REDIS_IP:-172.22.0.10}
+
+  consul:
+    networks:
+      - higherself_network
+      - monitoring_network
+    aliases:
+      - service-discovery
+      - consul-server
+    ipv4_address:
+      higherself_network: ${CONSUL_IP:-172.20.0.20}
+
+  nginx:
+    networks:
+      - higherself_network
+      - external_network
+    aliases:
+      - proxy
+      - load-balancer
+      - gateway
+    ipv4_address:
+      higherself_network: ${NGINX_IP:-172.20.0.5}
+      external_network: ${NGINX_EXTERNAL_IP:-172.24.0.5}
+
+  prometheus:
+    networks:
+      - monitoring_network
+      - higherself_network
+    aliases:
+      - metrics
+      - prometheus-server
+    ipv4_address:
+      monitoring_network: ${PROMETHEUS_IP:-172.23.0.10}
+
+  grafana:
+    networks:
+      - monitoring_network
+      - higherself_network
+    aliases:
+      - dashboard
+      - grafana-server
+    ipv4_address:
+      monitoring_network: ${GRAFANA_IP:-172.23.0.20}
+
+  celery-worker:
+    networks:
+      - higherself_network
+      - database_network
+      - cache_network
+    aliases:
+      - worker
+      - task-processor
+    ipv4_address:
+      higherself_network: ${CELERY_WORKER_IP:-172.20.0.30}
+
+  celery-beat:
+    networks:
+      - higherself_network
+      - cache_network
+    aliases:
+      - scheduler
+      - task-scheduler
+    ipv4_address:
+      higherself_network: ${CELERY_BEAT_IP:-172.20.0.31}
+
+# Load balancing configuration
+load_balancing:
+  enabled: true
+  strategy: round_robin  # round_robin, least_connections, ip_hash
+  
+  upstream_servers:
+    higherself_api:
+      - server: ${API_SERVER_IP:-172.20.0.10}:8000
+        weight: 1
+        max_fails: 3
+        fail_timeout: 30s
+      # Additional API server instances for scaling
+      - server: ${API_SERVER_2_IP:-172.20.0.11}:8000
+        weight: 1
+        max_fails: 3
+        fail_timeout: 30s
+        backup: true
+
+  health_checks:
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    path: /health
+    expected_status: 200
+
+# Security configuration
+security:
+  # Network isolation
+  isolation:
+    enabled: true
+    database_isolation: true
+    cache_isolation: true
+    monitoring_isolation: false
+    
+  # Firewall rules
+  firewall:
+    enabled: true
+    default_policy: DROP
+    
+    rules:
+      # Allow internal service communication
+      - name: api_to_database
+        source: higherself_network
+        destination: database_network
+        ports: [27017]
+        protocol: tcp
+        action: ALLOW
+      
+      - name: api_to_cache
+        source: higherself_network
+        destination: cache_network
+        ports: [6379]
+        protocol: tcp
+        action: ALLOW
+      
+      - name: monitoring_access
+        source: monitoring_network
+        destination: [higherself_network, database_network, cache_network]
+        ports: [8000, 27017, 6379, 8500]
+        protocol: tcp
+        action: ALLOW
+      
+      # External access
+      - name: external_http
+        source: 0.0.0.0/0
+        destination: external_network
+        ports: [80, 443]
+        protocol: tcp
+        action: ALLOW
+      
+      # Block direct database access from external
+      - name: block_external_database
+        source: 0.0.0.0/0
+        destination: database_network
+        ports: [27017]
+        protocol: tcp
+        action: DROP
+
+  # SSL/TLS configuration
+  tls:
+    enabled: ${ENABLE_TLS:-false}
+    version: TLSv1.3
+    ciphers: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+    certificate_path: /etc/ssl/certs/higherself.crt
+    private_key_path: /etc/ssl/private/higherself.key
+    
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 1000
+    burst_size: 100
+    whitelist:
+      - ${MONITORING_SUBNET:-172.23.0.0/24}
+      - ${ADMIN_IP_RANGE:-10.0.0.0/8}
+
+# Service discovery configuration
+service_discovery:
+  enabled: true
+  provider: consul
+  
+  consul:
+    address: ${CONSUL_IP:-172.20.0.20}:8500
+    datacenter: higherself-${ENVIRONMENT:-dev}
+    
+    services:
+      higherself-api:
+        name: higherself-api
+        address: ${API_SERVER_IP:-172.20.0.10}
+        port: 8000
+        tags: [api, http, ${ENVIRONMENT:-dev}]
+        health_check:
+          http: http://${API_SERVER_IP:-172.20.0.10}:8000/health
+          interval: 30s
+          timeout: 10s
+      
+      mongodb:
+        name: mongodb
+        address: ${MONGODB_IP:-172.21.0.10}
+        port: 27017
+        tags: [database, mongodb, ${ENVIRONMENT:-dev}]
+        health_check:
+          tcp: ${MONGODB_IP:-172.21.0.10}:27017
+          interval: 30s
+          timeout: 10s
+      
+      redis:
+        name: redis
+        address: ${REDIS_IP:-172.22.0.10}
+        port: 6379
+        tags: [cache, redis, ${ENVIRONMENT:-dev}]
+        health_check:
+          tcp: ${REDIS_IP:-172.22.0.10}:6379
+          interval: 30s
+          timeout: 10s
+
+# Business entity network isolation
+business_entity_isolation:
+  enabled: ${BUSINESS_ENTITY_ISOLATION:-true}
+  strategy: vlan_tagging  # vlan_tagging, subnet_isolation, namespace_isolation
+  
+  entities:
+    the_7_space:
+      vlan_id: 100
+      subnet: ${THE_7_SPACE_SUBNET:-172.25.0.0/24}
+      gateway: ${THE_7_SPACE_GATEWAY:-172.25.0.1}
+      allowed_services: [higherself-server, mongodb, redis]
+      
+    am_consulting:
+      vlan_id: 200
+      subnet: ${AM_CONSULTING_SUBNET:-172.26.0.0/24}
+      gateway: ${AM_CONSULTING_GATEWAY:-172.26.0.1}
+      allowed_services: [higherself-server, mongodb, redis]
+      
+    higherself_core:
+      vlan_id: 300
+      subnet: ${HIGHERSELF_CORE_SUBNET:-172.27.0.0/24}
+      gateway: ${HIGHERSELF_CORE_GATEWAY:-172.27.0.1}
+      allowed_services: [higherself-server, mongodb, redis]
+
+# Performance optimization
+performance:
+  # Connection pooling
+  connection_pooling:
+    enabled: true
+    max_connections: 100
+    min_connections: 10
+    connection_timeout: 30s
+    idle_timeout: 300s
+    
+  # Caching
+  caching:
+    enabled: true
+    cache_size: 256MB
+    ttl: 3600s
+    
+  # Compression
+  compression:
+    enabled: true
+    algorithm: gzip
+    level: 6
+    min_size: 1024
+
+# Monitoring and logging
+monitoring:
+  network_metrics:
+    enabled: true
+    collection_interval: 30s
+    metrics:
+      - bandwidth_usage
+      - connection_count
+      - latency
+      - packet_loss
+      - error_rate
+  
+  logging:
+    enabled: true
+    log_level: INFO
+    log_format: json
+    log_rotation:
+      max_size: 100MB
+      max_files: 10
+      
+  alerting:
+    enabled: true
+    thresholds:
+      high_latency: 1000ms
+      high_error_rate: 5%
+      connection_limit: 80%
+
+# Environment-specific overrides
+environments:
+  development:
+    security:
+      firewall:
+        enabled: false
+      tls:
+        enabled: false
+    performance:
+      connection_pooling:
+        max_connections: 20
+    monitoring:
+      network_metrics:
+        collection_interval: 60s
+  
+  staging:
+    security:
+      firewall:
+        enabled: true
+      tls:
+        enabled: true
+    performance:
+      connection_pooling:
+        max_connections: 50
+    monitoring:
+      network_metrics:
+        collection_interval: 30s
+  
+  production:
+    security:
+      firewall:
+        enabled: true
+      tls:
+        enabled: true
+      rate_limiting:
+        requests_per_minute: 5000
+    performance:
+      connection_pooling:
+        max_connections: 200
+    monitoring:
+      network_metrics:
+        collection_interval: 15s
+      alerting:
+        enabled: true

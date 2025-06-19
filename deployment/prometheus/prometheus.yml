@@ -1,37 +1,111 @@
+# ======================================================
+# HIGHERSELF NETWORK SERVER - PROMETHEUS CONFIGURATION
+# Comprehensive monitoring configuration for all services
+# ======================================================
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
   scrape_timeout: 10s
+  external_labels:
+    cluster: 'higherself-network-server'
+    environment: '${ENVIRONMENT:-development}'
 
-# Alert manager configuration
+# Alertmanager configuration
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          # - alertmanager:9093
+          - alertmanager:9093
 
-# Rule files specifies a list of files where Prometheus finds its alert rules
+# Load rules once and periodically evaluate them
 rule_files:
-  # - "rules/alert_rules.yml"
+  - "alert_rules.yml"
+  - "recording_rules.yml"
 
 # Scrape configuration
 scrape_configs:
+  # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
 
-  - job_name: 'windsurf-agent'
+  # HigherSelf Network Server application (updated from windsurf-agent)
+  - job_name: 'higherself-server'
     static_configs:
-      - targets: ['windsurf-agent:8000']
-    metrics_path: '/metrics'
+      - targets: ['higherself-server:8000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: higherself-server:8000
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'higherself_.*'
+        target_label: service
+        replacement: 'higherself-server'
 
+  # Health check endpoints monitoring
+  - job_name: 'higherself-health'
+    static_configs:
+      - targets: ['higherself-server:8000']
+    scrape_interval: 30s
+    metrics_path: /health
+    scrape_timeout: 15s
+    params:
+      format: ['prometheus']
+
+  # MongoDB monitoring
   - job_name: 'mongodb'
     static_configs:
-      - targets: ['mongodb-exporter:9216']
+      - targets: ['mongodb:27017']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
 
+  # MongoDB Exporter (if available)
+  - job_name: 'mongodb-exporter'
+    static_configs:
+      - targets: ['mongodb-exporter:9216']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Redis monitoring
   - job_name: 'redis'
     static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Redis Exporter (if available)
+  - job_name: 'redis-exporter'
+    static_configs:
       - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Consul monitoring
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['consul:8500']
+    scrape_interval: 30s
+    metrics_path: /v1/agent/metrics
+    params:
+      format: ['prometheus']
+    scrape_timeout: 10s
 
   # Auto-discover services registered with Consul
   - job_name: 'consul-services'
@@ -46,3 +120,55 @@ scrape_configs:
       - source_labels: [__meta_consul_tags]
         regex: .*,prometheus,.*
         action: keep
+
+  # Business entity specific monitoring
+  - job_name: 'the-7-space-metrics'
+    static_configs:
+      - targets: ['higherself-server:8000']
+    scrape_interval: 60s
+    metrics_path: /metrics/the-7-space
+    scrape_timeout: 15s
+    params:
+      entity: ['the_7_space']
+
+  - job_name: 'am-consulting-metrics'
+    static_configs:
+      - targets: ['higherself-server:8000']
+    scrape_interval: 60s
+    metrics_path: /metrics/am-consulting
+    scrape_timeout: 15s
+    params:
+      entity: ['am_consulting']
+
+  - job_name: 'higherself-core-metrics'
+    static_configs:
+      - targets: ['higherself-server:8000']
+    scrape_interval: 60s
+    metrics_path: /metrics/higherself-core
+    scrape_timeout: 15s
+    params:
+      entity: ['higherself_core']
+
+  # External service monitoring
+  - job_name: 'notion-api-health'
+    static_configs:
+      - targets: ['higherself-server:8000']
+    scrape_interval: 120s
+    metrics_path: /health/external/notion
+    scrape_timeout: 30s
+
+  # Celery worker monitoring
+  - job_name: 'celery-worker'
+    static_configs:
+      - targets: ['celery-worker:5555']  # Flower monitoring port
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Grafana self-monitoring
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s

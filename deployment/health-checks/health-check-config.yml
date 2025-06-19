@@ -1,0 +1,447 @@
+# ======================================================
+# HIGHERSELF NETWORK SERVER - HEALTH CHECK CONFIGURATION
+# Comprehensive health check system for all services
+# ======================================================
+
+# Global health check configuration
+global:
+  check_interval: 30s
+  check_timeout: 10s
+  check_retries: 3
+  start_period: 60s
+  failure_threshold: 3
+  success_threshold: 1
+
+# Service-specific health check configurations
+services:
+  # Main application server health checks
+  higherself-server:
+    primary_check:
+      type: http
+      endpoint: /health
+      port: 8000
+      method: GET
+      expected_status: 200
+      timeout: 30s
+      interval: 30s
+      retries: 5
+      start_period: 60s
+    
+    secondary_checks:
+      - name: api_readiness
+        type: http
+        endpoint: /health/ready
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 15s
+      
+      - name: database_connectivity
+        type: http
+        endpoint: /health/database
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 60s
+      
+      - name: external_services
+        type: http
+        endpoint: /health/external
+        port: 8000
+        method: GET
+        expected_status: 200
+        timeout: 20s
+        interval: 120s
+    
+    startup_dependencies:
+      - mongodb
+      - redis
+      - consul
+    
+    failure_actions:
+      - restart_container
+      - notify_monitoring
+      - log_failure
+    
+    recovery_actions:
+      - validate_dependencies
+      - clear_cache
+      - reload_configuration
+
+  # MongoDB health checks
+  mongodb:
+    primary_check:
+      type: command
+      command: |
+        echo 'try {
+          db.runCommand("ping").ok ? 0 : 2
+        } catch(err) {
+          print("MongoDB health check failed: " + err);
+          2
+        }' | mongosh localhost:27017/${MONGODB_DB_NAME:-higherself_dev} --quiet
+      timeout: 10s
+      interval: 30s
+      retries: 5
+      start_period: 40s
+    
+    secondary_checks:
+      - name: replica_set_status
+        type: command
+        command: |
+          echo 'rs.status().ok' | mongosh localhost:27017/${MONGODB_DB_NAME:-higherself_dev} --quiet
+        timeout: 15s
+        interval: 60s
+      
+      - name: disk_space
+        type: command
+        command: df -h /data/db | awk 'NR==2 {print $5}' | sed 's/%//' | awk '{if($1 > 85) exit 1; else exit 0}'
+        timeout: 5s
+        interval: 300s
+      
+      - name: connection_count
+        type: command
+        command: |
+          echo 'db.serverStatus().connections.current' | mongosh localhost:27017/${MONGODB_DB_NAME:-higherself_dev} --quiet
+        timeout: 10s
+        interval: 120s
+    
+    failure_actions:
+      - restart_container
+      - backup_data
+      - notify_critical
+    
+    recovery_actions:
+      - repair_database
+      - rebuild_indexes
+      - validate_collections
+
+  # Redis health checks
+  redis:
+    primary_check:
+      type: command
+      command: redis-cli ping
+      expected_output: PONG
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 10s
+    
+    secondary_checks:
+      - name: memory_usage
+        type: command
+        command: redis-cli info memory | grep used_memory_human
+        timeout: 5s
+        interval: 60s
+      
+      - name: connected_clients
+        type: command
+        command: redis-cli info clients | grep connected_clients
+        timeout: 5s
+        interval: 60s
+      
+      - name: keyspace_info
+        type: command
+        command: redis-cli info keyspace
+        timeout: 5s
+        interval: 120s
+    
+    failure_actions:
+      - restart_container
+      - flush_cache
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_persistence
+      - check_memory_usage
+      - optimize_configuration
+
+  # Consul health checks
+  consul:
+    primary_check:
+      type: command
+      command: consul members
+      timeout: 10s
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    
+    secondary_checks:
+      - name: leader_election
+        type: command
+        command: consul operator raft list-peers
+        timeout: 10s
+        interval: 60s
+      
+      - name: service_catalog
+        type: http
+        endpoint: /v1/catalog/services
+        port: 8500
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 120s
+      
+      - name: kv_store
+        type: http
+        endpoint: /v1/kv/health-check
+        port: 8500
+        method: GET
+        timeout: 10s
+        interval: 300s
+    
+    failure_actions:
+      - restart_container
+      - rejoin_cluster
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_cluster_state
+      - sync_services
+      - rebuild_catalog
+
+  # Celery worker health checks
+  celery-worker:
+    primary_check:
+      type: command
+      command: celery -A services.task_queue_service:task_queue inspect ping
+      timeout: 15s
+      interval: 60s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: active_tasks
+        type: command
+        command: celery -A services.task_queue_service:task_queue inspect active
+        timeout: 10s
+        interval: 120s
+      
+      - name: worker_stats
+        type: command
+        command: celery -A services.task_queue_service:task_queue inspect stats
+        timeout: 10s
+        interval: 300s
+    
+    failure_actions:
+      - restart_container
+      - purge_tasks
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_broker_connection
+      - clear_task_queue
+      - restart_worker_pool
+
+  # Celery beat scheduler health checks
+  celery-beat:
+    primary_check:
+      type: process
+      process_name: celery
+      timeout: 10s
+      interval: 60s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: schedule_status
+        type: file
+        file_path: /app/logs/celerybeat-schedule
+        max_age: 300s
+        interval: 120s
+    
+    failure_actions:
+      - restart_container
+      - reset_schedule
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_schedule_file
+      - sync_periodic_tasks
+      - restart_scheduler
+
+  # Nginx health checks
+  nginx:
+    primary_check:
+      type: command
+      command: nginx -t
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 10s
+    
+    secondary_checks:
+      - name: upstream_health
+        type: http
+        endpoint: /health
+        port: 80
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 30s
+      
+      - name: ssl_certificate
+        type: command
+        command: openssl x509 -in /etc/nginx/ssl/cert.pem -noout -checkend 2592000
+        timeout: 5s
+        interval: 86400s
+    
+    failure_actions:
+      - reload_configuration
+      - restart_container
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_configuration
+      - check_upstream_servers
+      - renew_certificates
+
+  # Prometheus health checks
+  prometheus:
+    primary_check:
+      type: http
+      endpoint: /-/healthy
+      port: 9090
+      method: GET
+      expected_status: 200
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: targets_health
+        type: http
+        endpoint: /api/v1/targets
+        port: 9090
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 120s
+      
+      - name: storage_health
+        type: http
+        endpoint: /-/ready
+        port: 9090
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 60s
+    
+    failure_actions:
+      - restart_container
+      - compact_storage
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_configuration
+      - check_storage_space
+      - reload_targets
+
+  # Grafana health checks
+  grafana:
+    primary_check:
+      type: http
+      endpoint: /api/health
+      port: 3000
+      method: GET
+      expected_status: 200
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 30s
+    
+    secondary_checks:
+      - name: datasource_health
+        type: http
+        endpoint: /api/datasources/proxy/1/api/v1/query?query=up
+        port: 3000
+        method: GET
+        expected_status: 200
+        timeout: 15s
+        interval: 300s
+      
+      - name: dashboard_health
+        type: http
+        endpoint: /api/dashboards/home
+        port: 3000
+        method: GET
+        expected_status: 200
+        timeout: 10s
+        interval: 600s
+    
+    failure_actions:
+      - restart_container
+      - reset_database
+      - notify_monitoring
+    
+    recovery_actions:
+      - validate_datasources
+      - repair_dashboards
+      - check_plugins
+
+# Health check aggregation and reporting
+monitoring:
+  aggregation:
+    overall_health_endpoint: /health/overall
+    service_health_endpoint: /health/services
+    detailed_health_endpoint: /health/detailed
+  
+  reporting:
+    prometheus_metrics: true
+    grafana_dashboard: true
+    log_health_events: true
+    alert_on_failures: true
+  
+  alerting:
+    critical_services:
+      - higherself-server
+      - mongodb
+      - redis
+    
+    alert_channels:
+      - email
+      - slack
+      - webhook
+    
+    escalation_rules:
+      - level: warning
+        threshold: 1_failure
+        cooldown: 300s
+      - level: critical
+        threshold: 3_failures
+        cooldown: 60s
+      - level: emergency
+        threshold: 5_failures
+        cooldown: 0s
+
+# Environment-specific overrides
+environments:
+  development:
+    global:
+      check_interval: 60s
+      failure_threshold: 5
+    
+    monitoring:
+      alert_on_failures: false
+      log_health_events: true
+  
+  staging:
+    global:
+      check_interval: 30s
+      failure_threshold: 3
+    
+    monitoring:
+      alert_on_failures: true
+      log_health_events: true
+  
+  production:
+    global:
+      check_interval: 15s
+      failure_threshold: 2
+    
+    monitoring:
+      alert_on_failures: true
+      log_health_events: true
+      detailed_metrics: true

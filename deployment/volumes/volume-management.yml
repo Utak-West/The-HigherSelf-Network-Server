@@ -1,0 +1,352 @@
+# ======================================================
+# HIGHERSELF NETWORK SERVER - VOLUME MANAGEMENT CONFIGURATION
+# Comprehensive data persistence and backup strategies
+# ======================================================
+
+# Volume configuration for different environments
+volumes:
+  # Development environment volumes
+  development:
+    mongodb_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./data/development/mongodb
+      labels:
+        com.higherself.service: mongodb
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 7d
+      backup_strategy:
+        enabled: true
+        schedule: "0 2 * * *"  # Daily at 2 AM
+        retention_days: 7
+        compression: true
+        encryption: false
+    
+    redis_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./data/development/redis
+      labels:
+        com.higherself.service: redis
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 3d
+      backup_strategy:
+        enabled: true
+        schedule: "0 3 * * *"  # Daily at 3 AM
+        retention_days: 3
+        compression: true
+        encryption: false
+    
+    consul_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./data/development/consul
+      labels:
+        com.higherself.service: consul
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 7d
+      backup_strategy:
+        enabled: true
+        schedule: "0 4 * * *"  # Daily at 4 AM
+        retention_days: 7
+        compression: true
+        encryption: false
+    
+    prometheus_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./data/development/prometheus
+      labels:
+        com.higherself.service: prometheus
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 7d
+      backup_strategy:
+        enabled: true
+        schedule: "0 5 * * *"  # Daily at 5 AM
+        retention_days: 7
+        compression: true
+        encryption: false
+    
+    grafana_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./data/development/grafana
+      labels:
+        com.higherself.service: grafana
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 7d
+      backup_strategy:
+        enabled: true
+        schedule: "0 6 * * *"  # Daily at 6 AM
+        retention_days: 7
+        compression: true
+        encryption: false
+    
+    application_logs:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: ./logs/development
+      labels:
+        com.higherself.service: application
+        com.higherself.environment: development
+        com.higherself.backup: enabled
+        com.higherself.retention: 14d
+      backup_strategy:
+        enabled: true
+        schedule: "0 1 * * 0"  # Weekly on Sunday at 1 AM
+        retention_days: 14
+        compression: true
+        encryption: false
+
+  # Staging environment volumes
+  staging:
+    mongodb_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /opt/higherself/staging/data/mongodb
+      labels:
+        com.higherself.service: mongodb
+        com.higherself.environment: staging
+        com.higherself.backup: enabled
+        com.higherself.retention: 14d
+      backup_strategy:
+        enabled: true
+        schedule: "0 2 * * *"  # Daily at 2 AM
+        retention_days: 14
+        compression: true
+        encryption: true
+        backup_location: s3://higherself-staging-backups/mongodb
+    
+    redis_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /opt/higherself/staging/data/redis
+      labels:
+        com.higherself.service: redis
+        com.higherself.environment: staging
+        com.higherself.backup: enabled
+        com.higherself.retention: 7d
+      backup_strategy:
+        enabled: true
+        schedule: "0 3 * * *"  # Daily at 3 AM
+        retention_days: 7
+        compression: true
+        encryption: true
+        backup_location: s3://higherself-staging-backups/redis
+
+  # Production environment volumes
+  production:
+    mongodb_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /opt/higherself/production/data/mongodb
+      labels:
+        com.higherself.service: mongodb
+        com.higherself.environment: production
+        com.higherself.backup: enabled
+        com.higherself.retention: 90d
+        com.higherself.critical: true
+      backup_strategy:
+        enabled: true
+        schedule: "0 1 * * *"  # Daily at 1 AM
+        retention_days: 90
+        compression: true
+        encryption: true
+        backup_location: s3://higherself-production-backups/mongodb
+        cross_region_backup: true
+        point_in_time_recovery: true
+    
+    redis_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /opt/higherself/production/data/redis
+      labels:
+        com.higherself.service: redis
+        com.higherself.environment: production
+        com.higherself.backup: enabled
+        com.higherself.retention: 30d
+        com.higherself.critical: true
+      backup_strategy:
+        enabled: true
+        schedule: "0 2 * * *"  # Daily at 2 AM
+        retention_days: 30
+        compression: true
+        encryption: true
+        backup_location: s3://higherself-production-backups/redis
+
+# Business entity data isolation configuration
+business_entity_isolation:
+  enabled: true
+  strategy: database_separation  # database_separation, schema_separation, or collection_separation
+  
+  entities:
+    the_7_space:
+      mongodb_database: the_7_space_db
+      redis_namespace: "the_7_space:"
+      data_path: ./data/{environment}/the_7_space
+      backup_schedule: "0 1 * * *"
+      retention_days: 90
+      encryption_key: the_7_space_encryption_key
+    
+    am_consulting:
+      mongodb_database: am_consulting_db
+      redis_namespace: "am_consulting:"
+      data_path: ./data/{environment}/am_consulting
+      backup_schedule: "0 2 * * *"
+      retention_days: 90
+      encryption_key: am_consulting_encryption_key
+    
+    higherself_core:
+      mongodb_database: higherself_core_db
+      redis_namespace: "higherself_core:"
+      data_path: ./data/{environment}/higherself_core
+      backup_schedule: "0 3 * * *"
+      retention_days: 90
+      encryption_key: higherself_core_encryption_key
+
+# Backup configuration
+backup:
+  global_settings:
+    compression_algorithm: gzip
+    encryption_algorithm: AES-256
+    verification_enabled: true
+    notification_enabled: true
+    
+  storage_backends:
+    local:
+      enabled: true
+      path: ./backups/{environment}
+      retention_policy: time_based
+      max_size: 100GB
+    
+    s3:
+      enabled: true
+      bucket: higherself-{environment}-backups
+      region: us-east-1
+      storage_class: STANDARD_IA
+      lifecycle_policy:
+        transition_to_glacier: 30d
+        transition_to_deep_archive: 90d
+        expiration: 365d
+    
+    azure:
+      enabled: false
+      container: higherself-{environment}-backups
+      storage_account: higherselfbackups
+      tier: cool
+    
+    gcp:
+      enabled: false
+      bucket: higherself-{environment}-backups
+      storage_class: NEARLINE
+
+  # Backup verification
+  verification:
+    enabled: true
+    schedule: "0 6 * * 0"  # Weekly on Sunday at 6 AM
+    test_restore: true
+    integrity_check: true
+    notification_on_failure: true
+
+# Data migration configuration
+migration:
+  enabled: true
+  strategies:
+    zero_downtime:
+      enabled: true
+      method: blue_green
+      validation_steps:
+        - schema_validation
+        - data_integrity_check
+        - performance_test
+    
+    rolling_update:
+      enabled: true
+      batch_size: 1
+      health_check_interval: 30s
+      rollback_on_failure: true
+
+# Monitoring and alerting for volumes
+monitoring:
+  disk_usage:
+    warning_threshold: 80
+    critical_threshold: 90
+    check_interval: 300s
+  
+  backup_status:
+    check_interval: 3600s
+    alert_on_failure: true
+    alert_on_delay: true
+  
+  data_integrity:
+    check_interval: 86400s  # Daily
+    checksum_validation: true
+    corruption_detection: true
+
+# Volume cleanup policies
+cleanup:
+  temporary_files:
+    enabled: true
+    schedule: "0 0 * * *"  # Daily at midnight
+    max_age: 24h
+    patterns:
+      - "*.tmp"
+      - "*.log.old"
+      - "core.*"
+  
+  log_rotation:
+    enabled: true
+    max_size: 100MB
+    max_files: 10
+    compression: true
+  
+  backup_cleanup:
+    enabled: true
+    schedule: "0 7 * * 0"  # Weekly on Sunday at 7 AM
+    retention_policy: time_based
+
+# Security configuration for volumes
+security:
+  encryption_at_rest:
+    enabled: true
+    algorithm: AES-256
+    key_rotation: true
+    key_rotation_interval: 90d
+  
+  access_control:
+    enabled: true
+    file_permissions: 0600
+    directory_permissions: 0700
+    owner: higherself
+    group: higherself
+  
+  audit_logging:
+    enabled: true
+    log_file_access: true
+    log_permission_changes: true
+    log_backup_operations: true
