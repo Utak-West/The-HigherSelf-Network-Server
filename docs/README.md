@@ -42,6 +42,7 @@ cp .env.development.template .env.development
 | [**Comprehensive Deployment Guide**](./COMPREHENSIVE_DEPLOYMENT_GUIDE.md) | Complete deployment instructions for all environments | DevOps, Developers |
 | [**Environment Setup Guide**](./ENVIRONMENT_SETUP_GUIDE.md) | Environment configuration and management | Developers, Admins |
 | [**Docker Deployment Guide**](./deployment/DOCKER_DEPLOYMENT.md) | Docker-specific deployment instructions | DevOps Engineers |
+| [**GHCR Integration Guide**](./GHCR_INTEGRATION_GUIDE.md) | GitHub Container Registry integration and CI/CD | DevOps, CI/CD Engineers |
 | [**Terraform Integration Guide**](./TERRAFORM_INTEGRATION_GUIDE.md) | Infrastructure as Code with Terragrunt | Infrastructure Teams |
 
 ### Configuration References
@@ -80,6 +81,8 @@ cp .env.development.template .env.development
 | [`volume-backup.sh`](../scripts/volume-backup.sh) | Backup management | `./scripts/volume-backup.sh backup all full` |
 | [`network-manager.sh`](../scripts/network-manager.sh) | Network management | `./scripts/network-manager.sh status all` |
 | [`external-services.sh`](../scripts/external-services.sh) | External API testing | `./scripts/external-services.sh test all` |
+| [`ghcr-manager.sh`](../scripts/ghcr-manager.sh) | GHCR image management | `./scripts/ghcr-manager.sh build latest` |
+| [`test-ghcr-integration.sh`](../scripts/test-ghcr-integration.sh) | GHCR integration testing | `./scripts/test-ghcr-integration.sh all` |
 
 ## 🏗️ Architecture Overview
 

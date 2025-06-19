@@ -1,0 +1,274 @@
+# ======================================================
+# HIGHERSELF NETWORK SERVER - GITHUB CONTAINER REGISTRY OVERRIDE
+# Docker Compose override for using GHCR images
+# ======================================================
+
+version: '3.8'
+
+# Override services to use GHCR images
+services:
+  higherself-server:
+    image: ${DOCKER_IMAGE:-ghcr.io/utak-west/higherself-network-server:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      cache_from:
+        - ghcr.io/utak-west/higherself-network-server:cache
+        - ghcr.io/utak-west/higherself-network-server:latest
+      cache_to:
+        - ghcr.io/utak-west/higherself-network-server:cache
+      labels:
+        - "org.opencontainers.image.title=HigherSelf Network Server"
+        - "org.opencontainers.image.description=Enterprise automation platform for multi-business entity management"
+        - "org.opencontainers.image.vendor=HigherSelf Network"
+        - "org.opencontainers.image.source=https://github.com/Utak-West/The-HigherSelf-Network-Server"
+        - "org.opencontainers.image.documentation=https://github.com/Utak-West/The-HigherSelf-Network-Server/blob/main/docs/README.md"
+        - "org.opencontainers.image.licenses=MIT"
+        - "com.higherself.business-entities=the_7_space,am_consulting,higherself_core"
+        - "com.higherself.environment=${ENVIRONMENT:-development}"
+        - "com.higherself.version=${VERSION:-latest}"
+      args:
+        - VERSION=${VERSION:-latest}
+        - BUILD_DATE=${BUILD_DATE:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}
+        - VCS_REF=${VCS_REF:-$(git rev-parse HEAD)}
+        - BUILDKIT_INLINE_CACHE=1
+    environment:
+      # GHCR-specific environment variables
+      - CONTAINER_REGISTRY=ghcr.io
+      - IMAGE_SOURCE=ghcr
+      - IMAGE_TAG=${DOCKER_IMAGE_TAG:-latest}
+      - DEPLOYMENT_METHOD=ghcr
+    labels:
+      # Container labels for identification
+      - "com.higherself.image.source=ghcr"
+      - "com.higherself.image.registry=ghcr.io"
+      - "com.higherself.image.tag=${DOCKER_IMAGE_TAG:-latest}"
+      - "com.higherself.deployment.method=ghcr"
+      - "com.higherself.deployment.timestamp=${DEPLOYMENT_TIMESTAMP:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}"
+
+  # Override for development with local build fallback
+  higherself-server-dev:
+    extends:
+      service: higherself-server
+    image: ${DOCKER_IMAGE:-higherself-network-server:dev}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+      cache_from:
+        - ghcr.io/utak-west/higherself-network-server:dev
+        - ghcr.io/utak-west/higherself-network-server:latest
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      # Mount source code for development
+      - .:/app
+      - /app/node_modules
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# Networks configuration for GHCR deployment
+networks:
+  higherself_network:
+    external: true
+    name: higherself-network-${ENVIRONMENT:-development}
+  
+  database_network:
+    external: true
+    name: higherself-database-${ENVIRONMENT:-development}
+  
+  cache_network:
+    external: true
+    name: higherself-cache-${ENVIRONMENT:-development}
+  
+  monitoring_network:
+    external: true
+    name: higherself-monitoring-${ENVIRONMENT:-development}
+
+# Volumes configuration for GHCR deployment
+volumes:
+  mongodb_data:
+    external: true
+    name: higherself-network-server_mongodb_data_${ENVIRONMENT:-development}
+  
+  redis_data:
+    external: true
+    name: higherself-network-server_redis_data_${ENVIRONMENT:-development}
+  
+  consul_data:
+    external: true
+    name: higherself-network-server_consul_data_${ENVIRONMENT:-development}
+  
+  prometheus_data:
+    external: true
+    name: higherself-network-server_prometheus_data_${ENVIRONMENT:-development}
+  
+  grafana_data:
+    external: true
+    name: higherself-network-server_grafana_data_${ENVIRONMENT:-development}
+
+# Additional services for GHCR-based deployment
+x-ghcr-common: &ghcr-common
+  restart: unless-stopped
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+  labels:
+    - "com.higherself.deployment.source=ghcr"
+    - "com.higherself.deployment.environment=${ENVIRONMENT:-development}"
+
+# Service extensions for production GHCR deployment
+x-production-overrides: &production-overrides
+  <<: *ghcr-common
+  deploy:
+    resources:
+      limits:
+        cpus: '2.0'
+        memory: 2G
+      reservations:
+        cpus: '0.5'
+        memory: 512M
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+  healthcheck:
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 40s
+
+# Service extensions for staging GHCR deployment
+x-staging-overrides: &staging-overrides
+  <<: *ghcr-common
+  deploy:
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 1G
+      reservations:
+        cpus: '0.25'
+        memory: 256M
+    restart_policy:
+      condition: on-failure
+      delay: 3s
+      max_attempts: 5
+      window: 60s
+  healthcheck:
+    interval: 20s
+    timeout: 5s
+    retries: 5
+    start_period: 30s
+
+# Service extensions for development GHCR deployment
+x-development-overrides: &development-overrides
+  <<: *ghcr-common
+  deploy:
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 512M
+      reservations:
+        cpus: '0.1'
+        memory: 128M
+  healthcheck:
+    interval: 60s
+    timeout: 10s
+    retries: 3
+    start_period: 60s
+
+# Environment-specific configurations
+configs:
+  ghcr_deployment_config:
+    external: true
+    name: higherself-ghcr-config-${ENVIRONMENT:-development}
+
+secrets:
+  github_token:
+    external: true
+    name: higherself-github-token-${ENVIRONMENT:-development}
+  
+  ghcr_pull_secret:
+    external: true
+    name: higherself-ghcr-pull-secret-${ENVIRONMENT:-development}
+
+# GHCR-specific service definitions
+x-ghcr-services:
+  # Image updater service for automatic updates
+  image-updater:
+    image: ghcr.io/utak-west/higherself-network-server:latest
+    command: ["sh", "-c", "while true; do sleep 3600; done"]
+    environment:
+      - GITHUB_TOKEN_FILE=/run/secrets/github_token
+      - REGISTRY=ghcr.io
+      - IMAGE_NAME=utak-west/higherself-network-server
+    secrets:
+      - github_token
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "com.higherself.service.type=image-updater"
+      - "com.higherself.service.purpose=automatic-updates"
+    restart: unless-stopped
+    profiles:
+      - production
+      - staging
+
+  # Registry proxy for caching
+  registry-proxy:
+    image: registry:2
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://ghcr.io
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+    volumes:
+      - registry_cache:/var/lib/registry
+    ports:
+      - "5000:5000"
+    labels:
+      - "com.higherself.service.type=registry-proxy"
+      - "com.higherself.service.purpose=image-caching"
+    restart: unless-stopped
+    profiles:
+      - production
+
+# Additional volumes for GHCR services
+x-ghcr-volumes:
+  registry_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_ROOT:-./}/data/${ENVIRONMENT:-development}/registry_cache
+
+# GHCR deployment profiles
+profiles:
+  # Production profile with all GHCR optimizations
+  production:
+    services:
+      higherself-server:
+        <<: *production-overrides
+        image: ghcr.io/utak-west/higherself-network-server:stable
+        
+  # Staging profile for testing GHCR images
+  staging:
+    services:
+      higherself-server:
+        <<: *staging-overrides
+        image: ghcr.io/utak-west/higherself-network-server:main
+        
+  # Development profile with local build fallback
+  development:
+    services:
+      higherself-server:
+        <<: *development-overrides
+        image: ${DOCKER_IMAGE:-higherself-network-server:dev}
+        build:
+          context: .
+          dockerfile: Dockerfile
