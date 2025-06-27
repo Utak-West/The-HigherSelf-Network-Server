@@ -6,19 +6,25 @@ This module provides a standardized Redis-based caching mechanism featuring:
 2. Support for cache invalidation patterns
 3. Cache health monitoring
 4. Decorator-based automatic caching
+5. Model-aware caching with Pydantic integration
+6. Multi-level caching with in-memory layer
 """
 
 import hashlib
 import json
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
+from pydantic import BaseModel
 from services.redis_service import redis_service
 from utils.error_handling import ErrorHandler
+
+# Type variable for Pydantic models
+T = TypeVar('T', bound=BaseModel)
 
 # Optional metrics - only use if prometheus_client is available
 try:
@@ -387,6 +393,125 @@ class CacheService:
         except Exception as e:
             self.logger.warning(f"Failed to evict cache entries: {str(e)}")
             return 0
+
+    async def get_model(
+        self,
+        key: str,
+        model_class: Type[T],
+        cache_type: Optional[CacheType] = None,
+    ) -> Optional[T]:
+        """
+        Get a Pydantic model from cache with automatic deserialization.
+
+        Args:
+            key: Cache key
+            model_class: Pydantic model class for deserialization
+            cache_type: Type of cache
+
+        Returns:
+            Deserialized model instance or None if not found
+        """
+        try:
+            cached_data = await self.get(key, cache_type=cache_type)
+            if cached_data is None:
+                return None
+
+            # Deserialize to model
+            if isinstance(cached_data, dict):
+                return model_class(**cached_data)
+            elif isinstance(cached_data, str):
+                # Try to parse JSON string
+                try:
+                    data = json.loads(cached_data)
+                    return model_class(**data)
+                except (json.JSONDecodeError, TypeError):
+                    self.logger.warning(f"Failed to deserialize cached data for key {key}")
+                    return None
+            else:
+                self.logger.warning(f"Unexpected cached data type for key {key}: {type(cached_data)}")
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Failed to get model from cache for key {key}: {str(e)}")
+            return None
+
+    async def set_model(
+        self,
+        key: str,
+        model: BaseModel,
+        ttl: Optional[int] = None,
+        cache_type: Optional[CacheType] = None,
+    ) -> bool:
+        """
+        Cache a Pydantic model with automatic serialization.
+
+        Args:
+            key: Cache key
+            model: Pydantic model instance to cache
+            ttl: Time-to-live in seconds
+            cache_type: Type of cache
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Serialize model to dict
+            if hasattr(model, 'model_dump'):
+                model_data = model.model_dump()
+            else:
+                model_data = model.dict()
+
+            return await self.set(key, model_data, ttl=ttl, cache_type=cache_type)
+
+        except Exception as e:
+            self.logger.error(f"Failed to cache model for key {key}: {str(e)}")
+            return False
+
+    async def get_or_set_model(
+        self,
+        key: str,
+        model_class: Type[T],
+        factory_func: Callable,
+        ttl: Optional[int] = None,
+        cache_type: Optional[CacheType] = None,
+    ) -> Optional[T]:
+        """
+        Get model from cache or create it using factory function.
+
+        Args:
+            key: Cache key
+            model_class: Pydantic model class
+            factory_func: Function to create model if not cached
+            ttl: Time-to-live in seconds
+            cache_type: Type of cache
+
+        Returns:
+            Model instance or None if creation failed
+        """
+        # Try to get from cache first
+        cached_model = await self.get_model(key, model_class, cache_type)
+        if cached_model is not None:
+            return cached_model
+
+        # Create new model using factory function
+        try:
+            if hasattr(factory_func, '__call__'):
+                if hasattr(factory_func, '__await__'):
+                    # Async function
+                    new_model = await factory_func()
+                else:
+                    # Sync function
+                    new_model = factory_func()
+
+                if new_model is not None and isinstance(new_model, BaseModel):
+                    # Cache the new model
+                    await self.set_model(key, new_model, ttl=ttl, cache_type=cache_type)
+                    return new_model
+
+        except Exception as e:
+            self.logger.error(f"Factory function failed for key {key}: {str(e)}")
+
+        return None
 
     async def check_health(self) -> bool:
         """
