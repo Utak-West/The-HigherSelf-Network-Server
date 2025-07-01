@@ -1,25 +1,25 @@
-# HigherSelf Gaming Operations Dashboard
+# HigherSelf Operations Dashboard
 
-A next-generation operations dashboard that transforms traditional business metrics into an immersive gaming experience. This system visualizes The HigherSelf Network Server's operations through interactive 3D environments, agent character representations, and real-time performance analytics with gaming aesthetics.
+An operations dashboard that uses gaming interface elements to provide intuitive monitoring and management of The HigherSelf Network Server. The gaming metaphors make complex agent interactions and system relationships more accessible to operators.
 
-## Architecture Overview
+## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    GAMING OPERATIONS COMMAND CENTER             │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │   AGENT     │  │   SYSTEM    │  │  BUSINESS   │             │
-│  │ CHARACTERS  │  │  TOPOLOGY   │  │  METRICS    │             │
-│  │             │  │             │  │             │             │
-│  │ ◉ Grace     │  │ ╭─────────╮ │  │ Revenue: ▲  │             │
-│  │ ◉ Nyra      │  │ │ MongoDB │ │  │ Users: ▲▲   │             │
-│  │ ◉ Booking   │  │ │ Redis   │ │  │ Tasks: ▲▲▲  │             │
-│  │ ◉ RAG       │  │ │ FastAPI │ │  │             │             │
-│  │ ◉ Video     │  │ ╰─────────╯ │  │ XP: 15,420  │             │
-│  └─────────────┘  └─────────────┘  └─────────────┘             │
-└─────────────────────────────────────────────────────────────────┘
-```
+The dashboard integrates with existing infrastructure to provide operational visibility:
+
+**Agent Monitoring Layer**
+- Visualizes agent communication patterns and collaboration workflows
+- Displays real-time agent status and current task assignments
+- Shows inter-agent dependencies and data sharing relationships
+
+**System Infrastructure Layer**
+- Maps connections between MongoDB, Redis, FastAPI, and other components
+- Provides health monitoring for all system dependencies
+- Visualizes data flow and processing pipelines
+
+**Business Operations Layer**
+- Tracks task completion and workflow progress across different business entities
+- Monitors resource utilization and system performance
+- Provides operational metrics relevant to each business unit
 
 ## Directory Structure
 
@@ -51,48 +51,42 @@ dashboard/
 └── docs/                    # Documentation
 ```
 
-## Gaming Features
+## Operational Features
 
-### Agent Command Center
+### Agent Interaction Visualization
 
-Transform your AI agents into gaming characters with real-time performance visualization:
+The dashboard provides clear visibility into how agents work together:
 
-- **Character Progression**: Each agent gains XP and levels based on task completion
-- **Performance Metrics**: Real-time success rates, response times, and efficiency scores
-- **Achievement System**: Unlock badges and milestones for exceptional performance
-- **Status Indicators**: Live activity feeds with gaming-style status effects
+- **Communication Flow Mapping**: Visual representation of message exchanges between agents, showing collaboration patterns and information routing
+- **Workflow Coordination Display**: Shows how agents hand off tasks, share resources, and coordinate on complex multi-step processes
+- **Dependency Tracking**: Identifies which agents rely on others for data, tools, or processing capabilities
+- **Collaboration Patterns**: Highlights frequent agent partnerships and team formations for different types of work
 
-### 3D Network Topology
+### System Infrastructure Monitoring
 
-Immersive visualization of your infrastructure:
+Real-time visibility into system health and performance:
 
-```
-    ╭─────────╮     ╭─────────╮     ╭─────────╮
-    │ MongoDB │────▶│ FastAPI │────▶│ React   │
-    │ Cluster │     │ Server  │     │ Gaming  │
-    ╰─────────╯     ╰─────────╯     ╰─────────╯
-         ▲               ▲               ▲
-         │               │               │
-    ╭─────────╮     ╭─────────╮     ╭─────────╮
-    │  Redis  │     │ Socket  │     │ Three.js│
-    │  Cache  │     │   IO    │     │ Engine  │
-    ╰─────────╯     ╰─────────╯     ╰─────────╯
-```
+- **Component Status Tracking**: Monitors the health of MongoDB, Redis, FastAPI, and other infrastructure components
+- **Data Flow Visualization**: Shows how information moves through the system, from input sources to final outputs
+- **Performance Bottleneck Identification**: Highlights system components under stress or experiencing delays
+- **Resource Utilization Monitoring**: Tracks CPU, memory, and network usage across the infrastructure
 
-### Multi-Tenant Gaming Environments
+### Multi-Tenant Operations Management
 
-Each business entity operates as a distinct gaming realm:
+Separate operational views for different business entities:
 
-- **A.M. Consulting Realm**: Conflict resolution missions, practitioner guilds
-- **The 7 Space Arena**: Event management campaigns, visitor engagement quests
-- **HigherSelf Network Hub**: Community building adventures, platform optimization challenges
+- **A.M. Consulting Operations**: Focuses on conflict resolution workflows, practitioner scheduling, and client management processes
+- **The 7 Space Management**: Emphasizes event coordination, space utilization, and visitor experience workflows
+- **HigherSelf Network Administration**: Concentrates on community management, platform operations, and network health
 
-### Real-Time Gaming Mechanics
+### Practical Interface Elements
 
-- **Live Leaderboards**: Agent performance rankings with competitive elements
-- **Mission Control**: Task assignment with quest-like interfaces
-- **Resource Management**: System monitoring with RPG-style resource bars
-- **Team Coordination**: Multi-agent collaboration with guild mechanics
+Gaming metaphors serve specific operational purposes:
+
+- **Agent Status Indicators**: Clear visual representation of agent availability, current tasks, and operational health
+- **Task Progress Tracking**: Visual progress indicators for ongoing work, showing completion status and estimated time remaining
+- **System Health Dashboard**: Infrastructure monitoring presented through intuitive visual elements that make complex system states immediately understandable
+- **Workflow Management**: Task assignment and coordination interfaces that simplify complex multi-agent operations
 
 ## Integration Points
 
