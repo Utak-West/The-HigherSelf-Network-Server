@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HigherSelf Network Server - Game-Like Dashboard Deployment Guide for Devin AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .code-block {
+            background-color: #1a1a1a;
+            color: #f8f8f2;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .gaming-card {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .gaming-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .chart-container {
+            height: 400px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="gradient-bg text-white p-8 rounded-lg mb-8">
+            <h1 class="text-4xl font-bold mb-4">
+                <i class="fas fa-gamepad mr-3"></i>
+                HigherSelf Network Server
+            </h1>
+            <h2 class="text-2xl mb-4">Game-Like Dashboard Deployment Guide for Devin AI</h2>
+            <p class="text-lg opacity-90">
+                Comprehensive implementation guide for interactive, gamified Docker container monitoring and management interfaces
+            </p>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-info-circle mr-2"></i>
+                Project Overview
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Objectives</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Deploy game-like Docker dashboard interface</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Integrate with HigherSelf Network Server architecture</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Implement Pydantic-based communication</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Create interactive visualization for 9 specialized agents</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Key Technologies</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Docker</span>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Pydantic</span>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">FastAPI</span>
+                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">React</span>
+                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Three.js</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pydantic Schemas Section -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-code mr-2"></i>
+                Pydantic Communication Schemas
+            </h2>
+            
+            <h3 class="text-lg font-semibold mb-3">Core Dashboard Models</h3>
+            <div class="code-block">
+from pydantic import BaseModel, Field
+from typing import Dict, List, Optional, Union
+from datetime import datetime
+from enum import Enum
+
+class AgentStatus(str, Enum):
+    ACTIVE = "active"
+    IDLE = "idle"
+    PROCESSING = "processing"
+    ERROR = "error"
+    MAINTENANCE = "maintenance"
+
+class GameMetrics(BaseModel):
+    """Gaming-style metrics for dashboard visualization"""
+    level: int = Field(ge=1, le=100, description="Agent performance level")
+    experience_points: int = Field(ge=0, description="Accumulated XP")
+    efficiency_score: float = Field(ge=0.0, le=100.0, description="Performance efficiency")
+    tasks_completed: int = Field(ge=0, description="Total completed tasks")
+    achievement_badges: List[str] = Field(default_factory=list)
+    combo_streak: int = Field(ge=0, description="Consecutive successful operations")
+
+class AgentPerformance(BaseModel):
+    """Individual agent performance metrics"""
+    agent_id: str = Field(..., description="Unique agent identifier")
+    agent_name: str = Field(..., description="Human-readable agent name")
+    status: AgentStatus
+    current_tasks: int = Field(ge=0, description="Active task count")
+    cpu_usage: float = Field(ge=0.0, le=100.0, description="CPU utilization percentage")
+    memory_usage: float = Field(ge=0.0, le=100.0, description="Memory utilization percentage")
+    response_time_ms: float = Field(ge=0.0, description="Average response time")
+    gaming_metrics: GameMetrics
+    last_activity: datetime
+
+class ContainerHealth(BaseModel):
+    """Docker container health and status"""
+    container_id: str
+    container_name: str
+    image: str
+    status: str = Field(..., description="running, stopped, error, etc.")
+    cpu_percent: float = Field(ge=0.0, le=100.0)
+    memory_usage_mb: float = Field(ge=0.0)
+    memory_limit_mb: float = Field(gt=0.0)
+    network_rx_bytes: int = Field(ge=0)
+    network_tx_bytes: int = Field(ge=0)
+    uptime_seconds: int = Field(ge=0)
+    restart_count: int = Field(ge=0)
+
+class DatabaseMetrics(BaseModel):
+    """Multi-database performance metrics"""
+    database_type: str = Field(..., description="postgresql, mysql, mariadb, mssql, oracle")
+    connection_count: int = Field(ge=0)
+    active_queries: int = Field(ge=0)
+    slow_queries: int = Field(ge=0)
+    cache_hit_ratio: float = Field(ge=0.0, le=100.0)
+    storage_used_gb: float = Field(ge=0.0)
+    storage_available_gb: float = Field(ge=0.0)
+    transactions_per_second: float = Field(ge=0.0)
+
+class DashboardState(BaseModel):
+    """Complete dashboard state model"""
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    agents: List[AgentPerformance]
+    containers: List[ContainerHealth]
+    databases: List[DatabaseMetrics]
+    system_alerts: List[str] = Field(default_factory=list)
+    total_workflows_active: int = Field(ge=0)
+    community_engagement_score: float = Field(ge=0.0, le=100.0)
+    
+class DashboardConfig(BaseModel):
+    """Dashboard configuration and preferences"""
+    theme: str = Field(default="gaming", description="UI theme selection")
+    refresh_interval_seconds: int = Field(default=5, ge=1, le=60)
+    alert_thresholds: Dict[str, float] = Field(default_factory=dict)
+    visible_agents: List[str] = Field(default_factory=list)
+    gaming_features_enabled: bool = Field(default=True)
+    notifications_enabled: bool = Field(default=True)
+
+class DashboardCommand(BaseModel):
+    """Commands for dashboard interaction"""
+    command_type: str = Field(..., description="restart_container, scale_service, etc.")
+    target: str = Field(..., description="Target container/service/agent")
+    parameters: Dict[str, Union[str, int, float]] = Field(default_factory=dict)
+    user_id: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class DashboardResponse(BaseModel):
+    """Standard response format for dashboard operations"""
+    success: bool
+    message: str
+    data: Optional[Dict] = None
+    error_code: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6">API Endpoint Schemas</h3>
+            <div class="code-block">
+from fastapi import FastAPI, WebSocket, HTTPException
+from fastapi.responses import HTMLResponse
+import asyncio
+import json
+
+app = FastAPI(title="HigherSelf Gaming Dashboard API")
+
+@app.websocket("/ws/dashboard")
+async def dashboard_websocket(websocket: WebSocket):
+    """Real-time dashboard data streaming"""
+    await websocket.accept()
+    try:
+        while True:
+            # Collect current system state
+            dashboard_state = await collect_dashboard_state()
+            
+            # Send as Pydantic JSON
+            await websocket.send_text(dashboard_state.json())
+            await asyncio.sleep(5)  # 5-second refresh rate
+            
+    except Exception as e:
+        await websocket.close(code=1000)
+
+@app.post("/api/dashboard/command", response_model=DashboardResponse)
+async def execute_dashboard_command(command: DashboardCommand):
+    """Execute dashboard commands with validation"""
+    try:
+        result = await process_dashboard_command(command)
+        return DashboardResponse(
+            success=True,
+            message=f"Command {command.command_type} executed successfully",
+            data=result
+        )
+    except Exception as e:
+        return DashboardResponse(
+            success=False,
+            message=str(e),
+            error_code="COMMAND_EXECUTION_ERROR"
+        )
+
+@app.get("/api/dashboard/state", response_model=DashboardState)
+async def get_dashboard_state():
+    """Get current dashboard state"""
+    return await collect_dashboard_state()
+
+@app.put("/api/dashboard/config", response_model=DashboardResponse)
+async def update_dashboard_config(config: DashboardConfig):
+    """Update dashboard configuration"""
+    await save_dashboard_config(config)
+    return DashboardResponse(
+        success=True,
+        message="Dashboard configuration updated"
+    )
+            </div>
+        </div>
+
+        <!-- Architecture Overview -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-sitemap mr-2"></i>
+                Gaming Dashboard Architecture
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-2">
+                        <i class="fas fa-layer-group mr-2"></i>Frontend Layer
+                    </h3>
+                    <ul class="text-sm space-y-1">
+                        <li>• React + TypeScript</li>
+                        <li>• Three.js for 3D visualization</li>
+                        <li>• Gaming UI components</li>
+                        <li>• WebSocket real-time updates</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-800 mb-2">
+                        <i class="fas fa-server mr-2"></i>Backend Layer
+                    </h3>
+                    <ul class="text-sm space-y-1">
+                        <li>• FastAPI + Pydantic</li>
+                        <li>• Docker API integration</li>
+                        <li>• Multi-database monitoring</li>
+                        <li>• Agent communication</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-purple-800 mb-2">
+                        <i class="fas fa-database mr-2"></i>Data Layer
+                    </h3>
+                    <ul class="text-sm space-y-1">
+                        <li>• Redis for real-time data</li>
+                        <li>• InfluxDB for metrics</li>
+                        <li>• Integration with existing DBs</li>
+                        <li>• Agent state management</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold mb-3">Data Flow Visualization</h3>
+                <div class="chart-container">
+                    <canvas id="architectureChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Steps -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-list-ol mr-2"></i>
+                Step-by-Step Implementation Guide
+            </h2>
+
+            <div class="space-y-6">
+                <!-- Step 1 -->
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">
+                        Step 1: Environment Setup and Dependencies
+                    </h3>
+                    <div class="code-block">
+# Create project structure
+mkdir higherself-gaming-dashboard
+cd higherself-gaming-dashboard
+
+# Create Docker Compose setup
+cat > docker-compose.yml << EOF
+version: '3.8'
+services:
+  dashboard-backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - INFLUXDB_URL=http://influxdb:8086
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - redis
+      - influxdb
+
+  dashboard-frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - dashboard-backend
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  influxdb:
+    image: influxdb:2.0
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=higherself_metrics
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=adminpass
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+volumes:
+  grafana-storage:
+EOF
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h3 class="text-lg font-semibold text-green-800 mb-2">
+                        Step 2: Backend Implementation
+                    </h3>
+                    <div class="code-block">
+# backend/main.py
+from fastapi import FastAPI, WebSocket, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+import docker
+import asyncio
+import redis
+from influxdb_client import InfluxDBClient
+import json
+from datetime import datetime
+from typing import List
+
+app = FastAPI(title="HigherSelf Gaming Dashboard API")
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize connections
+docker_client = docker.from_env()
+redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+influx_client = InfluxDBClient(url="http://influxdb:8086", token="your-token", org="higherself")
+
+class DashboardDataCollector:
+    """Collects data from various sources for dashboard"""
+    
+    async def collect_agent_performance(self) -> List[AgentPerformance]:
+        """Collect performance data for all 9 HigherSelf agents"""
+        agents = []
+        
+        # Define the 9 HigherSelf agents
+        agent_configs = [
+            {"id": "grace_fields", "name": "Grace Fields - Master Orchestrator"},
+            {"id": "nyra", "name": "Nyra - Lead Specialist"},
+            {"id": "solari", "name": "Solari - Booking Manager"},
+            {"id": "ruvo", "name": "Ruvo - Task Orchestrator"},
+            {"id": "liora", "name": "Liora - Marketing Strategist"},
+            {"id": "sage", "name": "Sage - Community Curator"},
+            {"id": "elan", "name": "Elan - Content Choreographer"},
+            {"id": "zevi", "name": "Zevi - Audience Analyst"},
+            {"id": "atlas", "name": "Atlas - Knowledge Specialist"},
+        ]
+        
+        for config in agent_configs:
+            # Simulate agent performance collection
+            # In production, this would query actual agent containers
+            performance = AgentPerformance(
+                agent_id=config["id"],
+                agent_name=config["name"],
+                status=AgentStatus.ACTIVE,
+                current_tasks=random.randint(0, 10),
+                cpu_usage=random.uniform(10, 80),
+                memory_usage=random.uniform(20, 90),
+                response_time_ms=random.uniform(50, 500),
+                gaming_metrics=GameMetrics(
+                    level=random.randint(1, 50),
+                    experience_points=random.randint(1000, 50000),
+                    efficiency_score=random.uniform(70, 98),
+                    tasks_completed=random.randint(100, 10000),
+                    achievement_badges=["Fast Responder", "Task Master"],
+                    combo_streak=random.randint(0, 25)
+                ),
+                last_activity=datetime.utcnow()
+            )
+            agents.append(performance)
+        
+        return agents
+    
+    async def collect_container_health(self) -> List[ContainerHealth]:
+        """Collect Docker container health metrics"""
+        containers = []
+        
+        try:
+            for container in docker_client.containers.list():
+                stats = container.stats(stream=False)
+                
+                # Calculate CPU usage
+                cpu_delta = stats['cpu_stats']['cpu_usage']['total_usage'] - \
+                           stats['precpu_stats']['cpu_usage']['total_usage']
+                system_delta = stats['cpu_stats']['system_cpu_usage'] - \
+                              stats['precpu_stats']['system_cpu_usage']
+                
+                cpu_percent = (cpu_delta / system_delta) * 100.0 if system_delta > 0 else 0.0
+                
+                # Calculate memory usage
+                memory_usage = stats['memory_stats']['usage']
+                memory_limit = stats['memory_stats']['limit']
+                
+                health = ContainerHealth(
+                    container_id=container.id,
+                    container_name=container.name,
+                    image=container.image.tags[0] if container.image.tags else "unknown",
+                    status=container.status,
+                    cpu_percent=min(cpu_percent, 100.0),
+                    memory_usage_mb=memory_usage / (1024 * 1024),
+                    memory_limit_mb=memory_limit / (1024 * 1024),
+                    network_rx_bytes=stats['networks']['eth0']['rx_bytes'],
+                    network_tx_bytes=stats['networks']['eth0']['tx_bytes'],
+                    uptime_seconds=int((datetime.utcnow() - 
+                                     datetime.fromisoformat(container.attrs['Created'].replace('Z', '+00:00'))).total_seconds()),
+                    restart_count=container.attrs['RestartCount']
+                )
+                containers.append(health)
+        
+        except Exception as e:
+            print(f"Error collecting container health: {e}")
+        
+        return containers
+
+# WebSocket endpoint for real-time updates
+@app.websocket("/ws/dashboard")
+async def dashboard_websocket(websocket: WebSocket):
+    await websocket.accept()
+    collector = DashboardDataCollector()
+    
+    try:
+        while True:
+            # Collect all dashboard data
+            agents = await collector.collect_agent_performance()
+            containers = await collector.collect_container_health()
+            
+            dashboard_state = DashboardState(
+                agents=agents,
+                containers=containers,
+                databases=[],  # Implement database metrics collection
+                total_workflows_active=len([a for a in agents if a.status == AgentStatus.ACTIVE]),
+                community_engagement_score=random.uniform(85, 98)
+            )
+            
+            # Send to frontend
+            await websocket.send_text(dashboard_state.json())
+            await asyncio.sleep(2)  # Update every 2 seconds
+            
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        await websocket.close(code=1000)
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="border-l-4 border-purple-500 pl-4">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2">
+                        Step 3: Gaming Frontend Implementation
+                    </h3>
+                    <div class="code-block">
+// frontend/src/components/GamingDashboard.tsx
+import React, { useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Text, Box } from '@react-three/drei';
+import * as THREE from 'three';
+
+interface AgentPerformance {
+  agent_id: string;
+  agent_name: string;
+  status: string;
+  gaming_metrics: {
+    level: number;
+    experience_points: number;
+    efficiency_score: number;
+    tasks_completed: number;
+    achievement_badges: string[];
+    combo_streak: number;
+  };
+  cpu_usage: number;
+  memory_usage: number;
+}
+
+interface DashboardState {
+  agents: AgentPerformance[];
+  containers: any[];
+  timestamp: string;
+}
+
+const GamingDashboard: React.FC = () => {
+  const [dashboardState, setDashboardState] = useState<DashboardState | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:8000/ws/dashboard');
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setDashboardState(data);
+    };
+
+    return () => ws.close();
+  }, []);
+
+  const Agent3D: React.FC<{ agent: AgentPerformance; position: [number, number, number] }> = 
+    ({ agent, position }) => {
+    const efficiency = agent.gaming_metrics.efficiency_score / 100;
+    const color = efficiency > 0.8 ? '#10B981' : efficiency > 0.6 ? '#F59E0B' : '#EF4444';
+    
+    return (
+      <group position={position}>
+        <Box 
+          args={[1, 1 + agent.gaming_metrics.level / 50, 1]}
+          onClick={() => setSelectedAgent(agent.agent_id)}
+        >
+          <meshStandardMaterial color={color} />
+        </Box>
+        <Text
+          position={[0, -1, 0]}
+          fontSize={0.2}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+        >
+          {agent.agent_name.split(' - ')[0]}
+        </Text>
+        <Text
+          position={[0, -1.3, 0]}
+          fontSize={0.15}
+          color="yellow"
+          anchorX="center"
+          anchorY="middle"
+        >
+          LVL {agent.gaming_metrics.level}
+        </Text>
+      </group>
+    );
+  };
+
+  if (!dashboardState) return <div>Loading...</div>;
+
+  return (
+    <div className="h-screen bg-gray-900 text-white">
+      <div className="h-1/2">
+        <Canvas camera={{ position: [10, 10, 10] }}>
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} />
+          <OrbitControls />
+          
+          {dashboardState.agents.map((agent, index) => (
+            <Agent3D 
+              key={agent.agent_id}
+              agent={agent}
+              position={[
+                (index % 3) * 3 - 3,
+                Math.floor(index / 3) * 3 - 3,
+                0
+              ]}
+            />
+          ))}
+        </Canvas>
+      </div>
+      
+      <div className="h-1/2 p-4 overflow-y-auto">
+        <div className="grid grid-cols-3 gap-4">
+          {dashboardState.agents.map((agent) => (
+            <div 
+              key={agent.agent_id}
+              className={`bg-gray-800 p-4 rounded-lg border-2 ${
+                selectedAgent === agent.agent_id ? 'border-yellow-400' : 'border-gray-600'
+              }`}
+            >
+              <h3 className="font-bold text-lg mb-2">{agent.agent_name}</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span>Level:</span>
+                  <span className="text-yellow-400">{agent.gaming_metrics.level}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>XP:</span>
+                  <span className="text-blue-400">{agent.gaming_metrics.experience_points.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Efficiency:</span>
+                  <span className="text-green-400">{agent.gaming_metrics.efficiency_score.toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Combo:</span>
+                  <span className="text-purple-400">{agent.gaming_metrics.combo_streak}x</span>
+                </div>
+                <div className="mt-2">
+                  <div className="flex flex-wrap gap-1">
+                    {agent.gaming_metrics.achievement_badges.map((badge, i) => (
+                      <span key={i} className="bg-yellow-600 text-xs px-2 py-1 rounded">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GamingDashboard;
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="border-l-4 border-red-500 pl-4">
+                    <h3 class="text-lg font-semibold text-red-800 mb-2">
+                        Step 4: Docker Configuration
+                    </h3>
+                    <div class="code-block">
+# backend/Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# frontend/Dockerfile  
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+
+# backend/requirements.txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+docker==6.1.3
+redis==5.0.1
+influxdb-client==1.38.0
+pydantic==2.5.0
+python-multipart==0.0.6
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="border-l-4 border-yellow-500 pl-4">
+                    <h3 class="text-lg font-semibold text-yellow-800 mb-2">
+                        Step 5: Deployment and Testing
+                    </h3>
+                    <div class="code-block">
+# Start the complete stack
+docker-compose up -d
+
+# Verify services
+docker-compose ps
+
+# Check logs
+docker-compose logs -f dashboard-backend
+docker-compose logs -f dashboard-frontend
+
+# Test API endpoints
+curl http://localhost:8000/api/dashboard/state
+
+# Access dashboard
+# Frontend: http://localhost:3000
+# API Docs: http://localhost:8000/docs
+# Grafana: http://localhost:3001
+
+# Health check script
+cat > health_check.sh << 'EOF'
+#!/bin/bash
+echo "=== HigherSelf Gaming Dashboard Health Check ==="
+
+# Check backend
+echo "Checking backend..."
+curl -f http://localhost:8000/health || echo "Backend DOWN"
+
+# Check frontend
+echo "Checking frontend..."
+curl -f http://localhost:3000 || echo "Frontend DOWN"
+
+# Check WebSocket
+echo "Checking WebSocket..."
+wscat -c ws://localhost:8000/ws/dashboard -x '{"test": true}' || echo "WebSocket DOWN"
+
+# Check Redis
+echo "Checking Redis..."
+redis-cli -h localhost ping || echo "Redis DOWN"
+
+echo "Health check complete!"
+EOF
+
+chmod +x health_check.sh
+./health_check.sh
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gaming Features Section -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-trophy mr-2"></i>
+                Gaming Features Implementation
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Achievement System</h3>
+                    <div class="code-block">
+class AchievementEngine:
+    """Gamification engine for dashboard achievements"""
+    
+    ACHIEVEMENTS = {
+        "efficiency_master": {
+            "name": "Efficiency Master",
+            "description": "Maintain >95% efficiency for 1 hour",
+            "icon": "🏆",
+            "xp_reward": 500
+        },
+        "multitasker": {
+            "name": "Multitasker",
+            "description": "Handle 10+ concurrent tasks",
+            "icon": "⚡",
+            "xp_reward": 300
+        },
+        "uptime_champion": {
+            "name": "Uptime Champion", 
+            "description": "24h uptime without restart",
+            "icon": "💪",
+            "xp_reward": 1000
+        }
+    }
+    
+    def check_achievements(self, agent: AgentPerformance) -> List[str]:
+        """Check and award achievements"""
+        earned = []
+        
+        if agent.gaming_metrics.efficiency_score > 95:
+            earned.append("efficiency_master")
+        
+        if agent.current_tasks >= 10:
+            earned.append("multitasker")
+            
+        # Add more achievement logic
+        return earned
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Leaderboard System</h3>
+                    <div class="code-block">
+class LeaderboardManager:
+    """Manage agent performance leaderboards"""
+    
+    def generate_leaderboard(self, agents: List[AgentPerformance]) -> Dict:
+        """Generate performance leaderboard"""
+        
+        # Sort by multiple criteria
+        efficiency_leaders = sorted(
+            agents, 
+            key=lambda x: x.gaming_metrics.efficiency_score, 
+            reverse=True
+        )[:5]
+        
+        xp_leaders = sorted(
+            agents,
+            key=lambda x: x.gaming_metrics.experience_points,
+            reverse=True
+        )[:5]
+        
+        streak_leaders = sorted(
+            agents,
+            key=lambda x: x.gaming_metrics.combo_streak,
+            reverse=True
+        )[:5]
+        
+        return {
+            "efficiency": efficiency_leaders,
+            "experience": xp_leaders,
+            "streak": streak_leaders,
+            "updated_at": datetime.utcnow()
+        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Visualization -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-chart-line mr-2"></i>
+                Performance Visualization Examples
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Agent Performance Metrics</h3>
+                    <div class="chart-container">
+                        <canvas id="agentPerformanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Container Resource Usage</h3>
+                    <div class="chart-container">
+                        <canvas id="resourceUsageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration Guide -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-puzzle-piece mr-2"></i>
+                HigherSelf Network Integration
+            </h2>
+
+            <div class="space-y-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-2">Notion Integration</h3>
+                    <div class="code-block">
+# Integration with existing Notion workspace
+class NotionDashboardSync:
+    """Sync dashboard data with Notion workspace"""
+    
+    async def sync_agent_performance(self, agents: List[AgentPerformance]):
+        """Update Notion database with agent performance"""
+        for agent in agents:
+            notion_data = {
+                "Agent Name": agent.agent_name,
+                "Status": agent.status.value,
+                "Level": agent.gaming_metrics.level,
+                "Efficiency": agent.gaming_metrics.efficiency_score,
+                "Last Updated": datetime.utcnow().isoformat()
+            }
+            # Update Notion database
+            await self.notion_client.update_database_entry(agent.agent_id, notion_data)
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-800 mb-2">Multi-Database Monitoring</h3>
+                    <div class="code-block">
+# Monitor your 16 interconnected data layers
+DATABASE_CONFIGS = {
+    "postgresql": {"host": "postgres", "port": 5432},
+    "mysql": {"host": "mysql", "port": 3306}, 
+    "mariadb": {"host": "mariadb", "port": 3306},
+    "mssql": {"host": "mssql", "port": 1433},
+    "oracle": {"host": "oracle", "port": 1521}
+}
+
+class DatabaseMonitor:
+    """Monitor all HigherSelf databases"""
+    
+    async def collect_database_metrics(self) -> List[DatabaseMetrics]:
+        """Collect metrics from all configured databases"""
+        metrics = []
+        
+        for db_type, config in DATABASE_CONFIGS.items():
+            try:
+                # Collect database-specific metrics
+                db_metrics = await self.query_database_metrics(db_type, config)
+                metrics.append(db_metrics)
+            except Exception as e:
+                print(f"Error collecting {db_type} metrics: {e}")
+        
+        return metrics
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing and Validation -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-vial mr-2"></i>
+                Testing and Validation
+            </h2>
+
+            <div class="code-block">
+# tests/test_dashboard.py
+import pytest
+from fastapi.testclient import TestClient
+from main import app
+from pydantic_models import DashboardState, AgentPerformance
+
+client = TestClient(app)
+
+def test_dashboard_state_endpoint():
+    """Test dashboard state API endpoint"""
+    response = client.get("/api/dashboard/state")
+    assert response.status_code == 200
+    
+    # Validate Pydantic model
+    dashboard_state = DashboardState(**response.json())
+    assert len(dashboard_state.agents) == 9  # All HigherSelf agents
+    
+def test_websocket_connection():
+    """Test WebSocket real-time updates"""
+    with client.websocket_connect("/ws/dashboard") as websocket:
+        data = websocket.receive_json()
+        dashboard_state = DashboardState(**data)
+        assert dashboard_state.agents is not None
+
+def test_agent_performance_validation():
+    """Test agent performance data validation"""
+    valid_agent = {
+        "agent_id": "grace_fields",
+        "agent_name": "Grace Fields - Master Orchestrator",
+        "status": "active",
+        "current_tasks": 5,
+        "cpu_usage": 45.5,
+        "memory_usage": 67.2,
+        "response_time_ms": 150.0,
+        "gaming_metrics": {
+            "level": 25,
+            "experience_points": 15000,
+            "efficiency_score": 92.5,
+            "tasks_completed": 500,
+            "achievement_badges": ["Fast Responder"],
+            "combo_streak": 10
+        },
+        "last_activity": "2024-01-01T12:00:00Z"
+    }
+    
+    agent = AgentPerformance(**valid_agent)
+    assert agent.agent_id == "grace_fields"
+    assert agent.gaming_metrics.level == 25
+
+# Run tests
+# pytest tests/ -v
+            </div>
+        </div>
+
+        <!-- Deployment Checklist -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-check-circle mr-2"></i>
+                Deployment Checklist for Devin AI
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Pre-Deployment</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2"> 
+                            <span>Verify Docker environment access</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Test Pydantic model validation</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Configure environment variables</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Setup database connections</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Verify network connectivity</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Post-Deployment</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Verify all services running</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Test WebSocket connections</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Validate agent data collection</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Test gaming features</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span>Monitor performance metrics</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting Guide -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-wrench mr-2"></i>
+                Troubleshooting Guide
+            </h2>
+
+            <div class="space-y-4">
+                <div class="border-l-4 border-red-500 pl-4">
+                    <h3 class="font-semibold text-red-800">Docker Socket Access Issues</h3>
+                    <div class="code-block">
+# Fix Docker socket permissions
+sudo chmod 666 /var/run/docker.sock
+
+# Or add user to docker group
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Verify access
+docker ps
+                    </div>
+                </div>
+
+                <div class="border-l-4 border-yellow-500 pl-4">
+                    <h3 class="font-semibold text-yellow-800">WebSocket Connection Failures</h3>
+                    <div class="code-block">
+# Check WebSocket endpoint
+curl -i -N -H "Connection: Upgrade" \
+     -H "Upgrade: websocket" \
+     -H "Sec-WebSocket-Key: test" \
+     -H "Sec-WebSocket-Version: 13" \
+     http://localhost:8000/ws/dashboard
+
+# Debug WebSocket in JavaScript
+const ws = new WebSocket('ws://localhost:8000/ws/dashboard');
+ws.onopen = () => console.log('Connected');
+ws.onerror = (error) => console.error('WebSocket error:', error);
+                    </div>
+                </div>
+
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <h3 class="font-semibold text-blue-800">Pydantic Validation Errors</h3>
+                    <div class="code-block">
+# Debug validation errors
+try:
+    agent = AgentPerformance(**data)
+except ValidationError as e:
+    print(f"Validation error: {e.json()}")
+    # Fix data issues based on error details
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Notes -->
+        <div class="gaming-card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">
+                <i class="fas fa-lightbulb mr-2"></i>
+                Implementation Notes for Devin AI
+            </h2>
+
+            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                <h3 class="font-semibold text-blue-800 mb-2">Key Implementation Priorities</h3>
+                <ol class="list-decimal list-inside space-y-1 text-sm">
+                    <li>Focus on Pydantic model validation throughout the implementation</li>
+                    <li>Ensure real-time WebSocket connections for live dashboard updates</li>
+                    <li>Implement proper error handling and logging for debugging</li>
+                    <li>Create modular code structure for easy maintenance and updates</li>
+                    <li>Test thoroughly with actual HigherSelf Network Server data</li>
+                </ol>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg mb-4">
+                <h3 class="font-semibold text-green-800 mb-2">Success Metrics</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm">
+                    <li>All 9 HigherSelf agents visible and monitored in real-time</li>
+                    <li>Gaming features (levels, XP, achievements) working correctly</li>
+                    <li>3D visualization responsive and interactive</li>
+                    <li>WebSocket updates occurring every 2-5 seconds</li>
+                    <li>Integration with existing HigherSelf infrastructure</li>
+                </ul>
+            </div>
+
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-yellow-800 mb-2">Future Enhancements</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm">
+                    <li>VR/AR interface implementation</li>
+                    <li>Advanced AI-driven dashboard personalization</li>
+                    <li>Mobile gaming-style interface</li>
+                    <li>Community leaderboards and competitions</li>
+                    <li>Advanced achievement system with rewards</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-600 py-8">
+            <p class="text-lg">HigherSelf Network Gaming Dashboard Deployment Guide</p>
+            <p class="text-sm">Created for Devin AI Implementation • Version 1.0 • 2024</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Architecture Flow Chart
+            const architectureCtx = document.getElementById('architectureChart');
+            if (architectureCtx) {
+                new Chart(architectureCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Frontend Components', 'Backend Services', 'Database Layer', 'Integration APIs'],
+                        datasets: [{
+                            data: [25, 35, 25, 15],
+                            backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Dashboard Architecture Distribution'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Agent Performance Chart
+            const agentCtx = document.getElementById('agentPerformanceChart');
+            if (agentCtx) {
+                new Chart(agentCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Grace Fields', 'Nyra', 'Solari', 'Ruvo', 'Liora', 'Sage', 'Elan', 'Zevi', 'Atlas'],
+                        datasets: [{
+                            label: 'Performance Level',
+                            data: [95, 88, 92, 85, 90, 87, 93, 89, 91],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Resource Usage Chart
+            const resourceCtx = document.getElementById('resourceUsageChart');
+            if (resourceCtx) {
+                new Chart(resourceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                        datasets: [{
+                            label: 'CPU Usage %',
+                            data: [25, 35, 45, 55, 40, 30],
+                            borderColor: 'rgb(239, 68, 68)',
+                            tension: 0.1
+                        }, {
+                            label: 'Memory Usage %',
+                            data: [40, 45, 50, 60, 55, 45],
+                            borderColor: 'rgb(16, 185, 129)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDttR146e5YYKdb9moLnvNbwm8lGNIenPW%2FKwuwXpiZ3Z70X83t10rkA3Yxke%2BHr1umQfLVdFwZTzHyHaN076tcq5bK7bQcILETeGlUUE7zeDywrQjBCbnBi6UiAy1OKoFjicrHwXb0i4LHckgyyEiOgjgm0%2Fu4wFQUbFnOINu1AO9sLreInHwi361%2BLaJ1EnKmQk7TYdnvDGqhYtT5dLcBismCvyI9jMIesZAMOmXPK7KcQNOgx%2Fsym%2FUojrtMJI1zrwsLjw4TGc6Ihx6Zr0FYBTByg3jH43qrH0gmJFRwkQLhizYM8ZdXbw3hTi3MYYGuyNeSpxfdtratCPm4pTHnlrtbPWkVbmK46yCnrWi%2BzHVmeoXB%2BLQDvgi6z%2FGCLEd3EmmPMJ5ElFgJ8Q4aODLXCcMDvEBxsmu%2BxmKshGshLqBUeUSwVqYMMwXT0VsGFP9vtBfm4SAFSnAF%2B2MP9Fi0QHBZi0AAYRcbHQDFdd%2Fh5nl3E9HQGvM12N9UFtJinyVyski0%2FijEyK5IC8r4Qry2I%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDttR146e5YYKdb9moLnvNbwm8lGNIenPW/KwuwXpiZ3Z70X83t10rkA3Yxke+Hr1umQfLVdFwZTzHyHaN076tcq5bK7bQcILETeGlUUE7zeDywrQjBCbnBi6UiAy1OKoFjicrHwXb0i4LHckgyyEiOgjgm0/u4wFQUbFnOINu1AO9sLreInHwi361+LaJ1EnKmQk7TYdnvDGqhYtT5dLcBismCvyI9jMIesZAMOmXPK7KcQNOgx/sym/UojrtMJI1zrwsLjw4TGc6Ihx6Zr0FYBTByg3jH43qrH0gmJFRwkQLhizYM8ZdXbw3hTi3MYYGuyNeSpxfdtratCPm4pTHnlrtbPWkVbmK46yCnrWi+zHVmeoXB+LQDvgi6z/GCLEd3EmmPMJ5ElFgJ8Q4aODLXCcMDvEBxsmu+xmKshGshLqBUeUSwVqYMMwXT0VsGFP9vtBfm4SAFSnAF+2MP9Fi0QHBZi0AAYRcbHQDFdd/h5nl3E9HQGvM12N9UFtJinyVyski0/ijEyK5IC8r4Qry2I=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

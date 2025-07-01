@@ -1,0 +1,247 @@
+version: '3.8'
+
+services:
+  # Main Dashboard Application (Production)
+  dashboard:
+    build:
+      context: .
+      target: production
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
+      - ./ssl:/app/ssl
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  # MySQL Database (Production)
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: dashboard_prod
+      MYSQL_USER: dashboard_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/backup:/backup
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --innodb-buffer-pool-size=1G
+    secrets:
+      - mysql_root_password
+      - mysql_password
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+
+  # Redis Cache (Production)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  # Nginx Load Balancer (Production)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - dashboard
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Monitoring with Prometheus (Production)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # Grafana for Visualization (Production)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD_FILE=/run/secrets/grafana_password
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    secrets:
+      - grafana_password
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Log Aggregation with ELK Stack (Optional)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    profiles:
+      - logging
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.8.0
+    volumes:
+      - ./docker/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logs:/logs
+    depends_on:
+      - elasticsearch
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    profiles:
+      - logging
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    profiles:
+      - logging
+
+  # Backup Service
+  backup:
+    build:
+      context: ./docker/backup
+    volumes:
+      - mysql_data:/data/mysql
+      - redis_data:/data/redis
+      - ./backups:/backups
+      - ./uploads:/data/uploads
+    environment:
+      - BACKUP_SCHEDULE=0 2 * * *
+      - AWS_ACCESS_KEY_ID_FILE=/run/secrets/aws_access_key
+      - AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/aws_secret_key
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    secrets:
+      - aws_access_key
+      - aws_secret_key
+    profiles:
+      - backup
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
+  grafana_password:
+    file: ./secrets/grafana_password.txt
+  aws_access_key:
+    file: ./secrets/aws_access_key.txt
+  aws_secret_key:
+    file: ./secrets/aws_secret_key.txt
+
+volumes:
+  mysql_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+
+networks:
+  dashboard-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+

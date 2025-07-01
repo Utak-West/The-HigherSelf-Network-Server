@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # Main Dashboard Application
+  dashboard:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "9090:9090"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dashboard
+      MYSQL_USER: dashboard_user
+      MYSQL_PASSWORD: dashboard_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Nginx Reverse Proxy (Development)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/dev.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - dashboard
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+
+  # Monitoring with Prometheus (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana for Visualization (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - dashboard-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  mysql_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  dashboard-network:
+    driver: bridge
+

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Configuration Templates for Gaming Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .code-block {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            color: #f8f8f2;
+        }
+        .yaml { color: #f92672; }
+        .string { color: #a6e22e; }
+        .number { color: #ae81ff; }
+        .comment { color: #75715e; }
+        .key { color: #66d9ef; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-gamepad text-blue-600 mr-3"></i>
+                Docker Gaming Dashboard Configuration
+            </h1>
+            <p class="text-xl text-gray-600">Production-ready templates for HigherSelf Network integration</p>
+            <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4">
+                <p class="text-blue-700"><i class="fas fa-info-circle mr-2"></i>
+                These configurations extend your existing HigherSelf Network infrastructure with gaming dashboard capabilities</p>
+            </div>
+        </header>
+
+        <!-- Main Docker Compose Configuration -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-docker text-blue-500 mr-2"></i>
+                Gaming Dashboard Docker Compose
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">docker-compose.gaming.yml</h3>
+                <div class="code-block">
+<pre><span class="comment"># HigherSelf Network Gaming Dashboard Extension</span>
+<span class="comment"># Integrates with existing infrastructure</span>
+
+<span class="key">version:</span> <span class="string">'3.8'</span>
+
+<span class="key">services:</span>
+  <span class="comment"># Gaming Dashboard Backend</span>
+  <span class="key">gaming-dashboard-api:</span>
+    <span class="key">build:</span>
+      <span class="key">context:</span> <span class="string">./gaming-dashboard</span>
+      <span class="key">dockerfile:</span> <span class="string">Dockerfile.api</span>
+    <span class="key">container_name:</span> <span class="string">higherself-gaming-api</span>
+    <span class="key">environment:</span>
+      - <span class="string">REDIS_URL=redis://redis:6379</span>
+      - <span class="string">MONGODB_URL=mongodb://mongodb:27017/higherself_gaming</span>
+      - <span class="string">CONSUL_URL=http://consul:8500</span>
+      - <span class="string">PROMETHEUS_URL=http://prometheus:9090</span>
+      - <span class="string">WEBSOCKET_PORT=8765</span>
+      - <span class="string">API_PORT=8080</span>
+    <span class="key">ports:</span>
+      - <span class="string">"8080:8080"</span>  <span class="comment"># REST API</span>
+      - <span class="string">"8765:8765"</span>  <span class="comment"># WebSocket</span>
+    <span class="key">volumes:</span>
+      - <span class="string">gaming_data:/app/data</span>
+      - <span class="string">./logs:/app/logs</span>
+    <span class="key">networks:</span>
+      - <span class="string">higherselfnetwork</span>
+    <span class="key">depends_on:</span>
+      - <span class="string">redis</span>
+      - <span class="string">mongodb</span>
+      - <span class="string">consul</span>
+    <span class="key">restart:</span> <span class="string">unless-stopped</span>
+    <span class="key">healthcheck:</span>
+      <span class="key">test:</span> <span class="string">["CMD", "curl", "-f", "http://localhost:8080/health"]</span>
+      <span class="key">interval:</span> <span class="string">30s</span>
+      <span class="key">timeout:</span> <span class="string">10s</span>
+      <span class="key">retries:</span> <span class="number">3</span>
+
+  <span class="comment"># Gaming Dashboard Frontend</span>
+  <span class="key">gaming-dashboard-ui:</span>
+    <span class="key">build:</span>
+      <span class="key">context:</span> <span class="string">./gaming-dashboard</span>
+      <span class="key">dockerfile:</span> <span class="string">Dockerfile.ui</span>
+    <span class="key">container_name:</span> <span class="string">higherself-gaming-ui</span>
+    <span class="key">environment:</span>
+      - <span class="string">REACT_APP_API_URL=http://gaming-dashboard-api:8080</span>
+      - <span class="string">REACT_APP_WS_URL=ws://gaming-dashboard-api:8765</span>
+      - <span class="string">REACT_APP_GRAFANA_URL=http://grafana:3000</span>
+    <span class="key">ports:</span>
+      - <span class="string">"3001:3000"</span>
+    <span class="key">networks:</span>
+      - <span class="string">higherselfnetwork</span>
+    <span class="key">depends_on:</span>
+      - <span class="string">gaming-dashboard-api</span>
+    <span class="key">restart:</span> <span class="string">unless-stopped</span>
+
+  <span class="comment"># Gaming Metrics Collector</span>
+  <span class="key">gaming-metrics-collector:</span>
+    <span class="key">build:</span>
+      <span class="key">context:</span> <span class="string">./gaming-dashboard</span>
+      <span class="key">dockerfile:</span> <span class="string">Dockerfile.collector</span>
+    <span class="key">container_name:</span> <span class="string">higherself-gaming-collector</span>
+    <span class="key">environment:</span>
+      - <span class="string">PROMETHEUS_URL=http://prometheus:9090</span>
+      - <span class="string">CONSUL_URL=http://consul:8500</span>
+      - <span class="string">REDIS_URL=redis://redis:6379</span>
+      - <span class="string">COLLECTION_INTERVAL=5</span>
+    <span class="key">networks:</span>
+      - <span class="string">higherselfnetwork</span>
+    <span class="key">depends_on:</span>
+      - <span class="string">prometheus</span>
+      - <span class="string">consul</span>
+      - <span class="string">redis</span>
+    <span class="key">restart:</span> <span class="string">unless-stopped</span>
+
+  <span class="comment"># Gaming Achievement Engine</span>
+  <span class="key">gaming-achievement-engine:</span>
+    <span class="key">build:</span>
+      <span class="key">context:</span> <span class="string">./gaming-dashboard</span>
+      <span class="key">dockerfile:</span> <span class="string">Dockerfile.achievements</span>
+    <span class="key">container_name:</span> <span class="string">higherself-gaming-achievements</span>
+    <span class="key">environment:</span>
+      - <span class="string">MONGODB_URL=mongodb://mongodb:27017/higherself_gaming</span>
+      - <span class="string">REDIS_URL=redis://redis:6379</span>
+      - <span class="string">WEBHOOK_URL=http://gaming-dashboard-api:8080/webhooks/achievements</span>
+    <span class="key">networks:</span>
+      - <span class="string">higherselfnetwork</span>
+    <span class="key">depends_on:</span>
+      - <span class="string">mongodb</span>
+      - <span class="string">redis</span>
+    <span class="key">restart:</span> <span class="string">unless-stopped</span>
+
+<span class="key">volumes:</span>
+  <span class="key">gaming_data:</span>
+    <span class="key">driver:</span> <span class="string">local</span>
+
+<span class="key">networks:</span>
+  <span class="key">higherselfnetwork:</span>
+    <span class="key">external:</span> <span class="string">true</span>  <span class="comment"># Uses existing network</span>
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Service Dockerfile -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-code text-green-500 mr-2"></i>
+                Gaming Dashboard API Service
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Dockerfile.api</h3>
+                <div class="code-block">
+<pre><span class="comment"># Gaming Dashboard API Service</span>
+<span class="comment"># Integrates with HigherSelf Network agent system</span>
+
+<span class="key">FROM</span> <span class="string">python:3.11-slim</span>
+
+<span class="key">WORKDIR</span> <span class="string">/app</span>
+
+<span class="comment"># Install system dependencies</span>
+<span class="key">RUN</span> apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="comment"># Install Python dependencies</span>
+<span class="key">COPY</span> requirements.api.txt .
+<span class="key">RUN</span> pip install --no-cache-dir -r requirements.api.txt
+
+<span class="comment"># Copy application code</span>
+<span class="key">COPY</span> ./api /app/api
+<span class="key">COPY</span> ./shared /app/shared
+<span class="key">COPY</span> ./config /app/config
+
+<span class="comment"># Create necessary directories</span>
+<span class="key">RUN</span> mkdir -p /app/logs /app/data
+
+<span class="comment"># Set permissions</span>
+<span class="key">RUN</span> chmod +x /app/api/start.sh
+
+<span class="comment"># Expose ports</span>
+<span class="key">EXPOSE</span> <span class="number">8080</span> <span class="number">8765</span>
+
+<span class="comment"># Health check</span>
+<span class="key">HEALTHCHECK</span> --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    <span class="key">CMD</span> curl -f http://localhost:8080/health || exit 1
+
+<span class="comment"># Start the application</span>
+<span class="key">CMD</span> ["/app/api/start.sh"]
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Frontend Dockerfile -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-desktop text-purple-500 mr-2"></i>
+                Gaming Dashboard Frontend
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Dockerfile.ui</h3>
+                <div class="code-block">
+<pre><span class="comment"># Gaming Dashboard Frontend - React + Three.js</span>
+<span class="comment"># 3D visualization for HigherSelf Network agents</span>
+
+<span class="key">FROM</span> <span class="string">node:18-alpine as builder</span>
+
+<span class="key">WORKDIR</span> <span class="string">/app</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="key">COPY</span> package*.json ./
+<span class="key">RUN</span> npm ci --only=production
+
+<span class="comment"># Copy source code</span>
+<span class="key">COPY</span> ./src ./src
+<span class="key">COPY</span> ./public ./public
+<span class="key">COPY</span> ./tsconfig.json ./
+<span class="key">COPY</span> ./tailwind.config.js ./
+
+<span class="comment"># Build the application</span>
+<span class="key">RUN</span> npm run build
+
+<span class="comment"># Production stage</span>
+<span class="key">FROM</span> <span class="string">nginx:alpine</span>
+
+<span class="comment"># Copy custom nginx configuration</span>
+<span class="key">COPY</span> ./nginx.conf /etc/nginx/conf.d/default.conf
+
+<span class="comment"># Copy built application</span>
+<span class="key">COPY</span> --from=builder /app/build /usr/share/nginx/html
+
+<span class="comment"># Expose port</span>
+<span class="key">EXPOSE</span> <span class="number">3000</span>
+
+<span class="comment"># Health check</span>
+<span class="key">HEALTHCHECK</span> --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    <span class="key">CMD</span> curl -f http://localhost:3000 || exit 1
+
+<span class="key">CMD</span> ["nginx", "-g", "daemon off;"]
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Requirements Files -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-list text-orange-500 mr-2"></i>
+                Dependencies & Requirements
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">requirements.api.txt</h3>
+                    <div class="code-block">
+<pre><span class="comment"># Core Framework</span>
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+
+<span class="comment"># Data & Validation</span>
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+<span class="comment"># Database & Cache</span>
+redis==5.0.1
+pymongo==4.6.0
+motor==3.3.2
+
+<span class="comment"># Monitoring & Metrics</span>
+prometheus-client==0.19.0
+prometheus-fastapi-instrumentator==6.1.0
+
+<span class="comment"># Service Discovery</span>
+python-consul==1.1.0
+
+<span class="comment"># HTTP Client</span>
+httpx==0.25.2
+aiohttp==3.9.1
+
+<span class="comment"># Gaming Logic</span>
+numpy==1.25.2
+scipy==1.11.4
+
+<span class="comment"># Utilities</span>
+python-dotenv==1.0.0
+click==8.1.7
+structlog==23.2.0
+</pre>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">package.json (Frontend)</h3>
+                    <div class="code-block">
+<pre>{
+  <span class="key">"name":</span> <span class="string">"higherself-gaming-dashboard"</span>,
+  <span class="key">"version":</span> <span class="string">"1.0.0"</span>,
+  <span class="key">"dependencies":</span> {
+    <span class="key">"react":</span> <span class="string">"^18.2.0"</span>,
+    <span class="key">"react-dom":</span> <span class="string">"^18.2.0"</span>,
+    <span class="key">"three":</span> <span class="string">"^0.158.0"</span>,
+    <span class="key">"@react-three/fiber":</span> <span class="string">"^8.15.12"</span>,
+    <span class="key">"@react-three/drei":</span> <span class="string">"^9.88.13"</span>,
+    <span class="key">"socket.io-client":</span> <span class="string">"^4.7.4"</span>,
+    <span class="key">"axios":</span> <span class="string">"^1.6.2"</span>,
+    <span class="key">"recharts":</span> <span class="string">"^2.8.0"</span>,
+    <span class="key">"framer-motion":</span> <span class="string">"^10.16.16"</span>,
+    <span class="key">"tailwindcss":</span> <span class="string">"^3.3.6"</span>,
+    <span class="key">"@headlessui/react":</span> <span class="string">"^1.7.17"</span>,
+    <span class="key">"@heroicons/react":</span> <span class="string">"^2.0.18"</span>,
+    <span class="key">"react-router-dom":</span> <span class="string">"^6.20.1"</span>,
+    <span class="key">"zustand":</span> <span class="string">"^4.4.7"</span>
+  },
+  <span class="key">"scripts":</span> {
+    <span class="key">"start":</span> <span class="string">"react-scripts start"</span>,
+    <span class="key">"build":</span> <span class="string">"react-scripts build"</span>,
+    <span class="key">"test":</span> <span class="string">"react-scripts test"</span>
+  }
+}
+</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Integration Configuration -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-network-wired text-indigo-500 mr-2"></i>
+                HigherSelf Network Integration
+            </h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Service Registration Config</h3>
+                <div class="code-block">
+<pre><span class="comment"># consul-registration.py</span>
+<span class="comment"># Register gaming services with existing Consul infrastructure</span>
+
+<span class="key">import</span> consul
+<span class="key">import</span> os
+<span class="key">from</span> typing <span class="key">import</span> Dict, List
+
+<span class="key">class</span> <span class="string">GamingServiceRegistry</span>:
+    <span class="key">def</span> <span class="string">__init__</span>(self):
+        self.consul = consul.Consul(
+            host=os.getenv(<span class="string">'CONSUL_HOST'</span>, <span class="string">'consul'</span>),
+            port=int(os.getenv(<span class="string">'CONSUL_PORT'</span>, <span class="number">8500</span>))
+        )
+    
+    <span class="key">def</span> <span class="string">register_gaming_services</span>(self):
+        <span class="comment"># Gaming Dashboard API</span>
+        self.consul.agent.service.register(
+            name=<span class="string">'gaming-dashboard-api'</span>,
+            service_id=<span class="string">'gaming-dashboard-api-1'</span>,
+            address=<span class="string">'gaming-dashboard-api'</span>,
+            port=<span class="number">8080</span>,
+            tags=[<span class="string">'gaming'</span>, <span class="string">'dashboard'</span>, <span class="string">'api'</span>],
+            check=consul.Check.http(<span class="string">'http://gaming-dashboard-api:8080/health'</span>, <span class="number">30</span>)
+        )
+        
+        <span class="comment"># Gaming Dashboard UI</span>
+        self.consul.agent.service.register(
+            name=<span class="string">'gaming-dashboard-ui'</span>,
+            service_id=<span class="string">'gaming-dashboard-ui-1'</span>,
+            address=<span class="string">'gaming-dashboard-ui'</span>,
+            port=<span class="number">3000</span>,
+            tags=[<span class="string">'gaming'</span>, <span class="string">'dashboard'</span>, <span class="string">'ui'</span>],
+            check=consul.Check.http(<span class="string">'http://gaming-dashboard-ui:3000'</span>, <span class="number">30</span>)
+        )
+        
+        <span class="comment"># Gaming Metrics Collector</span>
+        self.consul.agent.service.register(
+            name=<span class="string">'gaming-metrics-collector'</span>,
+            service_id=<span class="string">'gaming-metrics-collector-1'</span>,
+            address=<span class="string">'gaming-metrics-collector'</span>,
+            port=<span class="number">8081</span>,
+            tags=[<span class="string">'gaming'</span>, <span class="string">'metrics'</span>, <span class="string">'collector'</span>]
+        )
+
+<span class="comment"># Agent Gaming Profiles</span>
+<span class="key">AGENT_GAMING_PROFILES</span> = {
+    <span class="string">'grace-fields'</span>: {
+        <span class="string">'character_class'</span>: <span class="string">'Master Orchestrator'</span>,
+        <span class="string">'color'</span>: <span class="string">'#31B2E0'</span>,
+        <span class="string">'special_abilities'</span>: [<span class="string">'Workflow Harmony'</span>, <span class="string">'Multi-Agent Coordination'</span>],
+        <span class="string">'metrics'</span>: [<span class="string">'coordination_efficiency'</span>, <span class="string">'resolution_rate'</span>]
+    },
+    <span class="string">'nyra'</span>: {
+        <span class="string">'character_class'</span>: <span class="string">'Lead Specialist'</span>,
+        <span class="string">'color'</span>: <span class="string">'#FF6B6B'</span>,
+        <span class="string">'special_abilities'</span>: [<span class="string">'Lead Capture'</span>, <span class="string">'Contact Intuition'</span>],
+        <span class="string">'metrics'</span>: [<span class="string">'lead_conversion_rate'</span>, <span class="string">'response_time'</span>]
+    },
+    <span class="string">'solari'</span>: {
+        <span class="string">'character_class'</span>: <span class="string">'Booking Manager'</span>,
+        <span class="string">'color'</span>: <span class="string">'#FFD93D'</span>,
+        <span class="string">'special_abilities'</span>: [<span class="string">'Schedule Optimization'</span>, <span class="string">'Resource Coordination'</span>],
+        <span class="string">'metrics'</span>: [<span class="string">'booking_efficiency'</span>, <span class="string">'resource_utilization'</span>]
+    }
+}
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deployment Scripts -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-rocket text-red-500 mr-2"></i>
+                Deployment Scripts
+            </h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">deploy-gaming-dashboard.sh</h3>
+                <div class="code-block">
+<pre><span class="comment">#!/bin/bash</span>
+<span class="comment"># Deploy Gaming Dashboard to HigherSelf Network</span>
+
+<span class="key">set</span> -e
+
+<span class="comment"># Configuration</span>
+<span class="key">COMPOSE_FILE</span>=<span class="string">"docker-compose.gaming.yml"</span>
+<span class="key">PROJECT_NAME</span>=<span class="string">"higherself-gaming"</span>
+<span class="key">NETWORK_NAME</span>=<span class="string">"higherselfnetwork"</span>
+
+<span class="key">echo</span> <span class="string">"🎮 Deploying HigherSelf Gaming Dashboard..."</span>
+
+<span class="comment"># Check if main network exists</span>
+<span class="key">if</span> ! docker network ls | grep -q <span class="string">"$NETWORK_NAME"</span>; <span class="key">then</span>
+    <span class="key">echo</span> <span class="string">"❌ HigherSelf network not found. Please deploy main stack first."</span>
+    <span class="key">exit</span> <span class="number">1</span>
+<span class="key">fi</span>
+
+<span class="comment"># Build and start services</span>
+<span class="key">echo</span> <span class="string">"🔨 Building gaming dashboard services..."</span>
+docker-compose -f <span class="string">"$COMPOSE_FILE"</span> -p <span class="string">"$PROJECT_NAME"</span> build
+
+<span class="key">echo</span> <span class="string">"🚀 Starting gaming dashboard services..."</span>
+docker-compose -f <span class="string">"$COMPOSE_FILE"</span> -p <span class="string">"$PROJECT_NAME"</span> up -d
+
+<span class="comment"># Wait for services to be healthy</span>
+<span class="key">echo</span> <span class="string">"⏳ Waiting for services to be healthy..."</span>
+<span class="key">sleep</span> <span class="number">30</span>
+
+<span class="comment"># Register services with Consul</span>
+<span class="key">echo</span> <span class="string">"📝 Registering services with Consul..."</span>
+docker exec higherself-gaming-api python /app/scripts/register_services.py
+
+<span class="comment"># Verify deployment</span>
+<span class="key">echo</span> <span class="string">"✅ Verifying deployment..."</span>
+<span class="key">if</span> curl -f http://localhost:8080/health > /dev/null <span class="number">2</span>>&<span class="number">1</span>; <span class="key">then</span>
+    <span class="key">echo</span> <span class="string">"✅ Gaming Dashboard API is healthy"</span>
+<span class="key">else</span>
+    <span class="key">echo</span> <span class="string">"❌ Gaming Dashboard API health check failed"</span>
+    <span class="key">exit</span> <span class="number">1</span>
+<span class="key">fi</span>
+
+<span class="key">if</span> curl -f http://localhost:3001 > /dev/null <span class="number">2</span>>&<span class="number">1</span>; <span class="key">then</span>
+    <span class="key">echo</span> <span class="string">"✅ Gaming Dashboard UI is healthy"</span>
+<span class="key">else</span>
+    <span class="key">echo</span> <span class="string">"❌ Gaming Dashboard UI health check failed"</span>
+    <span class="key">exit</span> <span class="number">1</span>
+<span class="key">fi</span>
+
+<span class="key">echo</span> <span class="string">"🎉 Gaming Dashboard deployed successfully!"</span>
+<span class="key">echo</span> <span class="string">"🌐 Dashboard URL: http://localhost:3001"</span>
+<span class="key">echo</span> <span class="string">"🔌 API URL: http://localhost:8080"</span>
+<span class="key">echo</span> <span class="string">"📊 Grafana Integration: http://localhost:3000"</span>
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Environment Configuration -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-cog text-gray-600 mr-2"></i>
+                Environment Configuration
+            </h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">.env.gaming</h3>
+                <div class="code-block">
+<pre><span class="comment"># HigherSelf Gaming Dashboard Configuration</span>
+
+<span class="comment"># API Configuration</span>
+<span class="key">API_HOST</span>=<span class="string">0.0.0.0</span>
+<span class="key">API_PORT</span>=<span class="number">8080</span>
+<span class="key">WEBSOCKET_PORT</span>=<span class="number">8765</span>
+
+<span class="comment"># Database Configuration</span>
+<span class="key">MONGODB_URL</span>=<span class="string">mongodb://mongodb:27017/higherself_gaming</span>
+<span class="key">REDIS_URL</span>=<span class="string">redis://redis:6379</span>
+
+<span class="comment"># Service Discovery</span>
+<span class="key">CONSUL_HOST</span>=<span class="string">consul</span>
+<span class="key">CONSUL_PORT</span>=<span class="number">8500</span>
+
+<span class="comment"># Monitoring</span>
+<span class="key">PROMETHEUS_URL</span>=<span class="string">http://prometheus:9090</span>
+<span class="key">GRAFANA_URL</span>=<span class="string">http://grafana:3000</span>
+
+<span class="comment"># Gaming Configuration</span>
+<span class="key">GAMING_UPDATE_INTERVAL</span>=<span class="number">5</span>
+<span class="key">ACHIEVEMENT_THRESHOLD_LOW</span>=<span class="number">100</span>
+<span class="key">ACHIEVEMENT_THRESHOLD_MEDIUM</span>=<span class="number">500</span>
+<span class="key">ACHIEVEMENT_THRESHOLD_HIGH</span>=<span class="number">1000</span>
+
+<span class="comment"># Security</span>
+<span class="key">SECRET_KEY</span>=<span class="string">your-secure-secret-key-here</span>
+<span class="key">CORS_ORIGINS</span>=<span class="string">http://localhost:3001,http://gaming-dashboard-ui:3000</span>
+
+<span class="comment"># Logging</span>
+<span class="key">LOG_LEVEL</span>=<span class="string">INFO</span>
+<span class="key">LOG_FORMAT</span>=<span class="string">json</span>
+
+<span class="comment"># Agent Integration</span>
+<span class="key">AGENT_METRICS_ENABLED</span>=<span class="string">true</span>
+<span class="key">AGENT_PERFORMANCE_TRACKING</span>=<span class="string">true</span>
+<span class="key">REAL_TIME_UPDATES</span>=<span class="string">true</span>
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Checklist -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-check-double text-green-600 mr-2"></i>
+                Implementation Checklist for Devin AI
+            </h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Backend Implementation</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>FastAPI gaming dashboard API</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>WebSocket real-time communication</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>Pydantic models for gaming data</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>Agent performance metrics collector</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>Achievement engine</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-blue-500 mr-2"></i>
+                                <span>Consul service registration</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Frontend Implementation</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>React + TypeScript setup</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>Three.js 3D visualization</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>Real-time WebSocket integration</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>Gaming UI components</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>Agent character visualization</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-square text-purple-500 mr-2"></i>
+                                <span>Performance charts & leaderboards</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+                    <h4 class="font-semibold text-yellow-800 mb-2">
+                        <i class="fas fa-lightbulb mr-2"></i>Integration Notes
+                    </h4>
+                    <ul class="text-yellow-700 space-y-1">
+                        <li>• Ensure gaming services use the existing 'higherselfnetwork' Docker network</li>
+                        <li>• Register all gaming services with the existing Consul instance</li>
+                        <li>• Integrate with existing Prometheus metrics collection</li>
+                        <li>• Use existing Redis instance for caching and real-time data</li>
+                        <li>• Connect to existing MongoDB for persistent gaming data</li>
+                        <li>• Follow existing logging and monitoring patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Success Metrics -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                Success Metrics & Validation
+            </h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-line text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Performance</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>API response time < 100ms</li>
+                            <li>WebSocket latency < 50ms</li>
+                            <li>3D rendering at 60 FPS</li>
+                            <li>Real-time updates < 1s delay</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Functionality</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>Agent performance tracking</li>
+                            <li>Gaming achievements system</li>
+                            <li>3D network visualization</li>
+                            <li>Staff interaction interface</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-network-wired text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Integration</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>Consul service discovery</li>
+                            <li>Prometheus metrics export</li>
+                            <li>Grafana dashboard links</li>
+                            <li>Existing network compatibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center py-8 border-t border-gray-200">
+            <p class="text-gray-600">
+                <i class="fas fa-gamepad text-blue-500 mr-2"></i>
+                HigherSelf Network Gaming Dashboard - Transforming Docker Management into an Interactive Experience
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+                Built for seamless integration with existing HigherSelf Network infrastructure
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDu%2FJj%2FbSPjCiDRVMKCiE7O1fO7VQ1EL7bRNtl9di8y0JVj%2BS%2BqsvvnZ%2F6DRlS9%2FBcSGWPk%2Fyemop%2B1T891q9E7ekl5OaobqtNEb1r3oRbbkEJmyMZ%2BArsz0EGk99IUf2jQpOh0omNsQLC%2Fj183EQUCUOEAwBwoWc%2FJTRcyP5BN3kcOdYXs8qF7X6R1FQV96r6Tqrbp78mB%2FQ%2FyRcQeyPiPJzHfxo8Z0LFHMpUrsqtJQdT0nmv7Kq6qGWewiwk3HebShG3ucO%2FatamXwWwQbVSCd3HoksWLVdgyRmC%2B2OZ%2FBXIJ95bbPEds4wKA7fcLshuaEUHCGbUo9tjWiKgTIH2h6QGyAsFtyY%2BbkOx0rmgimnZP%2By8hiHglVxg7Ya%2F9bwJRgyJiXuvlS1xnTEbJbvSJkbS%2FtRr1gNMEOaoH5uEE3gyaN7SbmjCqnucCt6XrTAse8kSlYYDAn7rAffCF2EdwVz6Do3kDshxbfvKqeSEaARiT%2BSieV6B1iRdYo0%2FKh9xA%3D%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDu/Jj/bSPjCiDRVMKCiE7O1fO7VQ1EL7bRNtl9di8y0JVj+S+qsvvnZ/6DRlS9/BcSGWPk/yemop+1T891q9E7ekl5OaobqtNEb1r3oRbbkEJmyMZ+Arsz0EGk99IUf2jQpOh0omNsQLC/j183EQUCUOEAwBwoWc/JTRcyP5BN3kcOdYXs8qF7X6R1FQV96r6Tqrbp78mB/Q/yRcQeyPiPJzHfxo8Z0LFHMpUrsqtJQdT0nmv7Kq6qGWewiwk3HebShG3ucO/atamXwWwQbVSCd3HoksWLVdgyRmC+2OZ/BXIJ95bbPEds4wKA7fcLshuaEUHCGbUo9tjWiKgTIH2h6QGyAsFtyY+bkOx0rmgimnZP+y8hiHglVxg7Ya/9bwJRgyJiXuvlS1xnTEbJbvSJkbS/tRr1gNMEOaoH5uEE3gyaN7SbmjCqnucCt6XrTAse8kSlYYDAn7rAffCF2EdwVz6Do3kDshxbfvKqeSEaARiT+SieV6B1iRdYo0/Kh9xA==";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

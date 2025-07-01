@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER PROJECT GUIDE - HigherSelf Gaming Dashboard for Devin AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .code-block { background: #1a202c; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+        .highlight { background: #31B2E0; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        .step-indicator { background: #31B2E0; color: white; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .agent-card { border-left: 4px solid #31B2E0; background: #f8f9fa; }
+         { body { -webkit-print-color-adjust: exact; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<div class="gradient-bg text-white py-8">
+    <div class="container mx-auto px-6">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">
+                <i class="fas fa-gamepad mr-3"></i>
+                MASTER PROJECT GUIDE
+            </h1>
+            <h2 class="text-2xl mb-2">HigherSelf Gaming Dashboard Implementation</h2>
+            <p class="text-xl opacity-90">Complete Build Instructions for Devin AI</p>
+        </div>
+    </div>
+</div>
+
+<!-- Project Overview -->
+<div class="container mx-auto px-6 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+            Project Overview
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Mission Statement</h3>
+                <p class="text-gray-600 mb-4">Transform the HigherSelf Network Server's Docker infrastructure into an interactive, game-like dashboard that visualizes the 9 specialized agents as gaming characters with real-time performance metrics, achievements, and 3D network topology.</p>
+                
+                <h3 class="text-xl font-semibold mb-4">Key Gaming Elements</h3>
+                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                    <li><span class="highlight">Agent Characters</span> - Each of the 9 agents becomes a gaming persona</li>
+                    <li><span class="highlight">Performance XP</span> - Task completion translates to experience points</li>
+                    <li><span class="highlight">Achievement System</span> - Milestones unlock new capabilities</li>
+                    <li><span class="highlight">3D Visualization</span> - Interactive network topology</li>
+                    <li><span class="highlight">Real-time Stats</span> - Live performance dashboards</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Technical Stack</h3>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                    <div class="mb-3"><strong>Frontend:</strong> React + Three.js + Socket.io</div>
+                    <div class="mb-3"><strong>Backend:</strong> FastAPI + Pydantic + WebSocket</div>
+                    <div class="mb-3"><strong>Visualization:</strong> Three.js + Chart.js + Custom Gaming UI</div>
+                    <div class="mb-3"><strong>Integration:</strong> Docker + Prometheus + Existing HigherSelf Services</div>
+                    <div><strong>Data:</strong> Real-time agent metrics + MongoDB + Redis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture Understanding -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-sitemap text-green-500 mr-3"></i>
+            HigherSelf Architecture Integration
+        </h2>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="agent-card p-4 rounded-lg">
+                <h3 class="font-bold mb-3">Existing Services to Gamify</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• windsurf-agent</li>
+                    <li>• celery-worker</li>
+                    <li>• mongodb</li>
+                    <li>• redis</li>
+                    <li>• consul</li>
+                    <li>• prometheus</li>
+                    <li>• grafana</li>
+                </ul>
+            </div>
+            
+            <div class="agent-card p-4 rounded-lg">
+                <h3 class="font-bold mb-3">9 Agent Personalities</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• Grace Fields (Master Orchestrator)</li>
+                    <li>• Nyra (Lead Specialist)</li>
+                    <li>• Solari (Booking Manager)</li>
+                    <li>• Ruvo (Task Orchestrator)</li>
+                    <li>• Liora (Marketing Strategist)</li>
+                    <li>• Sage (Community Curator)</li>
+                    <li>• Elan (Content Choreographer)</li>
+                    <li>• Zevi (Audience Analyst)</li>
+                    <li>• Atlas (Knowledge Specialist)</li>
+                </ul>
+            </div>
+            
+            <div class="agent-card p-4 rounded-lg">
+                <h3 class="font-bold mb-3">16 Data Layers</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• Business Entities Registry</li>
+                    <li>• Contacts & Profiles</li>
+                    <li>• Community Hub</li>
+                    <li>• Products & Services</li>
+                    <li>• Active Workflows</li>
+                    <li>• Marketing Campaigns</li>
+                    <li>• Agent Communication</li>
+                    <li>• And 9 more...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation Sequence -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-list-ol text-purple-500 mr-3"></i>
+            Implementation Sequence
+        </h2>
+        
+        <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+                <div class="step-indicator">1</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold mb-2">Environment Setup & Analysis</h3>
+                    <p class="text-gray-600 mb-3">Analyze the existing HigherSelf Network Server repository structure and identify integration points.</p>
+                    <div class="code-block text-sm">
+<pre>git clone https://github.com/Utak-West/The-HigherSelf-Network-Server.git
+cd The-HigherSelf-Network-Server
+# Analyze existing services directory
+# Review docker-compose configurations
+# Identify agent service endpoints</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="step-indicator">2</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold mb-2">Gaming Backend Development</h3>
+                    <p class="text-gray-600 mb-3">Create FastAPI backend with gaming logic, agent performance tracking, and WebSocket support.</p>
+                    <div class="code-block text-sm">
+<pre># Create new service directory
+mkdir services/gaming-dashboard
+# Implement Pydantic models from provided schemas
+# Build FastAPI endpoints for agent data
+# Implement WebSocket for real-time updates</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="step-indicator">3</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold mb-2">React Gaming Frontend</h3>
+                    <p class="text-gray-600 mb-3">Build React application with Three.js 3D visualization and gaming UI components.</p>
+                    <div class="code-block text-sm">
+<pre># Create frontend directory
+mkdir frontend/gaming-dashboard
+# Initialize React app with TypeScript
+# Integrate Three.js for 3D agent visualization
+# Implement gaming UI components</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="step-indicator">4</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold mb-2">Docker Integration</h3>
+                    <p class="text-gray-600 mb-3">Integrate gaming services into existing Docker Compose setup with proper networking and service discovery.</p>
+                    <div class="code-block text-sm">
+<pre># Add gaming services to docker-compose.yml
+# Configure networking with higherselfnetwork bridge
+# Set up Consul service registration
+# Configure Prometheus metrics collection</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="step-indicator">5</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold mb-2">Data Integration & Testing</h3>
+                    <p class="text-gray-600 mb-3">Connect to existing data sources, implement real-time metrics collection, and comprehensive testing.</p>
+                    <div class="code-block text-sm">
+<pre># Integrate with MongoDB for agent data
+# Connect to Redis for real-time state
+# Implement Prometheus metrics scraping
+# Create comprehensive test suite</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Structure -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-folder-tree text-orange-500 mr-3"></i>
+            Project File Structure
+        </h2>
+        
+        <div class="code-block">
+<pre>The-HigherSelf-Network-Server/
+├── services/
+│   ├── gaming-dashboard/           # NEW: Gaming backend service
+│   │   ├── main.py                # FastAPI application
+│   │   ├── models/                # Pydantic models
+│   │   ├── routers/               # API endpoints
+│   │   ├── websocket/             # Real-time connections
+│   │   └── gaming_logic/          # Achievement & XP systems
+│   └── existing_services/         # Your current services
+├── frontend/
+│   └── gaming-dashboard/          # NEW: React gaming frontend
+│       ├── src/
+│       │   ├── components/        # Gaming UI components
+│       │   ├── three/             # Three.js 3D scenes
+│       │   ├── hooks/             # React hooks for data
+│       │   └── utils/             # Gaming calculations
+│       └── public/
+├── deployment/
+│   ├── docker-compose.gaming.yml  # NEW: Gaming services config
+│   └── gaming.dockerfile          # NEW: Gaming service images
+└── configs/
+    └── gaming/                    # NEW: Gaming configurations
+        ├── agent-personas.json    # Agent character definitions
+        └── gaming-rules.json      # XP, achievements, levels</pre>
+        </div>
+    </div>
+
+    <!-- Quick Start Commands -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-rocket text-red-500 mr-3"></i>
+            Quick Start Commands
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Development Setup</h3>
+                <div class="code-block text-sm">
+<pre># 1. Clone and setup
+git clone [repo-url]
+cd The-HigherSelf-Network-Server
+
+# 2. Install gaming dependencies
+pip install fastapi websockets three.js
+
+# 3. Create gaming service
+mkdir services/gaming-dashboard
+cd services/gaming-dashboard
+
+# 4. Initialize FastAPI app
+python -m fastapi main:app --reload</pre>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Production Deployment</h3>
+                <div class="code-block text-sm">
+<pre># 1. Build gaming services
+docker-compose -f deployment/docker-compose.gaming.yml build
+
+# 2. Deploy with existing services
+docker-compose -f deployment/docker-compose.yml \
+  -f deployment/docker-compose.gaming.yml up -d
+
+# 3. Verify gaming dashboard
+curl http://localhost:8080/gaming/health</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integration Points -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-plug text-yellow-500 mr-3"></i>
+            Critical Integration Points
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Data Sources</h3>
+                <div class="space-y-3">
+                    <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+                        <strong>Prometheus Metrics:</strong> Container CPU, memory, network I/O
+                    </div>
+                    <div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
+                        <strong>MongoDB:</strong> Agent performance data, task completion
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded border-l-4 border-purple-400">
+                        <strong>Redis:</strong> Real-time agent state, gaming achievements
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded border-l-4 border-orange-400">
+                        <strong>Consul:</strong> Service discovery and health checks
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Gaming Mechanics</h3>
+                <div class="space-y-3">
+                    <div class="bg-indigo-50 p-3 rounded border-l-4 border-indigo-400">
+                        <strong>XP System:</strong> Tasks completed = XP gained
+                    </div>
+                    <div class="bg-pink-50 p-3 rounded border-l-4 border-pink-400">
+                        <strong>Achievements:</strong> Milestone-based unlocks
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded border-l-4 border-teal-400">
+                        <strong>Leaderboards:</strong> Agent performance rankings
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded border-l-4 border-gray-400">
+                        <strong>3D Visualization:</strong> Network topology gaming</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Resources -->
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-toolbox text-indigo-500 mr-3"></i>
+            Available Resources in AI Drive
+        </h2>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-bold text-blue-800 mb-2">
+                    <i class="fas fa-file-code mr-2"></i>
+                    Devin Instructions
+                </h3>
+                <p class="text-sm text-blue-600 mb-2">Complete build specification addressing your analysis</p>
+                <p class="text-xs text-blue-500">📁 /devin-instructions/</p>
+            </div>
+            
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="font-bold text-green-800 mb-2">
+                    <i class="fas fa-database mr-2"></i>
+                    Pydantic Schemas
+                </h3>
+                <p class="text-sm text-green-600 mb-2">Production-ready data models for all gaming components</p>
+                <p class="text-xs text-green-500">📁 /pydantic-schemas/</p>
+            </div>
+            
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-bold text-purple-800 mb-2">
+                    <i class="fas fa-docker mr-2"></i>
+                    Docker Configs
+                </h3>
+                <p class="text-sm text-purple-600 mb-2">Ready-to-deploy Docker configurations</p>
+                <p class="text-xs text-purple-500">📁 /docker-configs/</p>
+            </div>
+            
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <h3 class="font-bold text-orange-800 mb-2">
+                    <i class="fab fa-react mr-2"></i>
+                    React Templates
+                </h3>
+                <p class="text-sm text-orange-600 mb-2">Gaming UI components with Three.js integration</p>
+                <p class="text-xs text-orange-500">📁 /project-templates/</p>
+            </div>
+            
+            <div class="bg-red-50 p-4 rounded-lg">
+                <h3 class="font-bold text-red-800 mb-2">
+                    <i class="fas fa-server mr-2"></i>
+                    FastAPI Backend
+                </h3>
+                <p class="text-sm text-red-600 mb-2">Complete backend templates with WebSocket support</p>
+                <p class="text-xs text-red-500">📁 /project-templates/</p>
+            </div>
+            
+            <div class="bg-teal-50 p-4 rounded-lg">
+                <h3 class="font-bold text-teal-800 mb-2">
+                    <i class="fas fa-book mr-2"></i>
+                    Deployment Guide
+                </h3>
+                <p class="text-sm text-teal-600 mb-2">Original comprehensive deployment documentation</p>
+                <p class="text-xs text-teal-500">📁 /deployment-guide.html</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Criteria -->
+    <div class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-trophy text-yellow-500 mr-3"></i>
+            Success Criteria & Validation
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Functional Requirements</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>9 agents visualized as gaming characters</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Real-time performance metrics displayed</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>3D network topology visualization</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Achievement system working</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Integration with existing Docker services</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Technical Validation</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>FastAPI backend responding on /gaming/health</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>React frontend accessible via browser</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>WebSocket connections established</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>Prometheus metrics being collected</li>
+                    <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>All services registered in Consul</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Notes -->
+    <div class="bg-gray-800 text-white rounded-lg p-8">
+        <h2 class="text-2xl font-bold mb-4">
+            <i class="fas fa-lightbulb text-yellow-400 mr-3"></i>
+            Final Implementation Notes
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-3 text-blue-300">Key Integration Points</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>• Extend existing devin_deploy.py for gaming services</li>
+                    <li>• Use existing higherselfnetwork Docker bridge</li>
+                    <li>• Integrate with current Consul service discovery</li>
+                    <li>• Leverage existing Prometheus + Grafana setup</li>
+                    <li>• Maintain compatibility with current agent architecture</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold mb-3 text-green-300">Development Priority</h3>
+                <ul class="text-gray-300 space-y-2">
+                    <li>• Start with backend API and data models</li>
+                    <li>• Implement basic agent visualization first</li>
+                    <li>• Add gaming mechanics incrementally</li>
+                    <li>• Focus on real-time data integration</li>
+                    <li>• Polish UI/UX and 3D effects last</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-blue-900 rounded-lg">
+            <p class="text-blue-100"><strong>Remember:</strong> This gaming dashboard should enhance, not replace, the existing HigherSelf Network functionality. It's a visualization layer that makes the sophisticated agent network more accessible and engaging for staff and stakeholders.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDrBePTehGWM%2FW5eQCoZF5MG4oBCtskmb%2B4i8NvNVcbagTMSXgmZCEdNpbZJzhYfEuU461B%2BcfjUQqwZr%2B1t4L%2FlovlS%2BG4jPMzkz%2B03k7n4flxbcLSD3JxOA5eGfuISrFwWBiOX9fUi0%2Fs6SwWQTboH87tTaM4yUQPAqTiqS39MjR9dut9GXIyKeUV6M%2FuNSL0JfIRCB%2FDHKd2mFLlSLGmpfFlOWDeH7durEcUZmUQc2IXP2SZNr5PofZR%2Bj0fjbKEVkWjQ5oBQ4V6rncC6Kn2MA8WmFclvAhr3vBfwj78kAD%2Baf%2BDIBvFRntuw9CUObGgE0UpNEewYfCEw%2BPlascrzwO0nFVaoAocOXl20e7IG3yhn0uIDcPQF2gejYCQe07oJLY2lcJnQoWw%2BXX6NJimnYj2VkPCuyFdCDWobqEUyBWXCyo%2FPf53KB%2FCmXzBxGwmLtHaqjzSjzx5TDY05izcG91nG%2Fge59sauaj26tmNMwmknhK3Iepdh9D%2B2%2BzqsE1Q%3D%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDrBePTehGWM/W5eQCoZF5MG4oBCtskmb+4i8NvNVcbagTMSXgmZCEdNpbZJzhYfEuU461B+cfjUQqwZr+1t4L/lovlS+G4jPMzkz+03k7n4flxbcLSD3JxOA5eGfuISrFwWBiOX9fUi0/s6SwWQTboH87tTaM4yUQPAqTiqS39MjR9dut9GXIyKeUV6M/uNSL0JfIRCB/DHKd2mFLlSLGmpfFlOWDeH7durEcUZmUQc2IXP2SZNr5PofZR+j0fjbKEVkWjQ5oBQ4V6rncC6Kn2MA8WmFclvAhr3vBfwj78kAD+af+DIBvFRntuw9CUObGgE0UpNEewYfCEw+PlascrzwO0nFVaoAocOXl20e7IG3yhn0uIDcPQF2gejYCQe07oJLY2lcJnQoWw+XX6NJimnYj2VkPCuyFdCDWobqEUyBWXCyo/Pf53KB/CmXzBxGwmLtHaqjzSjzx5TDY05izcG91nG/ge59sauaj26tmNMwmknhK3Iepdh9D+2+zqsE1Q==";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pydantic Models for HigherSelf Gaming Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        .python-keyword { color: #f472b6; }
+        .python-string { color: #34d399; }
+        .python-comment { color: #94a3b8; font-style: italic; }
+        .python-class { color: #60a5fa; }
+        .python-function { color: #fbbf24; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .agent-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .agent-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="gradient-bg text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">
+                    <i class="fas fa-code text-yellow-300 mr-3"></i>
+                    Pydantic Models for HigherSelf Gaming Dashboard
+                </h1>
+                <p class="text-xl opacity-90">Complete schema definitions for agent performance, dashboard state, gaming metrics, and staff interactions</p>
+                <div class="mt-8 flex justify-center space-x-4">
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">
+                        <i class="fas fa-gamepad mr-2"></i>Gaming Interface
+                    </span>
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">
+                        <i class="fas fa-robot mr-2"></i>AI Agents
+                    </span>
+                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">
+                        <i class="fas fa-chart-line mr-2"></i>Real-time Metrics
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex space-x-8">
+                    <a href="#imports" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Imports
+                    </a>
+                    <a href="#base-models" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-foundation mr-2"></i>Base Models
+                    </a>
+                    <a href="#agent-models" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-robot mr-2"></i>Agent Models
+                    </a>
+                    <a href="#gaming-models" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-gamepad mr-2"></i>Gaming Models
+                    </a>
+                    <a href="#dashboard-models" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard Models
+                    </a>
+                    <a href="#api-models" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-exchange-alt mr-2"></i>API Models
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Imports Section -->
+        <section id="imports" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-download text-indigo-600 mr-3"></i>Required Imports
+                </h2>
+                <div class="code-block">
+<pre><span class="python-comment"># core_models.py - Complete Pydantic models for HigherSelf Gaming Dashboard</span>
+
+<span class="python-keyword">from</span> pydantic <span class="python-keyword">import</span> BaseModel, Field, validator, root_validator
+<span class="python-keyword">from</span> typing <span class="python-keyword">import</span> Dict, List, Optional, Union, Literal, Any
+<span class="python-keyword">from</span> datetime <span class="python-keyword">import</span> datetime, timedelta
+<span class="python-keyword">from</span> enum <span class="python-keyword">import</span> Enum
+<span class="python-keyword">from</span> uuid <span class="python-keyword">import</span> UUID, uuid4
+<span class="python-keyword">from</span> decimal <span class="python-keyword">import</span> Decimal</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Base Models Section -->
+        <section id="base-models" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-foundation text-indigo-600 mr-3"></i>Base Models & Enums
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Core Enums</h3>
+                        <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">AgentType</span>(str, Enum):
+    <span class="python-string">&quot;Agent specialization types&quot;</span>
+    LEAD_SPECIALIST = <span class="python-string">&quot;lead_specialist&quot;</span>
+    BOOKING_MANAGER = <span class="python-string">&quot;booking_manager&quot;</span>
+    TASK_ORCHESTRATOR = <span class="python-string">&quot;task_orchestrator&quot;</span>
+    MARKETING_STRATEGIST = <span class="python-string">&quot;marketing_strategist&quot;</span>
+    COMMUNITY_CURATOR = <span class="python-string">&quot;community_curator&quot;</span>
+    CONTENT_CHOREOGRAPHER = <span class="python-string">&quot;content_choreographer&quot;</span>
+    AUDIENCE_ANALYST = <span class="python-string">&quot;audience_analyst&quot;</span>
+    KNOWLEDGE_SPECIALIST = <span class="python-string">&quot;knowledge_specialist&quot;</span>
+    MASTER_ORCHESTRATOR = <span class="python-string">&quot;master_orchestrator&quot;</span>
+
+<span class="python-keyword">class</span> <span class="python-class">AgentStatus</span>(str, Enum):
+    <span class="python-string">&quot;Agent operational status&quot;</span>
+    ACTIVE = <span class="python-string">&quot;active&quot;</span>
+    IDLE = <span class="python-string">&quot;idle&quot;</span>
+    BUSY = <span class="python-string">&quot;busy&quot;</span>
+    MAINTENANCE = <span class="python-string">&quot;maintenance&quot;</span>
+    OFFLINE = <span class="python-string">&quot;offline&quot;</span>
+
+<span class="python-keyword">class</span> <span class="python-class">TaskPriority</span>(str, Enum):
+    <span class="python-string">&quot;Task priority levels&quot;</span>
+    CRITICAL = <span class="python-string">&quot;critical&quot;</span>
+    HIGH = <span class="python-string">&quot;high&quot;</span>
+    MEDIUM = <span class="python-string">&quot;medium&quot;</span>
+    LOW = <span class="python-string">&quot;low&quot;</span></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Base Configuration</h3>
+                        <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">BaseConfig</span>(BaseModel):
+    <span class="python-string">&quot;Base configuration for all models&quot;</span>
+    
+    <span class="python-keyword">class</span> <span class="python-class">Config</span>:
+        use_enum_values = <span class="python-keyword">True</span>
+        validate_assignment = <span class="python-keyword">True</span>
+        arbitrary_types_allowed = <span class="python-keyword">True</span>
+        json_encoders = {
+            datetime: <span class="python-keyword">lambda</span> v: v.isoformat(),
+            Decimal: <span class="python-keyword">lambda</span> v: float(v),
+            UUID: <span class="python-keyword">lambda</span> v: str(v)
+        }
+
+<span class="python-keyword">class</span> <span class="python-class">TimestampMixin</span>(BaseModel):
+    <span class="python-string">&quot;Mixin for timestamp fields&quot;</span>
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = <span class="python-keyword">None</span>
+    
+    <span class="python-function">@validator</span>(<span class="python-string">'updated_at'</span>, pre=<span class="python-keyword">True</span>, always=<span class="python-keyword">True</span>)
+    <span class="python-keyword">def</span> <span class="python-function">set_updated_at</span>(cls, v):
+        <span class="python-keyword">return</span> v or datetime.utcnow()</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agent Models Section -->
+        <section id="agent-models" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-robot text-indigo-600 mr-3"></i>Agent Performance Models
+                </h2>
+                
+                <!-- Agent Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="agent-card bg-gradient-to-br from-purple-500 to-pink-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-user-tie text-2xl mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Nyra</h4>
+                                <p class="text-sm opacity-90">Lead Specialist</p>
+                            </div>
+                        </div>
+                        <p class="text-sm">Intuitive & Responsive lead processing</p>
+                    </div>
+                    <div class="agent-card bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-calendar-alt text-2xl mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Solari</h4>
+                                <p class="text-sm opacity-90">Booking Manager</p>
+                            </div>
+                        </div>
+                        <p class="text-sm">Clear & Luminous scheduling</p>
+                    </div>
+                    <div class="agent-card bg-gradient-to-br from-green-400 to-blue-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-crown text-2xl mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Grace Fields</h4>
+                                <p class="text-sm opacity-90">Master Orchestrator</p>
+                            </div>
+                        </div>
+                        <p class="text-sm">Harmonious coordination</p>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">AgentMetrics</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Core performance metrics for agents&quot;</span>
+    
+    agent_id: UUID = Field(default_factory=uuid4)
+    agent_name: str = Field(..., description=<span class="python-string">&quot;Agent display name&quot;</span>)
+    agent_type: AgentType
+    status: AgentStatus = AgentStatus.IDLE
+    
+    <span class="python-comment"># Performance Metrics</span>
+    tasks_completed: int = Field(default=0, ge=0)
+    tasks_failed: int = Field(default=0, ge=0)
+    average_response_time: float = Field(default=0.0, ge=0.0)
+    uptime_percentage: float = Field(default=100.0, ge=0.0, le=100.0)
+    
+    <span class="python-comment"># Gaming Metrics</span>
+    experience_points: int = Field(default=0, ge=0)
+    level: int = Field(default=1, ge=1)
+    achievements: List[str] = Field(default_factory=list)
+    
+    <span class="python-function">@property</span>
+    <span class="python-keyword">def</span> <span class="python-function">success_rate</span>(self) -> float:
+        <span class="python-string">&quot;Calculate task success rate&quot;</span>
+        total_tasks = self.tasks_completed + self.tasks_failed
+        <span class="python-keyword">return</span> (self.tasks_completed / total_tasks * 100) <span class="python-keyword">if</span> total_tasks > 0 <span class="python-keyword">else</span> 0.0
+    
+    <span class="python-function">@validator</span>(<span class="python-string">'level'</span>)
+    <span class="python-keyword">def</span> <span class="python-function">calculate_level</span>(cls, v, values):
+        <span class="python-string">&quot;Auto-calculate level based on XP&quot;</span>
+        xp = values.get(<span class="python-string">'experience_points'</span>, 0)
+        <span class="python-keyword">return</span> max(1, int(xp / 1000) + 1)
+
+<span class="python-keyword">class</span> <span class="python-class">AgentTask</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Individual agent task tracking&quot;</span>
+    
+    task_id: UUID = Field(default_factory=uuid4)
+    agent_id: UUID
+    task_type: str
+    priority: TaskPriority
+    status: Literal[<span class="python-string">&quot;pending&quot;</span>, <span class="python-string">&quot;in_progress&quot;</span>, <span class="python-string">&quot;completed&quot;</span>, <span class="python-string">&quot;failed&quot;</span>]
+    
+    <span class="python-comment"># Task Details</span>
+    title: str
+    description: Optional[str] = <span class="python-keyword">None</span>
+    estimated_duration: Optional[timedelta] = <span class="python-keyword">None</span>
+    actual_duration: Optional[timedelta] = <span class="python-keyword">None</span>
+    
+    <span class="python-comment"># Gaming Elements</span>
+    xp_reward: int = Field(default=10, ge=0)
+    difficulty_level: int = Field(default=1, ge=1, le=10)
+    
+    started_at: Optional[datetime] = <span class="python-keyword">None</span>
+    completed_at: Optional[datetime] = <span class="python-keyword">None</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gaming Models Section -->
+        <section id="gaming-models" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-gamepad text-indigo-600 mr-3"></i>Gaming & Achievement Models
+                </h2>
+                <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">Achievement</span>(BaseConfig):
+    <span class="python-string">&quot;Gaming achievement definition&quot;</span>
+    
+    achievement_id: str = Field(..., description=<span class="python-string">&quot;Unique achievement identifier&quot;</span>)
+    name: str = Field(..., description=<span class="python-string">&quot;Achievement display name&quot;</span>)
+    description: str = Field(..., description=<span class="python-string">&quot;Achievement description&quot;</span>)
+    icon: str = Field(..., description=<span class="python-string">&quot;FontAwesome icon class&quot;</span>)
+    category: Literal[<span class="python-string">&quot;performance&quot;</span>, <span class="python-string">&quot;milestone&quot;</span>, <span class="python-string">&quot;collaboration&quot;</span>, <span class="python-string">&quot;special&quot;</span>]
+    
+    <span class="python-comment"># Requirements</span>
+    required_xp: Optional[int] = <span class="python-keyword">None</span>
+    required_tasks: Optional[int] = <span class="python-keyword">None</span>
+    required_success_rate: Optional[float] = <span class="python-keyword">None</span>
+    
+    <span class="python-comment"># Rewards</span>
+    xp_bonus: int = Field(default=0, ge=0)
+    level_bonus: int = Field(default=0, ge=0)
+    
+    <span class="python-comment"># Metadata</span>
+    rarity: Literal[<span class="python-string">&quot;common&quot;</span>, <span class="python-string">&quot;rare&quot;</span>, <span class="python-string">&quot;epic&quot;</span>, <span class="python-string">&quot;legendary&quot;</span>] = <span class="python-string">&quot;common&quot;</span>
+    is_hidden: bool = Field(default=<span class="python-keyword">False</span>)
+
+<span class="python-keyword">class</span> <span class="python-class">AgentAchievement</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Agent achievement progress&quot;</span>
+    
+    agent_id: UUID
+    achievement_id: str
+    progress: float = Field(default=0.0, ge=0.0, le=100.0)
+    is_unlocked: bool = Field(default=<span class="python-keyword">False</span>)
+    unlocked_at: Optional[datetime] = <span class="python-keyword">None</span>
+
+<span class="python-keyword">class</span> <span class="python-class">Leaderboard</span>(BaseConfig):
+    <span class="python-string">&quot;Agent performance leaderboard&quot;</span>
+    
+    leaderboard_type: Literal[<span class="python-string">&quot;xp&quot;</span>, <span class="python-string">&quot;tasks&quot;</span>, <span class="python-string">&quot;success_rate&quot;</span>, <span class="python-string">&quot;uptime&quot;</span>]
+    time_period: Literal[<span class="python-string">&quot;daily&quot;</span>, <span class="python-string">&quot;weekly&quot;</span>, <span class="python-string">&quot;monthly&quot;</span>, <span class="python-string">&quot;all_time&quot;</span>]
+    rankings: List[Dict[str, Union[str, int, float]]] = Field(default_factory=list)
+    last_updated: datetime = Field(default_factory=datetime.utcnow)
+
+<span class="python-keyword">class</span> <span class="python-class">GamingState</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Overall gaming system state&quot;</span>
+    
+    total_agents: int = Field(default=0, ge=0)
+    active_agents: int = Field(default=0, ge=0)
+    total_tasks_today: int = Field(default=0, ge=0)
+    total_xp_earned: int = Field(default=0, ge=0)
+    
+    <span class="python-comment"># System Health Gaming Metrics</span>
+    system_health_score: float = Field(default=100.0, ge=0.0, le=100.0)
+    collective_level: int = Field(default=1, ge=1)
+    team_achievements: List[str] = Field(default_factory=list)
+    
+    <span class="python-comment"># Performance Analytics</span>
+    average_response_time: float = Field(default=0.0, ge=0.0)
+    success_rate: float = Field(default=0.0, ge=0.0, le=100.0)
+    uptime: float = Field(default=100.0, ge=0.0, le=100.0)</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Models Section -->
+        <section id="dashboard-models" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-tachometer-alt text-indigo-600 mr-3"></i>Dashboard State Models
+                </h2>
+                <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">DashboardWidget</span>(BaseConfig):
+    <span class="python-string">&quot;Individual dashboard widget configuration&quot;</span>
+    
+    widget_id: str = Field(..., description=<span class="python-string">&quot;Unique widget identifier&quot;</span>)
+    widget_type: Literal[<span class="python-string">&quot;agent_metrics&quot;</span>, <span class="python-string">&quot;task_queue&quot;</span>, <span class="python-string">&quot;leaderboard&quot;</span>, <span class="python-string">&quot;achievements&quot;</span>, <span class="python-string">&quot;system_health&quot;</span>]
+    title: str
+    position: Dict[str, int] = Field(..., description=<span class="python-string">&quot;x, y, width, height&quot;</span>)
+    
+    <span class="python-comment"># Widget Configuration</span>
+    refresh_interval: int = Field(default=5000, ge=1000)  <span class="python-comment"># milliseconds</span>
+    is_visible: bool = Field(default=<span class="python-keyword">True</span>)
+    configuration: Dict[str, Any] = Field(default_factory=dict)
+
+<span class="python-keyword">class</span> <span class="python-class">DashboardLayout</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Complete dashboard layout configuration&quot;</span>
+    
+    layout_id: UUID = Field(default_factory=uuid4)
+    user_id: Optional[str] = <span class="python-keyword">None</span>  <span class="python-comment"># For personalized layouts</span>
+    name: str = Field(..., description=<span class="python-string">&quot;Layout display name&quot;</span>)
+    is_default: bool = Field(default=<span class="python-keyword">False</span>)
+    
+    widgets: List[DashboardWidget] = Field(default_factory=list)
+    theme: Literal[<span class="python-string">&quot;light&quot;</span>, <span class="python-string">&quot;dark&quot;</span>, <span class="python-string">&quot;gaming&quot;</span>] = <span class="python-string">&quot;gaming&quot;</span>
+    
+    <span class="python-comment"># Gaming Theme Settings</span>
+    background_animation: bool = Field(default=<span class="python-keyword">True</span>)
+    sound_effects: bool = Field(default=<span class="python-keyword">True</span>)
+    particle_effects: bool = Field(default=<span class="python-keyword">True</span>)
+
+<span class="python-keyword">class</span> <span class="python-class">RealTimeUpdate</span>(BaseConfig):
+    <span class="python-string">&quot;Real-time dashboard update event&quot;</span>
+    
+    event_id: UUID = Field(default_factory=uuid4)
+    event_type: Literal[<span class="python-string">&quot;agent_update&quot;</span>, <span class="python-string">&quot;task_complete&quot;</span>, <span class="python-string">&quot;achievement_unlock&quot;</span>, <span class="python-string">&quot;system_alert&quot;</span>]
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
+    <span class="python-comment"># Event Data</span>
+    agent_id: Optional[UUID] = <span class="python-keyword">None</span>
+    data: Dict[str, Any] = Field(default_factory=dict)
+    
+    <span class="python-comment"># Display Properties</span>
+    message: str = Field(..., description=<span class="python-string">&quot;Human-readable event message&quot;</span>)
+    severity: Literal[<span class="python-string">&quot;info&quot;</span>, <span class="python-string">&quot;success&quot;</span>, <span class="python-string">&quot;warning&quot;</span>, <span class="python-string">&quot;error&quot;</span>] = <span class="python-string">&quot;info&quot;</span>
+    auto_dismiss: bool = Field(default=<span class="python-keyword">True</span>)
+    dismiss_after: int = Field(default=5000)  <span class="python-comment"># milliseconds</span>
+
+<span class="python-keyword">class</span> <span class="python-class">SystemMetrics</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;System-wide performance metrics&quot;</span>
+    
+    <span class="python-comment"># Docker Container Metrics</span>
+    container_count: int = Field(default=0, ge=0)
+    containers_running: int = Field(default=0, ge=0)
+    containers_stopped: int = Field(default=0, ge=0)
+    
+    <span class="python-comment"># Resource Usage</span>
+    cpu_usage: float = Field(default=0.0, ge=0.0, le=100.0)
+    memory_usage: float = Field(default=0.0, ge=0.0, le=100.0)
+    disk_usage: float = Field(default=0.0, ge=0.0, le=100.0)
+    
+    <span class="python-comment"># Network Metrics</span>
+    network_io: Dict[str, float] = Field(default_factory=dict)
+    active_connections: int = Field(default=0, ge=0)
+    
+    <span class="python-comment"># Database Health</span>
+    database_connections: Dict[str, int] = Field(default_factory=dict)
+    query_performance: Dict[str, float] = Field(default_factory=dict)</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Models Section -->
+        <section id="api-models" class="mb-16">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-exchange-alt text-indigo-600 mr-3"></i>API & Staff Interaction Models
+                </h2>
+                <div class="code-block">
+<pre><span class="python-keyword">class</span> <span class="python-class">StaffCommand</span>(BaseConfig):
+    <span class="python-string">&quot;Staff interaction commands&quot;</span>
+    
+    command_id: UUID = Field(default_factory=uuid4)
+    staff_id: str = Field(..., description=<span class="python-string">&quot;Staff member identifier&quot;</span>)
+    command_type: Literal[<span class="python-string">&quot;start_agent&quot;</span>, <span class="python-string">&quot;stop_agent&quot;</span>, <span class="python-string">&quot;assign_task&quot;</span>, <span class="python-string">&quot;view_metrics&quot;</span>, <span class="python-string">&quot;reset_agent&quot;</span>]
+    
+    target_agent_id: Optional[UUID] = <span class="python-keyword">None</span>
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    
+    <span class="python-comment"># Command State</span>
+    status: Literal[<span class="python-string">&quot;pending&quot;</span>, <span class="python-string">&quot;executing&quot;</span>, <span class="python-string">&quot;completed&quot;</span>, <span class="python-string">&quot;failed&quot;</span>] = <span class="python-string">&quot;pending&quot;</span>
+    executed_at: Optional[datetime] = <span class="python-keyword">None</span>
+    result: Optional[Dict[str, Any]] = <span class="python-keyword">None</span>
+    error_message: Optional[str] = <span class="python-keyword">None</span>
+
+<span class="python-keyword">class</span> <span class="python-class">StaffSession</span>(BaseConfig, TimestampMixin):
+    <span class="python-string">&quot;Staff dashboard session&quot;</span>
+    
+    session_id: UUID = Field(default_factory=uuid4)
+    staff_id: str
+    staff_name: str
+    role: Literal[<span class="python-string">&quot;admin&quot;</span>, <span class="python-string">&quot;operator&quot;</span>, <span class="python-string">&quot;viewer&quot;</span>]
+    
+    <span class="python-comment"># Session State</span>
+    is_active: bool = Field(default=<span class="python-keyword">True</span>)
+    last_activity: datetime = Field(default_factory=datetime.utcnow)
+    dashboard_layout_id: Optional[UUID] = <span class="python-keyword">None</span>
+    
+    <span class="python-comment"># Permissions</span>
+    can_control_agents: bool = Field(default=<span class="python-keyword">False</span>)
+    can_view_sensitive_data: bool = Field(default=<span class="python-keyword">False</span>)
+    can_modify_layouts: bool = Field(default=<span class="python-keyword">False</span>)
+
+<span class="python-keyword">class</span> <span class="python-class">APIResponse</span>(BaseConfig):
+    <span class="python-string">&quot;Standard API response format&quot;</span>
+    
+    success: bool = Field(..., description=<span class="python-string">&quot;Request success status&quot;</span>)
+    message: str = Field(..., description=<span class="python-string">&quot;Human-readable response message&quot;</span>)
+    data: Optional[Any] = Field(default=<span class="python-keyword">None</span>, description=<span class="python-string">&quot;Response payload&quot;</span>)
+    errors: Optional[List[str]] = Field(default=<span class="python-keyword">None</span>, description=<span class="python-string">&quot;Error details if any&quot;</span>)
+    
+    <span class="python-comment"># Metadata</span>
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    request_id: Optional[str] = <span class="python-keyword">None</span>
+    execution_time: Optional[float] = <span class="python-keyword">None</span>
+
+<span class="python-keyword">class</span> <span class="python-class">WebSocketMessage</span>(BaseConfig):
+    <span class="python-string">&quot;WebSocket real-time message format&quot;</span>
+    
+    message_type: Literal[<span class="python-string">&quot;agent_update&quot;</span>, <span class="python-string">&quot;system_metric&quot;</span>, <span class="python-string">&quot;achievement&quot;</span>, <span class="python-string">&quot;alert&quot;</span>, <span class="python-string">&quot;command_result&quot;</span>]
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
+    <span class="python-comment"># Message Data</span>
+    data: Dict[str, Any] = Field(default_factory=dict)
+    target_session: Optional[UUID] = <span class="python-keyword">None</span>  <span class="python-comment"># For targeted messages</span>
+    
+    <span class="python-comment"># Display Properties</span>
+    requires_notification: bool = Field(default=<span class="python-keyword">False</span>)
+    notification_title: Optional[str] = <span class="python-keyword">None</span>
+    notification_body: Optional[str] = <span class="python-keyword">None</span>
+
+<span class="python-comment"># ============================================================================
+# USAGE EXAMPLES AND INTEGRATION PATTERNS
+# ============================================================================</span>
+
+<span class="python-keyword">class</span> <span class="python-class">DashboardIntegration</span>(BaseConfig):
+    <span class="python-string">&quot;Complete dashboard integration example&quot;</span>
+    
+    <span class="python-function">@staticmethod</span>
+    <span class="python-keyword">def</span> <span class="python-function">create_agent_update_message</span>(agent: AgentMetrics) -> WebSocketMessage:
+        <span class="python-string">&quot;Create real-time agent update message&quot;</span>
+        <span class="python-keyword">return</span> WebSocketMessage(
+            message_type=<span class="python-string">&quot;agent_update&quot;</span>,
+            data={
+                <span class="python-string">&quot;agent_id&quot;</span>: str(agent.agent_id),
+                <span class="python-string">&quot;agent_name&quot;</span>: agent.agent_name,
+                <span class="python-string">&quot;status&quot;</span>: agent.status,
+                <span class="python-string">&quot;level&quot;</span>: agent.level,
+                <span class="python-string">&quot;xp&quot;</span>: agent.experience_points,
+                <span class="python-string">&quot;success_rate&quot;</span>: agent.success_rate
+            }
+        )
+    
+    <span class="python-function">@staticmethod</span>
+    <span class="python-keyword">def</span> <span class="python-function">create_achievement_notification</span>(agent_id: UUID, achievement: Achievement) -> WebSocketMessage:
+        <span class="python-string">&quot;Create achievement unlock notification&quot;</span>
+        <span class="python-keyword">return</span> WebSocketMessage(
+            message_type=<span class="python-string">&quot;achievement&quot;</span>,
+            data={
+                <span class="python-string">&quot;agent_id&quot;</span>: str(agent_id),
+                <span class="python-string">&quot;achievement_id&quot;</span>: achievement.achievement_id,
+                <span class="python-string">&quot;achievement_name&quot;</span>: achievement.name,
+                <span class="python-string">&quot;rarity&quot;</span>: achievement.rarity
+            },
+            requires_notification=<span class="python-keyword">True</span>,
+            notification_title=<span class="python-string">f&quot;Achievement Unlocked!&quot;</span>,
+            notification_body=<span class="python-string">f&quot;{achievement.name} - {achievement.description}&quot;</span>
+        )</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="mb-16">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6">
+                    <i class="fas fa-check-circle mr-3"></i>Implementation Summary
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">
+                            <i class="fas fa-cogs mr-2"></i>Key Features Implemented
+                        </h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-robot text-green-300 mr-2"></i>
+                                Complete agent performance tracking
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-trophy text-yellow-300 mr-2"></i>
+                                Gaming achievements and leaderboards
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-chart-line text-blue-300 mr-2"></i>
+                                Real-time metrics and analytics
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-users text-purple-300 mr-2"></i>
+                                Staff interaction and control systems
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">
+                            <i class="fas fa-rocket mr-2"></i>Integration Ready
+                        </h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-database text-green-300 mr-2"></i>
+                                Multi-database support (PostgreSQL, MySQL, etc.)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-plug text-blue-300 mr-2"></i>
+                                WebSocket real-time updates
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-shield-alt text-yellow-300 mr-2"></i>
+                                Role-based access control
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-mobile-alt text-purple-300 mr-2"></i>
+                                Responsive dashboard layouts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-6 bg-white bg-opacity-10 rounded-lg">
+                    <h4 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-lightbulb text-yellow-300 mr-2"></i>Next Steps for Devin AI
+                    </h4>
+                    <p class="text-sm opacity-90">
+                        Use these Pydantic models as the foundation for your gaming dashboard implementation. 
+                        Each model includes validation, type hints, and integration patterns specifically designed 
+                        for the HigherSelf Network Server architecture. The gaming elements will transform 
+                        Docker container monitoring into an engaging, interactive experience.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">HigherSelf Network Server</h3>
+                <p class="text-gray-400 mb-4">Intelligent Business Automation Platform</p>
+                <div class="flex justify-center space-x-6">
+                    <span class="text-sm text-gray-500">
+                        <i class="fas fa-code mr-2"></i>Pydantic Models v1.0
+                    </span>
+                    <span class="text-sm text-gray-500">
+                        <i class="fas fa-calendar mr-2"></i>2025 Implementation
+                    </span>
+                    <span class="text-sm text-gray-500">
+                        <i class="fas fa-users mr-2"></i>For Development Team
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDs05tAZdzVTnSXEp7FVDWWxEtQkzgMzIBYlZP0D1jCBNKMch4blTQA8712ku87mSx74atvsATlEJC%2BfM%2Fxe3Grv49HEm2WjS4Fbdq6DUfNDaKR2sq5QJH8WE%2B2AzuenboDtGwtRuV7%2BvEVkNZfMW0xWC%2F7xobJxvJMdcBTNMi89oqdp6cKw8IKu3o6Lbfn51CIOfQPg7YaEh55opzZ7FrL2D2LLAkFqxb4MqQWg7nu2NTy9ttHAaYT1n0vrHPCHxzrdNQdrDY0YpbTcoi%2FXyiWMh1xPSlsgSn4os90iOmfvitKADjD8lKnDWOOvQapMRL3yZWjQ12CQI8NoThS56stnjLwNyPL0ZTnsT81yKL8Ht%2FWYyz%2FC%2BDKkcVdjCGpS%2FrWCFUwR7P%2BV83Fcn4TmmSdddUimGlPz6f8Imgrgllq3iCW3S8lct640M0f15at5NXHL%2BD%2FYvGji9qrkFNrA6Z%2FB%2Bf%2Fa0E%2FsH4CV0zNuq3zAqHWeA7JnUx82%2F1jv0NpimMw%3D%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDs05tAZdzVTnSXEp7FVDWWxEtQkzgMzIBYlZP0D1jCBNKMch4blTQA8712ku87mSx74atvsATlEJC+fM/xe3Grv49HEm2WjS4Fbdq6DUfNDaKR2sq5QJH8WE+2AzuenboDtGwtRuV7+vEVkNZfMW0xWC/7xobJxvJMdcBTNMi89oqdp6cKw8IKu3o6Lbfn51CIOfQPg7YaEh55opzZ7FrL2D2LLAkFqxb4MqQWg7nu2NTy9ttHAaYT1n0vrHPCHxzrdNQdrDY0YpbTcoi/XyiWMh1xPSlsgSn4os90iOmfvitKADjD8lKnDWOOvQapMRL3yZWjQ12CQI8NoThS56stnjLwNyPL0ZTnsT81yKL8Ht/WYyz/C+DKkcVdjCGpS/rWCFUwR7P+V83Fcn4TmmSdddUimGlPz6f8Imgrgllq3iCW3S8lct640M0f15at5NXHL+D/YvGji9qrkFNrA6Z/B+f/a0E/sH4CV0zNuq3zAqHWeA7JnUx82/1jv0NpimMw==";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
