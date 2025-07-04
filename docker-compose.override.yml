@@ -2,8 +2,6 @@
 # This file provides development-specific overrides for docker-compose.unified.yml
 # Automatically loaded by Docker Compose for local development
 
-version: '3.8'
-
 services:
   # Development overrides for main application server
   higherself-server:

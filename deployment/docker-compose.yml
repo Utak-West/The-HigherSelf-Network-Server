@@ -2,8 +2,6 @@
 # Enterprise automation platform supporting multi-business entity workflows
 # Integrates The 7 Space, A.M. Consulting, and HigherSelf Core business entities
 
-version: '3.8'
-
 services:
   # Main application server - Enterprise automation platform
   higherself-server:
@@ -188,7 +186,7 @@ services:
     ports:
       - "${MONGODB_PORT:-27017}:27017"
     volumes:
-      - mongodb_data_${ENVIRONMENT:-dev}:/data/db
+      - mongodb_data_development:/data/db
       - ./deployment/mongodb:/docker-entrypoint-initdb.d:ro
       - ./logs/${ENVIRONMENT:-dev}/mongodb:/var/log/mongodb
       - ./backups/mongodb:/backups
@@ -233,7 +231,7 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - redis_data_${ENVIRONMENT:-dev}:/data
+      - redis_data_development:/data
       - ./deployment/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./logs/${ENVIRONMENT:-dev}/redis:/var/log/redis
     networks:
@@ -258,7 +256,7 @@ services:
     ports:
       - "${CONSUL_PORT:-8500}:8500"
     volumes:
-      - consul_data_${ENVIRONMENT:-dev}:/consul/data
+      - consul_data_development:/consul/data
       - ./logs/${ENVIRONMENT:-dev}/consul:/consul/logs
     networks:
       - higherself_network
@@ -286,7 +284,7 @@ services:
       - "${PROMETHEUS_PORT:-9090}:9090"
     volumes:
       - ./deployment/prometheus:/etc/prometheus:ro
-      - prometheus_data_${ENVIRONMENT:-dev}:/prometheus
+      - prometheus_data_development:/prometheus
       - ./logs/${ENVIRONMENT:-dev}/prometheus:/var/log/prometheus
     networks:
       - higherself_network
@@ -318,7 +316,7 @@ services:
       - "${GRAFANA_PORT:-3000}:3000"
     volumes:
       - ./deployment/grafana/provisioning:/etc/grafana/provisioning:ro
-      - grafana_data_${ENVIRONMENT:-dev}:/var/lib/grafana
+      - grafana_data_development:/var/lib/grafana
       - ./logs/${ENVIRONMENT:-dev}/grafana:/var/log/grafana
     networks:
       - higherself_network
@@ -347,7 +345,7 @@ services:
     ports:
       - "${VAULT_PORT:-8200}:8200"
     volumes:
-      - vault_data_${ENVIRONMENT:-dev}:/vault/data
+      - vault_data_development:/vault/data
       - ./deployment/vault:/vault/config:ro
       - ./logs/${ENVIRONMENT:-dev}/vault:/vault/logs
     networks:
@@ -379,6 +377,11 @@ volumes:
     driver: local
     labels:
       - "com.higherself.volume=mongodb"
+      - "com.higherself.environment=dev"
+  mongodb_data_development:
+    driver: local
+    labels:
+      - "com.higherself.volume=mongodb"
       - "com.higherself.environment=development"
   mongodb_data_staging:
     driver: local
@@ -392,6 +395,11 @@ volumes:
       - "com.higherself.environment=production"
 
   redis_data_dev:
+    driver: local
+    labels:
+      - "com.higherself.volume=redis"
+      - "com.higherself.environment=dev"
+  redis_data_development:
     driver: local
     labels:
       - "com.higherself.volume=redis"
@@ -411,6 +419,11 @@ volumes:
     driver: local
     labels:
       - "com.higherself.volume=consul"
+      - "com.higherself.environment=dev"
+  consul_data_development:
+    driver: local
+    labels:
+      - "com.higherself.volume=consul"
       - "com.higherself.environment=development"
   consul_data_staging:
     driver: local
@@ -424,6 +437,11 @@ volumes:
       - "com.higherself.environment=production"
 
   prometheus_data_dev:
+    driver: local
+    labels:
+      - "com.higherself.volume=prometheus"
+      - "com.higherself.environment=dev"
+  prometheus_data_development:
     driver: local
     labels:
       - "com.higherself.volume=prometheus"
@@ -443,6 +461,11 @@ volumes:
     driver: local
     labels:
       - "com.higherself.volume=grafana"
+      - "com.higherself.environment=dev"
+  grafana_data_development:
+    driver: local
+    labels:
+      - "com.higherself.volume=grafana"
       - "com.higherself.environment=development"
   grafana_data_staging:
     driver: local
@@ -456,6 +479,11 @@ volumes:
       - "com.higherself.environment=production"
 
   vault_data_dev:
+    driver: local
+    labels:
+      - "com.higherself.volume=vault"
+      - "com.higherself.environment=dev"
+  vault_data_development:
     driver: local
     labels:
       - "com.higherself.volume=vault"
