@@ -41,6 +41,7 @@ class VoiceServerControlService:
         self.voice_service = voice_service
         self.project_root = os.getenv("PYTHONPATH", os.getcwd())
         self.docker_compose_file = os.getenv("DOCKER_COMPOSE_FILE", "docker-compose.yml")
+        self.onepassword_enabled = os.getenv("ONEPASSWORD_INTEGRATION", "false").lower() == "true"
         
         # Voice command mappings
         self.command_mappings = {
@@ -494,6 +495,41 @@ class VoiceServerControlService:
                     })
         
         return services
+
+    async def _log_to_onepassword(self, command: str, result: Dict[str, Any]) -> None:
+        """
+        Log command execution to 1Password clipboard for snippet use.
+
+        Args:
+            command: The executed command
+            result: Command execution result
+        """
+        if not self.onepassword_enabled:
+            return
+
+        try:
+            # Create log entry for 1Password clipboard
+            log_entry = f"Voice Command: {command}\n"
+            log_entry += f"Time: {datetime.now().isoformat()}\n"
+            log_entry += f"Success: {result.get('success', False)}\n"
+            log_entry += f"Action: {result.get('action', 'unknown')}\n"
+
+            if result.get('message'):
+                log_entry += f"Message: {result['message']}\n"
+
+            # Copy to clipboard for 1Password snippet use
+            process = await asyncio.create_subprocess_exec(
+                'pbcopy',
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            await process.communicate(input=log_entry.encode('utf-8'))
+            logger.info("Command logged to clipboard for 1Password snippets")
+
+        except Exception as e:
+            logger.warning(f"Failed to log to 1Password clipboard: {e}")
 
 
 # Service factory function
