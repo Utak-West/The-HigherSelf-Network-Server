@@ -1,0 +1,182 @@
+{
+  "voice_control_snippets": {
+    "name": "HigherSelf Voice Control Snippets",
+    "description": "Voice-activated server management snippets for Termius",
+    "version": "1.0.0",
+    "created": "2025-01-18",
+    "environment_support": ["development", "staging", "production"]
+  },
+  "snippets": [
+    {
+      "id": "voice-server-start",
+      "name": "Voice: Start HigherSelf Server",
+      "description": "Start the HigherSelf Network Server via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "start", "docker"],
+      "trigger_phrases": [
+        "start higher self server",
+        "start the server",
+        "launch server",
+        "boot up server"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Starting HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Load environment variables\nif [ -f .env ]; then\n    source .env\n    echo \"✅ Environment variables loaded\"\nelse\n    echo \"⚠️  Warning: .env file not found\"\nfi\n\n# Start the server based on environment\nif [ \"${ENVIRONMENT:-development}\" = \"production\" ]; then\n    echo \"🚀 Starting production server...\"\n    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d\nelif [ \"${ENVIRONMENT:-development}\" = \"staging\" ]; then\n    echo \"🧪 Starting staging server...\"\n    docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d\nelse\n    echo \"🛠️  Starting development server...\"\n    docker-compose up -d\nfi\n\n# Wait for services to start\necho \"⏳ Waiting for services to start...\"\nsleep 5\n\n# Check service status\necho \"📊 Service Status:\"\ndocker-compose ps\n\n# Health check\necho \"\"\necho \"🏥 Health Check:\"\ncurl -s http://localhost:8000/health | jq . || echo \"Health check endpoint not responding\"\n\necho \"\"\necho \"✅ Server startup complete!\"\necho \"🌐 API: http://localhost:8000\"\necho \"📊 Grafana: http://localhost:3000\"\necho \"📈 Prometheus: http://localhost:9090\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 120
+    },
+    {
+      "id": "voice-server-stop",
+      "name": "Voice: Stop HigherSelf Server",
+      "description": "Stop the HigherSelf Network Server via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "stop", "docker"],
+      "trigger_phrases": [
+        "stop higher self server",
+        "stop the server",
+        "shutdown server",
+        "halt server"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Stopping HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Show current status before stopping\necho \"📊 Current Service Status:\"\ndocker-compose ps\necho \"\"\n\n# Stop the server\necho \"🛑 Stopping server...\"\ndocker-compose down\n\n# Verify services are stopped\necho \"✅ Verifying services are stopped...\"\nsleep 2\ndocker-compose ps\n\necho \"\"\necho \"✅ Server stopped successfully!\"\necho \"💡 Use 'voice-server-start' to restart the server\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 60
+    },
+    {
+      "id": "voice-server-restart",
+      "name": "Voice: Restart HigherSelf Server",
+      "description": "Restart the HigherSelf Network Server via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "restart", "docker"],
+      "trigger_phrases": [
+        "restart higher self server",
+        "restart the server",
+        "reboot server",
+        "reload server"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Restarting HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Stop the server first\necho \"🛑 Stopping server...\"\ndocker-compose down\n\n# Wait a moment\necho \"⏳ Waiting...\"\nsleep 3\n\n# Start the server\necho \"🚀 Starting server...\"\nif [ \"${ENVIRONMENT:-development}\" = \"production\" ]; then\n    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d\nelif [ \"${ENVIRONMENT:-development}\" = \"staging\" ]; then\n    docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d\nelse\n    docker-compose up -d\nfi\n\n# Wait for services to start\necho \"⏳ Waiting for services to start...\"\nsleep 5\n\n# Check service status\necho \"📊 Service Status:\"\ndocker-compose ps\n\n# Health check\necho \"\"\necho \"🏥 Health Check:\"\ncurl -s http://localhost:8000/health | jq . || echo \"Health check endpoint not responding\"\n\necho \"\"\necho \"✅ Server restart complete!\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 180
+    },
+    {
+      "id": "voice-server-status",
+      "name": "Voice: Check Server Status",
+      "description": "Check the status of HigherSelf Network Server via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "status", "health"],
+      "trigger_phrases": [
+        "server status",
+        "check server status",
+        "server health",
+        "is server running"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Checking HigherSelf Network Server Status...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Check Docker status\necho \"🐳 Docker Status:\"\ndocker --version\ndocker-compose --version\necho \"\"\n\n# Check service status\necho \"📊 Service Status:\"\ndocker-compose ps\necho \"\"\n\n# Check system resources\necho \"💻 System Resources:\"\necho \"CPU Usage:\"\ntop -l 1 | grep \"CPU usage\" || echo \"CPU info not available\"\necho \"Memory Usage:\"\nfree -h 2>/dev/null || vm_stat | head -5\necho \"Disk Usage:\"\ndf -h | grep -E '(Filesystem|/dev/)'\necho \"\"\n\n# Health checks\necho \"🏥 Health Checks:\"\necho \"API Health:\"\ncurl -s http://localhost:8000/health | jq . || echo \"❌ API not responding\"\necho \"\"\necho \"Redis Health:\"\ncurl -s http://localhost:8000/health/redis | jq . || echo \"❌ Redis health check failed\"\necho \"\"\necho \"MongoDB Health:\"\ncurl -s http://localhost:8000/health/mongodb | jq . || echo \"❌ MongoDB health check failed\"\n\necho \"\"\necho \"📈 Quick Access URLs:\"\necho \"🌐 API: http://localhost:8000\"\necho \"📊 Grafana: http://localhost:3000\"\necho \"📈 Prometheus: http://localhost:9090\"\necho \"🗄️  Consul: http://localhost:8500\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 30
+    },
+    {
+      "id": "voice-server-logs",
+      "name": "Voice: Show Server Logs",
+      "description": "Display HigherSelf Network Server logs via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "logs", "debug"],
+      "trigger_phrases": [
+        "show server logs",
+        "server logs",
+        "view logs",
+        "check logs",
+        "tail logs"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Showing HigherSelf Network Server Logs...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Show recent logs from all services\necho \"📋 Recent Logs (last 50 lines):\"\ndocker-compose logs --tail=50 -t\n\necho \"\"\necho \"💡 Commands for more detailed logs:\"\necho \"   docker-compose logs -f higherself-server    # Follow main server logs\"\necho \"   docker-compose logs -f mongodb-dev         # Follow MongoDB logs\"\necho \"   docker-compose logs -f redis-dev           # Follow Redis logs\"\necho \"   docker-compose logs --tail=100             # Show last 100 lines\"\necho \"\"\necho \"📁 Log files location: ./logs/\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 30
+    },
+    {
+      "id": "voice-server-deploy",
+      "name": "Voice: Deploy Server",
+      "description": "Deploy HigherSelf Network Server via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "deploy", "production"],
+      "trigger_phrases": [
+        "deploy server",
+        "deploy to production",
+        "start deployment"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Deploying HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Confirmation for production deployment\nif [ \"${ENVIRONMENT}\" = \"production\" ]; then\n    echo \"⚠️  PRODUCTION DEPLOYMENT DETECTED!\"\n    echo \"This will deploy to the live production environment.\"\n    read -p \"Are you sure you want to continue? (yes/no): \" confirm\n    if [ \"$confirm\" != \"yes\" ]; then\n        echo \"❌ Deployment cancelled\"\n        exit 1\n    fi\nfi\n\n# Run deployment script based on environment\nif [ \"${ENVIRONMENT}\" = \"production\" ]; then\n    echo \"🚀 Running production deployment...\"\n    ./deploy-the7space-production.sh\nelif [ \"${ENVIRONMENT}\" = \"staging\" ]; then\n    echo \"🧪 Running staging deployment...\"\n    ./scripts/deploy.sh --env staging --build\nelse\n    echo \"🛠️  Running development deployment...\"\n    ./scripts/deploy.sh --env dev --build\nfi\n\necho \"\"\necho \"✅ Deployment complete!\"\necho \"🔍 Run 'voice-server-status' to verify deployment\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 600
+    },
+    {
+      "id": "voice-server-test",
+      "name": "Voice: Run Server Tests",
+      "description": "Run HigherSelf Network Server tests via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "test", "validation"],
+      "trigger_phrases": [
+        "run tests",
+        "execute tests",
+        "test server",
+        "run server tests"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Running HigherSelf Network Server Tests...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Activate virtual environment if it exists\nif [ -d \"venv\" ]; then\n    echo \"🐍 Activating virtual environment...\"\n    source venv/bin/activate\nfi\n\n# Install test dependencies if needed\necho \"📦 Checking test dependencies...\"\npip install -q pytest pytest-asyncio pytest-cov\n\n# Run tests\necho \"🧪 Running tests...\"\npython -m pytest tests/ -v --tb=short\n\n# Run specific test suites\necho \"\"\necho \"🔍 Running health check tests...\"\npython -m pytest tests/test_basic_functionality.py -v\n\necho \"\"\necho \"🎯 Running voice integration tests...\"\npython -m pytest tests/test_aqua_voice.py -v\n\necho \"\"\necho \"✅ Test execution complete!\"\necho \"📊 Check test results above for any failures\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 300
+    },
+    {
+      "id": "voice-server-build",
+      "name": "Voice: Build Server Images",
+      "description": "Build HigherSelf Network Server Docker images via voice command",
+      "category": "Voice Control",
+      "tags": ["voice", "server", "build", "docker"],
+      "trigger_phrases": [
+        "build server",
+        "build docker images",
+        "rebuild server"
+      ],
+      "script": "#!/bin/bash\necho \"🎤 Voice Command: Building HigherSelf Network Server Images...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Clean up old images if requested\nread -p \"Clean up old images first? (y/n): \" cleanup\nif [ \"$cleanup\" = \"y\" ]; then\n    echo \"🧹 Cleaning up old images...\"\n    docker system prune -f\n    docker-compose down --rmi all\nfi\n\n# Build images\necho \"🔨 Building Docker images...\"\ndocker-compose build --no-cache\n\n# Verify build\necho \"\"\necho \"🔍 Verifying built images:\"\ndocker images | grep higherself\n\necho \"\"\necho \"✅ Build complete!\"\necho \"🚀 Use 'voice-server-start' to start with new images\"",
+      "environment_variables": {
+        "ENVIRONMENT": "development"
+      },
+      "working_directory": "~/higherself-server",
+      "timeout": 900
+    }
+  ],
+  "voice_integration": {
+    "enabled": true,
+    "api_endpoint": "http://localhost:8000/voice/server/transcribe-and-control",
+    "confidence_threshold": 0.8,
+    "timeout": 30,
+    "retry_attempts": 3
+  },
+  "termius_automation": {
+    "auto_execute": false,
+    "confirmation_required": true,
+    "logging_enabled": true,
+    "session_recording": true
+  },
+  "usage_instructions": [
+    "1. Import these snippets into Termius Pro",
+    "2. Configure voice recognition in Termius settings",
+    "3. Set up SSH connection to your HigherSelf server",
+    "4. Use trigger phrases to execute commands via voice",
+    "5. Monitor execution in Termius session logs"
+  ]
+}

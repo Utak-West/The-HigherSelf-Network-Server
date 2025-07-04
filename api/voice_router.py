@@ -15,10 +15,11 @@ from pydantic import BaseModel, Field
 from services.ai_router import AIRouter
 from services.aqua_voice_service import (
     AquaVoiceService,
+    get_aqua_voice_service,
     VoiceCommandRequest,
     VoiceTranscriptionRequest,
-    get_aqua_voice_service,
 )
+from services.voice_server_control import get_voice_server_control_service, VoiceServerControlService
 
 
 # Models
@@ -253,3 +254,129 @@ async def transcribe_and_process_command(
     except Exception as e:
         logger.error(f"Error in transcribe and command: {e}")
         return CommandResponse(success=False, is_command=False, text="", error=str(e))
+
+
+# Server Control Models
+class ServerControlRequest(BaseModel):
+    """Server control request model."""
+
+    command: str = Field(..., description="Voice command for server control")
+    environment: Optional[str] = Field(default="development", description="Target environment")
+
+
+class ServerControlResponse(BaseModel):
+    """Server control response model."""
+
+    success: bool = Field(..., description="Whether the command was successful")
+    action: Optional[str] = Field(None, description="The action that was performed")
+    message: Optional[str] = Field(None, description="Response message")
+    result: Optional[Dict[str, Any]] = Field(None, description="Command execution results")
+    error: Optional[str] = Field(None, description="Error message if failed")
+    timestamp: Optional[str] = Field(None, description="Command execution timestamp")
+
+
+# Server Control Endpoints
+@router.post("/server/control", response_model=ServerControlResponse)
+async def voice_server_control(
+    request: ServerControlRequest,
+    voice_service: AquaVoiceService = Depends(get_voice_service),
+) -> ServerControlResponse:
+    """
+    Process voice commands for server control operations.
+
+    Args:
+        request: Server control request
+        voice_service: Aqua Voice service
+
+    Returns:
+        Server control response
+    """
+    try:
+        # Get voice server control service
+        server_control_service = await get_voice_server_control_service(voice_service)
+
+        # Process the voice command
+        result = await server_control_service.process_voice_command(request.command)
+
+        # Convert to response model
+        return ServerControlResponse(**result)
+
+    except Exception as e:
+        logger.error(f"Error processing server control command: {e}")
+        return ServerControlResponse(
+            success=False,
+            error=str(e),
+            message="Failed to process server control command"
+        )
+
+
+@router.post("/server/transcribe-and-control", response_model=ServerControlResponse)
+async def transcribe_and_control_server(
+    file: UploadFile = File(...),
+    environment: str = Form(default="development"),
+    voice_service: AquaVoiceService = Depends(get_voice_service),
+) -> ServerControlResponse:
+    """
+    Transcribe audio and process as server control command.
+
+    Args:
+        file: Audio file to transcribe
+        environment: Target environment
+        voice_service: Aqua Voice service
+
+    Returns:
+        Server control response
+    """
+    try:
+        # Read file content
+        content = await file.read()
+
+        # Encode as base64
+        audio_data = base64.b64encode(content).decode("utf-8")
+
+        # Create transcription request
+        voice_request = VoiceTranscriptionRequest(
+            audio_data=audio_data,
+            content_type=file.content_type or "audio/wav",
+        )
+
+        # Transcribe audio
+        transcription_result = await voice_service.transcribe(voice_request)
+
+        if not transcription_result.get("success", False):
+            return ServerControlResponse(
+                success=False,
+                error=transcription_result.get("error", "Transcription failed"),
+                message="Failed to transcribe audio"
+            )
+
+        # Get transcribed text
+        transcribed_text = transcription_result.get("text", "")
+
+        if not transcribed_text:
+            return ServerControlResponse(
+                success=False,
+                error="No text transcribed from audio",
+                message="Audio transcription returned empty text"
+            )
+
+        # Get voice server control service
+        server_control_service = await get_voice_server_control_service(voice_service)
+
+        # Process the transcribed command
+        result = await server_control_service.process_voice_command(transcribed_text)
+
+        # Add transcription info to result
+        result["transcribed_text"] = transcribed_text
+        result["transcription_confidence"] = transcription_result.get("confidence", 0.0)
+
+        # Convert to response model
+        return ServerControlResponse(**result)
+
+    except Exception as e:
+        logger.error(f"Error transcribing and controlling server: {e}")
+        return ServerControlResponse(
+            success=False,
+            error=str(e),
+            message="Failed to transcribe and process server control command"
+        )
