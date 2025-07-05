@@ -166,3 +166,25 @@ async def get_staff_user(
 
     logger.debug(f"Staff user authenticated: {staff_user.id}")
     return staff_user
+
+
+async def get_current_user(
+    x_staff_id: Optional[str] = Header(None),
+    api_key_valid: bool = Depends(verify_staff_api_key),
+) -> StaffUser:
+    """Get the current authenticated user from the request headers.
+
+    This is an alias for get_staff_user to maintain compatibility with
+    existing code that expects a get_current_user function.
+
+    Args:
+        x_staff_id: The staff ID from the request header (X-Staff-Id)
+        api_key_valid: Whether the API key is valid (validated by verify_staff_api_key)
+
+    Returns:
+        StaffUser: Current authenticated staff user object
+
+    Raises:
+        HTTPException: If staff ID is missing (401 Unauthorized)
+    """
+    return await get_staff_user(x_staff_id, api_key_valid)

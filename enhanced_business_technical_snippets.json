@@ -1,0 +1,437 @@
+[
+  {
+    "name": "The 7 Space - Event Booking Confirmation",
+    "text": "Thank you for booking with The 7 Space | Art Gallery & Wellness Center. Your reservation is confirmed for [Date] at [Time]. We look forward to welcoming you to our transformative space where art meets healing.",
+    "keyword": "!7confirm"
+  },
+  {
+    "name": "The 7 Space - Gallery Hours",
+    "text": "The 7 Space Gallery Hours:\nTuesday - Saturday: 10am - 6pm\nSunday: 12pm - 5pm\nClosed Mondays\nPrivate viewings available by appointment.",
+    "keyword": "!7hours"
+  },
+  {
+    "name": "The 7 Space - Service Bundle Inquiry",
+    "text": "Our wellness bundles combine art therapy, meditation sessions, and gallery experiences. Popular packages include:\n- Restoration Bundle: 3 sessions + gallery access\n- Joy Bundle: 5 sessions + private viewing\n- Transformation Bundle: 8 sessions + artist meet & greet\n\nWhich experience speaks to you?",
+    "keyword": "!7bundles"
+  },
+  {
+    "name": "The 7 Space - Artist Collaboration",
+    "text": "We're always seeking talented artists who align with our wellness mission. Our collaboration includes:\n- Gallery exhibition space\n- Marketing support\n- Community engagement opportunities\n- Revenue sharing model\n\nPlease share your portfolio for consideration.",
+    "keyword": "!7artist"
+  },
+  {
+    "name": "The 7 Space - Wellness Program Inquiry",
+    "text": "Our wellness programs integrate art appreciation with mindfulness practices. Current offerings:\n- Mindful Art Viewing Sessions\n- Creative Expression Workshops\n- Meditation in the Gallery\n- Art Therapy Sessions\n\nAll programs are designed to promote healing and personal growth.",
+    "keyword": "!7wellness"
+  },
+  {
+    "name": "The 7 Space - Event Follow-up",
+    "text": "Thank you for joining us at The 7 Space. We hope your experience was transformative. We'd love your feedback:\n\n1. How did the space make you feel?\n2. Which artwork resonated most with you?\n3. Would you recommend us to others?\n\nYour insights help us create better experiences.",
+    "keyword": "!7followup"
+  },
+  {
+    "name": "The 7 Space - Retail Product Description",
+    "text": "This piece carries the intention of [healing/transformation/joy]. Created by [Artist Name], it represents [meaning/story]. Each purchase includes a guided meditation audio and the artist's personal reflection on the work's healing properties.",
+    "keyword": "!7product"
+  },
+  {
+    "name": "The 7 Space - Technical Integration Status",
+    "text": "The 7 Space Technical Status:\n- Booking System: ${THE_7_SPACE_BOOKING_STATUS}\n- Payment Processing: ${THE_7_SPACE_PAYMENT_STATUS}\n- Gallery Management: ${THE_7_SPACE_GALLERY_STATUS}\n- Wellness Scheduling: ${THE_7_SPACE_WELLNESS_STATUS}\n- Artist Portal: ${THE_7_SPACE_ARTIST_STATUS}\n\nMonitoring: http://localhost:3000/d/the7space-overview",
+    "keyword": "!7tech"
+  },
+  {
+    "name": "The 7 Space - Monitoring Dashboard",
+    "text": "The 7 Space Monitoring Access:\n- Main Dashboard: http://localhost:3000/d/the7space-overview\n- Booking Analytics: http://localhost:3000/d/the7space-bookings\n- Gallery Metrics: http://localhost:3000/d/the7space-gallery\n- Wellness Programs: http://localhost:3000/d/the7space-wellness\n- Artist Engagement: http://localhost:3000/d/the7space-artists\n\nCredentials: $(op read 'op://HigherSelf/Grafana-The7Space/username') / $(op read 'op://HigherSelf/Grafana-The7Space/password')",
+    "keyword": "!7monitor"
+  },
+  {
+    "name": "The 7 Space - Data Backup Procedures",
+    "text": "The 7 Space Backup Commands:\n# Gallery data backup\ndocker exec higherself-server python -m tools.backup_gallery_data --entity=the_7_space\n\n# Booking system backup\ndocker exec mongodb mongodump --db=the7space_bookings --out=/backups/the7space_$(date +%Y%m%d)\n\n# Wellness program data\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  \"http://localhost:8000/api/backup/the7space/wellness\" -o the7space_wellness_backup.json",
+    "keyword": "!7backup"
+  },
+  {
+    "name": "The 7 Space - Deployment Status",
+    "text": "The 7 Space Deployment Status:\n# Check deployment health\ncurl -f http://localhost:8000/health/the7space\n\n# Service status\ndocker-compose ps | grep the7space\n\n# Recent deployments\ndocker logs higherself-server --tail 50 | grep \"The 7 Space\"\n\n# Environment: ${ENVIRONMENT:-development}\n# Last Deploy: $(docker inspect higherself-server | jq -r '.[0].Created')",
+    "keyword": "!7deploy"
+  },
+  {
+    "name": "The 7 Space - Logs and Troubleshooting",
+    "text": "The 7 Space Troubleshooting:\n# Application logs\ndocker logs higherself-server --tail 100 | grep -i \"7.space\\|the7space\"\n\n# Booking system logs\ntail -f ./logs/${ENVIRONMENT:-dev}/the7space_bookings.log\n\n# Gallery management logs\ntail -f ./logs/${ENVIRONMENT:-dev}/the7space_gallery.log\n\n# Error analysis\ngrep -i \"error\\|exception\" ./logs/${ENVIRONMENT:-dev}/the7space_*.log | tail -20",
+    "keyword": "!7logs"
+  },
+  {
+    "name": "A.M. Consulting - Conflict Bravery Introduction",
+    "text": "Conflict Bravery™ is our trademarked approach to transforming workplace tensions into opportunities for growth. Through our proven methodology, organizations experience measurable improvements in team dynamics, communication, and productivity.",
+    "keyword": "!amcb"
+  },
+  {
+    "name": "A.M. Consulting - Team Building Proposal",
+    "text": "Our team building programs combine conflict resolution with wellness practices. We offer:\n- Half-day workshops for teams of 10-50\n- Multi-day retreats for leadership development\n- Ongoing coaching for sustainable change\n\nAll programs include pre/post assessments to measure transformation.",
+    "keyword": "!amteam"
+  },
+  {
+    "name": "A.M. Consulting - Cultural Consulting Overview",
+    "text": "A.M. Consulting provides cultural transformation services for organizations ready to embrace inclusive practices. Our 50+ practitioner network brings expertise in:\n- DEI strategy development\n- Bias interruption training\n- Inclusive leadership coaching\n- Organizational culture assessment",
+    "keyword": "!amculture"
+  },
+  {
+    "name": "A.M. Consulting - Freedom Readers Book Club",
+    "text": "Join the Freedom Readers Book Club, where literature meets liberation. Monthly selections focus on social justice, personal growth, and community building. Virtual and in-person discussions available. Current book: [Title] by [Author].",
+    "keyword": "!ambooks"
+  },
+  {
+    "name": "A.M. Consulting - Retreat Planning",
+    "text": "Our transformational retreats combine conflict resolution training with wellness practices. Locations include:\n- Mountain retreat centers\n- Coastal wellness facilities\n- Urban sanctuary spaces\n\nAll retreats include meals, accommodations, and comprehensive materials.",
+    "keyword": "!amretreat"
+  },
+  {
+    "name": "A.M. Consulting - Practitioner Network",
+    "text": "Our network of 50+ practitioners spans legal, finance, healing, community organizing, mentorship, spiritual guidance, and wellness. Each brings 10+ years of experience in nonprofit, education, or corporate sectors.",
+    "keyword": "!amnetwork"
+  },
+  {
+    "name": "A.M. Consulting - Professional Authority",
+    "text": "Led by trusted industry authority Altagracia Montilla, creator of Conflict Bravery™. Our network delivers measurable human transformation through conflict resolution, wellness programming, retreats, team building, and cultural consulting.",
+    "keyword": "!amauth"
+  },
+  {
+    "name": "A.M. Consulting - Technical Infrastructure Status",
+    "text": "A.M. Consulting Technical Status:\n- Client Portal: ${AM_CONSULTING_PORTAL_STATUS}\n- Retreat Management: ${AM_CONSULTING_RETREAT_STATUS}\n- Practitioner Network: ${AM_CONSULTING_NETWORK_STATUS}\n- Assessment Tools: ${AM_CONSULTING_ASSESSMENT_STATUS}\n- Communication Hub: ${AM_CONSULTING_COMM_STATUS}\n\nDashboard: http://localhost:3000/d/amconsulting-overview",
+    "keyword": "!amtech"
+  },
+  {
+    "name": "A.M. Consulting - Data Analytics and Reporting",
+    "text": "A.M. Consulting Analytics:\n# Client engagement metrics\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  \"http://localhost:8000/api/analytics/amconsulting/engagement\"\n\n# Retreat effectiveness data\nopen http://localhost:3000/d/amconsulting-retreats\n\n# Practitioner network analytics\nopen http://localhost:3000/d/amconsulting-practitioners\n\n# Monthly reports\npython -m tools.generate_report --entity=am_consulting --period=monthly",
+    "keyword": "!amdata"
+  },
+  {
+    "name": "A.M. Consulting - Integration Health Checks",
+    "text": "A.M. Consulting Integration Status:\n# CRM integration\ncurl -f http://localhost:8000/health/amconsulting/crm\n\n# Assessment platform\ncurl -f http://localhost:8000/health/amconsulting/assessments\n\n# Communication tools\ncurl -f http://localhost:8000/health/amconsulting/communications\n\n# Practitioner portal\ncurl -f http://localhost:8000/health/amconsulting/practitioners\n\nAll systems: $(curl -s http://localhost:8000/health/amconsulting | jq -r '.status')",
+    "keyword": "!amintegration"
+  },
+  {
+    "name": "A.M. Consulting - Backup and Recovery",
+    "text": "A.M. Consulting Backup Procedures:\n# Client data backup\ndocker exec higherself-server python -m tools.backup_client_data --entity=am_consulting\n\n# Retreat data backup\nmongodump --db=amconsulting_retreats --out=/backups/amconsulting_$(date +%Y%m%d)\n\n# Practitioner network backup\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  \"http://localhost:8000/api/backup/amconsulting/practitioners\" -o amconsulting_practitioners_backup.json\n\n# Assessment data backup\npython -m tools.backup_assessments --entity=am_consulting",
+    "keyword": "!ambackup"
+  },
+  {
+    "name": "A.M. Consulting - System Logs and Diagnostics",
+    "text": "A.M. Consulting Diagnostics:\n# Application logs\ndocker logs higherself-server --tail 100 | grep -i \"am.consulting\\|amconsulting\"\n\n# Client portal logs\ntail -f ./logs/${ENVIRONMENT:-dev}/amconsulting_portal.log\n\n# Retreat management logs\ntail -f ./logs/${ENVIRONMENT:-dev}/amconsulting_retreats.log\n\n# Error analysis\ngrep -i \"error\\|exception\" ./logs/${ENVIRONMENT:-dev}/amconsulting_*.log | tail -20\n\n# Performance metrics\nopen http://localhost:3000/d/amconsulting-performance",
+    "keyword": "!amlogs"
+  },
+  {
+    "name": "HigherSelf - Community Learning Hub Overview",
+    "text": "HigherSelf is a nonprofit community learning hub and directory connecting individuals with practitioners, services, and educational resources. We facilitate community growth through accessible learning opportunities and meaningful connections.",
+    "keyword": "!hsoverview"
+  },
+  {
+    "name": "HigherSelf - Directory Services",
+    "text": "Our directory connects community members with:\n- Certified practitioners and service providers\n- Educational workshops and learning opportunities\n- Community events and gatherings\n- Resource sharing and collaboration spaces\n\nAll listings are verified and community-focused.",
+    "keyword": "!hsdirectory"
+  },
+  {
+    "name": "HigherSelf - Community Learning Programs",
+    "text": "HigherSelf offers accessible learning programs including:\n- Skill-sharing workshops\n- Peer-to-peer learning circles\n- Educational resource libraries\n- Community mentorship programs\n\nAll programs are designed to strengthen community connections.",
+    "keyword": "!hslearning"
+  },
+  {
+    "name": "HigherSelf - Nonprofit Mission",
+    "text": "As a nonprofit organization, HigherSelf is committed to:\n- Providing accessible community resources\n- Supporting local practitioners and service providers\n- Facilitating meaningful community connections\n- Promoting collaborative learning and growth",
+    "keyword": "!hsmission"
+  },
+  {
+    "name": "HigherSelf - Community Member Welcome",
+    "text": "Welcome to HigherSelf! We're excited to have you join our community learning hub. Here's how to get started:\n- Explore our directory of practitioners and services\n- Join upcoming learning workshops\n- Connect with other community members\n- Share your skills and expertise\n\nQuestions? We're here to help!",
+    "keyword": "!hswelcome"
+  },
+  {
+    "name": "HigherSelf - Community Event Announcement",
+    "text": "Upcoming HigherSelf Community Event:\n- Event: [Name]\n- Date: [Date and Time]\n- Location: [Venue/Virtual]\n- Description: [Brief overview]\n- Registration: [Link or method]\n- Cost: [Free/Sliding scale/Amount]\n\nJoin us for learning, connection, and community building!",
+    "keyword": "!hsevent"
+  },
+  {
+    "name": "HigherSelf - Technical Platform Status",
+    "text": "HigherSelf Platform Status:\n- Community Directory: ${HIGHERSELF_DIRECTORY_STATUS}\n- Learning Management: ${HIGHERSELF_LMS_STATUS}\n- Event Platform: ${HIGHERSELF_EVENTS_STATUS}\n- Member Portal: ${HIGHERSELF_PORTAL_STATUS}\n- Resource Library: ${HIGHERSELF_LIBRARY_STATUS}\n\nDashboard: http://localhost:3000/d/higherself-overview",
+    "keyword": "!hstech"
+  },
+  {
+    "name": "HigherSelf - Community Analytics Dashboard",
+    "text": "HigherSelf Analytics Access:\n# Member engagement metrics\nopen http://localhost:3000/d/higherself-engagement\n\n# Learning program analytics\nopen http://localhost:3000/d/higherself-learning\n\n# Community growth metrics\nopen http://localhost:3000/d/higherself-growth\n\n# Event participation data\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  \"http://localhost:8000/api/analytics/higherself/events\"",
+    "keyword": "!hsanalytics"
+  },
+  {
+    "name": "HigherSelf - Platform Integrations",
+    "text": "HigherSelf Integration Status:\n# Directory integration\ncurl -f http://localhost:8000/health/higherself/directory\n\n# Learning platform\ncurl -f http://localhost:8000/health/higherself/learning\n\n# Event management\ncurl -f http://localhost:8000/health/higherself/events\n\n# Member portal\ncurl -f http://localhost:8000/health/higherself/portal\n\nOverall status: $(curl -s http://localhost:8000/health/higherself | jq -r '.status')",
+    "keyword": "!hsintegration"
+  },
+  {
+    "name": "HigherSelf - Community Data Backup",
+    "text": "HigherSelf Backup Procedures:\n# Community directory backup\ndocker exec higherself-server python -m tools.backup_directory --entity=higherself\n\n# Learning content backup\nmongodump --db=higherself_learning --out=/backups/higherself_$(date +%Y%m%d)\n\n# Member data backup\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  \"http://localhost:8000/api/backup/higherself/members\" -o higherself_members_backup.json\n\n# Event data backup\npython -m tools.backup_events --entity=higherself",
+    "keyword": "!hsbackup"
+  },
+  {
+    "name": "HigherSelf - Platform Logs and Monitoring",
+    "text": "HigherSelf Platform Diagnostics:\n# Application logs\ndocker logs higherself-server --tail 100 | grep -i \"higherself\\|community\"\n\n# Directory logs\ntail -f ./logs/${ENVIRONMENT:-dev}/higherself_directory.log\n\n# Learning platform logs\ntail -f ./logs/${ENVIRONMENT:-dev}/higherself_learning.log\n\n# Member activity logs\ntail -f ./logs/${ENVIRONMENT:-dev}/higherself_members.log\n\n# Performance monitoring\nopen http://localhost:3000/d/higherself-performance",
+    "keyword": "!hslogs"
+  },
+  {
+    "name": "HigherSelf Network - Server Status",
+    "text": "HigherSelf Network Server Status:\n- Active Integrations: $(curl -s http://localhost:8000/api/integrations/count | jq -r '.active')\n- Database Connections: PostgreSQL, MySQL, MariaDB\n- API Endpoints: $(curl -s http://localhost:8000/health | jq -r '.endpoints_active') active\n- Agent Personalities: 7 operational (Nyra, Solari, Ruvo, Liora, Sage, Elan, Zevi)\n- Monitoring: Prometheus/Grafana active\n- Environment: ${ENVIRONMENT:-development}",
+    "keyword": "!hsnstatus"
+  },
+  {
+    "name": "HigherSelf Network - API Integration Template",
+    "text": "curl -X POST \"http://localhost:8000/api/v1/integrate\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n-H \"Content-Type: application/json\" \\\n-d '{\n  \"business_id\": \"\",\n  \"integration_type\": \"\",\n  \"config\": {}\n}'",
+    "keyword": "!hsnapi"
+  },
+  {
+    "name": "HigherSelf Network - Docker Deployment",
+    "text": "# Start HigherSelf Network Server\ndocker-compose -f docker-compose.yml up -d && \\\ndocker logs higherself-server --tail 50\n\n# Environment-specific deployment\n./scripts/deploy.sh --env ${ENVIRONMENT:-dev} --build\n\n# Health check\ncurl -f http://localhost:8000/health",
+    "keyword": "!hsndocker"
+  },
+  {
+    "name": "HigherSelf Network - Database Migration",
+    "text": "# Run database migrations\ndocker exec higherself-server python -m tools.migrate_databases --all\n\n# Notion database setup\ndocker exec higherself-server python -m tools.notion_db_setup\n\n# Supabase sync (if enabled)\ndocker exec higherself-server python -m tools.supabase_sync\n\n# Verify migrations\ncurl -f http://localhost:8000/health/database",
+    "keyword": "!hsnmigrate"
+  },
+  {
+    "name": "HigherSelf Network - Agent Personality Status",
+    "text": "Available Agent Personalities:\n1. Nyra - Lead Capture Specialist (intuitive & responsive)\n2. Solari - Booking & Order Manager (clear & luminous)\n3. Ruvo - Task Orchestrator (grounded & task-driven)\n4. Liora - Marketing Strategist (elegant & strategic)\n5. Sage - Community Curator (warm & connected)\n6. Elan - Content Choreographer (creative & adaptive)\n7. Zevi - Audience Analyst (analytical & sharp)\n\nStatus: $(curl -s http://localhost:8000/api/agents/status | jq -r '.active_count')/7 active",
+    "keyword": "!hsnagents"
+  },
+  {
+    "name": "HigherSelf Network - Agent Management",
+    "text": "# Check all agent status\ncurl -s http://localhost:8000/api/agents/status | jq\n\n# Restart specific agent\ncurl -X POST \"http://localhost:8000/api/agents/restart\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n-d '{\"agent_name\": \"Nyra\"}'\n\n# View agent logs\ndocker logs higherself-server --tail 100 | grep -i \"agent\\|nyra\\|solari\\|ruvo\\|liora\\|sage\\|elan\\|zevi\"",
+    "keyword": "!hsnagentmgmt"
+  },
+  {
+    "name": "HigherSelf Network - Monitoring Dashboard",
+    "text": "# Open main monitoring dashboard\nopen http://localhost:3000/d/higherself-overview\n\n# Agent performance dashboard\nopen http://localhost:3000/d/agent-performance\n\n# System metrics dashboard\nopen http://localhost:3000/d/system-metrics\n\n# Integration health dashboard\nopen http://localhost:3000/d/integration-health\n\nCredentials: $(op read 'op://HigherSelf/Grafana/username') / $(op read 'op://HigherSelf/Grafana/password')",
+    "keyword": "!hsnmonitor"
+  },
+  {
+    "name": "HigherSelf Network - Notion Database Sync",
+    "text": "# Full Notion sync\ndocker exec higherself-server python -m tools.notion_sync --databases all --mode full\n\n# Incremental sync\ndocker exec higherself-server python -m tools.notion_sync --databases all --mode incremental\n\n# Sync specific database\ndocker exec higherself-server python -m tools.notion_sync --database contacts_profiles\n\necho \"Notion sync completed: $(date)\"",
+    "keyword": "!hsnnotion"
+  },
+  {
+    "name": "HigherSelf Network - Vector Database Query",
+    "text": "curl -X POST \"http://localhost:8000/api/v1/vector/search\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n-H \"Content-Type: application/json\" \\\n-d '{\n  \"query\": \"\",\n  \"limit\": 10,\n  \"threshold\": 0.8,\n  \"entity\": \"all\"\n}'",
+    "keyword": "!hsnvector"
+  },
+  {
+    "name": "HigherSelf Network - Integration Priority Status",
+    "text": "Integration Priority Order:\n1. The Connection Practice (Priority 1) - Status: $(curl -s http://localhost:8000/health/tcp | jq -r '.status')\n2. The 7 Space (Priority 1) - Status: $(curl -s http://localhost:8000/health/the7space | jq -r '.status')\n3. HigherSelf (Priority 1) - Status: $(curl -s http://localhost:8000/health/higherself | jq -r '.status')\n4. A.M. Consulting (Priority 1) - Status: $(curl -s http://localhost:8000/health/amconsulting | jq -r '.status')\n5. Other businesses (Priority 3) - Status: $(curl -s http://localhost:8000/health/others | jq -r '.status')",
+    "keyword": "!hsnpriority"
+  },
+  {
+    "name": "HigherSelf Network - Environment Management",
+    "text": "# Switch environment\n./scripts/manage-environments.sh switch ${ENVIRONMENT:-development}\n\n# Validate environment\n./scripts/manage-environments.sh validate ${ENVIRONMENT:-development}\n\n# Environment status\necho \"Current Environment: ${ENVIRONMENT:-development}\"\necho \"Debug Mode: ${DEBUG:-false}\"\necho \"Log Level: ${LOG_LEVEL:-INFO}\"\necho \"Multi-Entity Mode: ${MULTI_ENTITY_MODE:-true}\"",
+    "keyword": "!hsnenv"
+  },
+  {
+    "name": "HigherSelf Network - Security and Credentials",
+    "text": "# Rotate API keys\ndocker exec higherself-server python -m tools.rotate_api_keys\n\n# Check security status\ncurl -f http://localhost:8000/health/security\n\n# Audit access logs\ntail -f ./logs/${ENVIRONMENT:-dev}/security_audit.log\n\n# Update secrets\nop inject -i .env.template -o .env.${ENVIRONMENT:-dev}",
+    "keyword": "!hsnsecurity"
+  },
+  {
+    "name": "1Password - Retrieve API Key",
+    "text": "# Retrieve API key from 1Password\nop read \"op://HigherSelf/HSN-API/token\"\n\n# Set as environment variable\nexport HSN_API_KEY=$(op read \"op://HigherSelf/HSN-API/token\")\n\n# Use in curl command\ncurl -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n  http://localhost:8000/api/status",
+    "keyword": "!1papi"
+  },
+  {
+    "name": "1Password - Database Credentials",
+    "text": "# MongoDB credentials\nexport MONGODB_USERNAME=$(op read \"op://HigherSelf/MongoDB/username\")\nexport MONGODB_PASSWORD=$(op read \"op://HigherSelf/MongoDB/password\")\n\n# Redis credentials\nexport REDIS_PASSWORD=$(op read \"op://HigherSelf/Redis/password\")\n\n# Connection string with credentials\nexport MONGODB_URI=\"mongodb://$(op read 'op://HigherSelf/MongoDB/username'):$(op read 'op://HigherSelf/MongoDB/password')@localhost:27017/higherself\"",
+    "keyword": "!1pdb"
+  },
+  {
+    "name": "1Password - SSH Key Management",
+    "text": "# Load SSH key from 1Password\nop read \"op://HigherSelf/SSH-Keys/higherself-server\" > ~/.ssh/higherself_server_key\nchmod 600 ~/.ssh/higherself_server_key\n\n# Add to SSH agent\nssh-add ~/.ssh/higherself_server_key\n\n# Connect to server\nssh -i ~/.ssh/higherself_server_key $(op read \"op://HigherSelf/Server-Access/username\")@$(op read \"op://HigherSelf/Server-Access/hostname\")",
+    "keyword": "!1pssh"
+  },
+  {
+    "name": "1Password - Environment Injection",
+    "text": "# Inject secrets into environment file\nop inject -i .env.template -o .env.${ENVIRONMENT:-development}\n\n# Inject into Docker Compose\nop inject -i docker-compose.template.yml -o docker-compose.yml\n\n# Verify injection\necho \"Environment file created with $(grep -c '=' .env.${ENVIRONMENT:-development}) variables\"",
+    "keyword": "!1pinject"
+  },
+  {
+    "name": "1Password - Service Account Token",
+    "text": "# Set service account token for automation\nexport OP_SERVICE_ACCOUNT_TOKEN=$(op read \"op://HigherSelf/Service-Accounts/automation-token\")\n\n# Verify service account access\nop whoami\n\n# Use in CI/CD pipeline\necho \"OP_SERVICE_ACCOUNT_TOKEN=$(op read 'op://HigherSelf/Service-Accounts/ci-cd-token')\" >> $GITHUB_ENV",
+    "keyword": "!1pservice"
+  },
+  {
+    "name": "1Password - Webhook Secrets",
+    "text": "# Retrieve webhook secrets\nexport WEBHOOK_SECRET=$(op read \"op://HigherSelf/Webhooks/secret\")\nexport GITHUB_WEBHOOK_SECRET=$(op read \"op://HigherSelf/GitHub/webhook-secret\")\nexport ZAPIER_WEBHOOK_SECRET=$(op read \"op://HigherSelf/Zapier/webhook-secret\")\n\n# Verify webhook signature\necho \"Webhook secrets loaded for signature verification\"",
+    "keyword": "!1pwebhook"
+  },
+  {
+    "name": "1Password - Monitoring Credentials",
+    "text": "# Grafana credentials\nexport GRAFANA_USER=$(op read \"op://HigherSelf/Grafana/username\")\nexport GRAFANA_PASS=$(op read \"op://HigherSelf/Grafana/password\")\n\n# Prometheus credentials\nexport PROMETHEUS_USER=$(op read \"op://HigherSelf/Prometheus/username\")\nexport PROMETHEUS_PASS=$(op read \"op://HigherSelf/Prometheus/password\")\n\n# Open monitoring with credentials\nopen \"http://${GRAFANA_USER}:${GRAFANA_PASS}@localhost:3000\"",
+    "keyword": "!1pmonitor"
+  },
+  {
+    "name": "1Password - Emergency Access",
+    "text": "# Emergency access procedures\necho \"🚨 EMERGENCY ACCESS PROTOCOL 🚨\"\necho \"1. Verify identity with emergency contact\"\necho \"2. Access emergency vault: $(op read 'op://Emergency/Access-Instructions/procedure')\"\necho \"3. Retrieve emergency credentials\"\necho \"4. Document emergency access in audit log\"\n\n# Emergency server access\nop read \"op://Emergency/Server-Access/emergency-key\" > ~/.ssh/emergency_key\nchmod 600 ~/.ssh/emergency_key",
+    "keyword": "!1pemergency"
+  },
+  {
+    "name": "Termius - HigherSelf Server Connection",
+    "text": "# HigherSelf Server SSH Profile\nHost: $(op read \"op://HigherSelf/Server-Access/hostname\")\nPort: 22\nUsername: $(op read \"op://HigherSelf/Server-Access/username\")\nKey: ~/.ssh/higherself_server_key\nTags: higherself, production, server\nStartup Commands:\n  - cd ~/higherself-network-server\n  - source venv/bin/activate\n  - ./scripts/server-status.sh",
+    "keyword": "!termserver"
+  },
+  {
+    "name": "Termius - Voice Control Start Server",
+    "text": "# Voice Command: \"Start HigherSelf Server\"\necho \"🎤 Voice Command: Starting HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Start server with monitoring\ndocker-compose up -d\nsleep 10\ncurl -f http://localhost:8000/health && echo \"✅ Server started successfully!\" || echo \"❌ Server startup failed!\"",
+    "keyword": "!termvoicestart"
+  },
+  {
+    "name": "Termius - Voice Control Stop Server",
+    "text": "# Voice Command: \"Stop HigherSelf Server\"\necho \"🎤 Voice Command: Stopping HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-development}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Graceful shutdown\ndocker-compose down\necho \"✅ Server stopped successfully!\"",
+    "keyword": "!termvoicestop"
+  },
+  {
+    "name": "Termius - Voice Control Server Status",
+    "text": "# Voice Command: \"Check Server Status\"\necho \"🎤 Voice Command: Checking HigherSelf Network Server Status...\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Comprehensive status check\necho \"🐳 Docker Status:\"\ndocker-compose ps\necho \"\"\necho \"🏥 Health Check:\"\ncurl -s http://localhost:8000/health | jq\necho \"\"\necho \"📊 Agent Status:\"\ncurl -s http://localhost:8000/api/agents/status | jq -r '.summary'",
+    "keyword": "!termvoicestatus"
+  },
+  {
+    "name": "Termius - Voice Control Deploy",
+    "text": "# Voice Command: \"Deploy Server\"\necho \"🎤 Voice Command: Deploying HigherSelf Network Server...\"\necho \"📍 Environment: ${ENVIRONMENT:-production}\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Automated deployment\n./scripts/deploy.sh --env ${ENVIRONMENT:-production} --build\necho \"🚀 Deployment completed!\"",
+    "keyword": "!termvoicedeploy"
+  },
+  {
+    "name": "Termius - Voice Control View Logs",
+    "text": "# Voice Command: \"Show Server Logs\"\necho \"🎤 Voice Command: Displaying HigherSelf Network Server Logs...\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Real-time log viewing\necho \"📋 Recent Application Logs:\"\ndocker logs higherself-server --tail 50\necho \"\"\necho \"📋 Following live logs (Ctrl+C to stop):\"\ndocker logs higherself-server --follow",
+    "keyword": "!termvoicelogs"
+  },
+  {
+    "name": "Termius - SSH Tunnel Management",
+    "text": "# Create SSH tunnel for secure access\nssh -L 8000:localhost:8000 -L 3000:localhost:3000 -L 9090:localhost:9090 \\\n  -i ~/.ssh/higherself_server_key \\\n  $(op read \"op://HigherSelf/Server-Access/username\")@$(op read \"op://HigherSelf/Server-Access/hostname\")\n\n# Tunnel Status:\n# - API Server: http://localhost:8000\n# - Grafana: http://localhost:3000\n# - Prometheus: http://localhost:9090",
+    "keyword": "!termtunnel"
+  },
+  {
+    "name": "Termius - File Transfer Operations",
+    "text": "# Upload configuration files\nscp -i ~/.ssh/higherself_server_key .env.production \\\n  $(op read \"op://HigherSelf/Server-Access/username\")@$(op read \"op://HigherSelf/Server-Access/hostname\"):~/higherself-network-server/\n\n# Download logs\nscp -r -i ~/.ssh/higherself_server_key \\\n  $(op read \"op://HigherSelf/Server-Access/username\")@$(op read \"op://HigherSelf/Server-Access/hostname\"):~/higherself-network-server/logs/ \\\n  ./downloaded-logs/\n\n# Sync backups\nrsync -avz -e \"ssh -i ~/.ssh/higherself_server_key\" \\\n  $(op read \"op://HigherSelf/Server-Access/username\")@$(op read \"op://HigherSelf/Server-Access/hostname\"):~/higherself-network-server/backups/ \\\n  ./local-backups/",
+    "keyword": "!termtransfer"
+  },
+  {
+    "name": "Termius - Session Management",
+    "text": "# Create named tmux session for server management\ntmux new-session -d -s higherself-mgmt\ntmux send-keys -t higherself-mgmt 'cd ~/higherself-network-server' Enter\ntmux send-keys -t higherself-mgmt 'source venv/bin/activate' Enter\n\n# Split window for monitoring\ntmux split-window -h -t higherself-mgmt\ntmux send-keys -t higherself-mgmt:0.1 'docker logs higherself-server --follow' Enter\n\n# Attach to session\ntmux attach-session -t higherself-mgmt",
+    "keyword": "!termsession"
+  },
+  {
+    "name": "Termius - Monitoring Integration",
+    "text": "# Start monitoring dashboard in Termius\necho \"🖥️  Opening HigherSelf Network Monitoring Dashboard\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Open monitoring URLs\nopen http://localhost:3000/d/higherself-overview\nopen http://localhost:9090/targets\n\n# Display key metrics in terminal\necho \"📊 Key Metrics:\"\necho \"- Server Status: $(curl -s http://localhost:8000/health | jq -r '.status')\"\necho \"- Active Agents: $(curl -s http://localhost:8000/api/agents/status | jq -r '.active_count')\"\necho \"- Database Status: $(curl -s http://localhost:8000/health/database | jq -r '.status')\"\necho \"- Memory Usage: $(docker stats higherself-server --no-stream --format 'table {{.MemUsage}}')\"\necho \"- CPU Usage: $(docker stats higherself-server --no-stream --format 'table {{.CPUPerc}}')\"\n\n# Start continuous monitoring\nwatch -n 30 'curl -s http://localhost:8000/health | jq'",
+    "keyword": "!termmonitor"
+  },
+  {
+    "name": "Cross-Business - Client Handoff",
+    "text": "Client Profile Transfer:\n- Name: [Client Name]\n- Primary Need: [Service Type]\n- Referring Business: [Source]\n- Recommended Service: [Target Business]\n- Notes: [Specific Requirements]\n- Follow-up Date: [Date]\n- Technical Integration: $(curl -s http://localhost:8000/api/cross-business/handoff-status | jq -r '.status')",
+    "keyword": "!xhandoff"
+  },
+  {
+    "name": "Cross-Business - Partnership Proposal",
+    "text": "Partnership Opportunity:\n- Partner Organization: [Name]\n- Collaboration Type: [Service/Event/Program]\n- Benefits for Network: [List]\n- Benefits for Partner: [List]\n- Timeline: [Duration]\n- Next Steps: [Actions]\n- Integration Requirements: [Technical Needs]\n- Data Sharing Agreement: [Status]",
+    "keyword": "!xpartner"
+  },
+  {
+    "name": "Cross-Business - Marketing Campaign",
+    "text": "Network Marketing Campaign:\n- Campaign Name: [Name]\n- Target Audience: [Demographics]\n- Participating Businesses: [List]\n- Budget Allocation: [Breakdown]\n- Launch Date: [Date]\n- Collaboration Focus: [Theme]\n- Technical Tracking: $(curl -s http://localhost:8000/api/campaigns/active | jq -r '.count') active campaigns",
+    "keyword": "!xmarketing"
+  },
+  {
+    "name": "Cross-Business - Technical Integration Status",
+    "text": "Cross-Business Integration Health:\n# The 7 Space Integration\necho \"🎨 The 7 Space: $(curl -s http://localhost:8000/health/the7space | jq -r '.status')\"\n\n# A.M. Consulting Integration\necho \"🤝 A.M. Consulting: $(curl -s http://localhost:8000/health/amconsulting | jq -r '.status')\"\n\n# HigherSelf Integration\necho \"🌟 HigherSelf: $(curl -s http://localhost:8000/health/higherself | jq -r '.status')\"\n\n# Data Synchronization Status\necho \"🔄 Data Sync: $(curl -s http://localhost:8000/api/sync/status | jq -r '.last_sync')\"\n\n# Cross-business analytics\nopen http://localhost:3000/d/cross-business-overview",
+    "keyword": "!xtech"
+  },
+  {
+    "name": "Cross-Business - Data Synchronization",
+    "text": "# Cross-business data synchronization\necho \"🔄 Starting cross-business data synchronization...\"\necho \"⏰ $(date)\"\n\n# Sync customer data across businesses\ndocker exec higherself-server python -m tools.cross_business_sync --type=customers\n\n# Sync event data\ndocker exec higherself-server python -m tools.cross_business_sync --type=events\n\n# Sync marketing data\ndocker exec higherself-server python -m tools.cross_business_sync --type=marketing\n\n# Verify synchronization\ncurl -s http://localhost:8000/api/sync/verify | jq\n\necho \"✅ Cross-business synchronization completed!\"",
+    "keyword": "!xsync"
+  },
+  {
+    "name": "Cross-Business - Performance Monitoring",
+    "text": "# Cross-business performance dashboard\nopen http://localhost:3000/d/cross-business-performance\n\n# Network-wide metrics\necho \"📊 Network Performance Metrics:\"\necho \"- Total Active Clients: $(curl -s http://localhost:8000/api/metrics/clients/total | jq -r '.count')\"\necho \"- Cross-referrals This Month: $(curl -s http://localhost:8000/api/metrics/referrals/monthly | jq -r '.count')\"\necho \"- Integration Health Score: $(curl -s http://localhost:8000/api/metrics/integration/health | jq -r '.score')\"\necho \"- Revenue Attribution: $(curl -s http://localhost:8000/api/metrics/revenue/attribution | jq -r '.cross_business_percentage')%\"\n\n# Performance alerts\ncurl -s http://localhost:8000/api/alerts/cross-business | jq",
+    "keyword": "!xperformance"
+  },
+  {
+    "name": "Cross-Business - Security Auditing",
+    "text": "# Cross-business security audit\necho \"🔒 Cross-Business Security Audit Report\"\necho \"⏰ Generated: $(date)\"\necho \"\"\n\n# Access control audit\necho \"👥 Access Control:\"\ncurl -s http://localhost:8000/api/security/audit/access | jq\n\n# Data sharing audit\necho \"📊 Data Sharing:\"\ncurl -s http://localhost:8000/api/security/audit/data-sharing | jq\n\n# Integration security\necho \"🔗 Integration Security:\"\ncurl -s http://localhost:8000/api/security/audit/integrations | jq\n\n# Generate security report\npython -m tools.security_audit --scope=cross-business --output=./reports/security_audit_$(date +%Y%m%d).json",
+    "keyword": "!xsecurity"
+  },
+  {
+    "name": "Cross-Business - Backup Coordination",
+    "text": "# Coordinated backup across all businesses\necho \"💾 Cross-Business Backup Coordination\"\necho \"⏰ Started: $(date)\"\necho \"\"\n\n# Backup The 7 Space data\necho \"🎨 Backing up The 7 Space...\"\ndocker exec higherself-server python -m tools.backup_business_data --entity=the_7_space\n\n# Backup A.M. Consulting data\necho \"🤝 Backing up A.M. Consulting...\"\ndocker exec higherself-server python -m tools.backup_business_data --entity=am_consulting\n\n# Backup HigherSelf data\necho \"🌟 Backing up HigherSelf...\"\ndocker exec higherself-server python -m tools.backup_business_data --entity=higherself\n\n# Create consolidated backup\necho \"📦 Creating consolidated backup...\"\ntar -czf ./backups/cross_business_backup_$(date +%Y%m%d_%H%M%S).tar.gz ./backups/the7space_* ./backups/amconsulting_* ./backups/higherself_*\n\necho \"✅ Cross-business backup completed!\"",
+    "keyword": "!xbackup"
+  },
+  {
+    "name": "Cross-Business - Incident Response",
+    "text": "# Cross-business incident response protocol\necho \"🚨 CROSS-BUSINESS INCIDENT RESPONSE ACTIVATED 🚨\"\necho \"⏰ Incident Time: $(date)\"\necho \"📋 Incident ID: CB-$(date +%Y%m%d-%H%M%S)\"\necho \"\"\n\n# Check all business systems\necho \"🔍 System Status Check:\"\necho \"- The 7 Space: $(curl -s http://localhost:8000/health/the7space | jq -r '.status')\"\necho \"- A.M. Consulting: $(curl -s http://localhost:8000/health/amconsulting | jq -r '.status')\"\necho \"- HigherSelf: $(curl -s http://localhost:8000/health/higherself | jq -r '.status')\"\necho \"- Core Infrastructure: $(curl -s http://localhost:8000/health | jq -r '.status')\"\n\n# Activate monitoring\necho \"📊 Activating enhanced monitoring...\"\nopen http://localhost:3000/d/incident-response-dashboard\n\n# Log incident\necho \"📝 Logging incident...\"\necho \"$(date): Cross-business incident response activated\" >> ./logs/incidents/cross_business_incidents.log\n\necho \"📞 Next Steps:\"\necho \"1. Assess impact across all businesses\"\necho \"2. Implement containment measures\"\necho \"3. Communicate with stakeholders\"\necho \"4. Document resolution steps\"",
+    "keyword": "!xincident"
+  },
+  {
+    "name": "Cross-Business - Capacity Planning",
+    "text": "# Cross-business capacity planning analysis\necho \"📈 Cross-Business Capacity Planning Report\"\necho \"⏰ Generated: $(date)\"\necho \"\"\n\n# Current resource utilization\necho \"💻 Current Resource Utilization:\"\necho \"- CPU Usage: $(docker stats --no-stream --format 'table {{.CPUPerc}}' | tail -n +2 | awk '{sum+=$1} END {print sum/NR\"%\"}')\"\necho \"- Memory Usage: $(docker stats --no-stream --format 'table {{.MemUsage}}' | tail -n +2)\"\necho \"- Database Connections: $(curl -s http://localhost:8000/api/metrics/database/connections | jq -r '.active')\"\necho \"- API Request Rate: $(curl -s http://localhost:8000/api/metrics/requests/rate | jq -r '.per_minute')/min\"\n\n# Growth projections\necho \"📊 Growth Projections:\"\ncurl -s http://localhost:8000/api/analytics/capacity/projections | jq\n\n# Recommendations\necho \"💡 Capacity Recommendations:\"\ncurl -s http://localhost:8000/api/analytics/capacity/recommendations | jq -r '.recommendations[]'\n\n# Generate detailed report\npython -m tools.capacity_planning --scope=cross-business --output=./reports/capacity_planning_$(date +%Y%m%d).json",
+    "keyword": "!xcapacity"
+  },
+  {
+    "name": "Business Operations - Weekly Review",
+    "text": "Weekly Business Review:\n- Key Accomplishments: [List]\n- Challenges Faced: [List]\n- Client Feedback: [Summary]\n- Community Engagement: [Activities]\n- Next Week Priorities: [List]\n- Action Items: [Tasks]\n- Technical Performance: $(curl -s http://localhost:8000/api/metrics/weekly-summary | jq -r '.summary')\n- System Uptime: $(curl -s http://localhost:8000/api/metrics/uptime | jq -r '.percentage')%",
+    "keyword": "!weekreview"
+  },
+  {
+    "name": "Business Operations - Client Onboarding",
+    "text": "New Client Onboarding:\n- Welcome packet sent: [ ]\n- Initial consultation scheduled: [ ]\n- Service agreement signed: [ ]\n- Payment method confirmed: [ ]\n- Team introductions completed: [ ]\n- First session/service delivered: [ ]\n- Technical profile created: [ ]\n- Integration setup completed: [ ]\n- Monitoring alerts configured: [ ]\n\n# Create client profile in system\ncurl -X POST \"http://localhost:8000/api/clients\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/token')\" \\\n-d '{\"name\": \"[Client Name]\", \"business_entity\": \"[Entity]\", \"onboarding_status\": \"in_progress\"}'",
+    "keyword": "!onboard"
+  },
+  {
+    "name": "Business Operations - Quality Assurance",
+    "text": "Service Quality Checklist:\n- Client expectations clearly defined: [ ]\n- Service delivery timeline communicated: [ ]\n- Regular check-ins scheduled: [ ]\n- Feedback collection method established: [ ]\n- Community impact considered: [ ]\n- Follow-up plan created: [ ]\n- Technical monitoring enabled: [ ]\n- Data backup verified: [ ]\n- Integration health confirmed: [ ]\n\n# Quality metrics dashboard\nopen http://localhost:3000/d/quality-assurance-metrics\n\n# Generate quality report\npython -m tools.quality_report --period=weekly",
+    "keyword": "!quality"
+  },
+  {
+    "name": "Business Operations - Emergency Contact",
+    "text": "Emergency Business Contacts:\n- Operations Manager: $(op read \"op://HigherSelf/Emergency-Contacts/operations-manager\")\n- Technical Support: $(op read \"op://HigherSelf/Emergency-Contacts/technical-support\")\n- Client Services: $(op read \"op://HigherSelf/Emergency-Contacts/client-services\")\n- After-hours line: $(op read \"op://HigherSelf/Emergency-Contacts/after-hours\")\n- Email escalation: $(op read \"op://HigherSelf/Emergency-Contacts/escalation-email\")\n- Backup coordinator: $(op read \"op://HigherSelf/Emergency-Contacts/backup-coordinator\")\n\n# Emergency system status\necho \"🚨 Emergency System Status:\"\ncurl -s http://localhost:8000/health/emergency | jq\n\n# Activate emergency protocols\n# curl -X POST \"http://localhost:8000/api/emergency/activate\" -H \"Authorization: Bearer $(op read 'op://HigherSelf/HSN-API/emergency-token')\"",
+    "keyword": "!emergency"
+  },
+  {
+    "name": "Business Operations - Performance Analytics",
+    "text": "# Business performance analytics dashboard\necho \"📊 Business Performance Analytics\"\necho \"⏰ Generated: $(date)\"\necho \"\"\n\n# Key performance indicators\necho \"📈 Key Performance Indicators:\"\necho \"- Total Revenue: $(curl -s http://localhost:8000/api/analytics/revenue/total | jq -r '.amount')\"\necho \"- Client Satisfaction: $(curl -s http://localhost:8000/api/analytics/satisfaction/average | jq -r '.score')/10\"\necho \"- Service Utilization: $(curl -s http://localhost:8000/api/analytics/utilization/services | jq -r '.percentage')%\"\necho \"- Cross-business Referrals: $(curl -s http://localhost:8000/api/analytics/referrals/count | jq -r '.total')\"\n\n# Open analytics dashboard\nopen http://localhost:3000/d/business-performance-overview\n\n# Generate detailed report\npython -m tools.analytics_report --scope=all-businesses --period=monthly",
+    "keyword": "!analytics"
+  },
+  {
+    "name": "Business Operations - Compliance Monitoring",
+    "text": "# Business compliance monitoring\necho \"⚖️  Business Compliance Status\"\necho \"⏰ Checked: $(date)\"\necho \"\"\n\n# Data privacy compliance\necho \"🔒 Data Privacy Compliance:\"\ncurl -s http://localhost:8000/api/compliance/privacy | jq\n\n# Financial compliance\necho \"💰 Financial Compliance:\"\ncurl -s http://localhost:8000/api/compliance/financial | jq\n\n# Service delivery compliance\necho \"📋 Service Delivery Compliance:\"\ncurl -s http://localhost:8000/api/compliance/service-delivery | jq\n\n# Generate compliance report\npython -m tools.compliance_report --output=./reports/compliance_$(date +%Y%m%d).json\n\necho \"📄 Compliance report generated in ./reports/\"",
+    "keyword": "!compliance"
+  },
+  {
+    "name": "Integration - Zapier Webhook",
+    "text": "curl -X POST \"https://hooks.zapier.com/hooks/catch/$(op read 'op://HigherSelf/Zapier/hook-id')/$(op read 'op://HigherSelf/Zapier/hook-key')\" \\\n-H \"Content-Type: application/json\" \\\n-d '{\n  \"business\": \"\",\n  \"event\": \"\",\n  \"data\": {},\n  \"timestamp\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\",\n  \"source\": \"higherself-network-server\"\n}'",
+    "keyword": "!zapier"
+  },
+  {
+    "name": "Integration - Airtable Update",
+    "text": "curl -X PATCH \"https://api.airtable.com/v0/$(op read 'op://HigherSelf/Airtable/base-id')/$(op read 'op://HigherSelf/Airtable/table-name')/[RECORD_ID]\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/Airtable/api-key')\" \\\n-H \"Content-Type: application/json\" \\\n-d '{\n  \"fields\": {\n    \"Last Updated\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\",\n    \"Updated By\": \"HigherSelf Network Server\"\n  }\n}'",
+    "keyword": "!airtable"
+  },
+  {
+    "name": "Integration - Notion API Call",
+    "text": "curl -X POST \"https://api.notion.com/v1/pages\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/Notion/api-token')\" \\\n-H \"Content-Type: application/json\" \\\n-H \"Notion-Version: 2022-06-28\" \\\n-d '{\n  \"parent\": {\n    \"database_id\": \"$(op read 'op://HigherSelf/Notion/database-id')\"\n  },\n  \"properties\": {\n    \"Name\": {\n      \"title\": [\n        {\n          \"text\": {\n            \"content\": \"[Page Title]\"\n          }\n        }\n      ]\n    }\n  }\n}'",
+    "keyword": "!notion"
+  },
+  {
+    "name": "Integration - High Level API",
+    "text": "# High Level API Configuration Status\necho \"📞 High Level API Integration Status:\"\necho \"- Omni chat integration: $(curl -s http://localhost:8000/health/highlevel/omnichat | jq -r '.status')\"\necho \"- Missed call text-back: $(curl -s http://localhost:8000/health/highlevel/missed-calls | jq -r '.enabled')\"\necho \"- Phone number management: $(curl -s http://localhost:8000/health/highlevel/phone-mgmt | jq -r '.status')\"\necho \"- Automation workflows: $(curl -s http://localhost:8000/api/highlevel/workflows/count | jq -r '.active') active\"\necho \"- CRM sync: $(curl -s http://localhost:8000/health/highlevel/crm-sync | jq -r '.status')\"\n\n# Test High Level connection\ncurl -X GET \"https://rest.gohighlevel.com/v1/contacts/\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/HighLevel/api-key')\" \\\n-H \"Content-Type: application/json\"",
+    "keyword": "!highlevel"
+  },
+  {
+    "name": "Integration - Supabase Operations",
+    "text": "# Supabase database operations\necho \"🗄️  Supabase Integration Status:\"\necho \"- Database Status: $(curl -s http://localhost:8000/health/supabase/database | jq -r '.status')\"\necho \"- Auth Status: $(curl -s http://localhost:8000/health/supabase/auth | jq -r '.status')\"\necho \"- Storage Status: $(curl -s http://localhost:8000/health/supabase/storage | jq -r '.status')\"\n\n# Sync data to Supabase\ndocker exec higherself-server python -m tools.supabase_sync --mode=incremental\n\n# Query Supabase\ncurl -X GET \"$(op read 'op://HigherSelf/Supabase/url')/rest/v1/[table_name]\" \\\n-H \"apikey: $(op read 'op://HigherSelf/Supabase/anon-key')\" \\\n-H \"Authorization: Bearer $(op read 'op://HigherSelf/Supabase/service-key')\"",
+    "keyword": "!supabase"
+  },
+  {
+    "name": "Integration - Health Check All",
+    "text": "# Comprehensive integration health check\necho \"🏥 Comprehensive Integration Health Check\"\necho \"⏰ $(date)\"\necho \"\"\n\n# Core system health\necho \"🔧 Core System:\"\ncurl -s http://localhost:8000/health | jq\n\n# Database health\necho \"🗄️  Databases:\"\ncurl -s http://localhost:8000/health/database | jq\n\n# External integrations\necho \"🔗 External Integrations:\"\necho \"- Notion: $(curl -s http://localhost:8000/health/notion | jq -r '.status')\"\necho \"- Zapier: $(curl -s http://localhost:8000/health/zapier | jq -r '.status')\"\necho \"- Airtable: $(curl -s http://localhost:8000/health/airtable | jq -r '.status')\"\necho \"- High Level: $(curl -s http://localhost:8000/health/highlevel | jq -r '.status')\"\necho \"- Supabase: $(curl -s http://localhost:8000/health/supabase | jq -r '.status')\"\n\n# Agent health\necho \"🤖 Agent Status:\"\ncurl -s http://localhost:8000/api/agents/health | jq\n\necho \"\"\necho \"✅ Health check completed!\"",
+    "keyword": "!healthcheck"
+  }
+]

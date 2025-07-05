@@ -98,11 +98,15 @@ FROM base as production
 
 WORKDIR /app
 
-# Copy Python dependencies from builder
-COPY --from=builder /root/.local /root/.local
+# Create non-root user first
+RUN adduser -u 5678 --disabled-password --gecos "" appuser
 
-# Add local bin to PATH
-ENV PATH=/root/.local/bin:$PATH
+# Copy Python dependencies from builder and fix permissions
+COPY --from=builder /root/.local /home/appuser/.local
+RUN chown -R appuser:appuser /home/appuser/.local
+
+# Add local bin to PATH for appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/data /app/uploads
@@ -110,9 +114,8 @@ RUN mkdir -p /app/logs /app/data /app/uploads
 # Copy application code
 COPY . .
 
-# Create non-root user
-RUN adduser -u 5678 --disabled-password --gecos "" appuser \
-    && chown -R appuser:appuser /app
+# Fix ownership of all app files
+RUN chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
