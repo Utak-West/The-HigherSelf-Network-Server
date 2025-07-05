@@ -272,6 +272,12 @@ async def register_new_contact(
             "workflows_triggered": True,
             "ai_processing_queued": True
         }
+    except Exception as e:
+        logger.error(f"Error registering new contact: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to register contact: {str(e)}"
+        )
 
 
 async def _queue_contact_for_ai_processing(contact_data: Dict[str, Any]):

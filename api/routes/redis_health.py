@@ -9,7 +9,7 @@ import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from loguru import logger
 from pydantic import BaseModel
 
@@ -300,7 +300,7 @@ async def test_redis_async_connection():
 
 @router.get("/info/{section}")
 async def get_redis_info(
-    section: str = Query(
+    section: str = Path(
         ..., description="Redis INFO section (e.g., server, memory, stats)"
     )
 ):

@@ -152,9 +152,9 @@ async def github_actions_webhook(
 @router.post("/notifications/send")
 async def send_custom_notification(
     message: str,
+    background_tasks: BackgroundTasks,
     status: NotificationStatus = NotificationStatus.IN_PROGRESS,
-    environment: Optional[str] = None,
-    background_tasks: BackgroundTasks
+    environment: Optional[str] = None
 ):
     """Send a custom notification to terminals."""
     try:

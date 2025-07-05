@@ -15,7 +15,7 @@ import aiohttp
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
-from config.settings import get_settings
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class TermiusNotificationService:
     """Service for handling Termius notifications and terminal integration."""
     
     def __init__(self):
-        self.settings = get_settings()
+        self.settings = settings
         self.active_sessions: Dict[str, TerminalSession] = {}
         self.notification_history: List[Dict[str, Any]] = []
         self.max_history = 100

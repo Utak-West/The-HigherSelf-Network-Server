@@ -96,7 +96,7 @@ class ContactWorkflowAutomation:
         self.notifications_db_id = os.getenv('NOTION_NOTIFICATIONS_TEMPLATES_DB')
         
         # Initialize services
-        self.notion_service = NotionService()
+        self.notion_service = NotionService.from_env()
         self.termius_service = TermiusNotificationService()
         self.task_agent = TaskManagementAgent()
         self.workflow_engine = WorkflowEngine()

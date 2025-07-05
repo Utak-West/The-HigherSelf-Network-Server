@@ -28,7 +28,7 @@ from api.mcp_tools_router import router as mcp_tools_router
 from api.openml_router import router as openml_router
 from api.rag_router import router as rag_router
 from api.routes.agent_tasks import router as agent_tasks_router
-from api.routes.barter import router as barter_router
+# from api.routes.barter import router as barter_router  # Module not found
 from api.routes.redis_health import router as redis_health_router
 from api.softr_router import router as softr_router
 from api.video_router import router as video_router
@@ -91,7 +91,7 @@ app.include_router(agent_tasks_router)
 app.include_router(softr_router)
 app.include_router(capcut_pipit_router)
 app.include_router(redis_health_router)  # Added Redis health monitoring router
-app.include_router(barter_router)  # Added Barter system router
+# app.include_router(barter_router)  # Added Barter system router - Module not found
 app.include_router(zapier_ecosystem_router)  # Added Zapier ecosystem router
 app.include_router(termius_router)  # Added Termius integration router
 app.include_router(contact_workflow_router)  # Added Contact Workflow automation router
