@@ -10,7 +10,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from pydantic import Any, BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from models.base import (
     AgentCapability,
@@ -53,7 +53,7 @@ class AgentDocument(MongoBaseModel):
     agent_type: str
     capabilities: List[AgentCapability] = []
     status: AgentStatus = AgentStatus.INACTIVE
-    runtime_environment: RuntimeEnvironment = RuntimeEnvironment.DEVELOPMENT
+    runtime_environment: RuntimeEnvironment = RuntimeEnvironment.DOCKER
     configuration: Dict[str, Any] = Field(default_factory=dict)
     api_keys: Dict[str, str] = Field(default_factory=dict)
     last_active: Optional[datetime] = None
@@ -93,7 +93,7 @@ class WorkflowInstanceDocument(MongoBaseModel):
     """MongoDB document for WorkflowInstance collection."""
 
     workflow_id: str
-    status: WorkflowStatus = WorkflowStatus.PENDING
+    status: WorkflowStatus = WorkflowStatus.DRAFT
     current_step: Optional[int] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
@@ -117,7 +117,7 @@ class TaskDocument(MongoBaseModel):
 
     title: str
     description: Optional[str] = None
-    status: TaskStatus = TaskStatus.PENDING
+    status: TaskStatus = TaskStatus.TO_DO
     priority: int = 1
     due_date: Optional[datetime] = None
     assigned_to: Optional[str] = None
@@ -164,7 +164,7 @@ class ApiIntegrationDocument(MongoBaseModel):
     platform: ApiPlatform
     api_url: str
     auth_type: str
-    status: IntegrationStatus = IntegrationStatus.INACTIVE
+    status: IntegrationStatus = IntegrationStatus.PLANNED
     configuration: Dict[str, Any] = Field(default_factory=dict)
     credentials: Dict[str, str] = Field(default_factory=dict)
     rate_limits: Optional[Dict[str, Any]] = None

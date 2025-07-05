@@ -228,15 +228,15 @@ class HuggingFaceService(BaseService):
                 await self.notion_service.log_to_workflow_history(
                     workflow_id,
                     "INFO",
-                    f"Processing text with Hugging Face model {integration.model_config.model_id}",
+                    f"Processing text with Hugging Face model {integration.hf_model_config.model_id}",
                 )
 
             # Query Hugging Face
-            result = await self.query_model(integration.model_config, input_text)
+            result = await self.query_model(integration.hf_model_config, input_text)
 
             # Format the output
             formatted_output = self.format_hf_output(
-                result, integration.model_config.task
+                result, integration.hf_model_config.task
             )
 
             # Prepare Notion property update based on property type
@@ -262,13 +262,13 @@ class HuggingFaceService(BaseService):
                     await self.notion_service.log_to_workflow_history(
                         workflow_id,
                         "INFO",
-                        f"Successfully processed text with Hugging Face model {integration.model_config.model_id}",
+                        f"Successfully processed text with Hugging Face model {integration.hf_model_config.model_id}",
                     )
 
             # Create and return response
             return HuggingFaceResponse(
-                model_id=integration.model_config.model_id,
-                task=integration.model_config.task,
+                model_id=integration.hf_model_config.model_id,
+                task=integration.hf_model_config.task,
                 input=input_text,
                 output=formatted_output,
                 raw_response=result,

@@ -37,7 +37,7 @@ class OptimizedBaseModel(BaseModel):
         populate_by_name=True,  # Allow field population by alias or name
 
         # Serialization optimizations
-        ser_json_bytes=True,  # Optimize JSON serialization
+        ser_json_bytes='utf8',  # Optimize JSON serialization
         validate_default=True,  # Validate default values
 
         # String handling
@@ -56,23 +56,23 @@ class CacheableModel(OptimizedBaseModel):
     """
 
     # Cache metadata (not serialized to API responses)
-    _cache_ttl: Optional[int] = Field(default=300, exclude=True)  # 5 minutes default
-    _cache_key_prefix: Optional[str] = Field(default=None, exclude=True)
-    _last_cached: Optional[datetime] = Field(default=None, exclude=True)
+    cache_ttl: Optional[int] = Field(default=300, exclude=True)  # 5 minutes default
+    cache_key_prefix: Optional[str] = Field(default=None, exclude=True)
+    last_cached: Optional[datetime] = Field(default=None, exclude=True)
 
     def get_cache_key(self, suffix: Optional[str] = None) -> str:
         """Generate cache key for this model instance."""
-        prefix = self._cache_key_prefix or self.__class__.__name__.lower()
+        prefix = self.cache_key_prefix or self.__class__.__name__.lower()
         base_key = f"{prefix}:{hash(self.model_dump_json())}"
         return f"{base_key}:{suffix}" if suffix else base_key
 
     def is_cache_valid(self) -> bool:
         """Check if cached data is still valid based on TTL."""
-        if not self._last_cached or not self._cache_ttl:
+        if not self.last_cached or not self.cache_ttl:
             return False
 
-        elapsed = (datetime.now() - self._last_cached).total_seconds()
-        return elapsed < self._cache_ttl
+        elapsed = (datetime.now() - self.last_cached).total_seconds()
+        return elapsed < self.cache_ttl
 
 
 class EntityType(str, Enum):
@@ -210,8 +210,8 @@ class NotionPage(CacheableModel):
     properties: Dict[str, Any] = Field(..., description="Notion page properties")
 
     # Cache configuration
-    _cache_ttl: Optional[int] = Field(default=600, exclude=True)  # 10 minutes for Notion pages
-    _cache_key_prefix: Optional[str] = Field(default="notion_page", exclude=True)
+    cache_ttl: Optional[int] = Field(default=600, exclude=True)  # 10 minutes for Notion pages
+    cache_key_prefix: Optional[str] = Field(default="notion_page", exclude=True)
 
     @field_validator('database_id')
     @classmethod
@@ -295,8 +295,8 @@ class NotionIntegrationConfig(CacheableModel):
     sync_frequency: int = Field(3600, description="Sync frequency in seconds")
 
     # Cache configuration for integration config
-    _cache_ttl: Optional[int] = Field(default=1800, exclude=True)  # 30 minutes
-    _cache_key_prefix: Optional[str] = Field(default="notion_config", exclude=True)
+    cache_ttl: Optional[int] = Field(default=1800, exclude=True)  # 30 minutes
+    cache_key_prefix: Optional[str] = Field(default="notion_config", exclude=True)
 
     @field_validator('sync_frequency')
     @classmethod

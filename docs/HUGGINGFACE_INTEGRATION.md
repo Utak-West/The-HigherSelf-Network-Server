@@ -66,7 +66,7 @@ Request body:
 ```json
 {
   "notion_page_id": "your-notion-page-id",
-  "model_config": {
+  "hf_model_config": {
     "model_id": "facebook/bart-large-cnn",
     "task": "summarization",
     "parameters": {
@@ -200,7 +200,7 @@ response = requests.post(
     "http://your-server/huggingface/process",
     json={
         "notion_page_id": "your-notion-page-id",
-        "model_config": {
+        "hf_model_config": {
             "model_id": "Helsinki-NLP/opus-mt-en-fr",
             "task": "translation",
             "parameters": {}

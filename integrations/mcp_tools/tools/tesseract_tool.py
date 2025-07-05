@@ -27,7 +27,7 @@ from services.ocr import (OCRServiceFactory, abbyy_service,
                           google_vision_service, tesseract_service)
 
 
-class TesseractTool(MCPTool):
+class TesseractTool:
     """
     MCP Tool for performing OCR operations using multiple providers.
 
@@ -42,56 +42,105 @@ class TesseractTool(MCPTool):
 
     def __init__(self):
         """Initialize the OCR tool."""
-        super().__init__(
-            tool_name="ocr",
-            metadata=ToolMetadata(
-                name="OCR Tool",
-                description="Extract text from images using multiple OCR providers",
-                version="2.0.0",
-                capabilities=[
-                    "IMAGE_PROCESSING",
-                    "TEXT_EXTRACTION",
-                    "DOCUMENT_PROCESSING",
-                ],
-            ),
+        self.enabled = True
+
+        # Register with registry
+        self._register()
+
+        logger.info("Tesseract MCP tool initialized")
+
+    def _register(self):
+        """Register this tool with the MCP tools registry."""
+        metadata = ToolMetadata(
+            name="ocr",
+            description="Extract text from images using multiple OCR providers",
+            version="2.0.0",
+            capabilities=[
+                ToolCapability.VISION,
+                ToolCapability.DATA_ANALYSIS,
+            ],
+            parameters_schema={
+                "type": "object",
+                "properties": {
+                    "image_data": {
+                        "type": "string",
+                        "description": "Base64 encoded image data"
+                    },
+                    "image_url": {
+                        "type": "string",
+                        "description": "URL to image file"
+                    },
+                    "provider": {
+                        "type": "string",
+                        "enum": ["tesseract", "google_vision", "abbyy", "auto"],
+                        "default": "auto",
+                        "description": "OCR provider to use"
+                    },
+                    "language": {
+                        "type": "string",
+                        "default": "eng",
+                        "description": "Language code for OCR"
+                    }
+                },
+                "required": [],
+                "anyOf": [
+                    {"required": ["image_data"]},
+                    {"required": ["image_url"]}
+                ]
+            },
+            response_schema={
+                "type": "object",
+                "properties": {
+                    "success": {"type": "boolean"},
+                    "text": {"type": "string"},
+                    "provider_used": {"type": "string"},
+                    "confidence": {"type": "number"},
+                    "error": {"type": "string"}
+                }
+            },
+            requires_api_key=False
         )
 
-        # Register methods
-        self.register_method(
-            "extract_text",
-            self._extract_text,
-            "Extract text from an image using OCR",
+        # Create and register the tool
+        ocr_tool = MCPTool(
+            metadata=metadata,
+            handler=self.extract_text,
+            is_async=True
         )
 
-        self.register_method(
-            "extract_text_from_url",
-            self._extract_text_from_url,
-            "Extract text from an image URL using OCR",
-        )
+        mcp_tools_registry.register_tool(ocr_tool)
 
-        self.register_method(
-            "extract_text_from_base64",
-            self._extract_text_from_base64,
-            "Extract text from a base64-encoded image using OCR",
-        )
+    async def extract_text(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Unified method to extract text from images using OCR.
 
-        self.register_method(
-            "get_supported_languages",
-            self._get_supported_languages,
-            "Get a list of supported OCR languages",
-        )
+        Args:
+            params: Dictionary containing:
+                - image_data: Base64 encoded image data (optional)
+                - image_url: URL to image file (optional)
+                - provider: OCR provider to use (default: "auto")
+                - language: Language code for OCR (default: "eng")
 
-        self.register_method(
-            "get_supported_providers",
-            self._get_supported_providers,
-            "Get a list of supported OCR providers",
-        )
-
-        self.register_method(
-            "get_supported_document_types",
-            self._get_supported_document_types,
-            "Get a list of supported document types",
-        )
+        Returns:
+            Dictionary with success status, extracted text, and metadata
+        """
+        try:
+            # Determine input type and delegate to appropriate method
+            if "image_data" in params:
+                return await self._extract_text_from_base64(params, "system")
+            elif "image_url" in params:
+                return await self._extract_text_from_url(params, "system")
+            else:
+                return {
+                    "success": False,
+                    "error": "Either image_data or image_url must be provided"
+                }
+        except Exception as e:
+            logger.error(f"Error in extract_text: {str(e)}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
     async def _extract_text(
         self, params: Dict[str, Any], agent_id: str

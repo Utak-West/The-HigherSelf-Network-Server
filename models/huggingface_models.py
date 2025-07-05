@@ -26,7 +26,7 @@ class NotionHuggingFaceIntegration(BaseModel):
     """Configuration for Notion to Hugging Face integration"""
 
     notion_page_id: str = Field(..., description="Notion page ID to process")
-    model_config: HuggingFaceModelConfig = Field(
+    hf_model_config: HuggingFaceModelConfig = Field(
         ..., description="Hugging Face model configuration"
     )
     input_property: str = Field(..., description="Notion property to use as input")

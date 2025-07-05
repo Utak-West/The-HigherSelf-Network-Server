@@ -33,6 +33,7 @@ services:
       # Database connections with environment-specific databases
       - MONGODB_URI=mongodb://${MONGODB_USERNAME:-higherself_user}:${MONGODB_PASSWORD:-secure_password}@mongodb:27017/${MONGODB_DB_NAME:-higherself_${ENVIRONMENT:-dev}}
       - REDIS_URI=redis://:${REDIS_PASSWORD:-}@redis:6379/${REDIS_DB:-0}
+      - REDIS_SSL=false
       - CONSUL_HTTP_ADDR=consul:8500
 
       # Business entity enablement flags
@@ -67,7 +68,7 @@ services:
       - ./backups:/app/backups
       - /run/secrets:/run/secrets:ro  # Docker secrets support
     networks:
-      - higherself_network
+      - app_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -112,7 +113,7 @@ services:
       - ./data/${ENVIRONMENT:-dev}:/app/data
       - ./config:/app/config:ro
     networks:
-      - higherself_network
+      - app_network
     depends_on:
       redis:
         condition: service_healthy
@@ -142,7 +143,7 @@ services:
       - ./data/${ENVIRONMENT:-dev}:/app/data
       - ./config:/app/config:ro
     networks:
-      - higherself_network
+      - app_network
     depends_on:
       redis:
         condition: service_healthy
@@ -165,7 +166,7 @@ services:
       - ./deployment/nginx/ssl:/etc/nginx/ssl:ro
       - ./logs/${ENVIRONMENT:-dev}/nginx:/var/log/nginx
     networks:
-      - higherself_network
+      - app_network
     depends_on:
       higherself-server:
         condition: service_healthy
@@ -197,7 +198,7 @@ services:
       - MONGO_APP_USER=${MONGODB_USERNAME:-higherself_user}
       - MONGO_APP_PASSWORD=${MONGODB_PASSWORD:-secure_password}
     networks:
-      - higherself_network
+      - app_network
     healthcheck:
       test: |
         echo 'try {
@@ -235,7 +236,7 @@ services:
       - ./deployment/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./logs/${ENVIRONMENT:-dev}/redis:/var/log/redis
     networks:
-      - higherself_network
+      - app_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -243,7 +244,7 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server /usr/local/etc/redis/redis.conf
     labels:
       - "prometheus.scrape=true"
       - "prometheus.port=6379"
@@ -259,7 +260,7 @@ services:
       - consul_data_development:/consul/data
       - ./logs/${ENVIRONMENT:-dev}/consul:/consul/logs
     networks:
-      - higherself_network
+      - app_network
     command: >
       agent -server -ui -client=0.0.0.0 -bootstrap-expect=1
       -data-dir=/consul/data -log-file=/consul/logs/consul.log
@@ -287,7 +288,7 @@ services:
       - prometheus_data_development:/prometheus
       - ./logs/${ENVIRONMENT:-dev}/prometheus:/var/log/prometheus
     networks:
-      - higherself_network
+      - app_network
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -319,7 +320,7 @@ services:
       - grafana_data_development:/var/lib/grafana
       - ./logs/${ENVIRONMENT:-dev}/grafana:/var/log/grafana
     networks:
-      - higherself_network
+      - app_network
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
@@ -349,7 +350,7 @@ services:
       - ./deployment/vault:/vault/config:ro
       - ./logs/${ENVIRONMENT:-dev}/vault:/vault/logs
     networks:
-      - higherself_network
+      - app_network
     environment:
       - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_ROOT_TOKEN:-dev-root-token}
       - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
@@ -501,16 +502,8 @@ volumes:
 
 # Networks for service communication
 networks:
-  higherself_network:
+  app_network:
     driver: bridge
-    name: higherself-network-${ENVIRONMENT:-dev}
-    labels:
-      - "com.higherself.network=main"
-      - "com.higherself.environment=${ENVIRONMENT:-development}"
-    ipam:
-      driver: default
-      config:
-        - subnet: ${NETWORK_SUBNET:-172.20.0.0/16}
 
 # Docker secrets for production deployment
 secrets:

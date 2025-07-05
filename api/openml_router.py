@@ -25,10 +25,15 @@ from repositories.dataset_repository import (
 from services.openml_service import openml_service
 from training.agent_training_pipeline import AgentTrainingPipeline
 from training.dataset_processor import DatasetProcessor
-from utils.message_bus import MessageBus, get_message_bus
+from utils.message_bus import MessageBus
 
 # Initialize router
 router = APIRouter(prefix="/openml", tags=["openml"])
+
+# Dependency function for message bus
+def get_message_bus() -> MessageBus:
+    """Get a MessageBus instance."""
+    return MessageBus()
 
 # Initialize repositories
 metadata_repo = DatasetMetadataRepository()

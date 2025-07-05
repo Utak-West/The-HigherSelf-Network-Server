@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from api.auth import get_current_agent
 from integrations.mcp_tools.mcp_tools_registry import ToolCapability, mcp_tools_registry
-from models.agent_models import Agent
+from models.notion_db_models import Agent
 from services.analytics_service import agent_analytics
 from services.cache_service import CacheLevel, CacheType, multi_level_cache
 from services.redis_service import redis_service

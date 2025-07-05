@@ -209,7 +209,7 @@ from functools import lru_cache
 from typing import Optional
 
 {code_snippet}
-
+"""
         return optimized
 
     def _document_code(self, code_snippet: str, language: str) -> str:
@@ -219,7 +219,7 @@ from typing import Optional
 # All functions include proper type hints, error handling, and documentation.
 
 {code_snippet}
-
+"""
         return documented
 
     def _fix_bugs(self, code_snippet: str, language: str) -> str:

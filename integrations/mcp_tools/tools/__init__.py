@@ -19,10 +19,10 @@ try:
 except ImportError:
     manus_ai_tool = None
 
-try:
-    from .genspark_tool import genspark_tool
-except ImportError:
-    genspark_tool = None
+# try:
+#     from .genspark_tool import genspark_tool
+# except ImportError:
+genspark_tool = None
 
 try:
     from .augment_code_tool import augment_code_tool

@@ -105,7 +105,7 @@ async def notion_huggingface_webhook(
             await notion_service.log_to_workflow_history(
                 integration.workflow_instance_id,
                 "INFO",
-                f"Received webhook for Hugging Face processing with model {integration.model_config.model_id}",
+                f"Received webhook for Hugging Face processing with model {integration.hf_model_config.model_id}",
                 "HuggingFaceIntegration",
             )
 
