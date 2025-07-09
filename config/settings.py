@@ -384,6 +384,11 @@ class IntegrationSettings(BaseSettings):
         env="GOHIGHLEVEL_SCOPE",
     )
 
+    # Todoist Integration
+    todoist_api_token: Optional[str] = Field(None, env="TODOIST_API_TOKEN")
+    todoist_webhook_secret: Optional[str] = Field(None, env="TODOIST_WEBHOOK_SECRET")
+    enable_todoist: bool = Field(True, env="ENABLE_TODOIST")
+
 
 class Settings(BaseSettings):
     """Main application settings."""
@@ -426,6 +431,22 @@ class Settings(BaseSettings):
     server: ServerSettings = Field(default_factory=ServerSettings)
     redis: RedisSettings = Field(default_factory=RedisSettings)
     integrations: IntegrationSettings = Field(default_factory=IntegrationSettings)
+
+    # Todoist Integration Properties (for easy access)
+    @property
+    def TODOIST_API_TOKEN(self) -> Optional[str]:
+        """Get Todoist API token."""
+        return self.integrations.todoist_api_token
+
+    @property
+    def TODOIST_WEBHOOK_SECRET(self) -> Optional[str]:
+        """Get Todoist webhook secret."""
+        return self.integrations.todoist_webhook_secret
+
+    @property
+    def ENABLE_TODOIST(self) -> bool:
+        """Check if Todoist integration is enabled."""
+        return self.integrations.enable_todoist
 
     model_config = {
         "env_file": ".env",
