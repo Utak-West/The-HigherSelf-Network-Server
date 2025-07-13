@@ -1,0 +1,155 @@
+# Multi-stage build for Higher Self Network Server Production
+# Addresses critical issues: Redis config, missing dependencies, environment loading
+
+# Stage 1: Base Python environment with system dependencies
+FROM python:3.11-slim as base
+
+# Set build arguments
+ARG BUILD_ENV=production
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies for all critical packages
+RUN apt-get update && apt-get install -y \
+    # Essential build tools
+    build-essential \
+    gcc \
+    g++ \
+    # Network and SSL tools
+    curl \
+    wget \
+    ca-certificates \
+    # Image processing for OCR
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    # Image libraries
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    # Video processing
+    ffmpeg \
+    # Git for package installations
+    git \
+    # Process management
+    supervisor \
+    # Cleanup
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Stage 2: Dependencies installation
+FROM base as dependencies
+
+# Create application directory
+WORKDIR /app
+
+# Copy requirements files
+COPY requirements.txt requirements-langchain.txt ./
+
+# Install Python dependencies with all critical packages
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-langchain.txt && \
+    # Install critical missing dependencies explicitly
+    pip install --no-cache-dir \
+        pymongo==4.6.1 \
+        motor==3.3.2 \
+        celery==5.3.4 \
+        python-consul==1.1.0 \
+        pytesseract==0.3.10 \
+        google-cloud-vision==3.4.5 \
+        # Additional production dependencies
+        gunicorn==21.2.0 \
+        uvicorn[standard]==0.23.2 \
+        # Monitoring and health checks
+        prometheus-client>=0.19.0 \
+        psutil>=5.9.0
+
+# Stage 3: Application build
+FROM dependencies as application
+
+# Create non-root user for security
+RUN groupadd -r higherself && \
+    useradd -r -g higherself -d /app -s /bin/bash higherself && \
+    chown -R higherself:higherself /app
+
+# Copy application code
+COPY --chown=higherself:higherself . .
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/logs /app/cache /app/data /app/tmp && \
+    chown -R higherself:higherself /app/logs /app/cache /app/data /app/tmp
+
+# Copy and set up entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Stage 4: Production image
+FROM application as production
+
+# Set production environment
+ENV ENVIRONMENT=production \
+    LOG_LEVEL=INFO \
+    WORKERS=4 \
+    # Redis configuration environment
+    REDIS_DECODE_RESPONSES=true \
+    REDIS_HEALTH_CHECK_INTERVAL=30 \
+    # Application configuration
+    PYTHONPATH=/app \
+    # Security settings
+    PYTHONHASHSEED=random
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Switch to non-root user
+USER higherself
+
+# Expose application port
+EXPOSE 8000
+
+# Set working directory
+WORKDIR /app
+
+# Default command with proper environment loading
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "main:app"]
+
+# Stage 5: Development image (optional)
+FROM application as development
+
+# Install development dependencies
+RUN pip install --no-cache-dir \
+    pytest==7.4.3 \
+    pytest-asyncio==0.21.1 \
+    black==23.12.1 \
+    isort==5.13.2 \
+    flake8==6.1.0 \
+    mypy==1.8.0 \
+    bandit==1.7.5
+
+# Set development environment
+ENV ENVIRONMENT=development \
+    LOG_LEVEL=DEBUG \
+    RELOAD=true
+
+# Development command
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+
+# Labels for image metadata
+LABEL maintainer="Higher Self Network <admin@higherself.network>" \
+      version="1.0.0" \
+      description="Higher Self Network Server - Production Docker Image" \
+      org.opencontainers.image.title="Higher Self Network Server" \
+      org.opencontainers.image.description="Enterprise-grade automation platform with AI agents" \
+      org.opencontainers.image.vendor="Higher Self Network" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.created="2025-07-13" \
+      org.opencontainers.image.source="https://github.com/Utak-West/The-HigherSelf-Network-Server" \
+      org.opencontainers.image.documentation="https://utak.atlassian.net/wiki/spaces/OPERATIONS/pages/8978433/"

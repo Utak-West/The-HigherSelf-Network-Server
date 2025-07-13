@@ -1,0 +1,222 @@
+version: '3.8'
+
+services:
+  # Main Higher Self Network Server Application (Development)
+  higherself-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: development
+    container_name: higherself-server-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # Debug port
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_API_KEY=${SUPABASE_API_KEY}
+      - MONGODB_URI=mongodb://mongodb:27017/higherself_dev
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=development
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - .:/app
+      - app_logs_dev:/app/logs
+      - app_cache_dev:/app/cache
+    networks:
+      - higherself-dev-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+
+  # Local Redis for Development
+  redis:
+    image: redis:7-alpine
+    container_name: higherself-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass devpassword
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - higherself-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "devpassword", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # MongoDB for Development
+  mongodb:
+    image: mongo:7.0
+    container_name: higherself-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=development
+      - MONGO_INITDB_DATABASE=higherself_dev
+    volumes:
+      - mongodb_data_dev:/data/db
+      - ./scripts/mongodb-init-dev.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - higherself-dev-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Neo4j for Development
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: higherself-neo4j-dev
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/development
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      - NEO4J_dbms_memory_heap_initial_size=512M
+      - NEO4J_dbms_memory_heap_max_size=1G
+    volumes:
+      - neo4j_data_dev:/data
+      - neo4j_logs_dev:/logs
+    networks:
+      - higherself-dev-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "development", "RETURN 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Celery Worker for Development
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: development
+    container_name: higherself-celery-dev
+    restart: unless-stopped
+    command: celery -A services.task_queue_service worker --loglevel=debug --concurrency=2
+    environment:
+      - ENVIRONMENT=development
+      - REDIS_URI=redis://:devpassword@redis:6379/0
+      - MONGODB_URI=mongodb://mongodb:27017/higherself_dev
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+    volumes:
+      - .:/app
+      - app_logs_dev:/app/logs
+    networks:
+      - higherself-dev-network
+    depends_on:
+      - redis
+      - mongodb
+
+  # Celery Flower for Task Monitoring
+  celery-flower:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: development
+    container_name: higherself-flower-dev
+    restart: unless-stopped
+    ports:
+      - "5555:5555"
+    command: celery -A services.task_queue_service flower --port=5555
+    environment:
+      - ENVIRONMENT=development
+      - REDIS_URI=redis://:devpassword@redis:6379/0
+    volumes:
+      - .:/app
+    networks:
+      - higherself-dev-network
+    depends_on:
+      - redis
+      - celery-worker
+
+  # Jupyter Notebook for Development
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: development
+    container_name: higherself-jupyter-dev
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    environment:
+      - ENVIRONMENT=development
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - .:/app
+      - jupyter_data_dev:/root/.jupyter
+    networks:
+      - higherself-dev-network
+
+  # MailHog for Email Testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: higherself-mailhog-dev
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - higherself-dev-network
+
+  # Adminer for Database Management
+  adminer:
+    image: adminer:latest
+    container_name: higherself-adminer-dev
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=mongodb
+    networks:
+      - higherself-dev-network
+    depends_on:
+      - mongodb
+
+networks:
+  higherself-dev-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
+volumes:
+  # Development volumes
+  app_logs_dev:
+    driver: local
+  app_cache_dev:
+    driver: local
+  redis_data_dev:
+    driver: local
+  mongodb_data_dev:
+    driver: local
+  neo4j_data_dev:
+    driver: local
+  neo4j_logs_dev:
+    driver: local
+  jupyter_data_dev:
+    driver: local

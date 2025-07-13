@@ -1,0 +1,297 @@
+version: '3.8'
+
+services:
+  # Main Higher Self Network Server Application (Staging)
+  higherself-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: production
+    container_name: higherself-server-staging
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=staging
+      - LOG_LEVEL=INFO
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_API_KEY=${SUPABASE_API_KEY}
+      - MONGODB_URI=${MONGODB_URI_STAGING}
+      - NEO4J_URI=${NEO4J_URI_STAGING}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD_STAGING}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - app_logs_staging:/app/logs
+      - app_cache_staging:/app/cache
+      - app_data_staging:/app/data
+    networks:
+      - higherself-staging-network
+      - monitoring-staging-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 3G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  # Celery Worker for Staging
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: production
+    container_name: higherself-celery-staging
+    restart: unless-stopped
+    command: celery -A services.task_queue_service worker --loglevel=info --concurrency=2
+    environment:
+      - ENVIRONMENT=staging
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MONGODB_URI=${MONGODB_URI_STAGING}
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+    volumes:
+      - app_logs_staging:/app/logs
+      - app_cache_staging:/app/cache
+    networks:
+      - higherself-staging-network
+    depends_on:
+      - higherself-server
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+  # MongoDB for Staging
+  mongodb:
+    image: mongo:7.0
+    container_name: higherself-mongodb-staging
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME_STAGING}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD_STAGING}
+      - MONGO_INITDB_DATABASE=${MONGODB_DB_NAME_STAGING}
+    volumes:
+      - mongodb_data_staging:/data/db
+      - mongodb_config_staging:/data/configdb
+      - ./scripts/mongodb-init-staging.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - higherself-staging-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+  # Neo4j for Staging
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: higherself-neo4j-staging
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD_STAGING}
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      - NEO4J_dbms_memory_heap_initial_size=512M
+      - NEO4J_dbms_memory_heap_max_size=1G
+    volumes:
+      - neo4j_data_staging:/data
+      - neo4j_logs_staging:/logs
+    networks:
+      - higherself-staging-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "${NEO4J_USER}", "-p", "${NEO4J_PASSWORD_STAGING}", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+  # Nginx for Staging
+  nginx:
+    image: nginx:alpine
+    container_name: higherself-nginx-staging
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx-staging.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl-staging:/etc/nginx/ssl:ro
+      - nginx_logs_staging:/var/log/nginx
+    networks:
+      - higherself-staging-network
+    depends_on:
+      - higherself-server
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus for Staging Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: higherself-prometheus-staging
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-staging.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data_staging:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=72h'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring-staging-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana for Staging Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: higherself-grafana-staging
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD_STAGING}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data_staging:/var/lib/grafana
+      - ./monitoring/grafana/dashboards-staging:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources-staging:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring-staging-network
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Integration Test Runner
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: development
+    container_name: higherself-integration-tests
+    restart: "no"
+    command: ["python", "-m", "pytest", "tests/integration/", "-v", "--tb=short"]
+    environment:
+      - ENVIRONMENT=staging
+      - TEST_REDIS_URI=${REDIS_URI}
+      - TEST_MONGODB_URI=${MONGODB_URI_STAGING}
+      - TEST_NEO4J_URI=${NEO4J_URI_STAGING}
+      - TEST_SUPABASE_URL=${SUPABASE_URL}
+      - TEST_NOTION_API_TOKEN=${NOTION_API_TOKEN}
+    volumes:
+      - .:/app
+      - test_results_staging:/app/test-results
+    networks:
+      - higherself-staging-network
+    depends_on:
+      higherself-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+
+  # Load Testing with Locust
+  load-tests:
+    image: locustio/locust:latest
+    container_name: higherself-load-tests
+    restart: "no"
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./tests/load:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --host=http://higherself-server:8000
+    networks:
+      - higherself-staging-network
+    depends_on:
+      higherself-server:
+        condition: service_healthy
+
+networks:
+  higherself-staging-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.23.0.0/16
+  monitoring-staging-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
+
+volumes:
+  # Staging application volumes
+  app_logs_staging:
+    driver: local
+  app_cache_staging:
+    driver: local
+  app_data_staging:
+    driver: local
+  
+  # Staging database volumes
+  mongodb_data_staging:
+    driver: local
+  mongodb_config_staging:
+    driver: local
+  neo4j_data_staging:
+    driver: local
+  neo4j_logs_staging:
+    driver: local
+  
+  # Staging monitoring volumes
+  prometheus_data_staging:
+    driver: local
+  grafana_data_staging:
+    driver: local
+  
+  # Staging infrastructure volumes
+  nginx_logs_staging:
+    driver: local
+  test_results_staging:
+    driver: local
